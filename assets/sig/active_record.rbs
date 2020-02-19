@@ -28,6 +28,9 @@ class ActiveRecord::Base
   def self.before_validation: (*untyped) -> void
 
   def will_save_change_to_attribute?: (String | Symbol attr_name, from: untyped, to: untyped) -> bool
+
+  def valid?: () -> bool
+  def errors: () -> untyped
 end
 
 class ActiveRecord::Relation
@@ -37,18 +40,25 @@ class ActiveRecord::Associations::CollectionProxy
 end
 
 interface _ActiveRecord_Relation[Model]
+  def all: () -> self
+  def none: () -> self
   def where: (*untyped) -> self
   def not: (*untyped) -> self
+  def exists: (*untyped) -> bool
   def order: (*untyped) -> self
   def find_by: (*untyped) -> Model?
   def find_by!: (*untyped) -> Model
   def find: (Integer id) -> Model
   def first: () -> Model
            | (Integer count) -> Array[Model]
+  def each: () { (Model) -> void } -> self
 end
 
 interface _ActiveRecord_Relation_ClassMethods[Model, Relation]
+  def all: () -> Relation
+  def none: () -> Relation
   def where: (*untyped) -> Relation
+  def exists: (*untyped) -> bool
   def order: (*untyped) -> Relation
   def find_by: (*untyped) -> Model?
   def find_by!: (*untyped) -> Model
