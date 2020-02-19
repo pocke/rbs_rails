@@ -1,0 +1,55 @@
+class ActiveRecord::Base
+  def self.scope: (Symbol, ^(*untyped) -> untyped ) -> void
+                | (Symbol) { (*untyped) -> untyped } -> void
+  def self.belongs_to: (Symbol, ?untyped, **untyped) -> void
+  def self.has_many: (Symbol, ?untyped, **untyped) -> void
+  def self.has_one: (Symbol, ?untyped, **untyped) -> void
+  def self.transaction: [T] () { () -> T } -> T
+  def self.create!: (**untyped) -> instance
+  def self.validate: (*untyped) -> void
+  def self.validates: (*untyped) -> void
+
+  # callbacks
+  def self.after_commit: (*untyped) -> void
+  def self.after_create: (*untyped) -> void
+  def self.after_destroy: (*untyped) -> void
+  def self.after_rollback: (*untyped) -> void
+  def self.after_save: (*untyped) -> void
+  def self.after_update: (*untyped) -> void
+  def self.after_validation: (*untyped) -> void
+  def self.around_create: (*untyped) -> void
+  def self.around_destroy: (*untyped) -> void
+  def self.around_save: (*untyped) -> void
+  def self.around_update: (*untyped) -> void
+  def self.before_create: (*untyped) -> void
+  def self.before_destroy: (*untyped) -> void
+  def self.before_save: (*untyped) -> void
+  def self.before_update: (*untyped) -> void
+  def self.before_validation: (*untyped) -> void
+
+  def will_save_change_to_attribute?: (String | Symbol attr_name, from: untyped, to: untyped) -> bool
+end
+
+class ActiveRecord::Relation
+end
+
+interface _ActiveRecord_Relation[Model]
+  def where: (*untyped) -> self
+  def not: (*untyped) -> self
+  def order: (*untyped) -> self
+  def find_by: (*untyped) -> Model?
+  def find_by!: (*untyped) -> Model
+  def find: (Integer id) -> Model
+  def first: () -> Model
+           | (Integer count) -> Array[Model]
+end
+
+interface _ActiveRecord_Relation_ClassMethods[Model, Relation]
+  def where: (*untyped) -> Relation
+  def order: (*untyped) -> Relation
+  def find_by: (*untyped) -> Model?
+  def find_by!: (*untyped) -> Model
+  def find: (Integer id) -> Model
+  def first: () -> Model
+           | (Integer count) -> Array[Model]
+end

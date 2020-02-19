@@ -11,9 +11,23 @@ module RbsRails
       end
 
       def generate
+        [klass_decl, relation_decl].join("\n")
+      end
+
+      private def klass_decl
         <<~RBS
           #{header}
+            extend _ActiveRecord_Relation_ClassMethods[#{klass.name}, #{relation_class_name}]
           #{columns.indent(2)}
+          end
+        RBS
+      end
+
+      private def relation_decl
+        <<~RBS
+          class #{relation_class_name} < ActiveRecord::Relation
+            include _ActiveRecord_Relation[#{klass.name}]
+            include Enumerable[#{klass.name}, self]
           end
         RBS
       end
@@ -27,6 +41,10 @@ module RbsRails
         else
           raise "unexpected mode: #{mode}"
         end
+      end
+
+      private def relation_class_name
+        "#{klass.name}::ActiveRecord_Relation"
       end
 
       private def columns

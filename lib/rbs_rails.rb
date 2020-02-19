@@ -4,5 +4,10 @@ require_relative 'rbs_rails/path_helpers'
 
 module RbsRails
   class Error < StandardError; end
-  # Your code goes here...
+
+  def self.copy_signatures(to:)
+    from = Pathname(__dir__) / '../assets/sig/'
+    to = Pathname(to)
+    FileUtils.cp_r(from, to)
+  end
 end
