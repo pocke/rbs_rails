@@ -42,6 +42,8 @@ end
 interface _ActiveRecord_Relation[Model]
   def all: () -> self
   def none: () -> self
+  def pluck: (Symbol | String column) -> Array[untyped]
+           | (*Symbol | String columns) -> Array[Array[untyped]]
   def where: (*untyped) -> self
   def not: (*untyped) -> self
   def exists: (*untyped) -> bool
@@ -57,6 +59,8 @@ end
 interface _ActiveRecord_Relation_ClassMethods[Model, Relation]
   def all: () -> Relation
   def none: () -> Relation
+  def pluck: (Symbol | String column) -> Array[untyped]
+           | (*Symbol | String columns) -> Array[Array[untyped]]
   def where: (*untyped) -> Relation
   def exists: (*untyped) -> bool
   def order: (*untyped) -> Relation
