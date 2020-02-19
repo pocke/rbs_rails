@@ -11,14 +11,20 @@ module RbsRails
       end
 
       def generate
-        [klass_decl, relation_decl].join("\n")
+        [
+          klass_decl,
+          relation_decl,
+          collection_proxy_decl,
+        ].join("\n")
       end
 
       private def klass_decl
         <<~RBS
           #{header}
             extend _ActiveRecord_Relation_ClassMethods[#{klass.name}, #{relation_class_name}]
+
           #{columns.indent(2)}
+          #{associations.indent(2)}
           end
         RBS
       end
@@ -32,6 +38,14 @@ module RbsRails
         RBS
       end
 
+      private def collection_proxy_decl
+        <<~RBS
+          class #{klass.name}::ActiveRecord_Associations_CollectionProxy < ActiveRecord::Associations::CollectionProxy
+          end
+        RBS
+      end
+
+
       private def header
         case mode
         when :extension
@@ -41,6 +55,34 @@ module RbsRails
         else
           raise "unexpected mode: #{mode}"
         end
+      end
+
+      private def associations
+        [
+          has_many,
+          has_one,
+          belongs_to,
+        ].join("\n")
+      end
+
+      private def has_many
+        klass.reflect_on_all_associations(:has_many).map do |a|
+          "def #{a.name}: () -> #{a.klass.name}::ActiveRecord_Associations_CollectionProxy"
+        end.join("\n")
+      end
+
+      private def has_one
+        klass.reflect_on_all_associations(:has_one).map do |a|
+          type = a.polymorphic? ? 'untyped' : a.klass.name
+          "def #{a.name}: () -> #{type}"
+        end.join("\n")
+      end
+
+      private def belongs_to
+        klass.reflect_on_all_associations(:belongs_to).map do |a|
+          type = a.polymorphic? ? 'untyped' : a.klass.name
+          "def #{a.name}: () -> #{type}"
+        end.join("\n")
       end
 
       private def relation_class_name

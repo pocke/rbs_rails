@@ -33,6 +33,9 @@ end
 class ActiveRecord::Relation
 end
 
+class ActiveRecord::Associations::CollectionProxy
+end
+
 interface _ActiveRecord_Relation[Model]
   def where: (*untyped) -> self
   def not: (*untyped) -> self
