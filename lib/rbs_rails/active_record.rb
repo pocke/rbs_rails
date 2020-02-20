@@ -26,6 +26,7 @@ module RbsRails
           #{columns.indent(2)}
           #{associations.indent(2)}
           #{enum_instance_methods.indent(2)}
+          #{enum_scope_methods(singleton: true).indent(2)}
           end
         RBS
       end
@@ -35,6 +36,7 @@ module RbsRails
           class #{relation_class_name} < ActiveRecord::Relation
             include _ActiveRecord_Relation[#{klass.name}]
             include Enumerable[#{klass.name}, self]
+          #{enum_scope_methods(singleton: false).indent(2)}
           end
         RBS
       end
@@ -87,36 +89,34 @@ module RbsRails
       end
 
       private def enum_instance_methods
-        path = Rails.root.join('app/models/', klass.name.underscore + '.rb')
-        return '' unless path.exist?
-
-        ast = Parser::CurrentRuby.parse path.read
-        return '' unless ast
-
         methods = []
         enum_definitions.each do |hash|
-          enum_prefix = hash.delete(:_prefix)
-          enum_suffix = hash.delete(:_suffix)
           hash.each do |name, values|
-            values.each do |label, value|
-              if enum_prefix == true
-                prefix = "#{name}_"
-              elsif enum_prefix
-                prefix = "#{enum_prefix}_"
-              end
-              if enum_suffix == true
-                suffix = "_#{name}"
-              elsif enum_suffix
-                suffix = "_#{enum_suffix}"
-              end
+            next if name == :_prefix || name == :_suffix
 
-              value_method_name = "#{prefix}#{label}#{suffix}"
+            values.each do |label, value|
+              value_method_name = enum_method_name(hash, name, label)
               methods << "def #{value_method_name}!: () -> bool"
               methods << "def #{value_method_name}?: () -> bool"
             end
           end
         end
 
+        methods.join("\n")
+      end
+
+      private def enum_scope_methods(singleton:)
+        methods = []
+        enum_definitions.each do |hash|
+          hash.each do |name, values|
+            next if name == :_prefix || name == :_suffix
+
+            values.each do |label, value|
+              value_method_name = enum_method_name(hash, name, label)
+              methods << "def #{singleton ? 'self.' : ''}#{value_method_name}: () -> #{relation_class_name}"
+            end
+          end
+        end
         methods.join("\n")
       end
 
@@ -148,6 +148,24 @@ module RbsRails
           code = "{#{code}}" if code[0] != '{'
           eval(code)
         end.compact
+      end
+
+      private def enum_method_name(hash, name, label)
+        enum_prefix = hash[:_prefix]
+        enum_suffix = hash[:_suffix]
+
+        if enum_prefix == true
+          prefix = "#{name}_"
+        elsif enum_prefix
+          prefix = "#{enum_prefix}_"
+        end
+        if enum_suffix == true
+          suffix = "_#{name}"
+        elsif enum_suffix
+          suffix = "_#{enum_suffix}"
+        end
+
+        "#{prefix}#{label}#{suffix}"
       end
 
       private def traverse(node, &block)
