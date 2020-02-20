@@ -25,6 +25,7 @@ module RbsRails
 
           #{columns.indent(2)}
           #{associations.indent(2)}
+          #{enums.indent(2)}
           end
         RBS
       end
@@ -83,6 +84,66 @@ module RbsRails
           type = a.polymorphic? ? 'untyped' : a.klass.name
           "def #{a.name}: () -> #{type}"
         end.join("\n")
+      end
+
+      # We need static analysis to detect enum.
+      # ActiveRecord has `defined_enums` method,
+      # but it does not contain _prefix and _suffix information.
+      private def enums
+        path = Rails.root.join('app/models/', klass.name.underscore + '.rb')
+        return '' unless path.exist?
+
+        ast = Parser::CurrentRuby.parse path.read
+        return '' unless ast
+
+        methods = []
+
+        traverse(ast) do |node|
+          next unless node.type == :send
+          next unless node.children[0].nil?
+          next unless node.children[1] == :enum
+
+          definitions = node.children[2]
+          next unless definitions
+          next unless definitions.type == :hash
+          next unless traverse(definitions).all? { |n| [:str, :sym, :int, :hash, :pair, :true, :false].include?(n.type) }
+
+          code = definitions.loc.expression.source
+          code = "{#{code}}" if code[0] != '{'
+          hash = eval(code)
+
+          enum_prefix = hash.delete(:_prefix)
+          enum_suffix = hash.delete(:_suffix)
+          hash.each do |name, values|
+            values.each do |label, value|
+              if enum_prefix == true
+                prefix = "#{name}_"
+              elsif enum_prefix
+                prefix = "#{enum_prefix}_"
+              end
+              if enum_suffix == true
+                suffix = "_#{name}"
+              elsif enum_suffix
+                suffix = "_#{enum_suffix}"
+              end
+
+              value_method_name = "#{prefix}#{label}#{suffix}"
+              methods << "def #{value_method_name}!: () -> bool"
+              methods << "def #{value_method_name}?: () -> bool"
+            end
+          end
+        end
+
+        methods.join("\n")
+      end
+
+      private def traverse(node, &block)
+        return to_enum(__method__, node) unless block_given?
+
+        block.call node
+        node.children.each do |child|
+          traverse(child, &block) if child.is_a?(Parser::AST::Node)
+        end
       end
 
       private def relation_class_name
