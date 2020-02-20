@@ -1,0 +1,12 @@
+module RbsRails
+end
+
+class RbsRails::PathHelpers
+  def self.generate: (?routes: untyped routes) -> untyped
+
+  def initialize: (routes: untyped routes) -> untyped
+
+  def generate: () -> untyped
+
+  attr_reader routes: untyped
+end

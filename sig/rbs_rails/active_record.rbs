@@ -1,0 +1,16 @@
+module RbsRails
+end
+
+module RbsRails::ActiveRecord
+  def self.class_to_rbs: (untyped klass, mode: untyped mode) -> untyped
+end
+
+class RbsRails::ActiveRecord::Generator
+  def initialize: (untyped klass, mode: untyped mode) -> untyped
+
+  def generate: () -> untyped
+
+  attr_reader klass: untyped
+
+  attr_reader mode: untyped
+end

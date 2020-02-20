@@ -1,0 +1,4 @@
+module RbsRails
+end
+
+RbsRails::VERSION: ::String
