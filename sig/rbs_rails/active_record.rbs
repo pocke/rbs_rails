@@ -1,6 +1,3 @@
-module RbsRails
-end
-
 module RbsRails::ActiveRecord
   def self.class_to_rbs: (untyped klass, mode: untyped mode) -> untyped
 end

@@ -1,6 +1,3 @@
-module RbsRails
-end
-
 class RbsRails::PathHelpers
   def self.generate: (?routes: untyped routes) -> untyped
 
