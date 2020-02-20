@@ -1,9 +1,9 @@
 target :lib do
   signature "sig"
+  signature 'assets/sig'
 
   check "lib"                       # Directory name
-  check "Gemfile"                   # File name
 
-  # library "pathname", "set"       # Standard libraries
+  library "pathname"
   # library "strong_json"           # Gems
 end

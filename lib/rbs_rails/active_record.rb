@@ -91,6 +91,7 @@ module RbsRails
       end
 
       private def enum_instance_methods
+        # @type var methods: Array[String]
         methods = []
         enum_definitions.each do |hash|
           hash.each do |name, values|
@@ -108,6 +109,7 @@ module RbsRails
       end
 
       private def enum_scope_methods(singleton:)
+        # @type var methods: Array[String]
         methods = []
         enum_definitions.each do |hash|
           hash.each do |name, values|
@@ -191,6 +193,7 @@ module RbsRails
       end
 
       private def args_to_type(args_node)
+        # @type var methods: Array[String]
         res = []
         args_node.children.each do |node|
           case node.type
@@ -266,6 +269,7 @@ module RbsRails
       end
 
       private
+      # @dynamic klass, mode
       attr_reader :klass, :mode
     end
   end

@@ -28,6 +28,9 @@ class ActiveRecord::Base
   def self.before_update: (*untyped) -> void
   def self.before_validation: (*untyped) -> void
 
+  def self.columns: () -> Array[untyped]
+  def self.reflect_on_all_associations: (?Symbol) -> Array[untyped]
+
   def will_save_change_to_attribute?: (String | Symbol attr_name, ?from: untyped, ?to: untyped) -> bool
 
   def save!: () -> self

@@ -3,6 +3,8 @@ module RbsRails::ActiveRecord
 end
 
 class RbsRails::ActiveRecord::Generator
+  @parse_model_file: nil | Parser::AST::Node
+
   def initialize: (untyped klass, mode: untyped mode) -> untyped
 
   def generate: () -> untyped
@@ -42,7 +44,7 @@ class RbsRails::ActiveRecord::Generator
 
   def parse_model_file: () -> untyped
 
-  def traverse: (untyped node) { () -> untyped } -> untyped
+  def traverse: (untyped node) ?{ () -> untyped } -> untyped
 
   def relation_class_name: () -> untyped
 
@@ -50,7 +52,7 @@ class RbsRails::ActiveRecord::Generator
 
   def sql_type_to_class: (untyped t) -> untyped
 
-  attr_reader klass: untyped
+  attr_reader klass: singleton(ActiveRecord::Base)
 
-  attr_reader mode: untyped
+  attr_reader mode: (:extension | :class)
 end
