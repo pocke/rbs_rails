@@ -5,5 +5,7 @@ class RbsRails::PathHelpers
 
   def generate: () -> untyped
 
+  def helpers: () -> untyped
+
   attr_reader routes: untyped
 end

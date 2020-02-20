@@ -7,6 +7,49 @@ class RbsRails::ActiveRecord::Generator
 
   def generate: () -> untyped
 
+  def klass_decl: () -> untyped
+
+  def relation_decl: () -> untyped
+
+  def collection_proxy_decl: () -> untyped
+
+  def header: () -> untyped
+
+  def associations: () -> untyped
+
+  def has_many: () -> untyped
+
+  def has_one: () -> untyped
+
+  def belongs_to: () -> untyped
+
+  def enum_instance_methods: () -> untyped
+
+  def enum_scope_methods: (singleton: untyped `singleton`) -> untyped
+
+  def enum_definitions: () -> untyped
+
+  # We need static analysis to detect enum.
+  # ActiveRecord has `defined_enums` method,
+  # but it does not contain _prefix and _suffix information.
+  def build_enum_definitions: () -> untyped
+
+  def enum_method_name: (untyped hash, untyped name, untyped label) -> untyped
+
+  def scopes: (singleton: untyped `singleton`) -> untyped
+
+  def args_to_type: (untyped args_node) -> untyped
+
+  def parse_model_file: () -> untyped
+
+  def traverse: (untyped node) { () -> untyped } -> untyped
+
+  def relation_class_name: () -> untyped
+
+  def columns: () -> untyped
+
+  def sql_type_to_class: (untyped t) -> untyped
+
   attr_reader klass: untyped
 
   attr_reader mode: untyped
