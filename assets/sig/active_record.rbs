@@ -28,12 +28,19 @@ class ActiveRecord::Base
   def self.before_update: (*untyped) -> void
   def self.before_validation: (*untyped) -> void
 
-  def will_save_change_to_attribute?: (String | Symbol attr_name, from: untyped, to: untyped) -> bool
+  def will_save_change_to_attribute?: (String | Symbol attr_name, ?from: untyped, ?to: untyped) -> bool
 
   def save!: () -> self
+  def save: () -> bool
+  def update!: (*untyped) -> self
+  def update: (*untyped) -> bool
+  def destroy!: () -> self
+  def destroy: () -> bool
   def valid?: () -> bool
   def invalid?: () -> bool
   def errors: () -> untyped
+  def []: (Symbol) -> untyped
+  def []=: (Symbol, untyped) -> untyped
 end
 
 class ActiveRecord::Relation
@@ -57,6 +64,8 @@ interface _ActiveRecord_Relation[Model]
   def or: (self) -> self
   def merge: (self) -> self
   def joins: (*String | Symbol) -> self
+           | (Hash[untyped, untyped]) -> self
+  def left_joins: (*String | Symbol) -> self
            | (Hash[untyped, untyped]) -> self
   def left_outer_joins: (*String | Symbol) -> self
                       | (Hash[untyped, untyped]) -> self
@@ -93,6 +102,8 @@ interface _ActiveRecord_Relation_ClassMethods[Model, Relation]
   def or: (Relation) -> Relation
   def merge: (Relation) -> Relation
   def joins: (*String | Symbol) -> self
+           | (Hash[untyped, untyped]) -> self
+  def left_joins: (*String | Symbol) -> self
            | (Hash[untyped, untyped]) -> self
   def left_outer_joins: (*String | Symbol) -> self
                       | (Hash[untyped, untyped]) -> self
