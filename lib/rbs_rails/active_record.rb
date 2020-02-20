@@ -27,6 +27,7 @@ module RbsRails
           #{associations.indent(2)}
           #{enum_instance_methods.indent(2)}
           #{enum_scope_methods(singleton: true).indent(2)}
+          #{scopes(singleton: true).indent(2)}
           end
         RBS
       end
@@ -37,6 +38,7 @@ module RbsRails
             include _ActiveRecord_Relation[#{klass.name}]
             include Enumerable[#{klass.name}, self]
           #{enum_scope_methods(singleton: false).indent(2)}
+          #{scopes(singleton: false).indent(2)}
           end
         RBS
       end
@@ -128,10 +130,7 @@ module RbsRails
       # ActiveRecord has `defined_enums` method,
       # but it does not contain _prefix and _suffix information.
       private def build_enum_definitions
-        path = Rails.root.join('app/models/', klass.name.underscore + '.rb')
-        return [] unless path.exist?
-
-        ast = Parser::CurrentRuby.parse path.read
+        ast = parse_model_file
         return [] unless ast
 
         traverse(ast).map do |node|
@@ -166,6 +165,62 @@ module RbsRails
         end
 
         "#{prefix}#{label}#{suffix}"
+      end
+
+      private def scopes(singleton:)
+        ast = parse_model_file
+        return '' unless ast
+
+        traverse(ast).map do |node|
+          next unless node.type == :send
+          next unless node.children[0].nil?
+          next unless node.children[1] == :scope
+
+          name_node = node.children[2]
+          next unless name_node
+          next unless name_node.type == :sym
+
+          name = name_node.children[0]
+          body_node = node.children[3]
+          next unless body_node
+          next unless body_node.type == :block
+
+          args = args_to_type(body_node.children[1])
+          "def #{singleton ? 'self.' : ''}#{name}: (#{args}) -> #{relation_class_name}"
+        end.compact.join("\n")
+      end
+
+      private def args_to_type(args_node)
+        res = []
+        args_node.children.each do |node|
+          case node.type
+          when :arg
+            res << "untyped"
+          when :optarg
+            res << "?untyped"
+          when :kwarg
+            res << "#{node.children[0]}: untyped"
+          when :kwoptarg
+            res << "?#{node.children[0]}: untyped"
+          else
+            raise "unexpected: #{node}"
+          end
+        end
+        res.join(", ")
+      end
+
+      private def parse_model_file
+        return @parse_model_file if defined?(@parse_model_file)
+
+
+        path = Rails.root.join('app/models/', klass.name.underscore + '.rb')
+        return @parse_model_file = nil unless path.exist?
+        return [] unless path.exist?
+
+        ast = Parser::CurrentRuby.parse path.read
+        return @parse_model_file = nil unless path.exist?
+
+        @parse_model_file = ast
       end
 
       private def traverse(node, &block)
