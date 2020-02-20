@@ -25,7 +25,7 @@ module RbsRails
 
           #{columns.indent(2)}
           #{associations.indent(2)}
-          #{enums.indent(2)}
+          #{enum_instance_methods.indent(2)}
           end
         RBS
       end
@@ -86,10 +86,7 @@ module RbsRails
         end.join("\n")
       end
 
-      # We need static analysis to detect enum.
-      # ActiveRecord has `defined_enums` method,
-      # but it does not contain _prefix and _suffix information.
-      private def enums
+      private def enum_instance_methods
         path = Rails.root.join('app/models/', klass.name.underscore + '.rb')
         return '' unless path.exist?
 
@@ -97,21 +94,7 @@ module RbsRails
         return '' unless ast
 
         methods = []
-
-        traverse(ast) do |node|
-          next unless node.type == :send
-          next unless node.children[0].nil?
-          next unless node.children[1] == :enum
-
-          definitions = node.children[2]
-          next unless definitions
-          next unless definitions.type == :hash
-          next unless traverse(definitions).all? { |n| [:str, :sym, :int, :hash, :pair, :true, :false].include?(n.type) }
-
-          code = definitions.loc.expression.source
-          code = "{#{code}}" if code[0] != '{'
-          hash = eval(code)
-
+        enum_definitions.each do |hash|
           enum_prefix = hash.delete(:_prefix)
           enum_suffix = hash.delete(:_suffix)
           hash.each do |name, values|
@@ -135,6 +118,36 @@ module RbsRails
         end
 
         methods.join("\n")
+      end
+
+      private def enum_definitions
+        @enum_definitions ||= build_enum_definitions
+      end
+
+      # We need static analysis to detect enum.
+      # ActiveRecord has `defined_enums` method,
+      # but it does not contain _prefix and _suffix information.
+      private def build_enum_definitions
+        path = Rails.root.join('app/models/', klass.name.underscore + '.rb')
+        return [] unless path.exist?
+
+        ast = Parser::CurrentRuby.parse path.read
+        return [] unless ast
+
+        traverse(ast).map do |node|
+          next unless node.type == :send
+          next unless node.children[0].nil?
+          next unless node.children[1] == :enum
+
+          definitions = node.children[2]
+          next unless definitions
+          next unless definitions.type == :hash
+          next unless traverse(definitions).all? { |n| [:str, :sym, :int, :hash, :pair, :true, :false].include?(n.type) }
+
+          code = definitions.loc.expression.source
+          code = "{#{code}}" if code[0] != '{'
+          eval(code)
+        end.compact
       end
 
       private def traverse(node, &block)
