@@ -193,7 +193,7 @@ module RbsRails
       end
 
       private def args_to_type(args_node)
-        # @type var methods: Array[String]
+        # @type var res: Array[String]
         res = []
         args_node.children.each do |node|
           case node.type
@@ -229,6 +229,7 @@ module RbsRails
       private def traverse(node, &block)
         return to_enum(__method__, node) unless block_given?
 
+        # @type var block: ^(Parser::AST::Node) -> untyped
         block.call node
         node.children.each do |child|
           traverse(child, &block) if child.is_a?(Parser::AST::Node)

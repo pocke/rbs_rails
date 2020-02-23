@@ -10,5 +10,5 @@ end
 
 class Parser::AST::Node
   def type: () -> Symbol
-  def children: () -> Array[self | Symbol | String | Integer | nil | true | false]
+  def children: () -> Array[untyped]
 end

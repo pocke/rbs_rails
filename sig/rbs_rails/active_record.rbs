@@ -5,38 +5,38 @@ end
 class RbsRails::ActiveRecord::Generator
   @parse_model_file: nil | Parser::AST::Node
 
-  def initialize: (untyped klass, mode: untyped mode) -> untyped
+  def initialize: (singleton(ActiveRecord::Base) klass, mode: (:extension | :class) mode) -> untyped
 
-  def generate: () -> untyped
+  def generate: () -> String
 
-  def klass_decl: () -> untyped
+  def klass_decl: () -> String
 
-  def relation_decl: () -> untyped
+  def relation_decl: () -> String
 
-  def collection_proxy_decl: () -> untyped
+  def collection_proxy_decl: () -> String
 
-  def header: () -> untyped
+  def header: () -> String
 
-  def associations: () -> untyped
+  def associations: () -> String
 
-  def has_many: () -> untyped
+  def has_many: () -> String
 
-  def has_one: () -> untyped
+  def has_one: () -> String
 
-  def belongs_to: () -> untyped
+  def belongs_to: () -> String
 
-  def enum_instance_methods: () -> untyped
+  def enum_instance_methods: () -> String
 
-  def enum_scope_methods: (singleton: untyped `singleton`) -> untyped
+  def enum_scope_methods: (singleton: untyped `singleton`) -> String
 
-  def enum_definitions: () -> untyped
+  def enum_definitions: () -> Array[Hash[Symbol, untyped]]
 
   # We need static analysis to detect enum.
   # ActiveRecord has `defined_enums` method,
   # but it does not contain _prefix and _suffix information.
-  def build_enum_definitions: () -> untyped
+  def build_enum_definitions: () -> Array[Hash[Symbol, untyped]]
 
-  def enum_method_name: (untyped hash, untyped name, untyped label) -> untyped
+  def enum_method_name: (Hash[Symbol, untyped] hash, Symbol name, Symbol label) -> String
 
   def scopes: (singleton: untyped `singleton`) -> untyped
 
@@ -44,7 +44,8 @@ class RbsRails::ActiveRecord::Generator
 
   def parse_model_file: () -> untyped
 
-  def traverse: (untyped node) ?{ () -> untyped } -> untyped
+  def traverse: (Parser::AST::Node node) { (Parser::AST::Node) -> untyped } -> untyped
+              | (Parser::AST::Node node) -> Enumerator[Parser::AST::Node, untyped]
 
   def relation_class_name: () -> untyped
 
