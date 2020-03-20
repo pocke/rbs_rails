@@ -8,7 +8,7 @@ module RbsRails
   class Error < StandardError; end
 
   def self.copy_signatures(to:)
-    from = Pathname(__dir__) / '../assets/sig/'
+    from = Pathname(_ = __dir__) / '../assets/sig/'
     to = Pathname(to)
     FileUtils.cp_r(from, to)
   end

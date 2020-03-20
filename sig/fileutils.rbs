@@ -1,0 +1,3 @@
+module FileUtils
+  def self.cp_r: (Pathname, Pathname) -> untyped
+end

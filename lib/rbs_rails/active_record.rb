@@ -56,7 +56,9 @@ module RbsRails
         when :extension
           "extension #{klass.name} (RbsRails)"
         when :class
-          "class #{klass.name} < #{klass.superclass.name}"
+          # @type var superclass: Class
+          superclass = _ = klass.superclass
+          "class #{klass.name} < #{superclass.name}"
         else
           raise "unexpected mode: #{mode}"
         end
@@ -216,7 +218,9 @@ module RbsRails
         return @parse_model_file if defined?(@parse_model_file)
 
 
-        path = Rails.root.join('app/models/', klass.name.underscore + '.rb')
+        # @type var class_name: String
+        class_name = _ = klass.name
+        path = Rails.root.join('app/models/', class_name.underscore + '.rb')
         return @parse_model_file = nil unless path.exist?
         return [] unless path.exist?
 

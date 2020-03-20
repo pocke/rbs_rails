@@ -1,4 +1,5 @@
 extension String (ActiveSupport)
   def indent: (Integer, ?String?, bool) -> String
   def indent!: (Integer, ?String?, bool) -> String
+  def underscore: () -> String
 end
