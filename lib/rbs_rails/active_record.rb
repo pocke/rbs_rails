@@ -56,7 +56,9 @@ module RbsRails
         when :extension
           "extension #{klass.name} (RbsRails)"
         when :class
-          "class #{klass.name} < #{klass.superclass.name}"
+          # @type var superclass: Class
+          superclass = _ = klass.superclass
+          "class #{klass.name} < #{superclass.name}"
         else
           raise "unexpected mode: #{mode}"
         end
@@ -91,6 +93,7 @@ module RbsRails
       end
 
       private def enum_instance_methods
+        # @type var methods: Array[String]
         methods = []
         enum_definitions.each do |hash|
           hash.each do |name, values|
@@ -108,6 +111,7 @@ module RbsRails
       end
 
       private def enum_scope_methods(singleton:)
+        # @type var methods: Array[String]
         methods = []
         enum_definitions.each do |hash|
           hash.each do |name, values|
@@ -191,6 +195,7 @@ module RbsRails
       end
 
       private def args_to_type(args_node)
+        # @type var res: Array[String]
         res = []
         args_node.children.each do |node|
           case node.type
@@ -213,7 +218,9 @@ module RbsRails
         return @parse_model_file if defined?(@parse_model_file)
 
 
-        path = Rails.root.join('app/models/', klass.name.underscore + '.rb')
+        # @type var class_name: String
+        class_name = _ = klass.name
+        path = Rails.root.join('app/models/', class_name.underscore + '.rb')
         return @parse_model_file = nil unless path.exist?
         return [] unless path.exist?
 
@@ -226,6 +233,7 @@ module RbsRails
       private def traverse(node, &block)
         return to_enum(__method__, node) unless block_given?
 
+        # @type var block: ^(Parser::AST::Node) -> untyped
         block.call node
         node.children.each do |child|
           traverse(child, &block) if child.is_a?(Parser::AST::Node)
@@ -266,6 +274,7 @@ module RbsRails
       end
 
       private
+      # @dynamic klass, mode
       attr_reader :klass, :mode
     end
   end

@@ -26,6 +26,7 @@ module RbsRails
     end
 
     private
+    # @dynamic routes
     attr_reader :routes
   end
 end
