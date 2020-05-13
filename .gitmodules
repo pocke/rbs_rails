@@ -1,0 +1,3 @@
+[submodule "vendor/rbs"]
+	path = vendor/rbs
+	url = git@github.com:ruby/rbs.git
