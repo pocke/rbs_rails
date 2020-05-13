@@ -9,6 +9,7 @@ Gem::Specification.new do |spec|
   spec.summary       = %q{A RBS files generator for Rails application}
   spec.description   = %q{A RBS files generator for Rails application}
   spec.homepage      = "https://github.com/pocke/rbs_rails"
+  spec.license       = 'Apache-2.0'
   spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")
 
   spec.metadata["homepage_uri"] = spec.homepage
