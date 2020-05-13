@@ -1,8 +1,6 @@
-# RbsRails
+# RBS Rails
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/rbs_rails`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+RBS files generator for Ruby on Rails.
 
 ## Installation
 
@@ -22,7 +20,56 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+### For Active Record models
+
+It has two tasks.
+
+* `copy_signature_files`: Copy type definition files for Rails from rbs_rails.
+* `generate_rbs_for_model`: Generate RBS files from model classes.
+
+```ruby
+# Rakefile
+
+task copy_signature_files: :environment do
+  require 'rbs_rails'
+
+  to = Rails.root.join('sig/rbs_rails/')
+  to.mkdir unless to.exist?
+  RbsRails.copy_signatures(to: to)
+end
+
+task generate_rbs_for_model: :environment do
+  require 'rbs_rails'
+
+  out_dir = Rails.root / 'sig'
+  out_dir.mkdir unless out_dir.exist?
+
+  Rails.application.eager_load!
+
+  ActiveRecord::Base.descendants.each do |klass|
+    next if klass.abstract_class?
+
+    path = out_dir / "app/models/#{klass.name.underscore}.rbs"
+    FileUtils.mkdir_p(path.dirname)
+
+    sig = RbsRails::ActiveRecord.class_to_rbs(klass, mode: :extension)
+    path.write sig
+  end
+end
+```
+
+### For path helpers
+
+```ruby
+# Rakefile
+
+task generate_rbs_for_path_helpers: :environment do
+  require 'rbs_rails'
+  out_path = Rails.root.join 'sig/path_helpers.rbs'
+  rbs = RbsRails::PathHelpers.generate
+  out_path.write rbs
+end
+```
 
 ## Development
 
