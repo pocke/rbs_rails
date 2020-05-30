@@ -254,7 +254,9 @@ module RbsRails
         case t
         when :integer
           Integer.name
-        when :string, :text, :uuid
+        when :float
+          Float.name
+        when :string, :text, :uuid, :binary
           String.name
         when :datetime
           # TODO
