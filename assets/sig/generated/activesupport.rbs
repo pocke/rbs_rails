@@ -1763,7 +1763,7 @@ module ActiveSupport::Configurable::ClassMethods
   def config_accessor: (*untyped names, ?instance_reader: bool instance_reader, ?instance_writer: bool instance_writer, ?instance_accessor: bool instance_accessor) { () -> untyped } -> untyped
 end
 
-extension Array (ActiveSupport)
+extension Array[Elem] (ActiveSupport)
   # Returns the tail of the array from +position+.
   #
   #   %w( a b c d ).from(0)  # => ["a", "b", "c", "d"]
@@ -1838,7 +1838,7 @@ extension Array (ActiveSupport)
   def second_to_last: () -> untyped
 end
 
-extension Array (ActiveSupport)
+extension Array[Elem] (ActiveSupport)
   # Converts the array to a comma-separated sentence where the last element is
   # joined by the connector word.
   #
@@ -1978,7 +1978,7 @@ extension Array (ActiveSupport)
   def to_xml: (?::Hash[untyped, untyped] options) { (untyped) -> untyped } -> untyped
 end
 
-extension Hash (ActiveSupport)
+extension Hash[K, V] (ActiveSupport)
   # By default, only instances of Hash itself are extractable.
   # Subclasses of Hash may implement this method and return
   # true to declare themselves as extractable. If a Hash
@@ -1987,7 +1987,7 @@ extension Hash (ActiveSupport)
   def extractable_options?: () -> untyped
 end
 
-extension Array (ActiveSupport)
+extension Array[Elem] (ActiveSupport)
   # Extracts options from a set of arguments. Removes and returns the last
   # element in the array if it's a hash, otherwise returns a blank hash.
   #
@@ -2000,7 +2000,7 @@ extension Array (ActiveSupport)
   def extract_options!: () -> untyped
 end
 
-extension Array (ActiveSupport)
+extension Array[Elem] (ActiveSupport)
   # Removes and returns the elements for which the block returns a true value.
   # If no block is given, an Enumerator is returned instead.
   #
@@ -2010,7 +2010,7 @@ extension Array (ActiveSupport)
   def extract!: () { (untyped) -> untyped } -> untyped
 end
 
-extension Array (ActiveSupport)
+extension Array[Elem] (ActiveSupport)
   # Splits or iterates over the array in groups of size +number+,
   # padding any remaining slots with +fill_with+ unless it is +false+.
   #
@@ -2058,7 +2058,7 @@ extension Array (ActiveSupport)
   def split: (?untyped? value) { (untyped) -> untyped } -> untyped
 end
 
-extension Array (ActiveSupport)
+extension Array[Elem] (ActiveSupport)
   # Wraps the array in an +ArrayInquirer+ object, which gives a friendlier way
   # to check its string-like contents.
   #
@@ -2072,7 +2072,7 @@ extension Array (ActiveSupport)
   def inquiry: () -> untyped
 end
 
-extension Array (ActiveSupport)
+extension Array[Elem] (ActiveSupport)
   # Wraps its argument in an array unless it is already an array (or array-like).
   #
   # Specifically:
@@ -2901,14 +2901,14 @@ Digest::UUID::X500_NAMESPACE: ::String
 
 Enumerable::INDEX_WITH_DEFAULT: untyped
 
-extension Range (ActiveSupport)
+extension Range[Elem] (ActiveSupport)
   # nodoc:
   # Optimize range sum to use arithmetic progression if a block is not given and
   # we have a range of numeric values.
   def sum: (?untyped? identity) -> untyped
 end
 
-extension Array (ActiveSupport)
+extension Array[Elem] (ActiveSupport)
   # nodoc:
   # Array#sum was added in Ruby 2.4 but it only works with Numeric elements.
   def sum: (?untyped? init) { () -> untyped } -> untyped
@@ -2935,7 +2935,7 @@ extension File (ActiveSupport)
   def self.probe_stat_in: (untyped dir) -> untyped
 end
 
-extension Hash (ActiveSupport)
+extension Hash[K, V] (ActiveSupport)
   # Returns a string containing an XML representation of its receiver:
   #
   #   { foo: 1, bar: 2 }.to_xml
@@ -3077,7 +3077,7 @@ end
 
 ActiveSupport::XMLConverter::DISALLOWED_TYPES: ::Array[untyped]
 
-extension Hash (ActiveSupport)
+extension Hash[K, V] (ActiveSupport)
   # Returns a new hash with +self+ and +other_hash+ merged recursively.
   #
   #   h1 = { a: true, b: { c: [1, 2, 3] } }
@@ -3098,7 +3098,7 @@ extension Hash (ActiveSupport)
   def deep_merge!: (untyped other_hash) { () -> untyped } -> untyped
 end
 
-extension Hash (ActiveSupport)
+extension Hash[K, V] (ActiveSupport)
   # Returns a new hash with all values converted by the block operation.
   # This includes the values from the root hash and from all
   # nested hashes and arrays.
@@ -3120,7 +3120,7 @@ extension Hash (ActiveSupport)
   def _deep_transform_values_in_object!: (untyped object) { (untyped) -> untyped } -> untyped
 end
 
-extension Hash (ActiveSupport)
+extension Hash[K, V] (ActiveSupport)
   # Returns a hash that includes everything except given keys.
   #   hash = { a: true, b: false, c: nil }
   #   hash.except(:c)     # => { a: true, b: false }
@@ -3138,14 +3138,14 @@ extension Hash (ActiveSupport)
   def except!: (*untyped keys) -> untyped
 end
 
-extension Hash (ActiveSupport)
+extension Hash[K, V] (ActiveSupport)
   # Returns an <tt>ActiveSupport::HashWithIndifferentAccess</tt> out of its receiver:
   #
   #   { a: 1 }.with_indifferent_access['a'] # => 1
   def with_indifferent_access: () -> untyped
 end
 
-extension Hash (ActiveSupport)
+extension Hash[K, V] (ActiveSupport)
   # Returns a new hash with all keys converted to strings.
   #
   #   hash = { name: 'Rob', age: '28' }
@@ -3233,7 +3233,7 @@ extension Hash (ActiveSupport)
   def _deep_transform_keys_in_object!: (untyped object) { (untyped) -> untyped } -> untyped
 end
 
-extension Hash (ActiveSupport)
+extension Hash[K, V] (ActiveSupport)
   # Merges the caller into +other_hash+. For example,
   #
   #   options = options.reverse_merge(size: 25, velocity: 10)
@@ -3250,7 +3250,7 @@ extension Hash (ActiveSupport)
   def reverse_merge!: (untyped other_hash) -> untyped
 end
 
-extension Hash (ActiveSupport)
+extension Hash[K, V] (ActiveSupport)
   # Replaces the hash with only the given keys.
   # Returns a hash containing the removed key/value pairs.
   #
@@ -4073,7 +4073,7 @@ extension Module (ActiveSupport)
   def remove_possible_singleton_method: (untyped method) -> untyped
 end
 
-extension NameError (ActiveSupport)
+extension NameError[T] (ActiveSupport)
   # Extract the name of the missing constant from the exception message.
   #
   #   begin
@@ -4414,7 +4414,7 @@ extension Object (ActiveSupport)
   def deep_dup: () -> untyped
 end
 
-extension Array (ActiveSupport)
+extension Array[Elem] (ActiveSupport)
   # Returns a deep copy of array.
   #
   #   array = [1, [2, 3]]
@@ -4426,7 +4426,7 @@ extension Array (ActiveSupport)
   def deep_dup: () -> untyped
 end
 
-extension Hash (ActiveSupport)
+extension Hash[K, V] (ActiveSupport)
   # Returns a deep copy of hash.
   #
   #   hash = { a: { b: 'b' } }
@@ -4536,7 +4536,7 @@ extension Object (ActiveSupport)
   def as_json: (?untyped? options) -> untyped
 end
 
-extension Struct (ActiveSupport)
+extension Struct[Elem] (ActiveSupport)
   # nodoc:
   def as_json: (?untyped? options) -> untyped
 end
@@ -4585,15 +4585,15 @@ extension IO (ActiveSupport)
   def as_json: (?untyped? options) -> untyped
 end
 
-extension Range (ActiveSupport)
+extension Range[Elem] (ActiveSupport)
   def as_json: (?untyped? options) -> untyped
 end
 
-extension Array (ActiveSupport)
+extension Array[Elem] (ActiveSupport)
   def as_json: (?untyped? options) -> untyped
 end
 
-extension Hash (ActiveSupport)
+extension Hash[K, V] (ActiveSupport)
   def as_json: (?untyped? options) -> untyped
 end
 
@@ -4652,7 +4652,7 @@ extension FalseClass (ActiveSupport)
   def to_param: () -> untyped
 end
 
-extension Array (ActiveSupport)
+extension Array[Elem] (ActiveSupport)
   # Calls <tt>to_param</tt> on all its elements and joins the result with
   # slashes. This is used by <tt>url_for</tt> in Action Pack.
   def to_param: () -> untyped
@@ -4664,7 +4664,7 @@ extension Array (ActiveSupport)
   def to_query: (untyped key) -> untyped
 end
 
-extension Hash (ActiveSupport)
+extension Hash[K, V] (ActiveSupport)
   # Returns a string representation of the receiver suitable for use as a URL
   # query string:
   #
@@ -4871,7 +4871,7 @@ module ActiveSupport::IncludeTimeWithZone
   def include?: (untyped value) -> untyped
 end
 
-extension Range (ActiveSupport)
+extension Range[Elem] (ActiveSupport)
   # Compare two ranges and see if they overlap each other
   #  (1..5).overlaps?(4..6) # => true
   #  (1..5).overlaps?(7..9) # => false
