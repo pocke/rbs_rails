@@ -11826,3 +11826,6 @@ extension Object (Toplevel)
 
   def unescape: (untyped str, ?untyped escaped) -> untyped
 end
+
+module DateAndTime::Compatibility
+end
