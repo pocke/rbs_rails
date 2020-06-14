@@ -3,3 +3,6 @@ end
 
 class Logger::Formatter
 end
+
+module Mutex_m
+end
