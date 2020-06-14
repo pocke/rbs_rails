@@ -7256,6 +7256,19 @@ end
 module ActiveSupport
   # Returns the version of the currently loaded Active Support as a <tt>Gem::Version</tt>.
   def self.gem_version: () -> untyped
+
+  extend LazyLoadHooks
+
+  extend ActiveSupport::Autoload
+
+  def self.eager_load!: () -> untyped
+
+  def self.to_time_preserves_timezone: () -> untyped
+
+  def self.to_time_preserves_timezone=: (untyped value) -> untyped
+
+  # Returns the version of the currently loaded ActiveSupport as a <tt>Gem::Version</tt>
+  def self.version: () -> untyped
 end
 
 
@@ -7560,18 +7573,6 @@ class I18n::Railtie < Rails::Railtie
   def self.watched_dirs_with_extensions: (untyped paths) -> untyped
 end
 
-module ActiveSupport::Inflector
-  # Yields a singleton instance of Inflector::Inflections so you can specify
-  # additional inflector rules. If passed an optional locale, rules for other
-  # languages can be specified. If not specified, defaults to <tt>:en</tt>.
-  # Only rules for English are provided.
-  #
-  #   ActiveSupport::Inflector.inflections(:en) do |inflect|
-  #     inflect.uncountable 'rails'
-  #   end
-  def inflections: (?::Symbol locale) { (untyped) -> untyped } -> untyped
-end
-
 # A singleton instance of this class is yielded by Inflector.inflections,
 # which can then be used to specify additional inflection rules. If passed
 # an optional locale, rules for other languages can be specified. The
@@ -7737,6 +7738,16 @@ end
 # require it for your application or wish to define rules for languages other
 # than English, please correct or add them yourself (explained below).
 module ActiveSupport::Inflector
+  # Yields a singleton instance of Inflector::Inflections so you can specify
+  # additional inflector rules. If passed an optional locale, rules for other
+  # languages can be specified. If not specified, defaults to <tt>:en</tt>.
+  # Only rules for English are provided.
+  #
+  #   ActiveSupport::Inflector.inflections(:en) do |inflect|
+  #     inflect.uncountable 'rails'
+  #   end
+  def inflections: (?::Symbol locale) { (untyped) -> untyped } -> untyped
+
   # Returns the plural form of the word in the string.
   #
   # If passed an optional +locale+ parameter, the word will be
@@ -7985,9 +7996,7 @@ module ActiveSupport::Inflector
   #  apply_inflections('post', inflections.plurals, :en)    # => "posts"
   #  apply_inflections('posts', inflections.singulars, :en) # => "post"
   def apply_inflections: (untyped word, untyped rules, ?::Symbol locale) -> untyped
-end
 
-module ActiveSupport::Inflector
   # Replaces non-ASCII characters with an ASCII approximation, or if none
   # exists, a replacement character which defaults to "?".
   #
@@ -8073,7 +8082,19 @@ module ActiveSupport::Inflector
   def parameterize: (untyped string, ?separator: ::String separator, ?preserve_case: bool preserve_case, ?locale: untyped? locale) -> untyped
 end
 
+# matches YAML-formatted dates
+ActiveSupport::JSON::DATE_REGEX: untyped
+
+ActiveSupport::JSON::DATETIME_REGEX: untyped
+
 module ActiveSupport::JSON
+  # Dumps objects in JSON (JavaScript Object Notation).
+  # See http://www.json.org for more info.
+  #
+  #   ActiveSupport::JSON.encode({ team: 'rails', players: '36' })
+  #   # => "{\"team\":\"rails\",\"players\":\"36\"}"
+  def self.encode: (untyped value, ?untyped? options) -> untyped
+
   # Parses a JSON string (JavaScript Object Notation) into a hash.
   # See http://www.json.org for more info.
   #
@@ -8094,20 +8115,6 @@ module ActiveSupport::JSON
   def self.parse_error: () -> untyped
 
   def self.convert_dates_from: (untyped data) -> untyped
-end
-
-# matches YAML-formatted dates
-ActiveSupport::JSON::DATE_REGEX: untyped
-
-ActiveSupport::JSON::DATETIME_REGEX: untyped
-
-module ActiveSupport::JSON
-  # Dumps objects in JSON (JavaScript Object Notation).
-  # See http://www.json.org for more info.
-  #
-  #   ActiveSupport::JSON.encode({ team: 'rails', players: '36' })
-  #   # => "{\"team\":\"rails\",\"players\":\"36\"}"
-  def self.encode: (untyped value, ?untyped? options) -> untyped
 end
 
 module ActiveSupport::JSON::Encoding
@@ -8195,10 +8202,6 @@ class ActiveSupport::CachingKeyGenerator
 
   # Returns a derived key suitable for use.
   def generate_key: (*untyped args) -> untyped
-end
-
-module ActiveSupport
-  extend LazyLoadHooks
 end
 
 # lazy_load_hooks allows Rails to lazily load a lot of components and thus
@@ -10113,16 +10116,6 @@ class ActiveSupport::ProxyObject < ::BasicObject
 end
 
 
-module ActiveSupport
-  extend ActiveSupport::Autoload
-
-  def self.eager_load!: () -> untyped
-
-  def self.to_time_preserves_timezone: () -> untyped
-
-  def self.to_time_preserves_timezone=: (untyped value) -> untyped
-end
-
 # -
 # This class defines several callbacks:
 #
@@ -11524,11 +11517,6 @@ ActiveSupport::TimeZone::MAPPING: ::Hash[untyped, untyped]
 ActiveSupport::TimeZone::UTC_OFFSET_WITH_COLON: ::String
 
 ActiveSupport::TimeZone::UTC_OFFSET_WITHOUT_COLON: untyped
-
-module ActiveSupport
-  # Returns the version of the currently loaded ActiveSupport as a <tt>Gem::Version</tt>
-  def self.version: () -> untyped
-end
 
 module ActiveSupport::XmlMini_JDOM
   # Parse an XML Document string or IO into a simple hash using Java's jdom.
