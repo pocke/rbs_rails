@@ -1,0 +1,5 @@
+class Logger
+end
+
+class Logger::Formatter
+end
