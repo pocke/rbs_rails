@@ -1,4 +1,5 @@
 class ActiveRecord::Base
+  def self.abstract_class=: (bool) -> void
   def self.scope: (Symbol, ^(*untyped) -> untyped ) -> void
                 | (Symbol) { (*untyped) -> untyped } -> void
   def self.belongs_to: (Symbol, ?untyped, **untyped) -> void
