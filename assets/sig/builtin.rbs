@@ -2,3 +2,6 @@ class Monitor
 end
 class MonitorMixin
 end
+
+module Singleton
+end
