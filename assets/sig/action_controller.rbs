@@ -26,13 +26,19 @@ interface _ActionController_API_and_Base_singletion
   def rescue_from: (*Class, ?with: Symbol | Proc) { (Exception) -> void } -> void
 end
 
-class ActionController::Base
+class AbstractController::Base
+end
+
+class ActionController::Metal < AbstractController::Base
+end
+
+class ActionController::Base < ActionController::Metal
   include _ActionController_API_and_Base
   extend _ActionController_API_and_Base_singletion
   extend ActionView::Layouts::ClassMethods
 end
 
-class ActionController::API
+class ActionController::API < ActionController::Metal
   include _ActionController_API_and_Base
   extend _ActionController_API_and_Base_singletion
 end
