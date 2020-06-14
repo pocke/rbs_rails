@@ -6,3 +6,5 @@ rvm:
   - ruby-head
 
 cache: bundler
+
+before_script: bin/setup
