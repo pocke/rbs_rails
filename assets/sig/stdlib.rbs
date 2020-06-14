@@ -6,3 +6,9 @@ end
 
 module Mutex_m
 end
+
+module DRb
+end
+
+module DRb::DRbUndumped
+end
