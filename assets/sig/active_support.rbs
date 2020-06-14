@@ -26,7 +26,3 @@ end
 extension Time (ActiveSupport)
   def self.zone: () -> untyped
 end
-
-module ActiveSupport::Concern
-  def included: () { () -> void } -> void
-end
