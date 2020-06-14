@@ -1,0 +1,4 @@
+class Monitor
+end
+class MonitorMixin
+end
