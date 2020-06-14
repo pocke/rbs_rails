@@ -4,5 +4,5 @@ source "https://rubygems.org"
 gemspec
 
 gem "rake", "~> 12.0"
-gem 'rbs', path: 'vendor/rbs'
+gem 'rbs'
 gem 'steep'
