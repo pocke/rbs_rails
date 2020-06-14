@@ -9199,9 +9199,9 @@ class ActiveSupport::Notifications::Event
 
   def now_cpu: () -> untyped
 
-  def now_cpu: () -> 0
+  # def now_cpu: () -> 0
 
-  def now_allocations: () -> 0
+  # def now_allocations: () -> 0
 
   def now_allocations: () -> untyped
 end
@@ -9920,8 +9920,6 @@ class ActiveSupport::OptionMerger
   def initialize: (untyped context, untyped options) -> untyped
 
   def method_missing: (untyped method, *untyped arguments) { () -> untyped } -> untyped
-
-  def invoke_method: (untyped method, untyped arguments, untyped options) { () -> untyped } -> untyped
 
   def invoke_method: (untyped method, untyped arguments, untyped options) { () -> untyped } -> untyped
 end
