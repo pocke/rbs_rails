@@ -24,12 +24,12 @@ interface _ActionController_API_and_Base_singletion
   def append_after_action: (*untyped) -> void
 
   def rescue_from: (*Class, ?with: Symbol | Proc) { (Exception) -> void } -> void
-  def layout: (String) -> void
 end
 
 class ActionController::Base
   include _ActionController_API_and_Base
   extend _ActionController_API_and_Base_singletion
+  extend ActionView::Layouts::ClassMethods
 end
 
 class ActionController::API
