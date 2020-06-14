@@ -33,7 +33,7 @@ end
 #   variants.phone?    # => true
 #   variants.tablet?   # => true
 #   variants.desktop?  # => false
-class ActiveSupport::ArrayInquirer < Array
+class ActiveSupport::ArrayInquirer[Elem] < Array[Elem]
   # Passes each element of +candidates+ collection to ArrayInquirer collection.
   # The method returns true if any element from the ArrayInquirer collection
   # is equal to the stringified or symbolized form of any element in the +candidates+ collection.
@@ -1325,7 +1325,7 @@ end
 
 class ActiveSupport::Callbacks::CallbackChain
   # nodoc:#
-  include Enumerable
+  include Enumerable[untyped, untyped]
 
   attr_reader name: untyped
 
@@ -1748,7 +1748,7 @@ module ActiveSupport::Configurable
   def config: () -> untyped
 end
 
-class ActiveSupport::Configurable::Configuration < ActiveSupport::InheritableOptions
+class ActiveSupport::Configurable::Configuration[K,V] < ActiveSupport::InheritableOptions[K, V]
   def compile_methods!: () -> untyped
 
   # Compiles reader methods so we don't have to go through method_missing.
@@ -6209,7 +6209,7 @@ ActiveSupport::Dependencies::UNBOUND_METHOD_MODULE_NAME: untyped
 # This is handled by walking back up the watch stack and adding the constants
 # found by child.rb to the list of original constants in parent.rb.
 class ActiveSupport::Dependencies::WatchStack
-  include Enumerable
+  include Enumerable[untyped, untyped]
 
   attr_reader watching: untyped
 
@@ -6717,7 +6717,7 @@ end
 class ActiveSupport::DescendantsTracker::DescendantsArray
   # DescendantsArray is an array that contains weak references to classes.
   # :nodoc:
-  include Enumerable
+  include Enumerable[untyped, untyped]
 
   def initialize: () -> untyped
 
@@ -7348,7 +7348,7 @@ end
 #   require "active_support/core_ext/hash/indifferent_access"
 #
 # which will, in turn, require this file.
-class ActiveSupport::HashWithIndifferentAccess < Hash
+class ActiveSupport::HashWithIndifferentAccess[K, V] < Hash[K, V]
   # Returns +true+ so that <tt>Array#extract_options!</tt> finds members of
   # this class.
   def extractable_options?: () -> ::TrueClass
@@ -7713,7 +7713,7 @@ class ActiveSupport::Inflector::Inflections
   def define_acronym_regex_patterns: () -> untyped
 end
 
-class ActiveSupport::Inflector::Inflections::Uncountables < Array
+class ActiveSupport::Inflector::Inflections::Uncountables[Elem] < Array[Elem]
   def initialize: () -> untyped
 
   def delete: (untyped entry) -> untyped
@@ -9980,7 +9980,7 @@ end
 #
 #   h.dog! # => raises KeyError: :dog is blank
 #
-class ActiveSupport::OrderedOptions < Hash
+class ActiveSupport::OrderedOptions[K, V] < Hash[K, V]
   def []=: (untyped key, untyped value) -> untyped
 
   def []: (untyped key) -> untyped
@@ -10000,7 +10000,7 @@ end
 #   h = ActiveSupport::InheritableOptions.new({ girl: 'Mary', boy: 'John' })
 #   h.girl # => 'Mary'
 #   h.boy  # => 'John'
-class ActiveSupport::InheritableOptions < OrderedOptions
+class ActiveSupport::InheritableOptions[K, V] < OrderedOptions[K, V]
   def initialize: (?untyped? parent) -> untyped
 
   def inheritable_copy: () -> untyped
