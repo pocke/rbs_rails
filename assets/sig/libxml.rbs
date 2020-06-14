@@ -1,0 +1,10 @@
+# is it correct?
+
+module LibXML
+end
+module LibXML::XML
+end
+module LibXML::XML::SaxParser
+end
+module LibXML::XML::SaxParser::Callbacks
+end
