@@ -1,0 +1,3 @@
+class ActionMailer::Base
+  def self.default: (?Hash[Symbol, untyped] value) -> Hash[Symbol, untyped]
+end
