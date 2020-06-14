@@ -9938,7 +9938,7 @@ end
 #
 # <tt>ActiveSupport::OrderedHash</tt> is namespaced to prevent conflicts
 # with other implementations.
-class ActiveSupport::OrderedHash < ::Hash
+class ActiveSupport::OrderedHash[K, V] < ::Hash[K, V]
   def to_yaml_type: () -> "!tag:yaml.org,2002:omap"
 
   def encode_with: (untyped coder) -> untyped
