@@ -11827,3 +11827,6 @@ end
 
 module DateAndTime::Compatibility
 end
+
+module ActiveSupport::Logger::Severity
+end
