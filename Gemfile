@@ -4,5 +4,5 @@ source "https://rubygems.org"
 gemspec
 
 gem "rake", "~> 12.0"
-gem 'rbs'
-gem 'steep'
+gem 'rbs', '>= 0.4.0'
+gem 'steep', github: 'pocke/steep', branch: 'rbs-0.4'
