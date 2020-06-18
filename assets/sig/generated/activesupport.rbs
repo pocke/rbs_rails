@@ -11,7 +11,6 @@ module ActiveSupport::ActionableError
   def self.dispatch: (untyped error, untyped name) -> untyped
 end
 
-
 module ActiveSupport::ActionableError::ClassMethods
   # Defines an action that can resolve the error.
   #
@@ -158,7 +157,6 @@ module ActiveSupport::Benchmarkable
   #  <% end %>
   def benchmark: (?::String message, ?::Hash[untyped, untyped] options) { () -> untyped } -> untyped
 end
-
 
 # A cache store implementation which stores everything on the filesystem.
 #
@@ -442,7 +440,6 @@ end
 # These options mean something to all cache implementations. Individual cache
 # implementations may support additional options.
 ActiveSupport::Cache::UNIVERSAL_OPTIONS: ::Array[untyped]
-
 
 # An abstract cache store class. There are multiple cache store
 # implementations, each having its own additional features. See the classes
@@ -797,7 +794,7 @@ class ActiveSupport::Cache::Entry
 
   # Creates a new cache entry for the specified value. Options supported are
   # +:compress+, +:compress_threshold+, +:version+ and +:expires_in+.
-  def initialize: (untyped value, ?compress: bool compress, ?compress_threshold: untyped compress_threshold, ?version: untyped? version, ?expires_in: untyped? expires_in) -> untyped
+  def initialize: (untyped value, ?expires_in: untyped? expires_in, ?version: untyped? version, ?compress_threshold: untyped compress_threshold, ?compress: bool compress) -> untyped
 
   def value: () -> untyped
 
@@ -852,7 +849,7 @@ class ActiveSupport::Cache::RedisCacheStore < Store
   # Advertise cache versioning support.
   def self.supports_cache_versioning?: () -> ::TrueClass
 
-  def self.build_redis: (?redis: untyped? redis, ?url: untyped? url, **untyped redis_options) -> untyped
+  def self.build_redis: (?url: untyped? url, ?redis: untyped? redis, **untyped redis_options) -> untyped
 
   def self.build_redis_distributed_client: (urls: untyped urls, **untyped redis_options) -> untyped
 
@@ -889,7 +886,7 @@ class ActiveSupport::Cache::RedisCacheStore < Store
   # Race condition TTL is not set by default. This can be used to avoid
   # "thundering herd" cache writes when hot cache entries are expired.
   # See <tt>ActiveSupport::Cache::Store#fetch</tt> for more.
-  def initialize: (?namespace: untyped? namespace, ?compress: bool compress, ?compress_threshold: untyped compress_threshold, ?expires_in: untyped? expires_in, ?race_condition_ttl: untyped? race_condition_ttl, ?error_handler: untyped error_handler, **untyped redis_options) -> untyped
+  def initialize: (?error_handler: untyped error_handler, ?race_condition_ttl: untyped? race_condition_ttl, ?expires_in: untyped? expires_in, ?compress_threshold: untyped compress_threshold, ?compress: bool compress, ?namespace: untyped? namespace, **untyped redis_options) -> untyped
 
   def redis: () -> untyped
 
@@ -967,7 +964,7 @@ class ActiveSupport::Cache::RedisCacheStore < Store
   # Write an entry to the cache.
   #
   # Requires Redis 2.6.12+ for extended SET options.
-  def write_entry: (untyped key, untyped entry, ?unless_exist: bool unless_exist, ?raw: bool raw, ?expires_in: untyped? expires_in, ?race_condition_ttl: untyped? race_condition_ttl, **untyped options) -> untyped
+  def write_entry: (untyped key, untyped entry, ?race_condition_ttl: untyped? race_condition_ttl, ?expires_in: untyped? expires_in, ?raw: bool raw, ?unless_exist: bool unless_exist, **untyped options) -> untyped
 
   def write_key_expiry: (untyped client, untyped key, untyped options) -> untyped
 
@@ -990,7 +987,7 @@ class ActiveSupport::Cache::RedisCacheStore < Store
 
   def failsafe: (untyped method, ?returning: untyped? returning) { () -> untyped } -> untyped
 
-  def handle_exception: (exception: untyped exception, method: untyped method, returning: untyped returning) -> untyped
+  def handle_exception: (returning: untyped returning, method: untyped method, exception: untyped exception) -> untyped
 end
 
 # Keys are truncated with their own SHA2 digest if they exceed 1kB
@@ -1008,7 +1005,6 @@ module ActiveSupport::Cache::RedisCacheStore::LocalCacheWithRaw
 
   def write_multi_entries: (untyped entries, **untyped options) -> untyped
 end
-
 
 class ActiveSupport::Cache::Strategy::LocalCache::Middleware
   # -
@@ -1192,14 +1188,12 @@ end
 
 ActiveSupport::Callbacks::CALLBACK_FILTER_TYPES: ::Array[untyped]
 
-
 # :nodoc:
 class ActiveSupport::Callbacks::Conditionals::Value
   def initialize: () { () -> untyped } -> untyped
 
   def call: (untyped target, untyped value) -> untyped
 end
-
 
 ActiveSupport::Callbacks::Filters::Environment: untyped
 
@@ -1239,7 +1233,7 @@ class ActiveSupport::Callbacks::Callback
 
   def raw_filter: () -> untyped
 
-  def merge_conditional_options: (untyped chain, if_option: untyped if_option, unless_option: untyped unless_option) -> untyped
+  def merge_conditional_options: (untyped chain, unless_option: untyped unless_option, if_option: untyped if_option) -> untyped
 
   def matches?: (untyped _kind, untyped _filter) -> untyped
 
@@ -1651,7 +1645,6 @@ class ActiveSupport::Concern::MultipleIncludedBlocks < StandardError
   def initialize: () -> untyped
 end
 
-
 # A monitor that will permit dependency loading while blocked waiting for
 # the lock.
 class ActiveSupport::Concurrency::LoadInterlockAwareMonitor < Monitor
@@ -1689,7 +1682,7 @@ class ActiveSupport::Concurrency::ShareLock
   # is awaiting a lock, it is not running any other code. With
   # +purpose+ matching, it is possible to yield only to other
   # threads whose activity will not interfere.
-  def start_exclusive: (?purpose: untyped? purpose, ?compatible: untyped compatible, ?no_wait: bool no_wait) -> untyped
+  def start_exclusive: (?no_wait: bool no_wait, ?compatible: untyped compatible, ?purpose: untyped? purpose) -> untyped
 
   # Relinquish the exclusive lock. Must only be called by the thread
   # that called start_exclusive (and currently holds the lock).
@@ -1705,7 +1698,7 @@ class ActiveSupport::Concurrency::ShareLock
   # the block.
   #
   # See +start_exclusive+ for other options.
-  def exclusive: (?purpose: untyped? purpose, ?compatible: untyped compatible, ?after_compatible: untyped after_compatible, ?no_wait: bool no_wait) { () -> untyped } -> untyped
+  def exclusive: (?no_wait: bool no_wait, ?after_compatible: untyped after_compatible, ?compatible: untyped compatible, ?purpose: untyped? purpose) { () -> untyped } -> untyped
 
   # Execute the supplied block while holding the Share lock.
   def sharing: () { () -> untyped } -> untyped
@@ -1713,7 +1706,7 @@ class ActiveSupport::Concurrency::ShareLock
   # Temporarily give up all held Share locks while executing the
   # supplied block, allowing any +compatible+ exclusive lock request
   # to proceed.
-  def yield_shares: (?purpose: untyped? purpose, ?compatible: untyped compatible, ?block_share: bool block_share) { () -> untyped } -> untyped
+  def yield_shares: (?block_share: bool block_share, ?compatible: untyped compatible, ?purpose: untyped? purpose) { () -> untyped } -> untyped
 
   # Must be called within synchronize
   def busy_for_exclusive?: (untyped purpose) -> untyped
@@ -1748,7 +1741,7 @@ module ActiveSupport::Configurable
   def config: () -> untyped
 end
 
-class ActiveSupport::Configurable::Configuration[K,V] < ActiveSupport::InheritableOptions[K, V]
+class ActiveSupport::Configurable::Configuration[K, V] < ActiveSupport::InheritableOptions[K, V]
   def compile_methods!: () -> untyped
 
   # Compiles reader methods so we don't have to go through method_missing.
@@ -1760,7 +1753,7 @@ module ActiveSupport::Configurable::ClassMethods
 
   def configure: () { (untyped) -> untyped } -> untyped
 
-  def config_accessor: (*untyped names, ?instance_reader: bool instance_reader, ?instance_writer: bool instance_writer, ?instance_accessor: bool instance_accessor) { () -> untyped } -> untyped
+  def config_accessor: (*untyped names, ?instance_accessor: bool instance_accessor, ?instance_writer: bool instance_writer, ?instance_reader: bool instance_reader) { () -> untyped } -> untyped
 end
 
 extension Array[Elem] (ActiveSupport)
@@ -1836,9 +1829,7 @@ extension Array[Elem] (ActiveSupport)
   #
   #   %w( a b c d e ).second_to_last # => "d"
   def second_to_last: () -> untyped
-end
 
-extension Array[Elem] (ActiveSupport)
   # Converts the array to a comma-separated sentence where the last element is
   # joined by the connector word.
   #
@@ -1976,18 +1967,7 @@ extension Array[Elem] (ActiveSupport)
   #   </messages>
   #
   def to_xml: (?::Hash[untyped, untyped] options) { (untyped) -> untyped } -> untyped
-end
 
-extension Hash[K, V] (ActiveSupport)
-  # By default, only instances of Hash itself are extractable.
-  # Subclasses of Hash may implement this method and return
-  # true to declare themselves as extractable. If a Hash
-  # is extractable, Array#extract_options! pops it from
-  # the Array when it is the last element of the Array.
-  def extractable_options?: () -> untyped
-end
-
-extension Array[Elem] (ActiveSupport)
   # Extracts options from a set of arguments. Removes and returns the last
   # element in the array if it's a hash, otherwise returns a blank hash.
   #
@@ -1998,9 +1978,7 @@ extension Array[Elem] (ActiveSupport)
   #   options(1, 2)        # => {}
   #   options(1, 2, a: :b) # => {:a=>:b}
   def extract_options!: () -> untyped
-end
 
-extension Array[Elem] (ActiveSupport)
   # Removes and returns the elements for which the block returns a true value.
   # If no block is given, an Enumerator is returned instead.
   #
@@ -2008,9 +1986,7 @@ extension Array[Elem] (ActiveSupport)
   #   odd_numbers = numbers.extract! { |number| number.odd? } # => [1, 3, 5, 7, 9]
   #   numbers # => [0, 2, 4, 6, 8]
   def extract!: () { (untyped) -> untyped } -> untyped
-end
 
-extension Array[Elem] (ActiveSupport)
   # Splits or iterates over the array in groups of size +number+,
   # padding any remaining slots with +fill_with+ unless it is +false+.
   #
@@ -2056,9 +2032,7 @@ extension Array[Elem] (ActiveSupport)
   #   [1, 2, 3, 4, 5].split(3)              # => [[1, 2], [4, 5]]
   #   (1..10).to_a.split { |i| i % 3 == 0 } # => [[1, 2], [4, 5], [7, 8], [10]]
   def split: (?untyped? value) { (untyped) -> untyped } -> untyped
-end
 
-extension Array[Elem] (ActiveSupport)
   # Wraps the array in an +ArrayInquirer+ object, which gives a friendlier way
   # to check its string-like contents.
   #
@@ -2070,9 +2044,7 @@ extension Array[Elem] (ActiveSupport)
   #   pets.any?(:cat, :ferret)  # => true
   #   pets.any?(:ferret, :alligator)  # => false
   def inquiry: () -> untyped
-end
 
-extension Array[Elem] (ActiveSupport)
   # Wraps its argument in an array unless it is already an array (or array-like).
   #
   # Specifically:
@@ -2109,6 +2081,348 @@ extension Array[Elem] (ActiveSupport)
   # The differences with <tt>Kernel#Array</tt> explained above
   # apply to the rest of <tt>object</tt>s.
   def self.wrap: (untyped object) -> untyped
+
+  # nodoc:
+  # Array#sum was added in Ruby 2.4 but it only works with Numeric elements.
+  def sum: (?untyped? init) { () -> untyped } -> untyped
+
+  # Returns a deep copy of array.
+  #
+  #   array = [1, [2, 3]]
+  #   dup   = array.deep_dup
+  #   dup[1][2] = 4
+  #
+  #   array[1][2] # => nil
+  #   dup[1][2]   # => 4
+  def deep_dup: () -> untyped
+
+  def as_json: (?untyped? options) -> untyped
+
+  # Calls <tt>to_param</tt> on all its elements and joins the result with
+  # slashes. This is used by <tt>url_for</tt> in Action Pack.
+  def to_param: () -> untyped
+
+  # Converts an array into a string suitable for use as a URL query string,
+  # using the given +key+ as the param name.
+  #
+  #   ['Rails', 'coding'].to_query('hobbies') # => "hobbies%5B%5D=Rails&hobbies%5B%5D=coding"
+  def to_query: (untyped key) -> untyped
+end
+
+extension Hash[K, V] (ActiveSupport)
+  # By default, only instances of Hash itself are extractable.
+  # Subclasses of Hash may implement this method and return
+  # true to declare themselves as extractable. If a Hash
+  # is extractable, Array#extract_options! pops it from
+  # the Array when it is the last element of the Array.
+  def extractable_options?: () -> untyped
+
+  # Returns a string containing an XML representation of its receiver:
+  #
+  #   { foo: 1, bar: 2 }.to_xml
+  #   # =>
+  #   # <?xml version="1.0" encoding="UTF-8"?>
+  #   # <hash>
+  #   #   <foo type="integer">1</foo>
+  #   #   <bar type="integer">2</bar>
+  #   # </hash>
+  #
+  # To do so, the method loops over the pairs and builds nodes that depend on
+  # the _values_. Given a pair +key+, +value+:
+  #
+  # * If +value+ is a hash there's a recursive call with +key+ as <tt>:root</tt>.
+  #
+  # * If +value+ is an array there's a recursive call with +key+ as <tt>:root</tt>,
+  #   and +key+ singularized as <tt>:children</tt>.
+  #
+  # * If +value+ is a callable object it must expect one or two arguments. Depending
+  #   on the arity, the callable is invoked with the +options+ hash as first argument
+  #   with +key+ as <tt>:root</tt>, and +key+ singularized as second argument. The
+  #   callable can add nodes by using <tt>options[:builder]</tt>.
+  #
+  #     {foo: lambda { |options, key| options[:builder].b(key) }}.to_xml
+  #     # => "<b>foo</b>"
+  #
+  # * If +value+ responds to +to_xml+ the method is invoked with +key+ as <tt>:root</tt>.
+  #
+  #     class Foo
+  #       def to_xml(options)
+  #         options[:builder].bar 'fooing!'
+  #       end
+  #     end
+  #
+  #     { foo: Foo.new }.to_xml(skip_instruct: true)
+  #     # =>
+  #     # <hash>
+  #     #   <bar>fooing!</bar>
+  #     # </hash>
+  #
+  # * Otherwise, a node with +key+ as tag is created with a string representation of
+  #   +value+ as text node. If +value+ is +nil+ an attribute "nil" set to "true" is added.
+  #   Unless the option <tt>:skip_types</tt> exists and is true, an attribute "type" is
+  #   added as well according to the following mapping:
+  #
+  #     XML_TYPE_NAMES = {
+  #       "Symbol"     => "symbol",
+  #       "Integer"    => "integer",
+  #       "BigDecimal" => "decimal",
+  #       "Float"      => "float",
+  #       "TrueClass"  => "boolean",
+  #       "FalseClass" => "boolean",
+  #       "Date"       => "date",
+  #       "DateTime"   => "dateTime",
+  #       "Time"       => "dateTime"
+  #     }
+  #
+  # By default the root node is "hash", but that's configurable via the <tt>:root</tt> option.
+  #
+  # The default XML builder is a fresh instance of <tt>Builder::XmlMarkup</tt>. You can
+  # configure your own builder with the <tt>:builder</tt> option. The method also accepts
+  # options like <tt>:dasherize</tt> and friends, they are forwarded to the builder.
+  def to_xml: (?::Hash[untyped, untyped] options) { (untyped) -> untyped } -> untyped
+
+  # Returns a Hash containing a collection of pairs when the key is the node name and the value is
+  # its content
+  #
+  #   xml = <<-XML
+  #     <?xml version="1.0" encoding="UTF-8"?>
+  #       <hash>
+  #         <foo type="integer">1</foo>
+  #         <bar type="integer">2</bar>
+  #       </hash>
+  #   XML
+  #
+  #   hash = Hash.from_xml(xml)
+  #   # => {"hash"=>{"foo"=>1, "bar"=>2}}
+  #
+  # +DisallowedType+ is raised if the XML contains attributes with <tt>type="yaml"</tt> or
+  # <tt>type="symbol"</tt>. Use <tt>Hash.from_trusted_xml</tt> to
+  # parse this XML.
+  #
+  # Custom +disallowed_types+ can also be passed in the form of an
+  # array.
+  #
+  #   xml = <<-XML
+  #     <?xml version="1.0" encoding="UTF-8"?>
+  #       <hash>
+  #         <foo type="integer">1</foo>
+  #         <bar type="string">"David"</bar>
+  #       </hash>
+  #   XML
+  #
+  #   hash = Hash.from_xml(xml, ['integer'])
+  #   # => ActiveSupport::XMLConverter::DisallowedType: Disallowed type attribute: "integer"
+  #
+  # Note that passing custom disallowed types will override the default types,
+  # which are Symbol and YAML.
+  def self.from_xml: (untyped xml, ?untyped? disallowed_types) -> untyped
+
+  # Builds a Hash from XML just like <tt>Hash.from_xml</tt>, but also allows Symbol and YAML.
+  def self.from_trusted_xml: (untyped xml) -> untyped
+
+  # Returns a new hash with +self+ and +other_hash+ merged recursively.
+  #
+  #   h1 = { a: true, b: { c: [1, 2, 3] } }
+  #   h2 = { a: false, b: { x: [3, 4, 5] } }
+  #
+  #   h1.deep_merge(h2) # => { a: false, b: { c: [1, 2, 3], x: [3, 4, 5] } }
+  #
+  # Like with Hash#merge in the standard library, a block can be provided
+  # to merge values:
+  #
+  #   h1 = { a: 100, b: 200, c: { c1: 100 } }
+  #   h2 = { b: 250, c: { c1: 200 } }
+  #   h1.deep_merge(h2) { |key, this_val, other_val| this_val + other_val }
+  #   # => { a: 100, b: 450, c: { c1: 300 } }
+  def deep_merge: (untyped other_hash) { () -> untyped } -> untyped
+
+  # Same as +deep_merge+, but modifies +self+.
+  def deep_merge!: (untyped other_hash) { () -> untyped } -> untyped
+
+  # Returns a new hash with all values converted by the block operation.
+  # This includes the values from the root hash and from all
+  # nested hashes and arrays.
+  #
+  #  hash = { person: { name: 'Rob', age: '28' } }
+  #
+  #  hash.deep_transform_values{ |value| value.to_s.upcase }
+  #  # => {person: {name: "ROB", age: "28"}}
+  def deep_transform_values: () { () -> untyped } -> untyped
+
+  # Destructively converts all values by using the block operation.
+  # This includes the values from the root hash and from all
+  # nested hashes and arrays.
+  def deep_transform_values!: () { () -> untyped } -> untyped
+
+  # support methods for deep transforming nested hashes and arrays
+  def _deep_transform_values_in_object: (untyped object) { (untyped) -> untyped } -> untyped
+
+  def _deep_transform_values_in_object!: (untyped object) { (untyped) -> untyped } -> untyped
+
+  # Returns a hash that includes everything except given keys.
+  #   hash = { a: true, b: false, c: nil }
+  #   hash.except(:c)     # => { a: true, b: false }
+  #   hash.except(:a, :b) # => { c: nil }
+  #   hash                # => { a: true, b: false, c: nil }
+  #
+  # This is useful for limiting a set of parameters to everything but a few known toggles:
+  #   @person.update(params[:person].except(:admin))
+  def except: (*untyped keys) -> untyped
+
+  # Removes the given keys from hash and returns it.
+  #   hash = { a: true, b: false, c: nil }
+  #   hash.except!(:c) # => { a: true, b: false }
+  #   hash             # => { a: true, b: false }
+  def except!: (*untyped keys) -> untyped
+
+  # Returns an <tt>ActiveSupport::HashWithIndifferentAccess</tt> out of its receiver:
+  #
+  #   { a: 1 }.with_indifferent_access['a'] # => 1
+  def with_indifferent_access: () -> untyped
+
+  # Returns a new hash with all keys converted to strings.
+  #
+  #   hash = { name: 'Rob', age: '28' }
+  #
+  #   hash.stringify_keys
+  #   # => {"name"=>"Rob", "age"=>"28"}
+  def stringify_keys: () -> untyped
+
+  # Destructively converts all keys to strings. Same as
+  # +stringify_keys+, but modifies +self+.
+  def stringify_keys!: () -> untyped
+
+  # Returns a new hash with all keys converted to symbols, as long as
+  # they respond to +to_sym+.
+  #
+  #   hash = { 'name' => 'Rob', 'age' => '28' }
+  #
+  #   hash.symbolize_keys
+  #   # => {:name=>"Rob", :age=>"28"}
+  def symbolize_keys: () -> untyped
+
+  # Destructively converts all keys to symbols, as long as they respond
+  # to +to_sym+. Same as +symbolize_keys+, but modifies +self+.
+  def symbolize_keys!: () -> untyped
+
+  # Validates all keys in a hash match <tt>*valid_keys</tt>, raising
+  # +ArgumentError+ on a mismatch.
+  #
+  # Note that keys are treated differently than HashWithIndifferentAccess,
+  # meaning that string and symbol keys will not match.
+  #
+  #   { name: 'Rob', years: '28' }.assert_valid_keys(:name, :age) # => raises "ArgumentError: Unknown key: :years. Valid keys are: :name, :age"
+  #   { name: 'Rob', age: '28' }.assert_valid_keys('name', 'age') # => raises "ArgumentError: Unknown key: :name. Valid keys are: 'name', 'age'"
+  #   { name: 'Rob', age: '28' }.assert_valid_keys(:name, :age)   # => passes, raises nothing
+  def assert_valid_keys: (*untyped valid_keys) -> untyped
+
+  # Returns a new hash with all keys converted by the block operation.
+  # This includes the keys from the root hash and from all
+  # nested hashes and arrays.
+  #
+  #  hash = { person: { name: 'Rob', age: '28' } }
+  #
+  #  hash.deep_transform_keys{ |key| key.to_s.upcase }
+  #  # => {"PERSON"=>{"NAME"=>"Rob", "AGE"=>"28"}}
+  def deep_transform_keys: () { () -> untyped } -> untyped
+
+  # Destructively converts all keys by using the block operation.
+  # This includes the keys from the root hash and from all
+  # nested hashes and arrays.
+  def deep_transform_keys!: () { () -> untyped } -> untyped
+
+  # Returns a new hash with all keys converted to strings.
+  # This includes the keys from the root hash and from all
+  # nested hashes and arrays.
+  #
+  #   hash = { person: { name: 'Rob', age: '28' } }
+  #
+  #   hash.deep_stringify_keys
+  #   # => {"person"=>{"name"=>"Rob", "age"=>"28"}}
+  def deep_stringify_keys: () -> untyped
+
+  # Destructively converts all keys to strings.
+  # This includes the keys from the root hash and from all
+  # nested hashes and arrays.
+  def deep_stringify_keys!: () -> untyped
+
+  # Returns a new hash with all keys converted to symbols, as long as
+  # they respond to +to_sym+. This includes the keys from the root hash
+  # and from all nested hashes and arrays.
+  #
+  #   hash = { 'person' => { 'name' => 'Rob', 'age' => '28' } }
+  #
+  #   hash.deep_symbolize_keys
+  #   # => {:person=>{:name=>"Rob", :age=>"28"}}
+  def deep_symbolize_keys: () -> untyped
+
+  # Destructively converts all keys to symbols, as long as they respond
+  # to +to_sym+. This includes the keys from the root hash and from all
+  # nested hashes and arrays.
+  def deep_symbolize_keys!: () -> untyped
+
+  # support methods for deep transforming nested hashes and arrays
+  def _deep_transform_keys_in_object: (untyped object) { (untyped) -> untyped } -> untyped
+
+  def _deep_transform_keys_in_object!: (untyped object) { (untyped) -> untyped } -> untyped
+
+  # Merges the caller into +other_hash+. For example,
+  #
+  #   options = options.reverse_merge(size: 25, velocity: 10)
+  #
+  # is equivalent to
+  #
+  #   options = { size: 25, velocity: 10 }.merge(options)
+  #
+  # This is particularly useful for initializing an options hash
+  # with default values.
+  def reverse_merge: (untyped other_hash) -> untyped
+
+  # Destructive +reverse_merge+.
+  def reverse_merge!: (untyped other_hash) -> untyped
+
+  # Replaces the hash with only the given keys.
+  # Returns a hash containing the removed key/value pairs.
+  #
+  #   hash = { a: 1, b: 2, c: 3, d: 4 }
+  #   hash.slice!(:a, :b)  # => {:c=>3, :d=>4}
+  #   hash                 # => {:a=>1, :b=>2}
+  def slice!: (*untyped keys) -> untyped
+
+  # Removes and returns the key/value pairs matching the given keys.
+  #
+  #   { a: 1, b: 2, c: 3, d: 4 }.extract!(:a, :b) # => {:a=>1, :b=>2}
+  #   { a: 1, b: 2 }.extract!(:a, :x)             # => {:a=>1}
+  def extract!: (*untyped keys) -> untyped
+
+  # Returns a deep copy of hash.
+  #
+  #   hash = { a: { b: 'b' } }
+  #   dup  = hash.deep_dup
+  #   dup[:a][:c] = 'c'
+  #
+  #   hash[:a][:c] # => nil
+  #   dup[:a][:c]  # => "c"
+  def deep_dup: () -> untyped
+
+  def as_json: (?untyped? options) -> untyped
+
+  # Returns a string representation of the receiver suitable for use as a URL
+  # query string:
+  #
+  #   {name: 'David', nationality: 'Danish'}.to_query
+  #   # => "name=David&nationality=Danish"
+  #
+  # An optional namespace can be passed to enclose key names:
+  #
+  #   {name: 'David', nationality: 'Danish'}.to_query('user')
+  #   # => "user%5Bname%5D=David&user%5Bnationality%5D=Danish"
+  #
+  # The string pairs "key=value" that conform the query string
+  # are sorted lexicographically in ascending order.
+  #
+  # This method is also aliased as +to_param+.
+  def to_query: (?untyped? namespace) -> untyped
 end
 
 module ActiveSupport::BigDecimalWithDefaultFormat
@@ -2196,10 +2510,8 @@ extension Class (ActiveSupport)
   # To set a default value for the attribute, pass <tt>default:</tt>, like so:
   #
   #   class_attribute :settings, default: {}
-  def class_attribute: (*untyped attrs, ?instance_accessor: bool instance_accessor, ?instance_reader: untyped instance_reader, ?instance_writer: untyped instance_writer, ?instance_predicate: bool instance_predicate, ?default: untyped? default) -> untyped
-end
+  def class_attribute: (*untyped attrs, ?default: untyped? default, ?instance_predicate: bool instance_predicate, ?instance_writer: untyped instance_writer, ?instance_reader: untyped instance_reader, ?instance_accessor: bool instance_accessor) -> untyped
 
-extension Class (ActiveSupport)
   # Returns an array with all classes that are < than its receiver.
   #
   #   class C; end
@@ -2215,9 +2527,6 @@ extension Class (ActiveSupport)
   #   C.descendants # => [B, A, D]
   def descendants: () -> untyped
 
-  # JRuby 9.0.4.0 and earlier
-  def descendants: () -> untyped
-
   # Returns an array with the direct children of +self+.
   #
   #   class Foo; end
@@ -2231,8 +2540,131 @@ end
 extension Date (ActiveSupport)
   # Duck-types as a Date-like class. See Object#acts_like?.
   def acts_like_date?: () -> ::TrueClass
-end
 
+  # nodoc:
+  # No Date is blank:
+  #
+  #   Date.today.blank? # => false
+  #
+  # @return [false]
+  def blank?: () -> ::FalseClass
+
+  include DateAndTime::Calculations
+
+  attr_accessor beginning_of_week_default: untyped
+
+  # Returns the week start (e.g. :monday) for the current request, if this has been set (via Date.beginning_of_week=).
+  # If <tt>Date.beginning_of_week</tt> has not been set for the current request, returns the week start specified in <tt>config.beginning_of_week</tt>.
+  # If no config.beginning_of_week was specified, returns :monday.
+  def self.beginning_of_week: () -> untyped
+
+  # Sets <tt>Date.beginning_of_week</tt> to a week start (e.g. :monday) for current request/thread.
+  #
+  # This method accepts any of the following day symbols:
+  # :monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday
+  def self.beginning_of_week=: (untyped week_start) -> untyped
+
+  # Returns week start day symbol (e.g. :monday), or raises an +ArgumentError+ for invalid day symbol.
+  def self.find_beginning_of_week!: (untyped week_start) -> untyped
+
+  # Returns a new Date representing the date 1 day ago (i.e. yesterday's date).
+  def self.yesterday: () -> untyped
+
+  # Returns a new Date representing the date 1 day after today (i.e. tomorrow's date).
+  def self.tomorrow: () -> untyped
+
+  # Returns Time.zone.today when <tt>Time.zone</tt> or <tt>config.time_zone</tt> are set, otherwise just returns Date.today.
+  def self.current: () -> untyped
+
+  # Converts Date to a Time (or DateTime if necessary) with the time portion set to the beginning of the day (0:00)
+  # and then subtracts the specified number of seconds.
+  def ago: (untyped seconds) -> untyped
+
+  # Converts Date to a Time (or DateTime if necessary) with the time portion set to the beginning of the day (0:00)
+  # and then adds the specified number of seconds
+  def since: (untyped seconds) -> untyped
+
+  # Converts Date to a Time (or DateTime if necessary) with the time portion set to the beginning of the day (0:00)
+  def beginning_of_day: () -> untyped
+
+  # Converts Date to a Time (or DateTime if necessary) with the time portion set to the middle of the day (12:00)
+  def middle_of_day: () -> untyped
+
+  # Converts Date to a Time (or DateTime if necessary) with the time portion set to the end of the day (23:59:59)
+  def end_of_day: () -> untyped
+
+  def plus_with_duration: (untyped other) -> untyped
+
+  def minus_with_duration: (untyped other) -> untyped
+
+  # Provides precise Date calculations for years, months, and days. The +options+ parameter takes a hash with
+  # any of these keys: <tt>:years</tt>, <tt>:months</tt>, <tt>:weeks</tt>, <tt>:days</tt>.
+  def advance: (untyped options) -> untyped
+
+  # Returns a new Date where one or more of the elements have been changed according to the +options+ parameter.
+  # The +options+ parameter is a hash with a combination of these keys: <tt>:year</tt>, <tt>:month</tt>, <tt>:day</tt>.
+  #
+  #   Date.new(2007, 5, 12).change(day: 1)               # => Date.new(2007, 5, 1)
+  #   Date.new(2007, 5, 12).change(year: 2005, month: 1) # => Date.new(2005, 1, 12)
+  def change: (untyped options) -> untyped
+
+  # Allow Date to be compared with Time by converting to DateTime and relying on the <=> from there.
+  def compare_with_coercion: (untyped other) -> untyped
+
+  # Convert to a formatted string. See DATE_FORMATS for predefined formats.
+  #
+  # This method is aliased to <tt>to_s</tt>.
+  #
+  #   date = Date.new(2007, 11, 10)       # => Sat, 10 Nov 2007
+  #
+  #   date.to_formatted_s(:db)            # => "2007-11-10"
+  #   date.to_s(:db)                      # => "2007-11-10"
+  #
+  #   date.to_formatted_s(:short)         # => "10 Nov"
+  #   date.to_formatted_s(:number)        # => "20071110"
+  #   date.to_formatted_s(:long)          # => "November 10, 2007"
+  #   date.to_formatted_s(:long_ordinal)  # => "November 10th, 2007"
+  #   date.to_formatted_s(:rfc822)        # => "10 Nov 2007"
+  #   date.to_formatted_s(:iso8601)       # => "2007-11-10"
+  #
+  # == Adding your own date formats to to_formatted_s
+  # You can add your own formats to the Date::DATE_FORMATS hash.
+  # Use the format name as the hash key and either a strftime string
+  # or Proc instance that takes a date argument as the value.
+  #
+  #   # config/initializers/date_formats.rb
+  #   Date::DATE_FORMATS[:month_and_year] = '%B %Y'
+  #   Date::DATE_FORMATS[:short_ordinal] = ->(date) { date.strftime("%B #{date.day.ordinalize}") }
+  def to_formatted_s: (?::Symbol format) -> untyped
+
+  # Overrides the default inspect method with a human readable one, e.g., "Mon, 21 Feb 2005"
+  def readable_inspect: () -> untyped
+
+  # Converts a Date instance to a Time, where the time is set to the beginning of the day.
+  # The timezone can be either :local or :utc (default :local).
+  #
+  #   date = Date.new(2007, 11, 10)  # => Sat, 10 Nov 2007
+  #
+  #   date.to_time                   # => 2007-11-10 00:00:00 0800
+  #   date.to_time(:local)           # => 2007-11-10 00:00:00 0800
+  #
+  #   date.to_time(:utc)             # => 2007-11-10 00:00:00 UTC
+  #
+  # NOTE: The :local timezone is Ruby's *process* timezone, i.e. ENV['TZ'].
+  #       If the *application's* timezone is needed, then use +in_time_zone+ instead.
+  def to_time: (?::Symbol form) -> untyped
+
+  # Returns a string which represents the time in used time zone as DateTime
+  # defined by XML Schema:
+  #
+  #   date = Date.new(2015, 05, 23)  # => Sat, 23 May 2015
+  #   date.xmlschema                 # => "2015-05-23T00:00:00+04:00"
+  def xmlschema: () -> untyped
+
+  include DateAndTime::Zones
+
+  def as_json: (?untyped? options) -> untyped
+end
 
 module DateAndTime::Calculations
   # Returns a new date/time representing yesterday.
@@ -2448,7 +2880,6 @@ DateAndTime::Calculations::DAYS_INTO_WEEK: ::Hash[untyped, untyped]
 
 DateAndTime::Calculations::WEEKEND_DAYS: ::Array[untyped]
 
-
 module DateAndTime::Zones
   # Returns the simultaneous time in <tt>Time.zone</tt> if a zone is given or
   # if Time.zone_default is set. Otherwise, it returns the current time.
@@ -2470,132 +2901,6 @@ module DateAndTime::Zones
   def time_with_zone: (untyped time, untyped zone) -> untyped
 end
 
-extension Date (ActiveSupport)
-  # nodoc:
-  # No Date is blank:
-  #
-  #   Date.today.blank? # => false
-  #
-  # @return [false]
-  def blank?: () -> ::FalseClass
-end
-
-extension Date (ActiveSupport)
-  include DateAndTime::Calculations
-
-  attr_accessor beginning_of_week_default: untyped
-
-  # Returns the week start (e.g. :monday) for the current request, if this has been set (via Date.beginning_of_week=).
-  # If <tt>Date.beginning_of_week</tt> has not been set for the current request, returns the week start specified in <tt>config.beginning_of_week</tt>.
-  # If no config.beginning_of_week was specified, returns :monday.
-  def self.beginning_of_week: () -> untyped
-
-  # Sets <tt>Date.beginning_of_week</tt> to a week start (e.g. :monday) for current request/thread.
-  #
-  # This method accepts any of the following day symbols:
-  # :monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday
-  def self.beginning_of_week=: (untyped week_start) -> untyped
-
-  # Returns week start day symbol (e.g. :monday), or raises an +ArgumentError+ for invalid day symbol.
-  def self.find_beginning_of_week!: (untyped week_start) -> untyped
-
-  # Returns a new Date representing the date 1 day ago (i.e. yesterday's date).
-  def self.yesterday: () -> untyped
-
-  # Returns a new Date representing the date 1 day after today (i.e. tomorrow's date).
-  def self.tomorrow: () -> untyped
-
-  # Returns Time.zone.today when <tt>Time.zone</tt> or <tt>config.time_zone</tt> are set, otherwise just returns Date.today.
-  def self.current: () -> untyped
-
-  # Converts Date to a Time (or DateTime if necessary) with the time portion set to the beginning of the day (0:00)
-  # and then subtracts the specified number of seconds.
-  def ago: (untyped seconds) -> untyped
-
-  # Converts Date to a Time (or DateTime if necessary) with the time portion set to the beginning of the day (0:00)
-  # and then adds the specified number of seconds
-  def since: (untyped seconds) -> untyped
-
-  # Converts Date to a Time (or DateTime if necessary) with the time portion set to the beginning of the day (0:00)
-  def beginning_of_day: () -> untyped
-
-  # Converts Date to a Time (or DateTime if necessary) with the time portion set to the middle of the day (12:00)
-  def middle_of_day: () -> untyped
-
-  # Converts Date to a Time (or DateTime if necessary) with the time portion set to the end of the day (23:59:59)
-  def end_of_day: () -> untyped
-
-  def plus_with_duration: (untyped other) -> untyped
-
-  def minus_with_duration: (untyped other) -> untyped
-
-  # Provides precise Date calculations for years, months, and days. The +options+ parameter takes a hash with
-  # any of these keys: <tt>:years</tt>, <tt>:months</tt>, <tt>:weeks</tt>, <tt>:days</tt>.
-  def advance: (untyped options) -> untyped
-
-  # Returns a new Date where one or more of the elements have been changed according to the +options+ parameter.
-  # The +options+ parameter is a hash with a combination of these keys: <tt>:year</tt>, <tt>:month</tt>, <tt>:day</tt>.
-  #
-  #   Date.new(2007, 5, 12).change(day: 1)               # => Date.new(2007, 5, 1)
-  #   Date.new(2007, 5, 12).change(year: 2005, month: 1) # => Date.new(2005, 1, 12)
-  def change: (untyped options) -> untyped
-
-  # Allow Date to be compared with Time by converting to DateTime and relying on the <=> from there.
-  def compare_with_coercion: (untyped other) -> untyped
-end
-
-extension Date (ActiveSupport)
-  # Convert to a formatted string. See DATE_FORMATS for predefined formats.
-  #
-  # This method is aliased to <tt>to_s</tt>.
-  #
-  #   date = Date.new(2007, 11, 10)       # => Sat, 10 Nov 2007
-  #
-  #   date.to_formatted_s(:db)            # => "2007-11-10"
-  #   date.to_s(:db)                      # => "2007-11-10"
-  #
-  #   date.to_formatted_s(:short)         # => "10 Nov"
-  #   date.to_formatted_s(:number)        # => "20071110"
-  #   date.to_formatted_s(:long)          # => "November 10, 2007"
-  #   date.to_formatted_s(:long_ordinal)  # => "November 10th, 2007"
-  #   date.to_formatted_s(:rfc822)        # => "10 Nov 2007"
-  #   date.to_formatted_s(:iso8601)       # => "2007-11-10"
-  #
-  # == Adding your own date formats to to_formatted_s
-  # You can add your own formats to the Date::DATE_FORMATS hash.
-  # Use the format name as the hash key and either a strftime string
-  # or Proc instance that takes a date argument as the value.
-  #
-  #   # config/initializers/date_formats.rb
-  #   Date::DATE_FORMATS[:month_and_year] = '%B %Y'
-  #   Date::DATE_FORMATS[:short_ordinal] = ->(date) { date.strftime("%B #{date.day.ordinalize}") }
-  def to_formatted_s: (?::Symbol format) -> untyped
-
-  # Overrides the default inspect method with a human readable one, e.g., "Mon, 21 Feb 2005"
-  def readable_inspect: () -> untyped
-
-  # Converts a Date instance to a Time, where the time is set to the beginning of the day.
-  # The timezone can be either :local or :utc (default :local).
-  #
-  #   date = Date.new(2007, 11, 10)  # => Sat, 10 Nov 2007
-  #
-  #   date.to_time                   # => 2007-11-10 00:00:00 0800
-  #   date.to_time(:local)           # => 2007-11-10 00:00:00 0800
-  #
-  #   date.to_time(:utc)             # => 2007-11-10 00:00:00 UTC
-  #
-  # NOTE: The :local timezone is Ruby's *process* timezone, i.e. ENV['TZ'].
-  #       If the *application's* timezone is needed, then use +in_time_zone+ instead.
-  def to_time: (?::Symbol form) -> untyped
-
-  # Returns a string which represents the time in used time zone as DateTime
-  # defined by XML Schema:
-  #
-  #   date = Date.new(2015, 05, 23)  # => Sat, 23 May 2015
-  #   date.xmlschema                 # => "2015-05-23T00:00:00+04:00"
-  def xmlschema: () -> untyped
-end
-
 Date::DATE_FORMATS: ::Hash[untyped, untyped]
 
 extension DateTime (ActiveSupport)
@@ -2604,9 +2909,7 @@ extension DateTime (ActiveSupport)
 
   # Duck-types as a Time-like class. See Object#acts_like?.
   def acts_like_time?: () -> ::TrueClass
-end
 
-extension DateTime (ActiveSupport)
   # nodoc:
   # No DateTime is ever blank:
   #
@@ -2614,9 +2917,7 @@ extension DateTime (ActiveSupport)
   #
   # @return [false]
   def blank?: () -> ::FalseClass
-end
 
-extension DateTime (ActiveSupport)
   # Returns <tt>Time.zone.now.to_datetime</tt> when <tt>Time.zone</tt> or
   # <tt>config.time_zone</tt> are set, otherwise returns
   # <tt>Time.now.to_datetime</tt>.
@@ -2708,9 +3009,7 @@ extension DateTime (ActiveSupport)
   # Layers additional behavior on DateTime#<=> so that Time and
   # ActiveSupport::TimeWithZone instances can be compared with a DateTime.
   def <=>: (untyped other) -> untyped
-end
 
-extension DateTime (ActiveSupport)
   include DateAndTime::Compatibility
 
   # Either return an instance of +Time+ with the same UTC offset
@@ -2718,9 +3017,7 @@ extension DateTime (ActiveSupport)
   # in the local system timezone depending on the setting of
   # on the setting of +ActiveSupport.to_time_preserves_timezone+.
   def to_time: () -> untyped
-end
 
-extension DateTime (ActiveSupport)
   # Convert to a formatted string. See Time::DATE_FORMATS for predefined formats.
   #
   # This method is aliased to <tt>to_s</tt>.
@@ -2783,12 +3080,9 @@ extension DateTime (ActiveSupport)
   def offset_in_seconds: () -> untyped
 
   def seconds_since_unix_epoch: () -> untyped
-end
 
-extension Date (ActiveSupport)
-  include DateAndTime::Zones
+  def as_json: (?untyped? options) -> untyped
 end
-
 
 module Digest::UUID
   # Generates a v5 non-random UUID (Universally Unique IDentifier).
@@ -2817,88 +3111,6 @@ Digest::UUID::OID_NAMESPACE: ::String
 
 Digest::UUID::X500_NAMESPACE: ::String
 
-# extension Enumerable (ActiveSupport)
-#   # Calculates a sum from the elements.
-#   #
-#   #  payments.sum { |p| p.price * p.tax_rate }
-#   #  payments.sum(&:price)
-#   #
-#   # The latter is a shortcut for:
-#   #
-#   #  payments.inject(0) { |sum, p| sum + p.price }
-#   #
-#   # It can also calculate the sum without the use of a block.
-#   #
-#   #  [5, 15, 10].sum # => 30
-#   #  ['foo', 'bar'].sum # => "foobar"
-#   #  [[1, 2], [3, 1, 5]].sum # => [1, 2, 3, 1, 5]
-#   #
-#   # The default sum of an empty list is zero. You can override this default:
-#   #
-#   #  [].sum(Payment.new(0)) { |i| i.amount } # => Payment.new(0)
-#   def sum: (?untyped? identity) { () -> untyped } -> untyped
-# 
-#   # Convert an enumerable to a hash keying it by the block return value.
-#   #
-#   #   people.index_by(&:login)
-#   #   # => { "nextangle" => <Person ...>, "chade-" => <Person ...>, ...}
-#   #
-#   #   people.index_by { |person| "#{person.first_name} #{person.last_name}" }
-#   #   # => { "Chade- Fowlersburg-e" => <Person ...>, "David Heinemeier Hansson" => <Person ...>, ...}
-#   def index_by: () { (untyped) -> untyped } -> untyped
-# 
-#   # Convert an enumerable to a hash keying it with the enumerable items and with the values returned in the block.
-#   #
-#   #   post = Post.new(title: "hey there", body: "what's up?")
-#   #
-#   #   %i( title body ).index_with { |attr_name| post.public_send(attr_name) }
-#   #   # => { title: "hey there", body: "what's up?" }
-#   def index_with: (?untyped default) { (untyped) -> untyped } -> untyped
-# 
-#   # Returns +true+ if the enumerable has more than 1 element. Functionally
-#   # equivalent to <tt>enum.to_a.size > 1</tt>. Can be called with a block too,
-#   # much like any?, so <tt>people.many? { |p| p.age > 26 }</tt> returns +true+
-#   # if more than one person is over 26.
-#   def many?: () { (untyped) -> untyped } -> untyped
-# 
-#   # Returns a new array that includes the passed elements.
-#   #
-#   #   [ 1, 2, 3 ].including(4, 5)
-#   #   # => [ 1, 2, 3, 4, 5 ]
-#   #
-#   #   ["David", "Rafael"].including %w[ Aaron Todd ]
-#   #   # => ["David", "Rafael", "Aaron", "Todd"]
-#   def including: (*untyped elements) -> untyped
-# 
-#   # The negative of the <tt>Enumerable#include?</tt>. Returns +true+ if the
-#   # collection does not include the object.
-#   def exclude?: (untyped object) -> untyped
-# 
-#   # Returns a copy of the enumerable excluding the specified elements.
-#   #
-#   #   ["David", "Rafael", "Aaron", "Todd"].excluding "Aaron", "Todd"
-#   #   # => ["David", "Rafael"]
-#   #
-#   #   ["David", "Rafael", "Aaron", "Todd"].excluding %w[ Aaron Todd ]
-#   #   # => ["David", "Rafael"]
-#   #
-#   #   {foo: 1, bar: 2, baz: 3}.excluding :bar
-#   #   # => {foo: 1, baz: 3}
-#   def excluding: (*untyped elements) -> untyped
-# 
-#   # Alias for #excluding.
-#   def without: (*untyped elements) -> untyped
-# 
-#   # Convert an enumerable to an array based on the given key.
-#   #
-#   #   [{ name: "David" }, { name: "Rafael" }, { name: "Aaron" }].pluck(:name)
-#   #   # => ["David", "Rafael", "Aaron"]
-#   #
-#   #   [{ id: 1, name: "David" }, { id: 2, name: "Rafael" }].pluck(:id, :name)
-#   #   # => [[1, "David"], [2, "Rafael"]]
-#   def pluck: (*untyped keys) -> untyped
-# end
-
 Enumerable::INDEX_WITH_DEFAULT: untyped
 
 extension Range[Elem] (ActiveSupport)
@@ -2906,12 +3118,13 @@ extension Range[Elem] (ActiveSupport)
   # Optimize range sum to use arithmetic progression if a block is not given and
   # we have a range of numeric values.
   def sum: (?untyped? identity) -> untyped
-end
 
-extension Array[Elem] (ActiveSupport)
-  # nodoc:
-  # Array#sum was added in Ruby 2.4 but it only works with Numeric elements.
-  def sum: (?untyped? init) { () -> untyped } -> untyped
+  def as_json: (?untyped? options) -> untyped
+
+  # Compare two ranges and see if they overlap each other
+  #  (1..5).overlaps?(4..6) # => true
+  #  (1..5).overlaps?(7..9) # => false
+  def overlaps?: (untyped other) -> untyped
 end
 
 extension File (ActiveSupport)
@@ -2933,111 +3146,6 @@ extension File (ActiveSupport)
   def self.atomic_write: (untyped file_name, ?untyped temp_dir) { (untyped) -> untyped } -> untyped
 
   def self.probe_stat_in: (untyped dir) -> untyped
-end
-
-extension Hash[K, V] (ActiveSupport)
-  # Returns a string containing an XML representation of its receiver:
-  #
-  #   { foo: 1, bar: 2 }.to_xml
-  #   # =>
-  #   # <?xml version="1.0" encoding="UTF-8"?>
-  #   # <hash>
-  #   #   <foo type="integer">1</foo>
-  #   #   <bar type="integer">2</bar>
-  #   # </hash>
-  #
-  # To do so, the method loops over the pairs and builds nodes that depend on
-  # the _values_. Given a pair +key+, +value+:
-  #
-  # * If +value+ is a hash there's a recursive call with +key+ as <tt>:root</tt>.
-  #
-  # * If +value+ is an array there's a recursive call with +key+ as <tt>:root</tt>,
-  #   and +key+ singularized as <tt>:children</tt>.
-  #
-  # * If +value+ is a callable object it must expect one or two arguments. Depending
-  #   on the arity, the callable is invoked with the +options+ hash as first argument
-  #   with +key+ as <tt>:root</tt>, and +key+ singularized as second argument. The
-  #   callable can add nodes by using <tt>options[:builder]</tt>.
-  #
-  #     {foo: lambda { |options, key| options[:builder].b(key) }}.to_xml
-  #     # => "<b>foo</b>"
-  #
-  # * If +value+ responds to +to_xml+ the method is invoked with +key+ as <tt>:root</tt>.
-  #
-  #     class Foo
-  #       def to_xml(options)
-  #         options[:builder].bar 'fooing!'
-  #       end
-  #     end
-  #
-  #     { foo: Foo.new }.to_xml(skip_instruct: true)
-  #     # =>
-  #     # <hash>
-  #     #   <bar>fooing!</bar>
-  #     # </hash>
-  #
-  # * Otherwise, a node with +key+ as tag is created with a string representation of
-  #   +value+ as text node. If +value+ is +nil+ an attribute "nil" set to "true" is added.
-  #   Unless the option <tt>:skip_types</tt> exists and is true, an attribute "type" is
-  #   added as well according to the following mapping:
-  #
-  #     XML_TYPE_NAMES = {
-  #       "Symbol"     => "symbol",
-  #       "Integer"    => "integer",
-  #       "BigDecimal" => "decimal",
-  #       "Float"      => "float",
-  #       "TrueClass"  => "boolean",
-  #       "FalseClass" => "boolean",
-  #       "Date"       => "date",
-  #       "DateTime"   => "dateTime",
-  #       "Time"       => "dateTime"
-  #     }
-  #
-  # By default the root node is "hash", but that's configurable via the <tt>:root</tt> option.
-  #
-  # The default XML builder is a fresh instance of <tt>Builder::XmlMarkup</tt>. You can
-  # configure your own builder with the <tt>:builder</tt> option. The method also accepts
-  # options like <tt>:dasherize</tt> and friends, they are forwarded to the builder.
-  def to_xml: (?::Hash[untyped, untyped] options) { (untyped) -> untyped } -> untyped
-
-  # Returns a Hash containing a collection of pairs when the key is the node name and the value is
-  # its content
-  #
-  #   xml = <<-XML
-  #     <?xml version="1.0" encoding="UTF-8"?>
-  #       <hash>
-  #         <foo type="integer">1</foo>
-  #         <bar type="integer">2</bar>
-  #       </hash>
-  #   XML
-  #
-  #   hash = Hash.from_xml(xml)
-  #   # => {"hash"=>{"foo"=>1, "bar"=>2}}
-  #
-  # +DisallowedType+ is raised if the XML contains attributes with <tt>type="yaml"</tt> or
-  # <tt>type="symbol"</tt>. Use <tt>Hash.from_trusted_xml</tt> to
-  # parse this XML.
-  #
-  # Custom +disallowed_types+ can also be passed in the form of an
-  # array.
-  #
-  #   xml = <<-XML
-  #     <?xml version="1.0" encoding="UTF-8"?>
-  #       <hash>
-  #         <foo type="integer">1</foo>
-  #         <bar type="string">"David"</bar>
-  #       </hash>
-  #   XML
-  #
-  #   hash = Hash.from_xml(xml, ['integer'])
-  #   # => ActiveSupport::XMLConverter::DisallowedType: Disallowed type attribute: "integer"
-  #
-  # Note that passing custom disallowed types will override the default types,
-  # which are Symbol and YAML.
-  def self.from_xml: (untyped xml, ?untyped? disallowed_types) -> untyped
-
-  # Builds a Hash from XML just like <tt>Hash.from_xml</tt>, but also allows Symbol and YAML.
-  def self.from_trusted_xml: (untyped xml) -> untyped
 end
 
 class ActiveSupport::XMLConverter
@@ -3077,195 +3185,6 @@ end
 
 ActiveSupport::XMLConverter::DISALLOWED_TYPES: ::Array[untyped]
 
-extension Hash[K, V] (ActiveSupport)
-  # Returns a new hash with +self+ and +other_hash+ merged recursively.
-  #
-  #   h1 = { a: true, b: { c: [1, 2, 3] } }
-  #   h2 = { a: false, b: { x: [3, 4, 5] } }
-  #
-  #   h1.deep_merge(h2) # => { a: false, b: { c: [1, 2, 3], x: [3, 4, 5] } }
-  #
-  # Like with Hash#merge in the standard library, a block can be provided
-  # to merge values:
-  #
-  #   h1 = { a: 100, b: 200, c: { c1: 100 } }
-  #   h2 = { b: 250, c: { c1: 200 } }
-  #   h1.deep_merge(h2) { |key, this_val, other_val| this_val + other_val }
-  #   # => { a: 100, b: 450, c: { c1: 300 } }
-  def deep_merge: (untyped other_hash) { () -> untyped } -> untyped
-
-  # Same as +deep_merge+, but modifies +self+.
-  def deep_merge!: (untyped other_hash) { () -> untyped } -> untyped
-end
-
-extension Hash[K, V] (ActiveSupport)
-  # Returns a new hash with all values converted by the block operation.
-  # This includes the values from the root hash and from all
-  # nested hashes and arrays.
-  #
-  #  hash = { person: { name: 'Rob', age: '28' } }
-  #
-  #  hash.deep_transform_values{ |value| value.to_s.upcase }
-  #  # => {person: {name: "ROB", age: "28"}}
-  def deep_transform_values: () { () -> untyped } -> untyped
-
-  # Destructively converts all values by using the block operation.
-  # This includes the values from the root hash and from all
-  # nested hashes and arrays.
-  def deep_transform_values!: () { () -> untyped } -> untyped
-
-  # support methods for deep transforming nested hashes and arrays
-  def _deep_transform_values_in_object: (untyped object) { (untyped) -> untyped } -> untyped
-
-  def _deep_transform_values_in_object!: (untyped object) { (untyped) -> untyped } -> untyped
-end
-
-extension Hash[K, V] (ActiveSupport)
-  # Returns a hash that includes everything except given keys.
-  #   hash = { a: true, b: false, c: nil }
-  #   hash.except(:c)     # => { a: true, b: false }
-  #   hash.except(:a, :b) # => { c: nil }
-  #   hash                # => { a: true, b: false, c: nil }
-  #
-  # This is useful for limiting a set of parameters to everything but a few known toggles:
-  #   @person.update(params[:person].except(:admin))
-  def except: (*untyped keys) -> untyped
-
-  # Removes the given keys from hash and returns it.
-  #   hash = { a: true, b: false, c: nil }
-  #   hash.except!(:c) # => { a: true, b: false }
-  #   hash             # => { a: true, b: false }
-  def except!: (*untyped keys) -> untyped
-end
-
-extension Hash[K, V] (ActiveSupport)
-  # Returns an <tt>ActiveSupport::HashWithIndifferentAccess</tt> out of its receiver:
-  #
-  #   { a: 1 }.with_indifferent_access['a'] # => 1
-  def with_indifferent_access: () -> untyped
-end
-
-extension Hash[K, V] (ActiveSupport)
-  # Returns a new hash with all keys converted to strings.
-  #
-  #   hash = { name: 'Rob', age: '28' }
-  #
-  #   hash.stringify_keys
-  #   # => {"name"=>"Rob", "age"=>"28"}
-  def stringify_keys: () -> untyped
-
-  # Destructively converts all keys to strings. Same as
-  # +stringify_keys+, but modifies +self+.
-  def stringify_keys!: () -> untyped
-
-  # Returns a new hash with all keys converted to symbols, as long as
-  # they respond to +to_sym+.
-  #
-  #   hash = { 'name' => 'Rob', 'age' => '28' }
-  #
-  #   hash.symbolize_keys
-  #   # => {:name=>"Rob", :age=>"28"}
-  def symbolize_keys: () -> untyped
-
-  # Destructively converts all keys to symbols, as long as they respond
-  # to +to_sym+. Same as +symbolize_keys+, but modifies +self+.
-  def symbolize_keys!: () -> untyped
-
-  # Validates all keys in a hash match <tt>*valid_keys</tt>, raising
-  # +ArgumentError+ on a mismatch.
-  #
-  # Note that keys are treated differently than HashWithIndifferentAccess,
-  # meaning that string and symbol keys will not match.
-  #
-  #   { name: 'Rob', years: '28' }.assert_valid_keys(:name, :age) # => raises "ArgumentError: Unknown key: :years. Valid keys are: :name, :age"
-  #   { name: 'Rob', age: '28' }.assert_valid_keys('name', 'age') # => raises "ArgumentError: Unknown key: :name. Valid keys are: 'name', 'age'"
-  #   { name: 'Rob', age: '28' }.assert_valid_keys(:name, :age)   # => passes, raises nothing
-  def assert_valid_keys: (*untyped valid_keys) -> untyped
-
-  # Returns a new hash with all keys converted by the block operation.
-  # This includes the keys from the root hash and from all
-  # nested hashes and arrays.
-  #
-  #  hash = { person: { name: 'Rob', age: '28' } }
-  #
-  #  hash.deep_transform_keys{ |key| key.to_s.upcase }
-  #  # => {"PERSON"=>{"NAME"=>"Rob", "AGE"=>"28"}}
-  def deep_transform_keys: () { () -> untyped } -> untyped
-
-  # Destructively converts all keys by using the block operation.
-  # This includes the keys from the root hash and from all
-  # nested hashes and arrays.
-  def deep_transform_keys!: () { () -> untyped } -> untyped
-
-  # Returns a new hash with all keys converted to strings.
-  # This includes the keys from the root hash and from all
-  # nested hashes and arrays.
-  #
-  #   hash = { person: { name: 'Rob', age: '28' } }
-  #
-  #   hash.deep_stringify_keys
-  #   # => {"person"=>{"name"=>"Rob", "age"=>"28"}}
-  def deep_stringify_keys: () -> untyped
-
-  # Destructively converts all keys to strings.
-  # This includes the keys from the root hash and from all
-  # nested hashes and arrays.
-  def deep_stringify_keys!: () -> untyped
-
-  # Returns a new hash with all keys converted to symbols, as long as
-  # they respond to +to_sym+. This includes the keys from the root hash
-  # and from all nested hashes and arrays.
-  #
-  #   hash = { 'person' => { 'name' => 'Rob', 'age' => '28' } }
-  #
-  #   hash.deep_symbolize_keys
-  #   # => {:person=>{:name=>"Rob", :age=>"28"}}
-  def deep_symbolize_keys: () -> untyped
-
-  # Destructively converts all keys to symbols, as long as they respond
-  # to +to_sym+. This includes the keys from the root hash and from all
-  # nested hashes and arrays.
-  def deep_symbolize_keys!: () -> untyped
-
-  # support methods for deep transforming nested hashes and arrays
-  def _deep_transform_keys_in_object: (untyped object) { (untyped) -> untyped } -> untyped
-
-  def _deep_transform_keys_in_object!: (untyped object) { (untyped) -> untyped } -> untyped
-end
-
-extension Hash[K, V] (ActiveSupport)
-  # Merges the caller into +other_hash+. For example,
-  #
-  #   options = options.reverse_merge(size: 25, velocity: 10)
-  #
-  # is equivalent to
-  #
-  #   options = { size: 25, velocity: 10 }.merge(options)
-  #
-  # This is particularly useful for initializing an options hash
-  # with default values.
-  def reverse_merge: (untyped other_hash) -> untyped
-
-  # Destructive +reverse_merge+.
-  def reverse_merge!: (untyped other_hash) -> untyped
-end
-
-extension Hash[K, V] (ActiveSupport)
-  # Replaces the hash with only the given keys.
-  # Returns a hash containing the removed key/value pairs.
-  #
-  #   hash = { a: 1, b: 2, c: 3, d: 4 }
-  #   hash.slice!(:a, :b)  # => {:c=>3, :d=>4}
-  #   hash                 # => {:a=>1, :b=>2}
-  def slice!: (*untyped keys) -> untyped
-
-  # Removes and returns the key/value pairs matching the given keys.
-  #
-  #   { a: 1, b: 2, c: 3, d: 4 }.extract!(:a, :b) # => {:a=>1, :b=>2}
-  #   { a: 1, b: 2 }.extract!(:a, :x)             # => {:a=>1}
-  def extract!: (*untyped keys) -> untyped
-end
-
 extension Integer (ActiveSupport)
   # Ordinalize turns a number into an ordinal string used to denote the
   # position in an ordered sequence such as 1st, 2nd, 3rd, 4th.
@@ -3288,18 +3207,14 @@ extension Integer (ActiveSupport)
   #  -11.ordinal   # => "th"
   #  -1001.ordinal # => "st"
   def ordinal: () -> untyped
-end
 
-extension Integer (ActiveSupport)
   # Check whether the integer is evenly divisible by the argument.
   #
   #   0.multiple_of?(0)  # => true
   #   6.multiple_of?(5)  # => false
   #   10.multiple_of?(2) # => true
   def multiple_of?: (untyped number) -> untyped
-end
 
-extension Integer (ActiveSupport)
   # Returns a Duration instance matching the number of months provided.
   #
   #   2.months # => 2 months
@@ -3316,9 +3231,7 @@ extension Kernel (ActiveSupport)
   #
   # See Module::Concerning for more.
   def concern: (untyped topic) { () -> untyped } -> untyped
-end
 
-extension Kernel (ActiveSupport)
   # Sets $VERBOSE to +nil+ for the duration of the block and back to its original
   # value afterwards.
   #
@@ -3346,9 +3259,7 @@ extension Kernel (ActiveSupport)
   #
   #   puts 'This code gets executed and nothing related to ZeroDivisionError was seen'
   def suppress: (*untyped exception_classes) { () -> untyped } -> untyped
-end
 
-extension Kernel (ActiveSupport)
   # class_eval on an object acts like singleton_class.class_eval.
   def class_eval: (*untyped args) { () -> untyped } -> untyped
 end
@@ -3383,9 +3294,7 @@ extension Module (ActiveSupport)
   #   e.subject = "Megastars"
   #   e.title    # => "Megastars"
   def alias_attribute: (untyped new_name, untyped old_name) -> untyped
-end
 
-extension Module (ActiveSupport)
   # A module may or may not have a name.
   #
   #   module M; end
@@ -3410,18 +3319,10 @@ extension Module (ActiveSupport)
   #   m.name         # => "M"
   #   m.anonymous?   # => false
   def anonymous?: () -> untyped
-end
 
-# Extends the module object with class/module and instance accessors for
-# class/module attributes, just like the native attr* accessors for instance
-# attributes, but does so on a per-thread basis.
-#
-# So the values are scoped within the Thread.current space under the class name
-# of the module.
-extension Module (ActiveSupport)
-  def thread_mattr_reader: (*untyped syms, ?instance_reader: bool instance_reader, ?instance_accessor: bool instance_accessor) -> untyped
+  def thread_mattr_reader: (*untyped syms, ?instance_accessor: bool instance_accessor, ?instance_reader: bool instance_reader) -> untyped
 
-  def thread_mattr_writer: (*untyped syms, ?instance_writer: bool instance_writer, ?instance_accessor: bool instance_accessor) -> untyped
+  def thread_mattr_writer: (*untyped syms, ?instance_accessor: bool instance_accessor, ?instance_writer: bool instance_writer) -> untyped
 
   # Defines both class and instance accessors for class attributes.
   #
@@ -3462,13 +3363,8 @@ extension Module (ActiveSupport)
   #
   #   Current.new.user = "DHH"  # => NoMethodError
   #   Current.new.user          # => NoMethodError
-  def thread_mattr_accessor: (*untyped syms, ?instance_reader: bool instance_reader, ?instance_writer: bool instance_writer, ?instance_accessor: bool instance_accessor) -> untyped
-end
+  def thread_mattr_accessor: (*untyped syms, ?instance_accessor: bool instance_accessor, ?instance_writer: bool instance_writer, ?instance_reader: bool instance_reader) -> untyped
 
-# Extends the module object with class/module and instance accessors for
-# class/module attributes, just like the native attr* accessors for instance
-# attributes.
-extension Module (ActiveSupport)
   # Defines a class attribute and creates a class and instance reader methods.
   # The underlying class variable is set to +nil+, if it is not previously
   # defined. All class and instance methods created will be public, even if
@@ -3513,7 +3409,7 @@ extension Module (ActiveSupport)
   #   end
   #
   #   Person.new.hair_colors # => [:brown, :black, :blonde, :red]
-  def mattr_reader: (*untyped syms, ?instance_reader: bool instance_reader, ?instance_accessor: bool instance_accessor, ?default: untyped? default) { () -> untyped } -> untyped
+  def mattr_reader: (*untyped syms, ?default: untyped? default, ?instance_accessor: bool instance_accessor, ?instance_reader: bool instance_reader) { () -> untyped } -> untyped
 
   # Defines a class attribute and creates a class and instance writer methods to
   # allow assignment to the attribute. All class and instance methods created
@@ -3557,7 +3453,7 @@ extension Module (ActiveSupport)
   #   end
   #
   #   Person.class_variable_get("@@hair_colors") # => [:brown, :black, :blonde, :red]
-  def mattr_writer: (*untyped syms, ?instance_writer: bool instance_writer, ?instance_accessor: bool instance_accessor, ?default: untyped? default) { () -> untyped } -> untyped
+  def mattr_writer: (*untyped syms, ?default: untyped? default, ?instance_accessor: bool instance_accessor, ?instance_writer: bool instance_writer) { () -> untyped } -> untyped
 
   # Defines both class and instance accessors for class attributes.
   # All class and instance methods created will be public, even if
@@ -3623,10 +3519,8 @@ extension Module (ActiveSupport)
   #   end
   #
   #   Person.class_variable_get("@@hair_colors") # => [:brown, :black, :blonde, :red]
-  def mattr_accessor: (*untyped syms, ?instance_reader: bool instance_reader, ?instance_writer: bool instance_writer, ?instance_accessor: bool instance_accessor, ?default: untyped? default) { () -> untyped } -> untyped
-end
+  def mattr_accessor: (*untyped syms, ?default: untyped? default, ?instance_accessor: bool instance_accessor, ?instance_writer: bool instance_writer, ?instance_reader: bool instance_reader) { () -> untyped } -> untyped
 
-extension Module (ActiveSupport)
   # Declares an attribute reader backed by an internally-named instance variable.
   def attr_internal_reader: (*untyped attrs) -> untyped
 
@@ -3642,134 +3536,9 @@ extension Module (ActiveSupport)
   def attr_internal_ivar_name: (untyped attr) -> untyped
 
   def attr_internal_define: (untyped attr_name, untyped `type`) -> untyped
-end
 
-extension Module (ActiveSupport)
   include Concerning
-end
 
-# = Bite-sized separation of concerns
-#
-# We often find ourselves with a medium-sized chunk of behavior that we'd
-# like to extract, but only mix in to a single class.
-#
-# Extracting a plain old Ruby object to encapsulate it and collaborate or
-# delegate to the original object is often a good choice, but when there's
-# no additional state to encapsulate or we're making DSL-style declarations
-# about the parent class, introducing new collaborators can obfuscate rather
-# than simplify.
-#
-# The typical route is to just dump everything in a monolithic class, perhaps
-# with a comment, as a least-bad alternative. Using modules in separate files
-# means tedious sifting to get a big-picture view.
-#
-# = Dissatisfying ways to separate small concerns
-#
-# == Using comments:
-#
-#   class Todo < ApplicationRecord
-#     # Other todo implementation
-#     # ...
-#
-#     ## Event tracking
-#     has_many :events
-#
-#     before_create :track_creation
-#
-#     private
-#       def track_creation
-#         # ...
-#       end
-#   end
-#
-# == With an inline module:
-#
-# Noisy syntax.
-#
-#   class Todo < ApplicationRecord
-#     # Other todo implementation
-#     # ...
-#
-#     module EventTracking
-#       extend ActiveSupport::Concern
-#
-#       included do
-#         has_many :events
-#         before_create :track_creation
-#       end
-#
-#       private
-#         def track_creation
-#           # ...
-#         end
-#     end
-#     include EventTracking
-#   end
-#
-# == Mix-in noise exiled to its own file:
-#
-# Once our chunk of behavior starts pushing the scroll-to-understand-it
-# boundary, we give in and move it to a separate file. At this size, the
-# increased overhead can be a reasonable tradeoff even if it reduces our
-# at-a-glance perception of how things work.
-#
-#   class Todo < ApplicationRecord
-#     # Other todo implementation
-#     # ...
-#
-#     include TodoEventTracking
-#   end
-#
-# = Introducing Module#concerning
-#
-# By quieting the mix-in noise, we arrive at a natural, low-ceremony way to
-# separate bite-sized concerns.
-#
-#   class Todo < ApplicationRecord
-#     # Other todo implementation
-#     # ...
-#
-#     concerning :EventTracking do
-#       included do
-#         has_many :events
-#         before_create :track_creation
-#       end
-#
-#       private
-#         def track_creation
-#           # ...
-#         end
-#     end
-#   end
-#
-#   Todo.ancestors
-#   # => [Todo, Todo::EventTracking, ApplicationRecord, Object]
-#
-# This small step has some wonderful ripple effects. We can
-# * grok the behavior of our class in one glance,
-# * clean up monolithic junk-drawer classes by separating their concerns, and
-# * stop leaning on protected/private for crude "this is internal stuff" modularity.
-module Module::Concerning
-  # Define a new concern and mix it in.
-  def concerning: (untyped topic) { () -> untyped } -> untyped
-
-  # A low-cruft shortcut to define a concern.
-  #
-  #   concern :EventTracking do
-  #     ...
-  #   end
-  #
-  # is equivalent to
-  #
-  #   module EventTracking
-  #     extend ActiveSupport::Concern
-  #
-  #     ...
-  #   end
-  def concern: (untyped topic) { () -> untyped } -> untyped
-end
-
-extension Module (ActiveSupport)
   # Provides a +delegate+ class method to easily expose contained objects'
   # public methods as your own.
   #
@@ -3923,7 +3692,7 @@ extension Module (ActiveSupport)
   #   Foo.new("Bar").name # raises NoMethodError: undefined method `name'
   #
   # The target method must be public, otherwise it will raise +NoMethodError+.
-  def delegate: (*untyped methods, ?to: untyped? to, ?prefix: untyped? prefix, ?allow_nil: untyped? allow_nil, ?private: untyped? `private`) -> untyped
+  def delegate: (*untyped methods, ?private: untyped? `private`, ?allow_nil: untyped? allow_nil, ?prefix: untyped? prefix, ?to: untyped? to) -> untyped
 
   # When building decorators, a common pattern may emerge:
   #
@@ -3971,18 +3740,7 @@ extension Module (ActiveSupport)
   # <tt>Marshal.dump(object)</tt>, should the delegation target method
   # of <tt>object</tt> add or remove instance variables.
   def delegate_missing_to: (untyped target) -> untyped
-end
 
-# Error generated by +delegate+ when a method is called on +nil+ and +allow_nil+
-# option is not used.
-
-Module::RUBY_RESERVED_KEYWORDS: ::Array[untyped]
-
-Module::DELEGATION_RESERVED_KEYWORDS: ::Array[untyped]
-
-Module::DELEGATION_RESERVED_METHOD_NAMES: untyped
-
-extension Module (ActiveSupport)
   #   deprecate :foo
   #   deprecate bar: 'message'
   #   deprecate :foo, :bar, baz: 'warning!', qux: 'gone!'
@@ -4002,9 +3760,7 @@ extension Module (ActiveSupport)
   #     end
   #   end
   def deprecate: (*untyped method_names) -> untyped
-end
 
-extension Module (ActiveSupport)
   # Returns the name of the module containing this one.
   #
   #   M::N.module_parent_name # => "M"
@@ -4046,9 +3802,7 @@ extension Module (ActiveSupport)
   def module_parents: () -> untyped
 
   def parents: () -> untyped
-end
 
-extension Module (ActiveSupport)
   # Marks the named method as intended to be redefined, if it exists.
   # Suppresses the Ruby method redefinition warning. Prefer
   # #redefine_method where possible.
@@ -4063,15 +3817,140 @@ extension Module (ActiveSupport)
   def redefine_singleton_method: (untyped method) { () -> untyped } -> untyped
 
   def method_visibility: (untyped method) -> untyped
-end
 
-extension Module (ActiveSupport)
   # Removes the named method, if it exists.
   def remove_possible_method: (untyped method) -> untyped
 
   # Removes the named singleton method, if it exists.
   def remove_possible_singleton_method: (untyped method) -> untyped
 end
+
+# = Bite-sized separation of concerns
+#
+# We often find ourselves with a medium-sized chunk of behavior that we'd
+# like to extract, but only mix in to a single class.
+#
+# Extracting a plain old Ruby object to encapsulate it and collaborate or
+# delegate to the original object is often a good choice, but when there's
+# no additional state to encapsulate or we're making DSL-style declarations
+# about the parent class, introducing new collaborators can obfuscate rather
+# than simplify.
+#
+# The typical route is to just dump everything in a monolithic class, perhaps
+# with a comment, as a least-bad alternative. Using modules in separate files
+# means tedious sifting to get a big-picture view.
+#
+# = Dissatisfying ways to separate small concerns
+#
+# == Using comments:
+#
+#   class Todo < ApplicationRecord
+#     # Other todo implementation
+#     # ...
+#
+#     ## Event tracking
+#     has_many :events
+#
+#     before_create :track_creation
+#
+#     private
+#       def track_creation
+#         # ...
+#       end
+#   end
+#
+# == With an inline module:
+#
+# Noisy syntax.
+#
+#   class Todo < ApplicationRecord
+#     # Other todo implementation
+#     # ...
+#
+#     module EventTracking
+#       extend ActiveSupport::Concern
+#
+#       included do
+#         has_many :events
+#         before_create :track_creation
+#       end
+#
+#       private
+#         def track_creation
+#           # ...
+#         end
+#     end
+#     include EventTracking
+#   end
+#
+# == Mix-in noise exiled to its own file:
+#
+# Once our chunk of behavior starts pushing the scroll-to-understand-it
+# boundary, we give in and move it to a separate file. At this size, the
+# increased overhead can be a reasonable tradeoff even if it reduces our
+# at-a-glance perception of how things work.
+#
+#   class Todo < ApplicationRecord
+#     # Other todo implementation
+#     # ...
+#
+#     include TodoEventTracking
+#   end
+#
+# = Introducing Module#concerning
+#
+# By quieting the mix-in noise, we arrive at a natural, low-ceremony way to
+# separate bite-sized concerns.
+#
+#   class Todo < ApplicationRecord
+#     # Other todo implementation
+#     # ...
+#
+#     concerning :EventTracking do
+#       included do
+#         has_many :events
+#         before_create :track_creation
+#       end
+#
+#       private
+#         def track_creation
+#           # ...
+#         end
+#     end
+#   end
+#
+#   Todo.ancestors
+#   # => [Todo, Todo::EventTracking, ApplicationRecord, Object]
+#
+# This small step has some wonderful ripple effects. We can
+# * grok the behavior of our class in one glance,
+# * clean up monolithic junk-drawer classes by separating their concerns, and
+# * stop leaning on protected/private for crude "this is internal stuff" modularity.
+module Module::Concerning
+  # Define a new concern and mix it in.
+  def concerning: (untyped topic) { () -> untyped } -> untyped
+
+  # A low-cruft shortcut to define a concern.
+  #
+  #   concern :EventTracking do
+  #     ...
+  #   end
+  #
+  # is equivalent to
+  #
+  #   module EventTracking
+  #     extend ActiveSupport::Concern
+  #
+  #     ...
+  #   end
+  def concern: (untyped topic) { () -> untyped } -> untyped
+end
+
+Module::RUBY_RESERVED_KEYWORDS: ::Array[untyped]
+
+Module::DELEGATION_RESERVED_KEYWORDS: ::Array[untyped]
+
+Module::DELEGATION_RESERVED_METHOD_NAMES: untyped
 
 extension NameError[T] (ActiveSupport)
   # Extract the name of the missing constant from the exception message.
@@ -4130,6 +4009,56 @@ extension Numeric (ActiveSupport)
   #
   #   2.exabytes # => 2_305_843_009_213_693_952
   def exabytes: () -> untyped
+
+  # Returns a Duration instance matching the number of seconds provided.
+  #
+  #   2.seconds # => 2 seconds
+  def seconds: () -> untyped
+
+  # Returns a Duration instance matching the number of minutes provided.
+  #
+  #   2.minutes # => 2 minutes
+  def minutes: () -> untyped
+
+  # Returns a Duration instance matching the number of hours provided.
+  #
+  #   2.hours # => 2 hours
+  def hours: () -> untyped
+
+  # Returns a Duration instance matching the number of days provided.
+  #
+  #   2.days # => 2 days
+  def days: () -> untyped
+
+  # Returns a Duration instance matching the number of weeks provided.
+  #
+  #   2.weeks # => 2 weeks
+  def weeks: () -> untyped
+
+  # Returns a Duration instance matching the number of fortnights provided.
+  #
+  #   2.fortnights # => 4 weeks
+  def fortnights: () -> untyped
+
+  # Returns the number of milliseconds equivalent to the seconds provided.
+  # Used with the standard time durations.
+  #
+  #   2.in_milliseconds # => 2000
+  #   1.hour.in_milliseconds # => 3600000
+  def in_milliseconds: () -> untyped
+
+  # nodoc:
+  # No number is blank:
+  #
+  #   1.blank? # => false
+  #   0.blank? # => false
+  #
+  # @return [false]
+  def blank?: () -> ::FalseClass
+
+  def as_json: (?untyped? options) -> untyped
+
+  def html_safe?: () -> ::TrueClass
 end
 
 Numeric::KILOBYTE: ::Integer
@@ -4244,45 +4173,6 @@ module ActiveSupport::NumericWithFormat
   def to_s: (?untyped? format, ?untyped? options) -> untyped
 end
 
-extension Numeric (ActiveSupport)
-  # Returns a Duration instance matching the number of seconds provided.
-  #
-  #   2.seconds # => 2 seconds
-  def seconds: () -> untyped
-
-  # Returns a Duration instance matching the number of minutes provided.
-  #
-  #   2.minutes # => 2 minutes
-  def minutes: () -> untyped
-
-  # Returns a Duration instance matching the number of hours provided.
-  #
-  #   2.hours # => 2 hours
-  def hours: () -> untyped
-
-  # Returns a Duration instance matching the number of days provided.
-  #
-  #   2.days # => 2 days
-  def days: () -> untyped
-
-  # Returns a Duration instance matching the number of weeks provided.
-  #
-  #   2.weeks # => 2 weeks
-  def weeks: () -> untyped
-
-  # Returns a Duration instance matching the number of fortnights provided.
-  #
-  #   2.fortnights # => 4 weeks
-  def fortnights: () -> untyped
-
-  # Returns the number of milliseconds equivalent to the seconds provided.
-  # Used with the standard time durations.
-  #
-  #   2.in_milliseconds # => 2000
-  #   1.hour.in_milliseconds # => 3600000
-  def in_milliseconds: () -> untyped
-end
-
 extension Object (ActiveSupport)
   # A duck-type assistant method. For example, Active Support extends Date
   # to define an <tt>acts_like_date?</tt> method, and extends Time to define
@@ -4290,9 +4180,7 @@ extension Object (ActiveSupport)
   # <tt>x.acts_like?(:date)</tt> to do duck-type-safe comparisons, since classes that
   # we want to act like Time simply need to define an <tt>acts_like_time?</tt> method.
   def acts_like?: (untyped duck) -> untyped
-end
 
-extension Object (ActiveSupport)
   # An object is blank if it's false, empty, or a whitespace string.
   # For example, +nil+, '', '   ', [], {}, and +false+ are all blank.
   #
@@ -4329,79 +4217,7 @@ extension Object (ActiveSupport)
   #
   # @return [Object]
   def presence: () -> untyped
-end
 
-extension NilClass (ActiveSupport)
-  # +nil+ is blank:
-  #
-  #   nil.blank? # => true
-  #
-  # @return [true]
-  def blank?: () -> ::TrueClass
-end
-
-extension FalseClass (ActiveSupport)
-  # +false+ is blank:
-  #
-  #   false.blank? # => true
-  #
-  # @return [true]
-  def blank?: () -> ::TrueClass
-end
-
-extension TrueClass (ActiveSupport)
-  # +true+ is not blank:
-  #
-  #   true.blank? # => false
-  #
-  # @return [false]
-  def blank?: () -> ::FalseClass
-end
-
-
-
-extension String (ActiveSupport)
-  # A string is blank if it's empty or contains whitespaces only:
-  #
-  #   ''.blank?       # => true
-  #   '   '.blank?    # => true
-  #   "\t\n\r".blank? # => true
-  #   ' blah '.blank? # => false
-  #
-  # Unicode whitespace is supported:
-  #
-  #   "\u00a0".blank? # => true
-  #
-  # @return [true, false]
-  def blank?: () -> untyped
-end
-
-String::BLANK_RE: untyped
-
-String::ENCODED_BLANKS: untyped
-
-extension Numeric (ActiveSupport)
-  # nodoc:
-  # No number is blank:
-  #
-  #   1.blank? # => false
-  #   0.blank? # => false
-  #
-  # @return [false]
-  def blank?: () -> ::FalseClass
-end
-
-extension Time (ActiveSupport)
-  # nodoc:
-  # No Time is blank:
-  #
-  #   Time.now.blank? # => false
-  #
-  # @return [false]
-  def blank?: () -> ::FalseClass
-end
-
-extension Object (ActiveSupport)
   # Returns a deep copy of object if it's duplicable. If it's
   # not duplicable, returns +self+.
   #
@@ -4412,75 +4228,13 @@ extension Object (ActiveSupport)
   #   object.instance_variable_defined?(:@a) # => false
   #   dup.instance_variable_defined?(:@a)    # => true
   def deep_dup: () -> untyped
-end
 
-extension Array[Elem] (ActiveSupport)
-  # Returns a deep copy of array.
-  #
-  #   array = [1, [2, 3]]
-  #   dup   = array.deep_dup
-  #   dup[1][2] = 4
-  #
-  #   array[1][2] # => nil
-  #   dup[1][2]   # => 4
-  def deep_dup: () -> untyped
-end
-
-extension Hash[K, V] (ActiveSupport)
-  # Returns a deep copy of hash.
-  #
-  #   hash = { a: { b: 'b' } }
-  #   dup  = hash.deep_dup
-  #   dup[:a][:c] = 'c'
-  #
-  #   hash[:a][:c] # => nil
-  #   dup[:a][:c]  # => "c"
-  def deep_dup: () -> untyped
-end
-
-# -
-# Most objects are cloneable, but not all. For example you can't dup methods:
-#
-#   method(:puts).dup # => TypeError: allocator undefined for Method
-#
-# Classes may signal their instances are not duplicable removing +dup+/+clone+
-# or raising exceptions from them. So, to dup an arbitrary object you normally
-# use an optimistic approach and are ready to catch an exception, say:
-#
-#   arbitrary_object.dup rescue object
-#
-# Rails dups objects in a few critical spots where they are not that arbitrary.
-# That rescue is very expensive (like 40 times slower than a predicate), and it
-# is often triggered.
-#
-# That's why we hardcode the following cases and check duplicable? instead of
-# using that rescue idiom.
-# +
-extension Object (ActiveSupport)
   # Can you safely dup this object?
   #
   # False for method objects;
   # true otherwise.
   def duplicable?: () -> ::TrueClass
-end
 
-extension Method (ActiveSupport)
-  # Methods are not duplicable:
-  #
-  #  method(:puts).duplicable? # => false
-  #  method(:puts).dup         # => TypeError: allocator undefined for Method
-  def duplicable?: () -> ::FalseClass
-end
-
-extension UnboundMethod (ActiveSupport)
-  # Unbound methods are not duplicable:
-  #
-  #  method(:puts).unbind.duplicable? # => false
-  #  method(:puts).unbind.dup         # => TypeError: allocator undefined for UnboundMethod
-  def duplicable?: () -> ::FalseClass
-end
-
-extension Object (ActiveSupport)
   # Returns true if this object is included in the argument. Argument must be
   # any object which responds to +#include?+. Usage:
   #
@@ -4500,9 +4254,7 @@ extension Object (ActiveSupport)
   #
   # @return [Object]
   def presence_in: (untyped another_object) -> untyped
-end
 
-extension Object (ActiveSupport)
   # Returns a hash with string keys that maps instance variable names without "@" to their
   # corresponding values.
   #
@@ -4525,199 +4277,18 @@ extension Object (ActiveSupport)
   #
   #   C.new(0, 1).instance_variable_names # => ["@y", "@x"]
   def instance_variable_names: () -> untyped
-end
 
-module ActiveSupport::ToJsonWithActiveSupportEncoder
-  # :nodoc:
-  def to_json: (?untyped? options) -> untyped
-end
-
-extension Object (ActiveSupport)
   def as_json: (?untyped? options) -> untyped
-end
 
-extension Struct[Elem] (ActiveSupport)
-  # nodoc:
-  def as_json: (?untyped? options) -> untyped
-end
-
-extension TrueClass (ActiveSupport)
-  def as_json: (?untyped? options) -> untyped
-end
-
-extension FalseClass (ActiveSupport)
-  def as_json: (?untyped? options) -> untyped
-end
-
-extension NilClass (ActiveSupport)
-  def as_json: (?untyped? options) -> untyped
-end
-
-extension String (ActiveSupport)
-  def as_json: (?untyped? options) -> untyped
-end
-
-extension Symbol (ActiveSupport)
-  def as_json: (?untyped? options) -> untyped
-end
-
-extension Numeric (ActiveSupport)
-  def as_json: (?untyped? options) -> untyped
-end
-
-extension Float (ActiveSupport)
-  def as_json: (?untyped? options) -> untyped
-end
-
-extension BigDecimal (ActiveSupport)
-  def as_json: (?untyped? options) -> untyped
-end
-
-extension Regexp (ActiveSupport)
-  def as_json: (?untyped? options) -> untyped
-end
-
-# extension Enumerable (ActiveSupport)
-#   def as_json: (?untyped? options) -> untyped
-# end
-
-extension IO (ActiveSupport)
-  def as_json: (?untyped? options) -> untyped
-end
-
-extension Range[Elem] (ActiveSupport)
-  def as_json: (?untyped? options) -> untyped
-end
-
-extension Array[Elem] (ActiveSupport)
-  def as_json: (?untyped? options) -> untyped
-end
-
-extension Hash[K, V] (ActiveSupport)
-  def as_json: (?untyped? options) -> untyped
-end
-
-extension Time (ActiveSupport)
-  def as_json: (?untyped? options) -> untyped
-end
-
-extension Date (ActiveSupport)
-  def as_json: (?untyped? options) -> untyped
-end
-
-extension DateTime (ActiveSupport)
-  def as_json: (?untyped? options) -> untyped
-end
-
-class URI::Generic
-  # nodoc:
-  def as_json: (?untyped? options) -> untyped
-end
-
-extension Pathname (ActiveSupport)
-  # nodoc:
-  def as_json: (?untyped? options) -> untyped
-end
-
-extension Process::Status (ActiveSupport)
-  # nodoc:
-  def as_json: (?untyped? options) -> { exitstatus: untyped, pid: untyped }
-end
-
-extension Exception (ActiveSupport)
-  def as_json: (?untyped? options) -> untyped
-end
-
-extension Object (ActiveSupport)
   # Alias of <tt>to_s</tt>.
   def to_param: () -> untyped
 
   # Converts an object into a string suitable for use as a URL query string,
   # using the given <tt>key</tt> as the param name.
   def to_query: (untyped key) -> ::String
-end
 
-extension NilClass (ActiveSupport)
-  # Returns +self+.
-  def to_param: () -> untyped
-end
-
-extension TrueClass (ActiveSupport)
-  # Returns +self+.
-  def to_param: () -> untyped
-end
-
-extension FalseClass (ActiveSupport)
-  # Returns +self+.
-  def to_param: () -> untyped
-end
-
-extension Array[Elem] (ActiveSupport)
-  # Calls <tt>to_param</tt> on all its elements and joins the result with
-  # slashes. This is used by <tt>url_for</tt> in Action Pack.
-  def to_param: () -> untyped
-
-  # Converts an array into a string suitable for use as a URL query string,
-  # using the given +key+ as the param name.
-  #
-  #   ['Rails', 'coding'].to_query('hobbies') # => "hobbies%5B%5D=Rails&hobbies%5B%5D=coding"
-  def to_query: (untyped key) -> untyped
-end
-
-extension Hash[K, V] (ActiveSupport)
-  # Returns a string representation of the receiver suitable for use as a URL
-  # query string:
-  #
-  #   {name: 'David', nationality: 'Danish'}.to_query
-  #   # => "name=David&nationality=Danish"
-  #
-  # An optional namespace can be passed to enclose key names:
-  #
-  #   {name: 'David', nationality: 'Danish'}.to_query('user')
-  #   # => "user%5Bname%5D=David&user%5Bnationality%5D=Danish"
-  #
-  # The string pairs "key=value" that conform the query string
-  # are sorted lexicographically in ascending order.
-  #
-  # This method is also aliased as +to_param+.
-  def to_query: (?untyped? namespace) -> untyped
-end
-
-module ActiveSupport::Tryable
-  # nodoc:
-  def try: (?untyped? method_name, *untyped args) { (untyped) -> untyped } -> untyped
-
-  def try!: (?untyped? method_name, *untyped args) { (untyped) -> untyped } -> untyped
-end
-
-extension Object (ActiveSupport)
   include ActiveSupport::Tryable
-end
 
-class Delegator
-  include ActiveSupport::Tryable
-end
-
-extension NilClass (ActiveSupport)
-  # Calling +try+ on +nil+ always returns +nil+.
-  # It becomes especially helpful when navigating through associations that may return +nil+.
-  #
-  #   nil.try(:name) # => nil
-  #
-  # Without +try+
-  #   @person && @person.children.any? && @person.children.first.name
-  #
-  # With +try+
-  #   @person.try(:children).try(:first).try(:name)
-  def try: (?untyped? method_name, *untyped args) -> nil
-
-  # Calling +try!+ on +nil+ always returns +nil+.
-  #
-  #   nil.try!(:name) # => nil
-  def try!: (?untyped? method_name, *untyped args) -> nil
-end
-
-extension Object (ActiveSupport)
   # An elegant way to factor duplication out of options passed to a series of
   # method calls. Each method called in the block, with the block variable as
   # the receiver, will have its options merged with the default +options+ hash
@@ -4791,130 +4362,97 @@ extension Object (ActiveSupport)
   #   end
   #
   def with_options: (untyped options) { () -> untyped } -> untyped
+
+  def html_safe?: () -> ::FalseClass
+
+  # Benchmark realtime in milliseconds.
+  #
+  #   Benchmark.realtime { User.all }
+  #   # => 8.0e-05
+  #
+  #   Benchmark.ms { User.all }
+  #   # => 0.074
+  def self.ms: () { () -> untyped } -> untyped
+
+  def unescape: (untyped str, ?untyped escaped) -> untyped
 end
 
-module ActiveSupport::CompareWithRange
-  # Extends the default Range#=== to support range comparisons.
-  #  (1..5) === (1..5)  # => true
-  #  (1..5) === (2..3)  # => true
-  #  (1..5) === (1...6) # => true
-  #  (1..5) === (2..6)  # => false
+extension NilClass (ActiveSupport)
+  # +nil+ is blank:
   #
-  # The native Range#=== behavior is untouched.
-  #  ('a'..'f') === ('c') # => true
-  #  (5..9) === (11) # => false
+  #   nil.blank? # => true
   #
-  # The given range must be fully bounded, with both start and end.
-  def ===: (untyped value) -> untyped
+  # @return [true]
+  def blank?: () -> ::TrueClass
 
-  # Extends the default Range#include? to support range comparisons.
-  #  (1..5).include?(1..5)  # => true
-  #  (1..5).include?(2..3)  # => true
-  #  (1..5).include?(1...6) # => true
-  #  (1..5).include?(2..6)  # => false
-  #
-  # The native Range#include? behavior is untouched.
-  #  ('a'..'f').include?('c') # => true
-  #  (5..9).include?(11) # => false
-  #
-  # The given range must be fully bounded, with both start and end.
-  def include?: (untyped value) -> untyped
+  def as_json: (?untyped? options) -> untyped
 
-  # Extends the default Range#cover? to support range comparisons.
-  #  (1..5).cover?(1..5)  # => true
-  #  (1..5).cover?(2..3)  # => true
-  #  (1..5).cover?(1...6) # => true
-  #  (1..5).cover?(2..6)  # => false
+  # Returns +self+.
+  def to_param: () -> untyped
+
+  # Calling +try+ on +nil+ always returns +nil+.
+  # It becomes especially helpful when navigating through associations that may return +nil+.
   #
-  # The native Range#cover? behavior is untouched.
-  #  ('a'..'f').cover?('c') # => true
-  #  (5..9).cover?(11) # => false
+  #   nil.try(:name) # => nil
   #
-  # The given range must be fully bounded, with both start and end.
-  def cover?: (untyped value) -> untyped
+  # Without +try+
+  #   @person && @person.children.any? && @person.children.first.name
+  #
+  # With +try+
+  #   @person.try(:children).try(:first).try(:name)
+  def try: (?untyped? method_name, *untyped args) -> nil
+
+  # Calling +try!+ on +nil+ always returns +nil+.
+  #
+  #   nil.try!(:name) # => nil
+  def try!: (?untyped? method_name, *untyped args) -> nil
 end
 
-module ActiveSupport::RangeWithFormat
-  # Convert range to a formatted string. See RANGE_FORMATS for predefined formats.
+extension FalseClass (ActiveSupport)
+  # +false+ is blank:
   #
-  #   range = (1..100)           # => 1..100
+  #   false.blank? # => true
   #
-  #   range.to_s                 # => "1..100"
-  #   range.to_s(:db)            # => "BETWEEN '1' AND '100'"
-  #
-  # == Adding your own range formats to to_s
-  # You can add your own formats to the Range::RANGE_FORMATS hash.
-  # Use the format name as the hash key and a Proc instance.
-  #
-  #   # config/initializers/range_formats.rb
-  #   Range::RANGE_FORMATS[:short] = ->(start, stop) { "Between #{start.to_s(:db)} and #{stop.to_s(:db)}" }
-  def to_s: (?::Symbol format) -> untyped
+  # @return [true]
+  def blank?: () -> ::TrueClass
+
+  def as_json: (?untyped? options) -> untyped
+
+  # Returns +self+.
+  def to_param: () -> untyped
 end
 
-ActiveSupport::RangeWithFormat::RANGE_FORMATS: ::Hash[untyped, untyped]
+extension TrueClass (ActiveSupport)
+  # +true+ is not blank:
+  #
+  #   true.blank? # => false
+  #
+  # @return [false]
+  def blank?: () -> ::FalseClass
 
-module ActiveSupport::EachTimeWithZone
-  # nodoc:
-  def each: () { () -> untyped } -> untyped
+  def as_json: (?untyped? options) -> untyped
 
-  def step: (?::Integer n) { () -> untyped } -> untyped
-
-  def ensure_iteration_allowed: () -> untyped
+  # Returns +self+.
+  def to_param: () -> untyped
 end
-
-module ActiveSupport::IncludeTimeWithZone
-  # nodoc:
-  # Extends the default Range#include? to support ActiveSupport::TimeWithZone.
-  #
-  #   (1.hour.ago..1.hour.from_now).include?(Time.current) # => true
-  #
-  def include?: (untyped value) -> untyped
-end
-
-extension Range[Elem] (ActiveSupport)
-  # Compare two ranges and see if they overlap each other
-  #  (1..5).overlaps?(4..6) # => true
-  #  (1..5).overlaps?(7..9) # => false
-  def overlaps?: (untyped other) -> untyped
-end
-
-extension Regexp (ActiveSupport)
-  # nodoc:
-  def multiline?: () -> untyped
-end
-
-module SecureRandom
-  # SecureRandom.base58 generates a random base58 string.
-  #
-  # The argument _n_ specifies the length of the random string to be generated.
-  #
-  # If _n_ is not specified or is +nil+, 16 is assumed. It may be larger in the future.
-  #
-  # The result may contain alphanumeric characters except 0, O, I and l.
-  #
-  #   p SecureRandom.base58 # => "4kUgL2pdQMSCQtjE"
-  #   p SecureRandom.base58(24) # => "77TMHrHJFvFDwodq8w7Ev2m7"
-  def self.base58: (?::Integer n) -> untyped
-
-  # SecureRandom.base36 generates a random base36 string in lowercase.
-  #
-  # The argument _n_ specifies the length of the random string to be generated.
-  #
-  # If _n_ is not specified or is +nil+, 16 is assumed. It may be larger in the future.
-  # This method can be used over +base58+ if a deterministic case key is necessary.
-  #
-  # The result will contain alphanumeric characters in lowercase.
-  #
-  #   p SecureRandom.base36 # => "4kugl2pdqmscqtje"
-  #   p SecureRandom.base36(24) # => "77tmhrhjfvfdwodq8w7ev2m7"
-  def self.base36: (?::Integer n) -> untyped
-end
-
-SecureRandom::BASE58_ALPHABET: untyped
-
-SecureRandom::BASE36_ALPHABET: untyped
 
 extension String (ActiveSupport)
+  # A string is blank if it's empty or contains whitespaces only:
+  #
+  #   ''.blank?       # => true
+  #   '   '.blank?    # => true
+  #   "\t\n\r".blank? # => true
+  #   ' blah '.blank? # => false
+  #
+  # Unicode whitespace is supported:
+  #
+  #   "\u00a0".blank? # => true
+  #
+  # @return [true, false]
+  def blank?: () -> untyped
+
+  def as_json: (?untyped? options) -> untyped
+
   # If you pass a single integer, returns a substring of one character at that
   # position. The first character of the string is at position 0, the next at
   # position 1, and so on. If a range is supplied, a substring containing
@@ -4995,14 +4533,10 @@ extension String (ActiveSupport)
   #   str.last(0) # => ""
   #   str.last(6) # => "hello"
   def last: (?::Integer limit) -> untyped
-end
 
-extension String (ActiveSupport)
   # Enables more predictable duck-typing on String-like classes. See <tt>Object#acts_like?</tt>.
   def acts_like_string?: () -> ::TrueClass
-end
 
-extension String (ActiveSupport)
   # Converts a string to a Time value.
   # The +form+ can be either :utc or :local (default :local).
   #
@@ -5034,9 +4568,7 @@ extension String (ActiveSupport)
   #   "2012-12-13 12:50".to_datetime    # => Thu, 13 Dec 2012 12:50:00 +0000
   #   "12/13/2012".to_datetime          # => ArgumentError: invalid date
   def to_datetime: () -> untyped
-end
 
-extension String (ActiveSupport)
   # The inverse of <tt>String#include?</tt>. Returns true if the string
   # does not include the other string.
   #
@@ -5044,9 +4576,7 @@ extension String (ActiveSupport)
   #   "hello".exclude? "ol" # => true
   #   "hello".exclude? ?h   # => false
   def exclude?: (untyped string) -> untyped
-end
 
-extension String (ActiveSupport)
   # Returns the string, first removing all whitespace on both ends of
   # the string, and then changing remaining consecutive whitespace
   # groups into one space each.
@@ -5128,9 +4658,7 @@ extension String (ActiveSupport)
   #   'And they found that many people were sleeping better.'.truncate_words(5, omission: '... (continued)')
   #   # => "And they found that many... (continued)"
   def truncate_words: (untyped words_count, ?::Hash[untyped, untyped] options) -> untyped
-end
 
-extension String (ActiveSupport)
   # Same as +indent+, except it indents the receiver in-place.
   #
   # Returns the indented string, or +nil+ if there was nothing to indent.
@@ -5166,14 +4694,7 @@ extension String (ActiveSupport)
   #   "foo\n\nbar".indent(2, nil, true) # => "  foo\n  \n  bar"
   #
   def indent: (untyped amount, ?untyped? indent_string, ?bool indent_empty_lines) -> untyped
-end
 
-# String inflections define new methods on the String class to transform names for different purposes.
-# For instance, you can figure out the name of a table from the name of a class.
-#
-#   'ScaleScore'.tableize # => "scale_scores"
-#
-extension String (ActiveSupport)
   # Returns the plural form of the word in the string.
   #
   # If the optional parameter +count+ is specified,
@@ -5323,7 +4844,7 @@ extension String (ActiveSupport)
   #
   #   <%= link_to(@person.name, person_path) %>
   #   # => <a href="/person/1-Donald-E-Knuth">Donald E. Knuth</a>
-  def parameterize: (?separator: ::String separator, ?preserve_case: bool preserve_case, ?locale: untyped? locale) -> untyped
+  def parameterize: (?locale: untyped? locale, ?preserve_case: bool preserve_case, ?separator: ::String separator) -> untyped
 
   # Creates the name of a table like Rails does for models to table names. This method
   # uses the +pluralize+ method on the last word in the string.
@@ -5358,7 +4879,7 @@ extension String (ActiveSupport)
   #   'author_id'.humanize(capitalize: false)       # => "author"
   #   '_id'.humanize                                # => "Id"
   #   'author_id'.humanize(keep_id_suffix: true)    # => "Author Id"
-  def humanize: (?capitalize: bool capitalize, ?keep_id_suffix: bool keep_id_suffix) -> untyped
+  def humanize: (?keep_id_suffix: bool keep_id_suffix, ?capitalize: bool capitalize) -> untyped
 
   # Converts just the first character to uppercase.
   #
@@ -5375,9 +4896,7 @@ extension String (ActiveSupport)
   #   'Message'.foreign_key(false) # => "messageid"
   #   'Admin::Post'.foreign_key    # => "post_id"
   def foreign_key: (?bool separate_class_name_and_id_with_underscore) -> untyped
-end
 
-extension String (ActiveSupport)
   # Wraps the current string in the <tt>ActiveSupport::StringInquirer</tt> class,
   # which gives you a prettier way to test for equality.
   #
@@ -5385,9 +4904,7 @@ extension String (ActiveSupport)
   #   env.production?  # => true
   #   env.development? # => false
   def inquiry: () -> untyped
-end
 
-extension String (ActiveSupport)
   # == Multibyte proxy
   #
   # +mb_chars+ is a multibyte safe proxy for string methods.
@@ -5429,163 +4946,14 @@ extension String (ActiveSupport)
   #   utf_8_str.is_utf8? # => true
   #   iso_str.is_utf8?   # => false
   def is_utf8?: () -> untyped
-end
 
-
-module ERB::Util
-  # A utility method for escaping HTML tag characters.
-  # This method is also aliased as <tt>h</tt>.
-  #
-  #   puts html_escape('is a > 0 & a < 10?')
-  #   # => is a &gt; 0 &amp; a &lt; 10?
-  def html_escape: (untyped s) -> untyped
-
-  def unwrapped_html_escape: (untyped s) -> untyped
-
-  # A utility method for escaping HTML without affecting existing escaped entities.
-  #
-  #   html_escape_once('1 < 2 &amp; 3')
-  #   # => "1 &lt; 2 &amp; 3"
-  #
-  #   html_escape_once('&lt;&lt; Accept & Checkout')
-  #   # => "&lt;&lt; Accept &amp; Checkout"
-  def html_escape_once: (untyped s) -> untyped
-
-  # A utility method for escaping HTML entities in JSON strings. Specifically, the
-  # &, > and < characters are replaced with their equivalent unicode escaped form -
-  # \u0026, \u003e, and \u003c. The Unicode sequences \u2028 and \u2029 are also
-  # escaped as they are treated as newline characters in some JavaScript engines.
-  # These sequences have identical meaning as the original characters inside the
-  # context of a JSON string, so assuming the input is a valid and well-formed
-  # JSON value, the output will have equivalent meaning when parsed:
-  #
-  #   json = JSON.generate({ name: "</script><script>alert('PWNED!!!')</script>"})
-  #   # => "{\"name\":\"</script><script>alert('PWNED!!!')</script>\"}"
-  #
-  #   json_escape(json)
-  #   # => "{\"name\":\"\\u003C/script\\u003E\\u003Cscript\\u003Ealert('PWNED!!!')\\u003C/script\\u003E\"}"
-  #
-  #   JSON.parse(json) == JSON.parse(json_escape(json))
-  #   # => true
-  #
-  # The intended use case for this method is to escape JSON strings before including
-  # them inside a script tag to avoid XSS vulnerability:
-  #
-  #   <script>
-  #     var currentUser = <%= raw json_escape(current_user.to_json) %>;
-  #   </script>
-  #
-  # It is necessary to +raw+ the result of +json_escape+, so that quotation marks
-  # don't get converted to <tt>&quot;</tt> entities. +json_escape+ doesn't
-  # automatically flag the result as HTML safe, since the raw value is unsafe to
-  # use inside HTML attributes.
-  #
-  # If your JSON is being used downstream for insertion into the DOM, be aware of
-  # whether or not it is being inserted via +html()+. Most jQuery plugins do this.
-  # If that is the case, be sure to +html_escape+ or +sanitize+ any user-generated
-  # content returned by your JSON.
-  #
-  # If you need to output JSON elsewhere in your HTML, you can just do something
-  # like this, as any unsafe characters (including quotation marks) will be
-  # automatically escaped for you:
-  #
-  #   <div data-user-info="<%= current_user.to_json %>">...</div>
-  #
-  # WARNING: this helper only works with valid JSON. Using this on non-JSON values
-  # will open up serious XSS vulnerabilities. For example, if you replace the
-  # +current_user.to_json+ in the example above with user input instead, the browser
-  # will happily eval() that string as JavaScript.
-  #
-  # The escaping performed in this method is identical to those performed in the
-  # Active Support JSON encoder when +ActiveSupport.escape_html_entities_in_json+ is
-  # set to true. Because this transformation is idempotent, this helper can be
-  # applied even if +ActiveSupport.escape_html_entities_in_json+ is already true.
-  #
-  # Therefore, when you are unsure if +ActiveSupport.escape_html_entities_in_json+
-  # is enabled, or if you are unsure where your JSON string originated from, it
-  # is recommended that you always apply this helper (other libraries, such as the
-  # JSON gem, do not provide this kind of protection by default; also some gems
-  # might override +to_json+ to bypass Active Support's encoder).
-  def json_escape: (untyped s) -> untyped
-end
-
-ERB::Util::HTML_ESCAPE: ::Hash[untyped, untyped]
-
-ERB::Util::JSON_ESCAPE: ::Hash[untyped, untyped]
-
-ERB::Util::HTML_ESCAPE_ONCE_REGEXP: untyped
-
-ERB::Util::JSON_ESCAPE_REGEXP: untyped
-
-extension Object (ActiveSupport)
-  def html_safe?: () -> ::FalseClass
-end
-
-extension Numeric (ActiveSupport)
-  def html_safe?: () -> ::TrueClass
-end
-
-# nodoc:
-class ActiveSupport::SafeBuffer < String
-  def []: (*untyped args) -> untyped
-
-  def safe_concat: (untyped value) -> untyped
-
-  def initialize: (?::String str) -> untyped
-
-  def initialize_copy: (untyped other) -> untyped
-
-  def clone_empty: () -> untyped
-
-  def concat: (untyped value) -> untyped
-
-  def insert: (untyped index, untyped value) -> untyped
-
-  def `prepend`: (untyped value) -> untyped
-
-  def replace: (untyped value) -> untyped
-
-  def []=: (*untyped args) -> untyped
-
-  def +: (untyped other) -> untyped
-
-  def *: () -> untyped
-
-  def %: (untyped args) -> untyped
-
-  def html_safe?: () -> untyped
-
-  def to_s: () -> untyped
-
-  def to_param: () -> untyped
-
-  def encode_with: (untyped coder) -> untyped
-
-  def html_escape_interpolated_argument: (untyped arg) -> untyped
-
-  def set_block_back_references: (untyped block, untyped match_data) -> untyped
-end
-
-ActiveSupport::SafeBuffer::UNSAFE_STRING_METHODS: ::Array[untyped]
-
-ActiveSupport::SafeBuffer::UNSAFE_STRING_METHODS_WITH_BACKREF: ::Array[untyped]
-
-# Raised when <tt>ActiveSupport::SafeBuffer#safe_concat</tt> is called on unsafe buffers.
-class ActiveSupport::SafeBuffer::SafeConcatError < StandardError
-  def initialize: () -> untyped
-end
-
-extension String (ActiveSupport)
   # Marks a string as trusted safe. It will be inserted into HTML with no
   # additional escaping performed. It is your responsibility to ensure that the
   # string contains no malicious content. This method is equivalent to the
   # +raw+ helper in views. It is recommended that you use +sanitize+ instead of
   # this method. It should never be called on user input.
   def html_safe: () -> untyped
-end
 
-
-extension String (ActiveSupport)
   # Strips indentation in heredocs.
   #
   # For example in
@@ -5605,20 +4973,30 @@ extension String (ActiveSupport)
   # Technically, it looks for the least indented non-empty line
   # in the whole string, and removes that amount of leading whitespace.
   def strip_heredoc: () -> untyped
-end
 
-extension String (ActiveSupport)
   # Converts String to a TimeWithZone in the current zone if Time.zone or Time.zone_default
   # is set, otherwise converts String to a Time via String#to_time
   def in_time_zone: (?untyped zone) -> untyped
 end
 
-extension Time (ActiveSupport)
-  # Duck-types as a Time-like class. See Object#acts_like?.
-  def acts_like_time?: () -> ::TrueClass
-end
+String::BLANK_RE: untyped
+
+String::ENCODED_BLANKS: untyped
 
 extension Time (ActiveSupport)
+  # nodoc:
+  # No Time is blank:
+  #
+  #   Time.now.blank? # => false
+  #
+  # @return [false]
+  def blank?: () -> ::FalseClass
+
+  def as_json: (?untyped? options) -> untyped
+
+  # Duck-types as a Time-like class. See Object#acts_like?.
+  def acts_like_time?: () -> ::TrueClass
+
   include DateAndTime::Calculations
 
   # Overriding case equality method so that it returns true for ActiveSupport::TimeWithZone instances
@@ -5755,19 +5133,13 @@ extension Time (ActiveSupport)
 
   # Returns a new time the specified number of years in the future.
   def next_year: (?::Integer years) -> untyped
-end
 
-Time::COMMON_YEAR_DAYS_IN_MONTH: ::Array[untyped]
-
-extension Time (ActiveSupport)
   include DateAndTime::Compatibility
 
   # Either return +self+ or the time in the local system timezone depending
   # on the setting of +ActiveSupport.to_time_preserves_timezone+.
   def to_time: () -> untyped
-end
 
-extension Time (ActiveSupport)
   # Converts to a formatted string. See DATE_FORMATS for built-in formats.
   #
   # This method is aliased to <tt>to_s</tt>.
@@ -5801,11 +5173,7 @@ extension Time (ActiveSupport)
   #   Time.local(2000).formatted_offset        # => "-06:00"
   #   Time.local(2000).formatted_offset(false) # => "-0600"
   def formatted_offset: (?bool colon, ?untyped? alternate_utc_string) -> untyped
-end
 
-Time::DATE_FORMATS: ::Hash[untyped, untyped]
-
-extension Time (ActiveSupport)
   include DateAndTime::Zones
 
   attr_accessor zone_default: untyped
@@ -5878,6 +5246,333 @@ extension Time (ActiveSupport)
   #   Time.find_zone "NOT-A-TIMEZONE"   # => nil
   def self.find_zone: (untyped time_zone) -> untyped
 end
+
+extension Method (ActiveSupport)
+  # Methods are not duplicable:
+  #
+  #  method(:puts).duplicable? # => false
+  #  method(:puts).dup         # => TypeError: allocator undefined for Method
+  def duplicable?: () -> ::FalseClass
+end
+
+extension UnboundMethod (ActiveSupport)
+  # Unbound methods are not duplicable:
+  #
+  #  method(:puts).unbind.duplicable? # => false
+  #  method(:puts).unbind.dup         # => TypeError: allocator undefined for UnboundMethod
+  def duplicable?: () -> ::FalseClass
+end
+
+module ActiveSupport::ToJsonWithActiveSupportEncoder
+  # :nodoc:
+  def to_json: (?untyped? options) -> untyped
+end
+
+extension Struct[Elem] (ActiveSupport)
+  # nodoc:
+  def as_json: (?untyped? options) -> untyped
+end
+
+extension Symbol (ActiveSupport)
+  def as_json: (?untyped? options) -> untyped
+end
+
+extension Float (ActiveSupport)
+  def as_json: (?untyped? options) -> untyped
+end
+
+extension BigDecimal (ActiveSupport)
+  def as_json: (?untyped? options) -> untyped
+end
+
+extension Regexp (ActiveSupport)
+  def as_json: (?untyped? options) -> untyped
+
+  # nodoc:
+  def multiline?: () -> untyped
+end
+
+extension IO (ActiveSupport)
+  def as_json: (?untyped? options) -> untyped
+end
+
+class URI::Generic
+  # nodoc:
+  def as_json: (?untyped? options) -> untyped
+end
+
+extension Pathname (ActiveSupport)
+  # nodoc:
+  def as_json: (?untyped? options) -> untyped
+end
+
+extension Process::Status (ActiveSupport)
+  # nodoc:
+  def as_json: (?untyped? options) -> { exitstatus: untyped, pid: untyped }
+end
+
+extension Exception (ActiveSupport)
+  def as_json: (?untyped? options) -> untyped
+end
+
+module ActiveSupport::Tryable
+  # nodoc:
+  def try: (?untyped? method_name, *untyped args) { (untyped) -> untyped } -> untyped
+
+  def try!: (?untyped? method_name, *untyped args) { (untyped) -> untyped } -> untyped
+end
+
+class Delegator
+  include ActiveSupport::Tryable
+end
+
+module ActiveSupport::CompareWithRange
+  # Extends the default Range#=== to support range comparisons.
+  #  (1..5) === (1..5)  # => true
+  #  (1..5) === (2..3)  # => true
+  #  (1..5) === (1...6) # => true
+  #  (1..5) === (2..6)  # => false
+  #
+  # The native Range#=== behavior is untouched.
+  #  ('a'..'f') === ('c') # => true
+  #  (5..9) === (11) # => false
+  #
+  # The given range must be fully bounded, with both start and end.
+  def ===: (untyped value) -> untyped
+
+  # Extends the default Range#include? to support range comparisons.
+  #  (1..5).include?(1..5)  # => true
+  #  (1..5).include?(2..3)  # => true
+  #  (1..5).include?(1...6) # => true
+  #  (1..5).include?(2..6)  # => false
+  #
+  # The native Range#include? behavior is untouched.
+  #  ('a'..'f').include?('c') # => true
+  #  (5..9).include?(11) # => false
+  #
+  # The given range must be fully bounded, with both start and end.
+  def include?: (untyped value) -> untyped
+
+  # Extends the default Range#cover? to support range comparisons.
+  #  (1..5).cover?(1..5)  # => true
+  #  (1..5).cover?(2..3)  # => true
+  #  (1..5).cover?(1...6) # => true
+  #  (1..5).cover?(2..6)  # => false
+  #
+  # The native Range#cover? behavior is untouched.
+  #  ('a'..'f').cover?('c') # => true
+  #  (5..9).cover?(11) # => false
+  #
+  # The given range must be fully bounded, with both start and end.
+  def cover?: (untyped value) -> untyped
+end
+
+module ActiveSupport::RangeWithFormat
+  # Convert range to a formatted string. See RANGE_FORMATS for predefined formats.
+  #
+  #   range = (1..100)           # => 1..100
+  #
+  #   range.to_s                 # => "1..100"
+  #   range.to_s(:db)            # => "BETWEEN '1' AND '100'"
+  #
+  # == Adding your own range formats to to_s
+  # You can add your own formats to the Range::RANGE_FORMATS hash.
+  # Use the format name as the hash key and a Proc instance.
+  #
+  #   # config/initializers/range_formats.rb
+  #   Range::RANGE_FORMATS[:short] = ->(start, stop) { "Between #{start.to_s(:db)} and #{stop.to_s(:db)}" }
+  def to_s: (?::Symbol format) -> untyped
+end
+
+ActiveSupport::RangeWithFormat::RANGE_FORMATS: ::Hash[untyped, untyped]
+
+module ActiveSupport::EachTimeWithZone
+  # nodoc:
+  def each: () { () -> untyped } -> untyped
+
+  def step: (?::Integer n) { () -> untyped } -> untyped
+
+  def ensure_iteration_allowed: () -> untyped
+end
+
+module ActiveSupport::IncludeTimeWithZone
+  # nodoc:
+  # Extends the default Range#include? to support ActiveSupport::TimeWithZone.
+  #
+  #   (1.hour.ago..1.hour.from_now).include?(Time.current) # => true
+  #
+  def include?: (untyped value) -> untyped
+end
+
+module SecureRandom
+  # SecureRandom.base58 generates a random base58 string.
+  #
+  # The argument _n_ specifies the length of the random string to be generated.
+  #
+  # If _n_ is not specified or is +nil+, 16 is assumed. It may be larger in the future.
+  #
+  # The result may contain alphanumeric characters except 0, O, I and l.
+  #
+  #   p SecureRandom.base58 # => "4kUgL2pdQMSCQtjE"
+  #   p SecureRandom.base58(24) # => "77TMHrHJFvFDwodq8w7Ev2m7"
+  def self.base58: (?::Integer n) -> untyped
+
+  # SecureRandom.base36 generates a random base36 string in lowercase.
+  #
+  # The argument _n_ specifies the length of the random string to be generated.
+  #
+  # If _n_ is not specified or is +nil+, 16 is assumed. It may be larger in the future.
+  # This method can be used over +base58+ if a deterministic case key is necessary.
+  #
+  # The result will contain alphanumeric characters in lowercase.
+  #
+  #   p SecureRandom.base36 # => "4kugl2pdqmscqtje"
+  #   p SecureRandom.base36(24) # => "77tmhrhjfvfdwodq8w7ev2m7"
+  def self.base36: (?::Integer n) -> untyped
+end
+
+SecureRandom::BASE58_ALPHABET: untyped
+
+SecureRandom::BASE36_ALPHABET: untyped
+
+module ERB::Util
+  # A utility method for escaping HTML tag characters.
+  # This method is also aliased as <tt>h</tt>.
+  #
+  #   puts html_escape('is a > 0 & a < 10?')
+  #   # => is a &gt; 0 &amp; a &lt; 10?
+  def html_escape: (untyped s) -> untyped
+
+  def unwrapped_html_escape: (untyped s) -> untyped
+
+  # A utility method for escaping HTML without affecting existing escaped entities.
+  #
+  #   html_escape_once('1 < 2 &amp; 3')
+  #   # => "1 &lt; 2 &amp; 3"
+  #
+  #   html_escape_once('&lt;&lt; Accept & Checkout')
+  #   # => "&lt;&lt; Accept &amp; Checkout"
+  def html_escape_once: (untyped s) -> untyped
+
+  # A utility method for escaping HTML entities in JSON strings. Specifically, the
+  # &, > and < characters are replaced with their equivalent unicode escaped form -
+  # \u0026, \u003e, and \u003c. The Unicode sequences \u2028 and \u2029 are also
+  # escaped as they are treated as newline characters in some JavaScript engines.
+  # These sequences have identical meaning as the original characters inside the
+  # context of a JSON string, so assuming the input is a valid and well-formed
+  # JSON value, the output will have equivalent meaning when parsed:
+  #
+  #   json = JSON.generate({ name: "</script><script>alert('PWNED!!!')</script>"})
+  #   # => "{\"name\":\"</script><script>alert('PWNED!!!')</script>\"}"
+  #
+  #   json_escape(json)
+  #   # => "{\"name\":\"\\u003C/script\\u003E\\u003Cscript\\u003Ealert('PWNED!!!')\\u003C/script\\u003E\"}"
+  #
+  #   JSON.parse(json) == JSON.parse(json_escape(json))
+  #   # => true
+  #
+  # The intended use case for this method is to escape JSON strings before including
+  # them inside a script tag to avoid XSS vulnerability:
+  #
+  #   <script>
+  #     var currentUser = <%= raw json_escape(current_user.to_json) %>;
+  #   </script>
+  #
+  # It is necessary to +raw+ the result of +json_escape+, so that quotation marks
+  # don't get converted to <tt>&quot;</tt> entities. +json_escape+ doesn't
+  # automatically flag the result as HTML safe, since the raw value is unsafe to
+  # use inside HTML attributes.
+  #
+  # If your JSON is being used downstream for insertion into the DOM, be aware of
+  # whether or not it is being inserted via +html()+. Most jQuery plugins do this.
+  # If that is the case, be sure to +html_escape+ or +sanitize+ any user-generated
+  # content returned by your JSON.
+  #
+  # If you need to output JSON elsewhere in your HTML, you can just do something
+  # like this, as any unsafe characters (including quotation marks) will be
+  # automatically escaped for you:
+  #
+  #   <div data-user-info="<%= current_user.to_json %>">...</div>
+  #
+  # WARNING: this helper only works with valid JSON. Using this on non-JSON values
+  # will open up serious XSS vulnerabilities. For example, if you replace the
+  # +current_user.to_json+ in the example above with user input instead, the browser
+  # will happily eval() that string as JavaScript.
+  #
+  # The escaping performed in this method is identical to those performed in the
+  # Active Support JSON encoder when +ActiveSupport.escape_html_entities_in_json+ is
+  # set to true. Because this transformation is idempotent, this helper can be
+  # applied even if +ActiveSupport.escape_html_entities_in_json+ is already true.
+  #
+  # Therefore, when you are unsure if +ActiveSupport.escape_html_entities_in_json+
+  # is enabled, or if you are unsure where your JSON string originated from, it
+  # is recommended that you always apply this helper (other libraries, such as the
+  # JSON gem, do not provide this kind of protection by default; also some gems
+  # might override +to_json+ to bypass Active Support's encoder).
+  def json_escape: (untyped s) -> untyped
+end
+
+ERB::Util::HTML_ESCAPE: ::Hash[untyped, untyped]
+
+ERB::Util::JSON_ESCAPE: ::Hash[untyped, untyped]
+
+ERB::Util::HTML_ESCAPE_ONCE_REGEXP: untyped
+
+ERB::Util::JSON_ESCAPE_REGEXP: untyped
+
+# nodoc:
+class ActiveSupport::SafeBuffer < String
+  def []: (*untyped args) -> untyped
+
+  def safe_concat: (untyped value) -> untyped
+
+  def initialize: (?::String str) -> untyped
+
+  def initialize_copy: (untyped other) -> untyped
+
+  def clone_empty: () -> untyped
+
+  def concat: (untyped value) -> untyped
+
+  def insert: (untyped index, untyped value) -> untyped
+
+  def `prepend`: (untyped value) -> untyped
+
+  def replace: (untyped value) -> untyped
+
+  def []=: (*untyped args) -> untyped
+
+  def +: (untyped other) -> untyped
+
+  def *: () -> untyped
+
+  def %: (untyped args) -> untyped
+
+  def html_safe?: () -> untyped
+
+  def to_s: () -> untyped
+
+  def to_param: () -> untyped
+
+  def encode_with: (untyped coder) -> untyped
+
+  def html_escape_interpolated_argument: (untyped arg) -> untyped
+
+  def set_block_back_references: (untyped block, untyped match_data) -> untyped
+end
+
+ActiveSupport::SafeBuffer::UNSAFE_STRING_METHODS: ::Array[untyped]
+
+ActiveSupport::SafeBuffer::UNSAFE_STRING_METHODS_WITH_BACKREF: ::Array[untyped]
+
+# Raised when <tt>ActiveSupport::SafeBuffer#safe_concat</tt> is called on unsafe buffers.
+class ActiveSupport::SafeBuffer::SafeConcatError < StandardError
+  def initialize: () -> untyped
+end
+
+Time::COMMON_YEAR_DAYS_IN_MONTH: ::Array[untyped]
+
+Time::DATE_FORMATS: ::Hash[untyped, untyped]
 
 module URI
   def self.parser: () -> untyped
@@ -6049,7 +5744,6 @@ module ActiveSupport::Autoload
 
   def autoloads: () -> untyped
 end
-
 
 # nodoc:
 # nodoc:
@@ -6363,10 +6057,6 @@ module ActiveSupport::Dependencies::ZeitwerkIntegration::Inflector
 
   def self.inflect: (untyped overrides) -> untyped
 end
-
-# Raised when <tt>ActiveSupport::Deprecation::Behavior#behavior</tt> is set with <tt>:raise</tt>.
-# You would set <tt>:raise</tt>, as a behavior to raise errors and proactively report exceptions from deprecations.
-
 
 # Default warning behaviors per Rails.env.
 ActiveSupport::Deprecation::DEFAULT_BEHAVIORS: ::Hash[untyped, untyped]
@@ -6742,7 +6432,6 @@ class ActiveSupport::Digest
   def self.hexdigest: (untyped arg) -> untyped
 end
 
-
 class ActiveSupport::Duration::ISO8601Parser
   attr_reader parts: untyped
 
@@ -6768,13 +6457,6 @@ class ActiveSupport::Duration::ISO8601Parser
   # Checks for various semantic errors as stated in ISO 8601 standard.
   def validate!: () -> ::TrueClass
 end
-
-# Parses a string formatted according to ISO 8601 Duration into the hash.
-#
-# See {ISO 8601}[https://en.wikipedia.org/wiki/ISO_8601#Durations] for more information.
-#
-# This parser allows negative parts to be present in pattern.
-# :nodoc:
 
 ActiveSupport::Duration::ISO8601Parser::PERIOD_OR_COMMA: untyped
 
@@ -7000,7 +6682,7 @@ ActiveSupport::Duration::PARTS_IN_SECONDS: untyped
 ActiveSupport::Duration::PARTS: untyped
 
 class ActiveSupport::EncryptedConfiguration < EncryptedFile
-  def initialize: (config_path: untyped config_path, key_path: untyped key_path, env_key: untyped env_key, raise_if_missing_key: untyped raise_if_missing_key) -> untyped
+  def initialize: (raise_if_missing_key: untyped raise_if_missing_key, env_key: untyped env_key, key_path: untyped key_path, config_path: untyped config_path) -> untyped
 
   # Allow a config to be started without a file present
   def read: () -> untyped
@@ -7025,7 +6707,7 @@ class ActiveSupport::EncryptedFile
 
   attr_reader raise_if_missing_key: untyped
 
-  def initialize: (content_path: untyped content_path, key_path: untyped key_path, env_key: untyped env_key, raise_if_missing_key: untyped raise_if_missing_key) -> untyped
+  def initialize: (raise_if_missing_key: untyped raise_if_missing_key, env_key: untyped env_key, key_path: untyped key_path, content_path: untyped content_path) -> untyped
 
   def key: () -> untyped
 
@@ -7055,7 +6737,7 @@ class ActiveSupport::EncryptedFile::MissingContentError < RuntimeError
 end
 
 class ActiveSupport::EncryptedFile::MissingKeyError < RuntimeError
-  def initialize: (key_path: untyped key_path, env_key: untyped env_key) -> untyped
+  def initialize: (env_key: untyped env_key, key_path: untyped key_path) -> untyped
 end
 
 ActiveSupport::EncryptedFile::CIPHER: ::String
@@ -7182,7 +6864,6 @@ ActiveSupport::ExecutionWrapper::RunHook: untyped
 
 ActiveSupport::ExecutionWrapper::CompleteHook: untyped
 
-
 # FileUpdateChecker specifies the API used by Rails to watch files
 # and control reloading. The API depends on four methods:
 #
@@ -7270,7 +6951,6 @@ module ActiveSupport
   # Returns the version of the currently loaded ActiveSupport as a <tt>Gem::Version</tt>
   def self.version: () -> untyped
 end
-
 
 ActiveSupport::VERSION::MAJOR: ::Integer
 
@@ -7559,7 +7239,6 @@ end
 
 HashWithIndifferentAccess: untyped
 
-
 class I18n::Railtie < Rails::Railtie
   # Setup i18n configuration.
   def self.initialize_i18n: (untyped app) -> (nil | untyped)
@@ -7834,7 +7513,7 @@ module ActiveSupport::Inflector
   #
   #   humanize('ssl_error') # => "SSL error"
   #
-  def humanize: (untyped lower_case_and_underscored_word, ?capitalize: bool capitalize, ?keep_id_suffix: bool keep_id_suffix) -> untyped
+  def humanize: (untyped lower_case_and_underscored_word, ?keep_id_suffix: bool keep_id_suffix, ?capitalize: bool capitalize) -> untyped
 
   # Converts just the first character to uppercase.
   #
@@ -8079,7 +7758,7 @@ module ActiveSupport::Inflector
   # the word will be parameterized as a word of that language.
   # By default, this parameter is set to <tt>nil</tt> and it will use
   # the configured <tt>I18n.locale<tt>.
-  def parameterize: (untyped string, ?separator: ::String separator, ?preserve_case: bool preserve_case, ?locale: untyped? locale) -> untyped
+  def parameterize: (untyped string, ?locale: untyped? locale, ?preserve_case: bool preserve_case, ?separator: ::String separator) -> untyped
 end
 
 # matches YAML-formatted dates
@@ -8392,7 +8071,6 @@ ActiveSupport::LogSubscriber::CYAN: ::String
 
 ActiveSupport::LogSubscriber::WHITE: ::String
 
-
 # Provides some helpers to deal with testing log subscribers by setting up
 # notifications. Take for instance Active Record subscriber tests:
 #
@@ -8548,7 +8226,7 @@ class ActiveSupport::MessageEncryptor
 
   # Encrypt and sign a message. We need to sign the message in order to avoid
   # padding attacks. Reference: https://www.limited-entropy.com/padding-oracle-attacks/.
-  def encrypt_and_sign: (untyped value, ?expires_at: untyped? expires_at, ?expires_in: untyped? expires_in, ?purpose: untyped? purpose) -> untyped
+  def encrypt_and_sign: (untyped value, ?purpose: untyped? purpose, ?expires_in: untyped? expires_in, ?expires_at: untyped? expires_at) -> untyped
 
   # Decrypt and verify a message. We need to verify the message in order to
   # avoid padding attacks. Reference: https://www.limited-entropy.com/padding-oracle-attacks/.
@@ -8584,9 +8262,7 @@ module ActiveSupport::MessageEncryptor::NullVerifier
   def self.generate: (untyped value) -> untyped
 end
 
-
 ActiveSupport::MessageEncryptor::OpenSSLCipherError: untyped
-
 
 class ActiveSupport::Messages::Metadata
   # nodoc:
@@ -8595,7 +8271,7 @@ class ActiveSupport::Messages::Metadata
 
   def as_json: (?::Hash[untyped, untyped] options) -> { _rails: { message: untyped, exp: untyped, pur: untyped } }
 
-  def self.wrap: (untyped message, ?expires_at: untyped? expires_at, ?expires_in: untyped? expires_in, ?purpose: untyped? purpose) -> untyped
+  def self.wrap: (untyped message, ?purpose: untyped? purpose, ?expires_in: untyped? expires_in, ?expires_at: untyped? expires_at) -> untyped
 
   def self.verify: (untyped message, untyped purpose) -> untyped
 
@@ -8800,7 +8476,7 @@ class ActiveSupport::MessageVerifier
   #
   #   verifier = ActiveSupport::MessageVerifier.new 's3Krit'
   #   verifier.generate 'a private message' # => "BAhJIhRwcml2YXRlLW1lc3NhZ2UGOgZFVA==--e2d724331ebdee96a10fb99b089508d1c72bd772"
-  def generate: (untyped value, ?expires_at: untyped? expires_at, ?expires_in: untyped? expires_in, ?purpose: untyped? purpose) -> ::String
+  def generate: (untyped value, ?purpose: untyped? purpose, ?expires_in: untyped? expires_in, ?expires_at: untyped? expires_at) -> ::String
 
   def encode: (untyped data) -> untyped
 
@@ -8808,8 +8484,6 @@ class ActiveSupport::MessageVerifier
 
   def generate_digest: (untyped data) -> untyped
 end
-
-
 
 # nodoc:
 # nodoc:
@@ -9013,7 +8687,6 @@ ActiveSupport::Multibyte::Unicode::NORMALIZATION_FORM_ALIASES: ::Hash[untyped, u
 # The Unicode version that is supported by the implementation
 ActiveSupport::Multibyte::Unicode::UNICODE_VERSION: untyped
 
-
 # This is a default queue implementation that ships with Notifications.
 # It just pushes events to all registered log subscribers.
 #
@@ -9198,10 +8871,6 @@ class ActiveSupport::Notifications::Event
   def now: () -> untyped
 
   def now_cpu: () -> untyped
-
-  # def now_cpu: () -> 0
-
-  # def now_allocations: () -> 0
 
   def now_allocations: () -> untyped
 end
@@ -9425,7 +9094,6 @@ class ActiveSupport::Notifications::InstrumentationRegistry
 
   def instrumenter_for: (untyped notifier) -> untyped
 end
-
 
 class ActiveSupport::NumberHelper::NumberConverter
   attr_reader number: untyped
@@ -10111,7 +9779,6 @@ class ActiveSupport::ProxyObject < ::BasicObject
   def raise: (*untyped args) -> untyped
 end
 
-
 # -
 # This class defines several callbacks:
 #
@@ -10234,7 +9901,7 @@ module ActiveSupport::Rescuable::ClassMethods
   #     end
   #
   # Returns the exception if it was handled and +nil+ if it was not.
-  def rescue_with_handler: (untyped exception, ?object: untyped object, ?visited_exceptions: untyped visited_exceptions) -> untyped
+  def rescue_with_handler: (untyped exception, ?visited_exceptions: untyped visited_exceptions, ?object: untyped object) -> untyped
 
   def handler_for_rescue: (untyped exception, ?object: untyped object) -> untyped
 
@@ -10441,7 +10108,7 @@ class ActiveSupport::TestCase < ::Minitest::Test
   #
   # The threaded parallelization uses minitest's parallel executor directly.
   # The processes parallelization uses a Ruby DRb server.
-  def self.parallelize: (?workers: ::Symbol workers, ?with: ::Symbol with) -> (nil | untyped)
+  def self.parallelize: (?with: ::Symbol with, ?workers: ::Symbol workers) -> (nil | untyped)
 
   # Set up hook for parallel testing. This can be used if you have multiple
   # databases or any behavior that needs to be run after the process is forked
@@ -10487,7 +10154,6 @@ class ActiveSupport::TestCase < ::Minitest::Test
 end
 
 ActiveSupport::TestCase::Assertion: untyped
-
 
 module ActiveSupport::Testing::Assertions
   # Asserts that an expression is not truthy. Passes if <tt>object</tt> is
@@ -10621,7 +10287,7 @@ module ActiveSupport::Testing::Assertions
   #   assert_changes -> { Status.all_good? }, 'Expected the status to be bad' do
   #     post :create, params: { status: { incident: true } }
   #   end
-  def assert_changes: (untyped expression, ?untyped? message, ?from: untyped from, ?to: untyped to) { () -> untyped } -> untyped
+  def assert_changes: (untyped expression, ?untyped? message, ?to: untyped to, ?from: untyped from) { () -> untyped } -> untyped
 
   # Assertion that the result of evaluating an expression is not changed before
   # and after invoking the passed in block.
@@ -10731,13 +10397,13 @@ end
 ActiveSupport::Testing::Isolation::Subprocess::ORIG_ARGV: untyped
 
 module ActiveSupport::Testing::MethodCallAssertions
-  def assert_called: (untyped object, untyped method_name, ?untyped? message, ?times: ::Integer times, ?returns: untyped? returns) { () -> untyped } -> untyped
+  def assert_called: (untyped object, untyped method_name, ?untyped? message, ?returns: untyped? returns, ?times: ::Integer times) { () -> untyped } -> untyped
 
   def assert_called_with: (untyped object, untyped method_name, untyped args, ?returns: untyped? returns) { () -> untyped } -> untyped
 
   def assert_not_called: (untyped object, untyped method_name, ?untyped? message) { () -> untyped } -> untyped
 
-  def assert_called_on_instance_of: (untyped klass, untyped method_name, ?untyped? message, ?times: ::Integer times, ?returns: untyped? returns) { () -> untyped } -> untyped
+  def assert_called_on_instance_of: (untyped klass, untyped method_name, ?untyped? message, ?returns: untyped? returns, ?times: ::Integer times) { () -> untyped } -> untyped
 
   def assert_not_called_on_instance_of: (untyped klass, untyped method_name, ?untyped? message) { () -> untyped } -> untyped
 
@@ -11588,8 +11254,6 @@ module ActiveSupport::XmlMini_LibXML
   def parse: (untyped data) -> untyped
 end
 
-
-
 module LibXML::Conversions::Document
   # nodoc:
   # nodoc:
@@ -11644,7 +11308,6 @@ module ActiveSupport::XmlMini_Nokogiri
   #   XML Document string or IO to parse
   def parse: (untyped data) -> untyped
 end
-
 
 module ActiveSupport::XmlMini_Nokogiri::Conversions::Document
   # nodoc:
@@ -11809,19 +11472,6 @@ module ActiveSupport::XmlMini_REXML
 end
 
 ActiveSupport::XmlMini_REXML::CONTENT_KEY: ::String
-
-extension Object (Toplevel)
-  # Benchmark realtime in milliseconds.
-  #
-  #   Benchmark.realtime { User.all }
-  #   # => 8.0e-05
-  #
-  #   Benchmark.ms { User.all }
-  #   # => 0.074
-  def self.ms: () { () -> untyped } -> untyped
-
-  def unescape: (untyped str, ?untyped escaped) -> untyped
-end
 
 module DateAndTime::Compatibility
 end
