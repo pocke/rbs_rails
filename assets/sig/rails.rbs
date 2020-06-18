@@ -6,3 +6,6 @@ end
 class Rails::Application
   def routes: () -> untyped
 end
+
+class Rails::Railtie
+end
