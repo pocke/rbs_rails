@@ -1,4 +1,13 @@
 module ActiveRecord
+  # Returns the version of the currently loaded Active Record as a <tt>Gem::Version</tt>
+  def self.gem_version: () -> untyped
+
+  extend ActiveSupport::Autoload
+
+  def self.eager_load!: () -> untyped
+
+  # Returns the version of the currently loaded ActiveRecord as a <tt>Gem::Version</tt>
+  def self.version: () -> untyped
 end
 
 class ActiveRecord::AdvisoryLockBase < ActiveRecord::Base
@@ -236,6 +245,32 @@ class ActiveRecord::AssociationRelation < Relation
 end
 
 module ActiveRecord::Associations
+  # See ActiveRecord::Associations::ClassMethods for documentation.
+  # :nodoc:
+  extend ActiveSupport::Autoload
+
+  extend ActiveSupport::Concern
+
+  def self.eager_load!: () -> untyped
+
+  def association: (untyped name) -> untyped
+
+  def association_cached?: (untyped name) -> untyped
+
+  def initialize_dup: () -> untyped
+
+  def reload: () -> untyped
+
+  # Clears out the association cache.
+  def clear_association_cache: () -> untyped
+
+  def init_internals: () -> untyped
+
+  # Returns the specified association instance if it exists, +nil+ otherwise.
+  def association_instance_get: (untyped name) -> untyped
+
+  # Set the specified association instance.
+  def association_instance_set: (untyped name, untyped association) -> untyped
 end
 
 class ActiveRecord::Associations::AliasTracker
@@ -1753,6 +1788,51 @@ class ActiveRecord::Associations::HasOneThroughAssociation < HasOneAssociation
 end
 
 class ActiveRecord::Associations::JoinDependency
+  def self.make_tree: (untyped associations) -> untyped
+
+  def self.walk_tree: (untyped associations, untyped hash) -> untyped
+
+  def initialize: (untyped base, untyped table, untyped associations, untyped join_type) -> untyped
+
+  def base_klass: () -> untyped
+
+  def reflections: () -> untyped
+
+  def join_constraints: (untyped joins_to_add, untyped alias_tracker) -> untyped
+
+  def instantiate: (untyped result_set) { () -> untyped } -> untyped
+
+  def apply_column_aliases: (untyped relation) -> untyped
+
+  attr_reader join_root: untyped
+
+  attr_reader join_type: untyped
+
+  attr_reader alias_tracker: untyped
+
+  def explicit_selections: (untyped root_column_aliases, untyped result_set) -> untyped
+
+  def aliases: () -> untyped
+
+  def construct_tables!: (untyped join_root) -> untyped
+
+  def make_join_constraints: (untyped join_root, untyped join_type) -> untyped
+
+  def make_constraints: (untyped parent, untyped child, untyped join_type) -> untyped
+
+  def table_aliases_for: (untyped parent, untyped node) -> untyped
+
+  def table_alias_for: (untyped reflection, untyped parent, untyped join) -> untyped
+
+  def walk: (untyped left, untyped right, untyped join_type) -> untyped
+
+  def find_reflection: (untyped klass, untyped name) -> untyped
+
+  def build: (untyped associations, untyped base_klass) -> untyped
+
+  def construct: (untyped ar_parent, untyped parent, untyped row, untyped seen, untyped model_cache) -> (nil | untyped)
+
+  def construct_model: (untyped record, untyped node, untyped row, untyped model_cache, untyped id) -> untyped
 end
 
 class ActiveRecord::Associations::JoinDependency::JoinAssociation < JoinPart
@@ -1826,54 +1906,6 @@ class ActiveRecord::Associations::JoinDependency::JoinPart
   def instantiate: (untyped row, untyped aliases) { () -> untyped } -> untyped
 end
 
-class ActiveRecord::Associations::JoinDependency
-  def self.make_tree: (untyped associations) -> untyped
-
-  def self.walk_tree: (untyped associations, untyped hash) -> untyped
-
-  def initialize: (untyped base, untyped table, untyped associations, untyped join_type) -> untyped
-
-  def base_klass: () -> untyped
-
-  def reflections: () -> untyped
-
-  def join_constraints: (untyped joins_to_add, untyped alias_tracker) -> untyped
-
-  def instantiate: (untyped result_set) { () -> untyped } -> untyped
-
-  def apply_column_aliases: (untyped relation) -> untyped
-
-  attr_reader join_root: untyped
-
-  attr_reader join_type: untyped
-
-  attr_reader alias_tracker: untyped
-
-  def explicit_selections: (untyped root_column_aliases, untyped result_set) -> untyped
-
-  def aliases: () -> untyped
-
-  def construct_tables!: (untyped join_root) -> untyped
-
-  def make_join_constraints: (untyped join_root, untyped join_type) -> untyped
-
-  def make_constraints: (untyped parent, untyped child, untyped join_type) -> untyped
-
-  def table_aliases_for: (untyped parent, untyped node) -> untyped
-
-  def table_alias_for: (untyped reflection, untyped parent, untyped join) -> untyped
-
-  def walk: (untyped left, untyped right, untyped join_type) -> untyped
-
-  def find_reflection: (untyped klass, untyped name) -> untyped
-
-  def build: (untyped associations, untyped base_klass) -> untyped
-
-  def construct: (untyped ar_parent, untyped parent, untyped row, untyped seen, untyped model_cache) -> (nil | untyped)
-
-  def construct_model: (untyped record, untyped node, untyped row, untyped model_cache, untyped id) -> untyped
-end
-
 class ActiveRecord::Associations::JoinDependency::Aliases
   # :nodoc:
   def initialize: (untyped tables) -> untyped
@@ -1888,58 +1920,6 @@ end
 ActiveRecord::Associations::JoinDependency::Aliases::Table: untyped
 
 ActiveRecord::Associations::JoinDependency::Aliases::Column: untyped
-
-class ActiveRecord::Associations::Preloader
-end
-
-class ActiveRecord::Associations::Preloader::Association
-  # nodoc:
-  def initialize: (untyped klass, untyped owners, untyped reflection, untyped preload_scope) -> untyped
-
-  def run: () -> untyped
-
-  def records_by_owner: () -> untyped
-
-  def preloaded_records: () -> untyped
-
-  attr_reader owners: untyped
-
-  attr_reader reflection: untyped
-
-  attr_reader preload_scope: untyped
-
-  attr_reader model: untyped
-
-  attr_reader klass: untyped
-
-  # The name of the key on the associated records
-  def association_key_name: () -> untyped
-
-  # The name of the key on the model which declares the association
-  def owner_key_name: () -> untyped
-
-  def associate_records_to_owner: (untyped owner, untyped records) -> untyped
-
-  def owner_keys: () -> untyped
-
-  def owners_by_key: () -> untyped
-
-  def key_conversion_required?: () -> untyped
-
-  def convert_key: (untyped key) -> untyped
-
-  def association_key_type: () -> untyped
-
-  def owner_key_type: () -> untyped
-
-  def records_for: (untyped ids) -> untyped
-
-  def scope: () -> untyped
-
-  def reflection_scope: () -> untyped
-
-  def build_scope: () -> untyped
-end
 
 class ActiveRecord::Associations::Preloader
   # Implements the details of eager loading of Active Record associations.
@@ -2046,6 +2026,55 @@ class ActiveRecord::Associations::Preloader
   # and attach it to a relation. The class returned implements a `run` method
   # that accepts a preloader.
   def preloader_for: (untyped reflection, untyped owners) -> untyped
+end
+
+class ActiveRecord::Associations::Preloader::Association
+  # nodoc:
+  def initialize: (untyped klass, untyped owners, untyped reflection, untyped preload_scope) -> untyped
+
+  def run: () -> untyped
+
+  def records_by_owner: () -> untyped
+
+  def preloaded_records: () -> untyped
+
+  attr_reader owners: untyped
+
+  attr_reader reflection: untyped
+
+  attr_reader preload_scope: untyped
+
+  attr_reader model: untyped
+
+  attr_reader klass: untyped
+
+  # The name of the key on the associated records
+  def association_key_name: () -> untyped
+
+  # The name of the key on the model which declares the association
+  def owner_key_name: () -> untyped
+
+  def associate_records_to_owner: (untyped owner, untyped records) -> untyped
+
+  def owner_keys: () -> untyped
+
+  def owners_by_key: () -> untyped
+
+  def key_conversion_required?: () -> untyped
+
+  def convert_key: (untyped key) -> untyped
+
+  def association_key_type: () -> untyped
+
+  def owner_key_type: () -> untyped
+
+  def records_for: (untyped ids) -> untyped
+
+  def scope: () -> untyped
+
+  def reflection_scope: () -> untyped
+
+  def build_scope: () -> untyped
 end
 
 class ActiveRecord::Associations::Preloader::AlreadyLoaded
@@ -2178,35 +2207,6 @@ class ActiveRecord::DeleteRestrictionError < ActiveRecordError
   # ex: if @project.tasks.size > 0, DeleteRestrictionError will be raised when trying to destroy @project
   # nodoc:
   def initialize: (?untyped? name) -> untyped
-end
-
-module ActiveRecord::Associations
-  # See ActiveRecord::Associations::ClassMethods for documentation.
-  # :nodoc:
-  extend ActiveSupport::Autoload
-
-  extend ActiveSupport::Concern
-
-  def self.eager_load!: () -> untyped
-
-  def association: (untyped name) -> untyped
-
-  def association_cached?: (untyped name) -> untyped
-
-  def initialize_dup: () -> untyped
-
-  def reload: () -> untyped
-
-  # Clears out the association cache.
-  def clear_association_cache: () -> untyped
-
-  def init_internals: () -> untyped
-
-  # Returns the specified association instance if it exists, +nil+ otherwise.
-  def association_instance_get: (untyped name) -> untyped
-
-  # Set the specified association instance.
-  def association_instance_set: (untyped name, untyped association) -> untyped
 end
 
 # \Associations are a set of macro-like class methods for tying objects together through
@@ -3887,6 +3887,190 @@ class ActiveRecord::AttributeDecorators::TypeDecorator
 end
 
 module ActiveRecord::AttributeMethods
+  extend ActiveSupport::Concern
+
+  include ActiveModel::AttributeMethods
+
+  include Read
+
+  include Write
+
+  include BeforeTypeCast
+
+  include Query
+
+  include PrimaryKey
+
+  include TimeZoneConversion
+
+  include Dirty
+
+  include Serialization
+
+  # A Person object with a name attribute can ask <tt>person.respond_to?(:name)</tt>,
+  # <tt>person.respond_to?(:name=)</tt>, and <tt>person.respond_to?(:name?)</tt>
+  # which will all return +true+. It also defines the attribute methods if they have
+  # not been generated.
+  #
+  #   class Person < ActiveRecord::Base
+  #   end
+  #
+  #   person = Person.new
+  #   person.respond_to?(:name)    # => true
+  #   person.respond_to?(:name=)   # => true
+  #   person.respond_to?(:name?)   # => true
+  #   person.respond_to?('age')    # => true
+  #   person.respond_to?('age=')   # => true
+  #   person.respond_to?('age?')   # => true
+  #   person.respond_to?(:nothing) # => false
+  def respond_to?: (untyped name, ?bool include_private) -> (::FalseClass | untyped | ::TrueClass)
+
+  # Returns +true+ if the given attribute is in the attributes hash, otherwise +false+.
+  #
+  #   class Person < ActiveRecord::Base
+  #   end
+  #
+  #   person = Person.new
+  #   person.has_attribute?(:name)    # => true
+  #   person.has_attribute?('age')    # => true
+  #   person.has_attribute?(:nothing) # => false
+  def has_attribute?: (untyped attr_name) -> untyped
+
+  # Returns an array of names for the attributes available on this object.
+  #
+  #   class Person < ActiveRecord::Base
+  #   end
+  #
+  #   person = Person.new
+  #   person.attribute_names
+  #   # => ["id", "created_at", "updated_at", "name", "age"]
+  def attribute_names: () -> untyped
+
+  # Returns a hash of all the attributes with their names as keys and the values of the attributes as values.
+  #
+  #   class Person < ActiveRecord::Base
+  #   end
+  #
+  #   person = Person.create(name: 'Francesco', age: 22)
+  #   person.attributes
+  #   # => {"id"=>3, "created_at"=>Sun, 21 Oct 2012 04:53:04, "updated_at"=>Sun, 21 Oct 2012 04:53:04, "name"=>"Francesco", "age"=>22}
+  def attributes: () -> untyped
+
+  # Returns an <tt>#inspect</tt>-like string for the value of the
+  # attribute +attr_name+. String attributes are truncated up to 50
+  # characters, Date and Time attributes are returned in the
+  # <tt>:db</tt> format. Other attributes return the value of
+  # <tt>#inspect</tt> without modification.
+  #
+  #   person = Person.create!(name: 'David Heinemeier Hansson ' * 3)
+  #
+  #   person.attribute_for_inspect(:name)
+  #   # => "\"David Heinemeier Hansson David Heinemeier Hansson ...\""
+  #
+  #   person.attribute_for_inspect(:created_at)
+  #   # => "\"2012-10-22 00:15:07\""
+  #
+  #   person.attribute_for_inspect(:tag_ids)
+  #   # => "[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]"
+  def attribute_for_inspect: (untyped attr_name) -> untyped
+
+  # Returns +true+ if the specified +attribute+ has been set by the user or by a
+  # database load and is neither +nil+ nor <tt>empty?</tt> (the latter only applies
+  # to objects that respond to <tt>empty?</tt>, most notably Strings). Otherwise, +false+.
+  # Note that it always returns +true+ with boolean attributes.
+  #
+  #   class Task < ActiveRecord::Base
+  #   end
+  #
+  #   task = Task.new(title: '', is_done: false)
+  #   task.attribute_present?(:title)   # => false
+  #   task.attribute_present?(:is_done) # => true
+  #   task.title = 'Buy milk'
+  #   task.is_done = true
+  #   task.attribute_present?(:title)   # => true
+  #   task.attribute_present?(:is_done) # => true
+  def attribute_present?: (untyped attribute) -> untyped
+
+  # Returns the value of the attribute identified by <tt>attr_name</tt> after it has been typecast (for example,
+  # "2004-12-12" in a date column is cast to a date object, like Date.new(2004, 12, 12)). It raises
+  # <tt>ActiveModel::MissingAttributeError</tt> if the identified attribute is missing.
+  #
+  # Note: +:id+ is always present.
+  #
+  #   class Person < ActiveRecord::Base
+  #     belongs_to :organization
+  #   end
+  #
+  #   person = Person.new(name: 'Francesco', age: '22')
+  #   person[:name] # => "Francesco"
+  #   person[:age]  # => 22
+  #
+  #   person = Person.select('id').first
+  #   person[:name]            # => ActiveModel::MissingAttributeError: missing attribute: name
+  #   person[:organization_id] # => ActiveModel::MissingAttributeError: missing attribute: organization_id
+  def []: (untyped attr_name) -> untyped
+
+  # Updates the attribute identified by <tt>attr_name</tt> with the specified +value+.
+  # (Alias for the protected #write_attribute method).
+  #
+  #   class Person < ActiveRecord::Base
+  #   end
+  #
+  #   person = Person.new
+  #   person[:age] = '22'
+  #   person[:age] # => 22
+  #   person[:age].class # => Integer
+  def []=: (untyped attr_name, untyped value) -> untyped
+
+  # Returns the name of all database fields which have been read from this
+  # model. This can be useful in development mode to determine which fields
+  # need to be selected. For performance critical pages, selecting only the
+  # required fields can be an easy performance win (assuming you aren't using
+  # all of the fields on the model).
+  #
+  # For example:
+  #
+  #   class PostsController < ActionController::Base
+  #     after_action :print_accessed_fields, only: :index
+  #
+  #     def index
+  #       @posts = Post.all
+  #     end
+  #
+  #     private
+  #
+  #     def print_accessed_fields
+  #       p @posts.first.accessed_fields
+  #     end
+  #   end
+  #
+  # Which allows you to quickly change your code to:
+  #
+  #   class PostsController < ActionController::Base
+  #     def index
+  #       @posts = Post.select(:id, :title, :author_id, :updated_at)
+  #     end
+  #   end
+  def accessed_fields: () -> untyped
+
+  def attribute_method?: (untyped attr_name) -> untyped
+
+  def attributes_with_values: (untyped attribute_names) -> untyped
+
+  # Filters the primary keys and readonly attributes from the attribute names.
+  def attributes_for_update: (untyped attribute_names) -> untyped
+
+  # Filters out the primary keys, from the attribute names, when the primary
+  # key is to be generated (e.g. the id attribute has no value).
+  def attributes_for_create: (untyped attribute_names) -> untyped
+
+  def format_for_inspect: (untyped value) -> untyped
+
+  def readonly_attribute?: (untyped name) -> untyped
+
+  def pk_attribute?: (untyped name) -> untyped
+
+  extend ActiveSupport::Autoload
 end
 
 # = Active Record Attribute Methods Before Type Cast
@@ -4142,192 +4326,6 @@ module ActiveRecord::AttributeMethods::Query
 
   # Dispatch target for <tt>*?</tt> attribute methods.
   def attribute?: (untyped attribute_name) -> untyped
-end
-
-# = Active Record Attribute Methods
-module ActiveRecord::AttributeMethods
-  extend ActiveSupport::Concern
-
-  include ActiveModel::AttributeMethods
-
-  include Read
-
-  include Write
-
-  include BeforeTypeCast
-
-  include Query
-
-  include PrimaryKey
-
-  include TimeZoneConversion
-
-  include Dirty
-
-  include Serialization
-
-  # A Person object with a name attribute can ask <tt>person.respond_to?(:name)</tt>,
-  # <tt>person.respond_to?(:name=)</tt>, and <tt>person.respond_to?(:name?)</tt>
-  # which will all return +true+. It also defines the attribute methods if they have
-  # not been generated.
-  #
-  #   class Person < ActiveRecord::Base
-  #   end
-  #
-  #   person = Person.new
-  #   person.respond_to?(:name)    # => true
-  #   person.respond_to?(:name=)   # => true
-  #   person.respond_to?(:name?)   # => true
-  #   person.respond_to?('age')    # => true
-  #   person.respond_to?('age=')   # => true
-  #   person.respond_to?('age?')   # => true
-  #   person.respond_to?(:nothing) # => false
-  def respond_to?: (untyped name, ?bool include_private) -> (::FalseClass | untyped | ::TrueClass)
-
-  # Returns +true+ if the given attribute is in the attributes hash, otherwise +false+.
-  #
-  #   class Person < ActiveRecord::Base
-  #   end
-  #
-  #   person = Person.new
-  #   person.has_attribute?(:name)    # => true
-  #   person.has_attribute?('age')    # => true
-  #   person.has_attribute?(:nothing) # => false
-  def has_attribute?: (untyped attr_name) -> untyped
-
-  # Returns an array of names for the attributes available on this object.
-  #
-  #   class Person < ActiveRecord::Base
-  #   end
-  #
-  #   person = Person.new
-  #   person.attribute_names
-  #   # => ["id", "created_at", "updated_at", "name", "age"]
-  def attribute_names: () -> untyped
-
-  # Returns a hash of all the attributes with their names as keys and the values of the attributes as values.
-  #
-  #   class Person < ActiveRecord::Base
-  #   end
-  #
-  #   person = Person.create(name: 'Francesco', age: 22)
-  #   person.attributes
-  #   # => {"id"=>3, "created_at"=>Sun, 21 Oct 2012 04:53:04, "updated_at"=>Sun, 21 Oct 2012 04:53:04, "name"=>"Francesco", "age"=>22}
-  def attributes: () -> untyped
-
-  # Returns an <tt>#inspect</tt>-like string for the value of the
-  # attribute +attr_name+. String attributes are truncated up to 50
-  # characters, Date and Time attributes are returned in the
-  # <tt>:db</tt> format. Other attributes return the value of
-  # <tt>#inspect</tt> without modification.
-  #
-  #   person = Person.create!(name: 'David Heinemeier Hansson ' * 3)
-  #
-  #   person.attribute_for_inspect(:name)
-  #   # => "\"David Heinemeier Hansson David Heinemeier Hansson ...\""
-  #
-  #   person.attribute_for_inspect(:created_at)
-  #   # => "\"2012-10-22 00:15:07\""
-  #
-  #   person.attribute_for_inspect(:tag_ids)
-  #   # => "[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]"
-  def attribute_for_inspect: (untyped attr_name) -> untyped
-
-  # Returns +true+ if the specified +attribute+ has been set by the user or by a
-  # database load and is neither +nil+ nor <tt>empty?</tt> (the latter only applies
-  # to objects that respond to <tt>empty?</tt>, most notably Strings). Otherwise, +false+.
-  # Note that it always returns +true+ with boolean attributes.
-  #
-  #   class Task < ActiveRecord::Base
-  #   end
-  #
-  #   task = Task.new(title: '', is_done: false)
-  #   task.attribute_present?(:title)   # => false
-  #   task.attribute_present?(:is_done) # => true
-  #   task.title = 'Buy milk'
-  #   task.is_done = true
-  #   task.attribute_present?(:title)   # => true
-  #   task.attribute_present?(:is_done) # => true
-  def attribute_present?: (untyped attribute) -> untyped
-
-  # Returns the value of the attribute identified by <tt>attr_name</tt> after it has been typecast (for example,
-  # "2004-12-12" in a date column is cast to a date object, like Date.new(2004, 12, 12)). It raises
-  # <tt>ActiveModel::MissingAttributeError</tt> if the identified attribute is missing.
-  #
-  # Note: +:id+ is always present.
-  #
-  #   class Person < ActiveRecord::Base
-  #     belongs_to :organization
-  #   end
-  #
-  #   person = Person.new(name: 'Francesco', age: '22')
-  #   person[:name] # => "Francesco"
-  #   person[:age]  # => 22
-  #
-  #   person = Person.select('id').first
-  #   person[:name]            # => ActiveModel::MissingAttributeError: missing attribute: name
-  #   person[:organization_id] # => ActiveModel::MissingAttributeError: missing attribute: organization_id
-  def []: (untyped attr_name) -> untyped
-
-  # Updates the attribute identified by <tt>attr_name</tt> with the specified +value+.
-  # (Alias for the protected #write_attribute method).
-  #
-  #   class Person < ActiveRecord::Base
-  #   end
-  #
-  #   person = Person.new
-  #   person[:age] = '22'
-  #   person[:age] # => 22
-  #   person[:age].class # => Integer
-  def []=: (untyped attr_name, untyped value) -> untyped
-
-  # Returns the name of all database fields which have been read from this
-  # model. This can be useful in development mode to determine which fields
-  # need to be selected. For performance critical pages, selecting only the
-  # required fields can be an easy performance win (assuming you aren't using
-  # all of the fields on the model).
-  #
-  # For example:
-  #
-  #   class PostsController < ActionController::Base
-  #     after_action :print_accessed_fields, only: :index
-  #
-  #     def index
-  #       @posts = Post.all
-  #     end
-  #
-  #     private
-  #
-  #     def print_accessed_fields
-  #       p @posts.first.accessed_fields
-  #     end
-  #   end
-  #
-  # Which allows you to quickly change your code to:
-  #
-  #   class PostsController < ActionController::Base
-  #     def index
-  #       @posts = Post.select(:id, :title, :author_id, :updated_at)
-  #     end
-  #   end
-  def accessed_fields: () -> untyped
-
-  def attribute_method?: (untyped attr_name) -> untyped
-
-  def attributes_with_values: (untyped attribute_names) -> untyped
-
-  # Filters the primary keys and readonly attributes from the attribute names.
-  def attributes_for_update: (untyped attribute_names) -> untyped
-
-  # Filters out the primary keys, from the attribute names, when the primary
-  # key is to be generated (e.g. the id attribute has no value).
-  def attributes_for_create: (untyped attribute_names) -> untyped
-
-  def format_for_inspect: (untyped value) -> untyped
-
-  def readonly_attribute?: (untyped name) -> untyped
-
-  def pk_attribute?: (untyped name) -> untyped
 end
 
 ActiveRecord::AttributeMethods::RESTRICTED_CLASS_METHODS: ::Array[untyped]
@@ -4752,7 +4750,7 @@ module ActiveRecord::Attributes::ClassMethods
   #
   # +user_provided_default+ Whether the default value should be cast using
   # +cast+ or +deserialize+.
-  def define_attribute: (untyped name, untyped cast_type, ?default: untyped default, ?user_provided_default: bool user_provided_default) -> untyped
+  def define_attribute: (untyped name, untyped cast_type, ?user_provided_default: bool user_provided_default, ?default: untyped default) -> untyped
 
   def load_schema!: () -> untyped
 
@@ -5990,7 +5988,7 @@ class ActiveRecord::ConnectionAdapters::AbstractAdapter
 
   def log: (untyped sql, ?::String name, ?untyped binds, ?untyped type_casted_binds, ?untyped? statement_name) { () -> untyped } -> untyped
 
-  def translate_exception: (untyped exception, message: untyped message, sql: untyped sql, binds: untyped binds) -> untyped
+  def translate_exception: (untyped exception, binds: untyped binds, sql: untyped sql, message: untyped message) -> untyped
 
   def without_prepared_statement?: (untyped binds) -> untyped
 
@@ -6034,9 +6032,6 @@ end
 # {ActiveRecord::Base.connection_pool.disconnect!}[rdoc-ref:ConnectionAdapters::ConnectionPool#disconnect!]
 # or {ActiveRecord::Base.clear_reloadable_connections!}[rdoc-ref:ConnectionAdapters::ConnectionHandler#clear_reloadable_connections!].
 class ActiveRecord::ExclusiveConnectionTimeoutError < ConnectionTimeoutError
-end
-
-module ActiveRecord::ConnectionAdapters
 end
 
 module ActiveRecord::ConnectionAdapters::AbstractPool
@@ -6771,7 +6766,7 @@ module ActiveRecord::ConnectionAdapters::DatabaseStatements
   #
   # The mysql2 and postgresql adapters support setting the transaction
   # isolation level.
-  def transaction: (?requires_new: untyped? requires_new, ?isolation: untyped? isolation, ?joinable: bool joinable) { () -> untyped } -> untyped
+  def transaction: (?joinable: bool joinable, ?isolation: untyped? isolation, ?requires_new: untyped? requires_new) { () -> untyped } -> untyped
 
   attr_reader transaction_manager: untyped
 
@@ -7036,7 +7031,7 @@ class ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter < AbstractAdapter
 
   def extract_precision: (untyped sql_type) -> untyped
 
-  def translate_exception: (untyped exception, message: untyped message, sql: untyped sql, binds: untyped binds) -> untyped
+  def translate_exception: (untyped exception, binds: untyped binds, sql: untyped sql, message: untyped message) -> untyped
 
   def change_column_for_alter: (untyped table_name, untyped column_name, untyped `type`, ?::Hash[untyped, untyped] options) -> untyped
 
@@ -7058,7 +7053,7 @@ class ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter < AbstractAdapter
 
   def build_statement_pool: () -> untyped
 
-  def mismatched_foreign_key: (untyped message, sql: untyped sql, binds: untyped binds) -> untyped
+  def mismatched_foreign_key: (untyped message, binds: untyped binds, sql: untyped sql) -> untyped
 
   def version_string: (untyped full_version_string) -> untyped
 end
@@ -7266,9 +7261,6 @@ module ActiveRecord::ConnectionAdapters::Savepoints
   def release_savepoint: (?untyped name) -> untyped
 end
 
-class ActiveRecord::ConnectionAdapters::AbstractAdapter
-end
-
 class ActiveRecord::ConnectionAdapters::AbstractAdapter::SchemaCreation
   # :nodoc:
   def initialize: (untyped conn) -> untyped
@@ -7389,7 +7381,7 @@ class ActiveRecord::ConnectionAdapters::IndexDefinition
   # :nodoc:
   attr_reader comment: untyped
 
-  def initialize: (untyped table, untyped name, ?bool unique, ?untyped columns, ?lengths: ::Hash[untyped, untyped] lengths, ?orders: ::Hash[untyped, untyped] orders, ?opclasses: ::Hash[untyped, untyped] opclasses, ?where: untyped? where, ?type: untyped? `type`, ?using: untyped? using, ?comment: untyped? comment) -> untyped
+  def initialize: (untyped table, untyped name, ?bool unique, ?untyped columns, ?comment: untyped? comment, ?using: untyped? using, ?type: untyped? `type`, ?where: untyped? where, ?opclasses: ::Hash[untyped, untyped] opclasses, ?orders: ::Hash[untyped, untyped] orders, ?lengths: ::Hash[untyped, untyped] lengths) -> untyped
 
   def concise_options: (untyped options) -> untyped
 end
@@ -7406,7 +7398,7 @@ ActiveRecord::ConnectionAdapters::ForeignKeyDefinition: untyped
 
 class ActiveRecord::ConnectionAdapters::ReferenceDefinition
   # :nodoc:
-  def initialize: (untyped name, ?polymorphic: bool polymorphic, ?index: bool index, ?foreign_key: bool foreign_key, ?type: ::Symbol `type`, **untyped options) -> untyped
+  def initialize: (untyped name, ?type: ::Symbol `type`, ?foreign_key: bool foreign_key, ?index: bool index, ?polymorphic: bool polymorphic, **untyped options) -> untyped
 
   def add_to: (untyped table) -> untyped
 
@@ -7486,7 +7478,7 @@ class ActiveRecord::ConnectionAdapters::TableDefinition
 
   attr_reader foreign_keys: untyped
 
-  def initialize: (untyped conn, untyped name, ?temporary: bool temporary, ?if_not_exists: bool if_not_exists, ?options: untyped? options, ?as: untyped? as, ?comment: untyped? comment) -> untyped
+  def initialize: (untyped conn, untyped name, ?comment: untyped? comment, ?as: untyped? as, ?options: untyped? options, ?if_not_exists: bool if_not_exists, ?temporary: bool temporary) -> untyped
 
   def primary_keys: (?untyped? name) -> untyped
 
@@ -8576,7 +8568,7 @@ module ActiveRecord::ConnectionAdapters::SchemaStatements
   #
   #   remove_reference(:products, :user, foreign_key: true)
   #
-  def remove_reference: (untyped table_name, untyped ref_name, ?foreign_key: bool foreign_key, ?polymorphic: bool polymorphic, **untyped options) -> untyped
+  def remove_reference: (untyped table_name, untyped ref_name, ?polymorphic: bool polymorphic, ?foreign_key: bool foreign_key, **untyped options) -> untyped
 
   # Returns an array of foreign keys for the given table.
   # The foreign keys are represented as ForeignKeyDefinition objects.
@@ -8678,7 +8670,7 @@ module ActiveRecord::ConnectionAdapters::SchemaStatements
 
   def assume_migrated_upto_version: (untyped version, ?untyped? migrations_paths) -> untyped
 
-  def type_to_sql: (untyped `type`, ?limit: untyped? limit, ?precision: untyped? precision, ?scale: untyped? scale) -> untyped
+  def type_to_sql: (untyped `type`, ?scale: untyped? scale, ?precision: untyped? precision, ?limit: untyped? limit) -> untyped
 
   def columns_for_distinct: (untyped columns, untyped orders) -> untyped
 
@@ -8940,7 +8932,7 @@ class ActiveRecord::ConnectionAdapters::Column
   # +default+ is the type-casted default value, such as +new+ in <tt>sales_stage varchar(20) default 'new'</tt>.
   # +sql_type_metadata+ is various information about the type of the column
   # +null+ determines if this column allows +NULL+ values.
-  def initialize: (untyped name, untyped default, ?untyped? sql_type_metadata, ?bool null, ?untyped? default_function, ?collation: untyped? collation, ?comment: untyped? comment) -> untyped
+  def initialize: (untyped name, untyped default, ?untyped? sql_type_metadata, ?bool null, ?untyped? default_function, ?comment: untyped? comment, ?collation: untyped? collation) -> untyped
 
   def has_default?: () -> untyped
 
@@ -9137,6 +9129,157 @@ end
 module ActiveRecord::ConnectionHandling
   # Establishes a connection to the database that's used by all Active Record objects.
   def mysql2_connection: (untyped config) -> untyped
+
+  # :nodoc:
+  # Establishes a connection to the database that's used by all Active Record objects
+  def postgresql_connection: (untyped config) -> untyped
+
+  # :nodoc:
+  def sqlite3_connection: (untyped config) -> untyped
+
+  # Establishes the connection to the database. Accepts a hash as input where
+  # the <tt>:adapter</tt> key must be specified with the name of a database adapter (in lower-case)
+  # example for regular databases (MySQL, PostgreSQL, etc):
+  #
+  #   ActiveRecord::Base.establish_connection(
+  #     adapter:  "mysql2",
+  #     host:     "localhost",
+  #     username: "myuser",
+  #     password: "mypass",
+  #     database: "somedatabase"
+  #   )
+  #
+  # Example for SQLite database:
+  #
+  #   ActiveRecord::Base.establish_connection(
+  #     adapter:  "sqlite3",
+  #     database: "path/to/dbfile"
+  #   )
+  #
+  # Also accepts keys as strings (for parsing from YAML for example):
+  #
+  #   ActiveRecord::Base.establish_connection(
+  #     "adapter"  => "sqlite3",
+  #     "database" => "path/to/dbfile"
+  #   )
+  #
+  # Or a URL:
+  #
+  #   ActiveRecord::Base.establish_connection(
+  #     "postgres://myuser:mypass@localhost/somedatabase"
+  #   )
+  #
+  # In case {ActiveRecord::Base.configurations}[rdoc-ref:Core.configurations]
+  # is set (Rails automatically loads the contents of config/database.yml into it),
+  # a symbol can also be given as argument, representing a key in the
+  # configuration hash:
+  #
+  #   ActiveRecord::Base.establish_connection(:production)
+  #
+  # The exceptions AdapterNotSpecified, AdapterNotFound and +ArgumentError+
+  # may be returned on an error.
+  def establish_connection: (?untyped? config_or_env) -> untyped
+
+  # Connects a model to the databases specified. The +database+ keyword
+  # takes a hash consisting of a +role+ and a +database_key+.
+  #
+  # This will create a connection handler for switching between connections,
+  # look up the config hash using the +database_key+ and finally
+  # establishes a connection to that config.
+  #
+  #   class AnimalsModel < ApplicationRecord
+  #     self.abstract_class = true
+  #
+  #     connects_to database: { writing: :primary, reading: :primary_replica }
+  #   end
+  #
+  # Returns an array of established connections.
+  def connects_to: (?database: ::Hash[untyped, untyped] database) -> untyped
+
+  # Connects to a database or role (ex writing, reading, or another
+  # custom role) for the duration of the block.
+  #
+  # If a role is passed, Active Record will look up the connection
+  # based on the requested role:
+  #
+  #   ActiveRecord::Base.connected_to(role: :writing) do
+  #     Dog.create! # creates dog using dog writing connection
+  #   end
+  #
+  #   ActiveRecord::Base.connected_to(role: :reading) do
+  #     Dog.create! # throws exception because we're on a replica
+  #   end
+  #
+  #   ActiveRecord::Base.connected_to(role: :unknown_role) do
+  #     # raises exception due to non-existent role
+  #   end
+  #
+  # The `database` kwarg is deprecated in 6.1 and will be removed in 6.2
+  #
+  # It is not recommended for use as it re-establishes a connection every
+  # time it is called.
+  def connected_to: (?prevent_writes: bool prevent_writes, ?role: untyped? role, ?database: untyped? database) { () -> untyped } -> untyped
+
+  # Returns true if role is the current connected role.
+  #
+  #   ActiveRecord::Base.connected_to(role: :writing) do
+  #     ActiveRecord::Base.connected_to?(role: :writing) #=> true
+  #     ActiveRecord::Base.connected_to?(role: :reading) #=> false
+  #   end
+  def connected_to?: (role: untyped role) -> untyped
+
+  # Returns the symbol representing the current connected role.
+  #
+  #   ActiveRecord::Base.connected_to(role: :writing) do
+  #     ActiveRecord::Base.current_role #=> :writing
+  #   end
+  #
+  #   ActiveRecord::Base.connected_to(role: :reading) do
+  #     ActiveRecord::Base.current_role #=> :reading
+  #   end
+  def current_role: () -> untyped
+
+  def lookup_connection_handler: (untyped handler_key) -> untyped
+
+  def with_handler: (untyped handler_key) { () -> untyped } -> untyped
+
+  def resolve_config_for_connection: (untyped config_or_env) -> untyped
+
+  # Clears the query cache for all connections associated with the current thread.
+  def clear_query_caches_for_current_thread: () -> untyped
+
+  # Returns the connection currently associated with the class. This can
+  # also be used to "borrow" the connection to do database work unrelated
+  # to any of the specific Active Records.
+  def connection: () -> untyped
+
+  attr_writer connection_specification_name: untyped
+
+  # Return the specification name from the current class or its parent.
+  def connection_specification_name: () -> untyped
+
+  def primary_class?: () -> untyped
+
+  # Returns the configuration of the associated connection as a hash:
+  #
+  #  ActiveRecord::Base.connection_config
+  #  # => {pool: 5, timeout: 5000, database: "db/development.sqlite3", adapter: "sqlite3"}
+  #
+  # Please use only for reading.
+  def connection_config: () -> untyped
+
+  def connection_pool: () -> untyped
+
+  def retrieve_connection: () -> untyped
+
+  # Returns +true+ if Active Record is connected.
+  def connected?: () -> untyped
+
+  def remove_connection: (?untyped? name) -> untyped
+
+  def clear_cache!: () -> untyped
+
+  def swap_connection_handler: (untyped handler) { () -> untyped } -> untyped
 end
 
 # :nodoc:
@@ -9356,7 +9499,7 @@ module ActiveRecord::ConnectionAdapters::MySQL::SchemaStatements
   def create_schema_dumper: (untyped options) -> untyped
 
   # Maps logical Rails types to MySQL-specific data types.
-  def type_to_sql: (untyped `type`, ?limit: untyped? limit, ?precision: untyped? precision, ?scale: untyped? scale, ?size: untyped size, ?unsigned: untyped? unsigned) -> untyped
+  def type_to_sql: (untyped `type`, ?unsigned: untyped? unsigned, ?size: untyped size, ?scale: untyped? scale, ?precision: untyped? precision, ?limit: untyped? limit) -> untyped
 
   def table_alias_length: () -> 256
 
@@ -9405,12 +9548,6 @@ class ActiveRecord::ConnectionAdapters::MySQL::TypeMetadata
 end
 
 class PG::Connection
-end
-
-module ActiveRecord::ConnectionHandling
-  # :nodoc:
-  # Establishes a connection to the database that's used by all Active Record objects
-  def postgresql_connection: (untyped config) -> untyped
 end
 
 # The PostgreSQL adapter works with the native C (https://bitbucket.org/ged/ruby-pg) driver.
@@ -9558,7 +9695,7 @@ class ActiveRecord::ConnectionAdapters::PostgreSQLAdapter < AbstractAdapter
 
   def check_version: () -> untyped
 
-  def translate_exception: (untyped exception, message: untyped message, sql: untyped sql, binds: untyped binds) -> untyped
+  def translate_exception: (untyped exception, binds: untyped binds, sql: untyped sql, message: untyped message) -> untyped
 
   def get_oid_type: (untyped oid, untyped fmod, untyped column_name, ?::String sql_type) -> untyped
 
@@ -10359,7 +10496,7 @@ module ActiveRecord::ConnectionAdapters::PostgreSQL::SchemaStatements
 
   def foreign_table_exists?: (untyped table_name) -> untyped
 
-  def type_to_sql: (untyped `type`, ?limit: untyped? limit, ?precision: untyped? precision, ?scale: untyped? scale, ?array: untyped? array) -> untyped
+  def type_to_sql: (untyped `type`, ?array: untyped? array, ?scale: untyped? scale, ?precision: untyped? precision, ?limit: untyped? limit) -> untyped
 
   def columns_for_distinct: (untyped columns, untyped orders) -> untyped
 
@@ -10430,7 +10567,7 @@ class ActiveRecord::ConnectionAdapters::PostgreSQL::TypeMetadata
 
   attr_reader fmod: untyped
 
-  def initialize: (untyped type_metadata, ?oid: untyped? oid, ?fmod: untyped? fmod) -> untyped
+  def initialize: (untyped type_metadata, ?fmod: untyped? fmod, ?oid: untyped? oid) -> untyped
 
   def ==: (untyped other) -> untyped
 
@@ -10532,11 +10669,6 @@ class ActiveRecord::ConnectionAdapters::SchemaCache
   def marshal_load: (untyped array) -> untyped
 
   def prepare_data_sources: () -> untyped
-end
-
-module ActiveRecord::ConnectionHandling
-  # :nodoc:
-  def sqlite3_connection: (untyped config) -> untyped
 end
 
 # nodoc:
@@ -10666,7 +10798,7 @@ class ActiveRecord::ConnectionAdapters::SQLite3Adapter < AbstractAdapter
 
   def copy_table_contents: (untyped from, untyped to, untyped columns, ?::Hash[untyped, untyped] rename) -> untyped
 
-  def translate_exception: (untyped exception, message: untyped message, sql: untyped sql, binds: untyped binds) -> untyped
+  def translate_exception: (untyped exception, binds: untyped binds, sql: untyped sql, message: untyped message) -> untyped
 
   def table_structure_with_collation: (untyped table_name, untyped basic_structure) -> untyped
 
@@ -10815,7 +10947,7 @@ class ActiveRecord::ConnectionAdapters::SqlTypeMetadata
 
   attr_reader scale: untyped
 
-  def initialize: (?sql_type: untyped? sql_type, ?type: untyped? `type`, ?limit: untyped? limit, ?precision: untyped? precision, ?scale: untyped? scale) -> untyped
+  def initialize: (?scale: untyped? scale, ?precision: untyped? precision, ?limit: untyped? limit, ?type: untyped? `type`, ?sql_type: untyped? sql_type) -> untyped
 
   def ==: (untyped other) -> untyped
 
@@ -10848,152 +10980,6 @@ class ActiveRecord::ConnectionAdapters::StatementPool
 end
 
 ActiveRecord::ConnectionAdapters::StatementPool::DEFAULT_STATEMENT_LIMIT: ::Integer
-
-module ActiveRecord::ConnectionHandling
-  # Establishes the connection to the database. Accepts a hash as input where
-  # the <tt>:adapter</tt> key must be specified with the name of a database adapter (in lower-case)
-  # example for regular databases (MySQL, PostgreSQL, etc):
-  #
-  #   ActiveRecord::Base.establish_connection(
-  #     adapter:  "mysql2",
-  #     host:     "localhost",
-  #     username: "myuser",
-  #     password: "mypass",
-  #     database: "somedatabase"
-  #   )
-  #
-  # Example for SQLite database:
-  #
-  #   ActiveRecord::Base.establish_connection(
-  #     adapter:  "sqlite3",
-  #     database: "path/to/dbfile"
-  #   )
-  #
-  # Also accepts keys as strings (for parsing from YAML for example):
-  #
-  #   ActiveRecord::Base.establish_connection(
-  #     "adapter"  => "sqlite3",
-  #     "database" => "path/to/dbfile"
-  #   )
-  #
-  # Or a URL:
-  #
-  #   ActiveRecord::Base.establish_connection(
-  #     "postgres://myuser:mypass@localhost/somedatabase"
-  #   )
-  #
-  # In case {ActiveRecord::Base.configurations}[rdoc-ref:Core.configurations]
-  # is set (Rails automatically loads the contents of config/database.yml into it),
-  # a symbol can also be given as argument, representing a key in the
-  # configuration hash:
-  #
-  #   ActiveRecord::Base.establish_connection(:production)
-  #
-  # The exceptions AdapterNotSpecified, AdapterNotFound and +ArgumentError+
-  # may be returned on an error.
-  def establish_connection: (?untyped? config_or_env) -> untyped
-
-  # Connects a model to the databases specified. The +database+ keyword
-  # takes a hash consisting of a +role+ and a +database_key+.
-  #
-  # This will create a connection handler for switching between connections,
-  # look up the config hash using the +database_key+ and finally
-  # establishes a connection to that config.
-  #
-  #   class AnimalsModel < ApplicationRecord
-  #     self.abstract_class = true
-  #
-  #     connects_to database: { writing: :primary, reading: :primary_replica }
-  #   end
-  #
-  # Returns an array of established connections.
-  def connects_to: (?database: ::Hash[untyped, untyped] database) -> untyped
-
-  # Connects to a database or role (ex writing, reading, or another
-  # custom role) for the duration of the block.
-  #
-  # If a role is passed, Active Record will look up the connection
-  # based on the requested role:
-  #
-  #   ActiveRecord::Base.connected_to(role: :writing) do
-  #     Dog.create! # creates dog using dog writing connection
-  #   end
-  #
-  #   ActiveRecord::Base.connected_to(role: :reading) do
-  #     Dog.create! # throws exception because we're on a replica
-  #   end
-  #
-  #   ActiveRecord::Base.connected_to(role: :unknown_role) do
-  #     # raises exception due to non-existent role
-  #   end
-  #
-  # The `database` kwarg is deprecated in 6.1 and will be removed in 6.2
-  #
-  # It is not recommended for use as it re-establishes a connection every
-  # time it is called.
-  def connected_to: (?database: untyped? database, ?role: untyped? role, ?prevent_writes: bool prevent_writes) { () -> untyped } -> untyped
-
-  # Returns true if role is the current connected role.
-  #
-  #   ActiveRecord::Base.connected_to(role: :writing) do
-  #     ActiveRecord::Base.connected_to?(role: :writing) #=> true
-  #     ActiveRecord::Base.connected_to?(role: :reading) #=> false
-  #   end
-  def connected_to?: (role: untyped role) -> untyped
-
-  # Returns the symbol representing the current connected role.
-  #
-  #   ActiveRecord::Base.connected_to(role: :writing) do
-  #     ActiveRecord::Base.current_role #=> :writing
-  #   end
-  #
-  #   ActiveRecord::Base.connected_to(role: :reading) do
-  #     ActiveRecord::Base.current_role #=> :reading
-  #   end
-  def current_role: () -> untyped
-
-  def lookup_connection_handler: (untyped handler_key) -> untyped
-
-  def with_handler: (untyped handler_key) { () -> untyped } -> untyped
-
-  def resolve_config_for_connection: (untyped config_or_env) -> untyped
-
-  # Clears the query cache for all connections associated with the current thread.
-  def clear_query_caches_for_current_thread: () -> untyped
-
-  # Returns the connection currently associated with the class. This can
-  # also be used to "borrow" the connection to do database work unrelated
-  # to any of the specific Active Records.
-  def connection: () -> untyped
-
-  attr_writer connection_specification_name: untyped
-
-  # Return the specification name from the current class or its parent.
-  def connection_specification_name: () -> untyped
-
-  def primary_class?: () -> untyped
-
-  # Returns the configuration of the associated connection as a hash:
-  #
-  #  ActiveRecord::Base.connection_config
-  #  # => {pool: 5, timeout: 5000, database: "db/development.sqlite3", adapter: "sqlite3"}
-  #
-  # Please use only for reading.
-  def connection_config: () -> untyped
-
-  def connection_pool: () -> untyped
-
-  def retrieve_connection: () -> untyped
-
-  # Returns +true+ if Active Record is connected.
-  def connected?: () -> untyped
-
-  def remove_connection: (?untyped? name) -> untyped
-
-  def clear_cache!: () -> untyped
-
-  def swap_connection_handler: (untyped handler) { () -> untyped } -> untyped
-end
 
 ActiveRecord::ConnectionHandling::RAILS_ENV: untyped
 
@@ -11319,6 +11305,78 @@ module ActiveRecord::CounterCache::ClassMethods
 end
 
 class ActiveRecord::DatabaseConfigurations
+  attr_reader configurations: untyped
+
+  def initialize: (?::Hash[untyped, untyped] configurations) -> untyped
+
+  # Collects the configs for the environment and optionally the specification
+  # name passed in. To include replica configurations pass <tt>include_replicas: true</tt>.
+  #
+  # If a spec name is provided a single DatabaseConfig object will be
+  # returned, otherwise an array of DatabaseConfig objects will be
+  # returned that corresponds with the environment and type requested.
+  #
+  # ==== Options
+  #
+  # * <tt>env_name:</tt> The environment name. Defaults to +nil+ which will collect
+  #   configs for all environments.
+  # * <tt>spec_name:</tt> The specification name (i.e. primary, animals, etc.). Defaults
+  #   to +nil+.
+  # * <tt>include_replicas:</tt> Determines whether to include replicas in
+  #   the returned list. Most of the time we're only iterating over the write
+  #   connection (i.e. migrations don't need to run for the write and read connection).
+  #   Defaults to +false+.
+  def configs_for: (?include_replicas: bool include_replicas, ?spec_name: untyped? spec_name, ?env_name: untyped? env_name) -> untyped
+
+  # Returns the config hash that corresponds with the environment
+  #
+  # If the application has multiple databases +default_hash+ will
+  # return the first config hash for the environment.
+  #
+  #   { database: "my_db", adapter: "mysql2" }
+  def default_hash: (?untyped env) -> untyped
+
+  # Returns a single DatabaseConfig object based on the requested environment.
+  #
+  # If the application has multiple databases +find_db_config+ will return
+  # the first DatabaseConfig for the environment.
+  def find_db_config: (untyped env) -> untyped
+
+  # Returns the DatabaseConfigurations object as a Hash.
+  def to_h: () -> untyped
+
+  # Checks if the application's configurations are empty.
+  #
+  # Aliased to blank?
+  def empty?: () -> untyped
+
+  def each: () { (untyped) -> untyped } -> untyped
+
+  def first: () -> ::Array[untyped]
+
+  def env_with_configs: (?untyped? env) -> untyped
+
+  def build_configs: (untyped configs) -> untyped
+
+  def walk_configs: (untyped env_name, untyped config) -> untyped
+
+  def build_db_config_from_raw_config: (untyped env_name, untyped spec_name, untyped config) -> untyped
+
+  def build_db_config_from_string: (untyped env_name, untyped spec_name, untyped config) -> untyped
+
+  def build_db_config_from_hash: (untyped env_name, untyped spec_name, untyped config) -> untyped
+
+  def merge_db_environment_variables: (untyped current_env, untyped configs) -> untyped
+
+  def environment_url_config: (untyped env, untyped spec_name, untyped config) -> (nil | untyped)
+
+  def environment_value_for: (untyped spec_name) -> untyped
+
+  def method_missing: (untyped method, *untyped args) { () -> untyped } -> untyped
+
+  def throw_setter_deprecation: (untyped method) -> untyped
+
+  def throw_getter_deprecation: (untyped method) -> untyped
 end
 
 class ActiveRecord::DatabaseConfigurations::DatabaseConfig
@@ -11383,84 +11441,6 @@ class ActiveRecord::DatabaseConfigurations::HashConfig < DatabaseConfig
   # +migrations_paths+ key is present in the config, +migrations_paths+
   # will return its value.
   def migrations_paths: () -> untyped
-end
-
-# ActiveRecord::DatabaseConfigurations returns an array of DatabaseConfig
-# objects (either a HashConfig or UrlConfig) that are constructed from the
-# application's database configuration hash or URL string.
-class ActiveRecord::DatabaseConfigurations
-  attr_reader configurations: untyped
-
-  def initialize: (?::Hash[untyped, untyped] configurations) -> untyped
-
-  # Collects the configs for the environment and optionally the specification
-  # name passed in. To include replica configurations pass <tt>include_replicas: true</tt>.
-  #
-  # If a spec name is provided a single DatabaseConfig object will be
-  # returned, otherwise an array of DatabaseConfig objects will be
-  # returned that corresponds with the environment and type requested.
-  #
-  # ==== Options
-  #
-  # * <tt>env_name:</tt> The environment name. Defaults to +nil+ which will collect
-  #   configs for all environments.
-  # * <tt>spec_name:</tt> The specification name (i.e. primary, animals, etc.). Defaults
-  #   to +nil+.
-  # * <tt>include_replicas:</tt> Determines whether to include replicas in
-  #   the returned list. Most of the time we're only iterating over the write
-  #   connection (i.e. migrations don't need to run for the write and read connection).
-  #   Defaults to +false+.
-  def configs_for: (?env_name: untyped? env_name, ?spec_name: untyped? spec_name, ?include_replicas: bool include_replicas) -> untyped
-
-  # Returns the config hash that corresponds with the environment
-  #
-  # If the application has multiple databases +default_hash+ will
-  # return the first config hash for the environment.
-  #
-  #   { database: "my_db", adapter: "mysql2" }
-  def default_hash: (?untyped env) -> untyped
-
-  # Returns a single DatabaseConfig object based on the requested environment.
-  #
-  # If the application has multiple databases +find_db_config+ will return
-  # the first DatabaseConfig for the environment.
-  def find_db_config: (untyped env) -> untyped
-
-  # Returns the DatabaseConfigurations object as a Hash.
-  def to_h: () -> untyped
-
-  # Checks if the application's configurations are empty.
-  #
-  # Aliased to blank?
-  def empty?: () -> untyped
-
-  def each: () { (untyped) -> untyped } -> untyped
-
-  def first: () -> ::Array[untyped]
-
-  def env_with_configs: (?untyped? env) -> untyped
-
-  def build_configs: (untyped configs) -> untyped
-
-  def walk_configs: (untyped env_name, untyped config) -> untyped
-
-  def build_db_config_from_raw_config: (untyped env_name, untyped spec_name, untyped config) -> untyped
-
-  def build_db_config_from_string: (untyped env_name, untyped spec_name, untyped config) -> untyped
-
-  def build_db_config_from_hash: (untyped env_name, untyped spec_name, untyped config) -> untyped
-
-  def merge_db_environment_variables: (untyped current_env, untyped configs) -> untyped
-
-  def environment_url_config: (untyped env, untyped spec_name, untyped config) -> (nil | untyped)
-
-  def environment_value_for: (untyped spec_name) -> untyped
-
-  def method_missing: (untyped method, *untyped args) { () -> untyped } -> untyped
-
-  def throw_setter_deprecation: (untyped method) -> untyped
-
-  def throw_getter_deprecation: (untyped method) -> untyped
 end
 
 class ActiveRecord::DatabaseConfigurations::InvalidConfigurationError < StandardError
@@ -11600,7 +11580,7 @@ module ActiveRecord::Enum
 
   def detect_enum_conflict!: (untyped enum_name, untyped method_name, ?bool klass_method) -> untyped
 
-  def raise_conflict_error: (untyped enum_name, untyped method_name, ?type: ::String `type`, ?source: ::String source) -> untyped
+  def raise_conflict_error: (untyped enum_name, untyped method_name, ?source: ::String source, ?type: ::String `type`) -> untyped
 
   def detect_negative_condition!: (untyped method_name) -> untyped
 end
@@ -11717,7 +11697,7 @@ end
 #
 # Wraps the underlying database error as +cause+.
 class ActiveRecord::StatementInvalid < ActiveRecordError
-  def initialize: (?untyped? message, ?sql: untyped? sql, ?binds: untyped? binds) -> untyped
+  def initialize: (?untyped? message, ?binds: untyped? binds, ?sql: untyped? sql) -> untyped
 
   attr_reader sql: untyped
 
@@ -11740,7 +11720,7 @@ end
 
 # Raised when a foreign key constraint cannot be added because the column type does not match the referenced column type.
 class ActiveRecord::MismatchedForeignKey < StatementInvalid
-  def initialize: (?message: untyped? message, ?sql: untyped? sql, ?binds: untyped? binds, ?table: untyped? table, ?foreign_key: untyped? foreign_key, ?target_table: untyped? target_table, ?primary_key: untyped? primary_key, ?primary_key_column: untyped? primary_key_column) -> untyped
+  def initialize: (?primary_key_column: untyped? primary_key_column, ?primary_key: untyped? primary_key, ?target_table: untyped? target_table, ?foreign_key: untyped? foreign_key, ?table: untyped? table, ?binds: untyped? binds, ?sql: untyped? sql, ?message: untyped? message) -> untyped
 end
 
 # Raised when a record cannot be inserted or updated because it would violate a not null constraint.
@@ -12003,543 +11983,6 @@ ActiveRecord::ExplainSubscriber::IGNORED_PAYLOADS: ::Array[untyped]
 ActiveRecord::ExplainSubscriber::EXPLAINED_SQLS: untyped
 
 class ActiveRecord::FixtureSet
-end
-
-class ActiveRecord::FixtureSet::File
-  # :nodoc:
-  include Enumerable
-
-  #
-  # Open a fixture file named +file+.  When called with a block, the block
-  # is called with the filehandle and the filehandle is automatically closed
-  # when the block finishes.
-  def self.open: (untyped file) { (untyped) -> untyped } -> untyped
-
-  def initialize: (untyped file) -> untyped
-
-  def each: () { () -> untyped } -> untyped
-
-  def model_class: () -> untyped
-
-  def rows: () -> untyped
-
-  def config_row: () -> untyped
-
-  def raw_rows: () -> untyped
-
-  def prepare_erb: (untyped content) -> untyped
-
-  def render: (untyped content) -> untyped
-
-  # Validate our unmarshalled data.
-  def validate: (untyped data) -> untyped
-end
-
-class ActiveRecord::FixtureSet::ModelMetadata
-  # :nodoc:
-  def initialize: (untyped model_class) -> untyped
-
-  def primary_key_name: () -> untyped
-
-  def primary_key_type: () -> untyped
-
-  def has_primary_key_column?: () -> untyped
-
-  def timestamp_column_names: () -> untyped
-
-  def inheritance_column_name: () -> untyped
-end
-
-class ActiveRecord::FixtureSet::RenderContext
-  # NOTE: This class has to be defined in compact style in
-  # order for rendering context subclassing to work correctly.
-  # :nodoc:
-  def self.create_subclass: () -> untyped
-end
-
-class ActiveRecord::FixtureSet::TableRow
-  def initialize: (untyped fixture, table_rows: untyped table_rows, label: untyped label, now: untyped now) -> untyped
-
-  def to_hash: () -> untyped
-
-  def model_metadata: () -> untyped
-
-  def model_class: () -> untyped
-
-  def fill_row_model_attributes: () -> (nil | untyped)
-
-  def reflection_class: () -> untyped
-
-  def fill_timestamps: () -> untyped
-
-  def interpolate_label: () -> untyped
-
-  def generate_primary_key: () -> untyped
-
-  def resolve_enums: () -> untyped
-
-  def resolve_sti_reflections: () -> untyped
-
-  def add_join_records: (untyped association) -> untyped
-end
-
-class ActiveRecord::FixtureSet::TableRow::ReflectionProxy
-  # :nodoc:
-  # :nodoc:
-  def initialize: (untyped association) -> untyped
-
-  def join_table: () -> untyped
-
-  def name: () -> untyped
-
-  def primary_key_type: () -> untyped
-end
-
-class ActiveRecord::FixtureSet::TableRow::HasManyThroughProxy < ReflectionProxy
-  # :nodoc:
-  def rhs_key: () -> untyped
-
-  def lhs_key: () -> untyped
-
-  def join_table: () -> untyped
-end
-
-class ActiveRecord::FixtureSet::TableRows
-  # :nodoc:
-  def initialize: (untyped table_name, model_class: untyped model_class, fixtures: untyped fixtures, config: untyped config) -> untyped
-
-  attr_reader tables: untyped
-
-  attr_reader model_class: untyped
-
-  def to_hash: () -> untyped
-
-  def model_metadata: () -> untyped
-
-  def build_table_rows_from: (untyped table_name, untyped fixtures, untyped config) -> untyped
-end
-
-class ActiveRecord::FixtureClassNotFound < ActiveRecord::ActiveRecordError
-end
-
-# \Fixtures are a way of organizing data that you want to test against; in short, sample data.
-#
-# They are stored in YAML files, one file per model, which are placed in the directory
-# appointed by <tt>ActiveSupport::TestCase.fixture_path=(path)</tt> (this is automatically
-# configured for Rails, so you can just put your files in <tt><your-rails-app>/test/fixtures/</tt>).
-# The fixture file ends with the +.yml+ file extension, for example:
-# <tt><your-rails-app>/test/fixtures/web_sites.yml</tt>).
-#
-# The format of a fixture file looks like this:
-#
-#   rubyonrails:
-#     id: 1
-#     name: Ruby on Rails
-#     url: http://www.rubyonrails.org
-#
-#   google:
-#     id: 2
-#     name: Google
-#     url: http://www.google.com
-#
-# This fixture file includes two fixtures. Each YAML fixture (ie. record) is given a name and
-# is followed by an indented list of key/value pairs in the "key: value" format. Records are
-# separated by a blank line for your viewing pleasure.
-#
-# Note: Fixtures are unordered. If you want ordered fixtures, use the omap YAML type.
-# See http://yaml.org/type/omap.html
-# for the specification. You will need ordered fixtures when you have foreign key constraints
-# on keys in the same table. This is commonly needed for tree structures. Example:
-#
-#    --- !omap
-#    - parent:
-#        id:         1
-#        parent_id:  NULL
-#        title:      Parent
-#    - child:
-#        id:         2
-#        parent_id:  1
-#        title:      Child
-#
-# = Using Fixtures in Test Cases
-#
-# Since fixtures are a testing construct, we use them in our unit and functional tests. There
-# are two ways to use the fixtures, but first let's take a look at a sample unit test:
-#
-#   require 'test_helper'
-#
-#   class WebSiteTest < ActiveSupport::TestCase
-#     test "web_site_count" do
-#       assert_equal 2, WebSite.count
-#     end
-#   end
-#
-# By default, +test_helper.rb+ will load all of your fixtures into your test
-# database, so this test will succeed.
-#
-# The testing environment will automatically load all the fixtures into the database before each
-# test. To ensure consistent data, the environment deletes the fixtures before running the load.
-#
-# In addition to being available in the database, the fixture's data may also be accessed by
-# using a special dynamic method, which has the same name as the model.
-#
-# Passing in a fixture name to this dynamic method returns the fixture matching this name:
-#
-#   test "find one" do
-#     assert_equal "Ruby on Rails", web_sites(:rubyonrails).name
-#   end
-#
-# Passing in multiple fixture names returns all fixtures matching these names:
-#
-#   test "find all by name" do
-#     assert_equal 2, web_sites(:rubyonrails, :google).length
-#   end
-#
-# Passing in no arguments returns all fixtures:
-#
-#   test "find all" do
-#     assert_equal 2, web_sites.length
-#   end
-#
-# Passing in any fixture name that does not exist will raise <tt>StandardError</tt>:
-#
-#   test "find by name that does not exist" do
-#     assert_raise(StandardError) { web_sites(:reddit) }
-#   end
-#
-# Alternatively, you may enable auto-instantiation of the fixture data. For instance, take the
-# following tests:
-#
-#   test "find_alt_method_1" do
-#     assert_equal "Ruby on Rails", @web_sites['rubyonrails']['name']
-#   end
-#
-#   test "find_alt_method_2" do
-#     assert_equal "Ruby on Rails", @rubyonrails.name
-#   end
-#
-# In order to use these methods to access fixtured data within your test cases, you must specify one of the
-# following in your ActiveSupport::TestCase-derived class:
-#
-# - to fully enable instantiated fixtures (enable alternate methods #1 and #2 above)
-#     self.use_instantiated_fixtures = true
-#
-# - create only the hash for the fixtures, do not 'find' each instance (enable alternate method #1 only)
-#     self.use_instantiated_fixtures = :no_instances
-#
-# Using either of these alternate methods incurs a performance hit, as the fixtured data must be fully
-# traversed in the database to create the fixture hash and/or instance variables. This is expensive for
-# large sets of fixtured data.
-#
-# = Dynamic fixtures with ERB
-#
-# Sometimes you don't care about the content of the fixtures as much as you care about the volume.
-# In these cases, you can mix ERB in with your YAML fixtures to create a bunch of fixtures for load
-# testing, like:
-#
-#   <% 1.upto(1000) do |i| %>
-#   fix_<%= i %>:
-#     id: <%= i %>
-#     name: guy_<%= i %>
-#   <% end %>
-#
-# This will create 1000 very simple fixtures.
-#
-# Using ERB, you can also inject dynamic values into your fixtures with inserts like
-# <tt><%= Date.today.strftime("%Y-%m-%d") %></tt>.
-# This is however a feature to be used with some caution. The point of fixtures are that they're
-# stable units of predictable sample data. If you feel that you need to inject dynamic values, then
-# perhaps you should reexamine whether your application is properly testable. Hence, dynamic values
-# in fixtures are to be considered a code smell.
-#
-# Helper methods defined in a fixture will not be available in other fixtures, to prevent against
-# unwanted inter-test dependencies. Methods used by multiple fixtures should be defined in a module
-# that is included in ActiveRecord::FixtureSet.context_class.
-#
-# - define a helper method in <tt>test_helper.rb</tt>
-#     module FixtureFileHelpers
-#       def file_sha(path)
-#         Digest::SHA2.hexdigest(File.read(Rails.root.join('test/fixtures', path)))
-#       end
-#     end
-#     ActiveRecord::FixtureSet.context_class.include FixtureFileHelpers
-#
-# - use the helper method in a fixture
-#     photo:
-#       name: kitten.png
-#       sha: <%= file_sha 'files/kitten.png' %>
-#
-# = Transactional Tests
-#
-# Test cases can use begin+rollback to isolate their changes to the database instead of having to
-# delete+insert for every test case.
-#
-#   class FooTest < ActiveSupport::TestCase
-#     self.use_transactional_tests = true
-#
-#     test "godzilla" do
-#       assert_not_empty Foo.all
-#       Foo.destroy_all
-#       assert_empty Foo.all
-#     end
-#
-#     test "godzilla aftermath" do
-#       assert_not_empty Foo.all
-#     end
-#   end
-#
-# If you preload your test database with all fixture data (probably by running `rails db:fixtures:load`)
-# and use transactional tests, then you may omit all fixtures declarations in your test cases since
-# all the data's already there and every case rolls back its changes.
-#
-# In order to use instantiated fixtures with preloaded data, set +self.pre_loaded_fixtures+ to
-# true. This will provide access to fixture data for every table that has been loaded through
-# fixtures (depending on the value of +use_instantiated_fixtures+).
-#
-# When *not* to use transactional tests:
-#
-# 1. You're testing whether a transaction works correctly. Nested transactions don't commit until
-#    all parent transactions commit, particularly, the fixtures transaction which is begun in setup
-#    and rolled back in teardown. Thus, you won't be able to verify
-#    the results of your transaction until Active Record supports nested transactions or savepoints (in progress).
-# 2. Your database does not support transactions. Every Active Record database supports transactions except MySQL MyISAM.
-#    Use InnoDB, MaxDB, or NDB instead.
-#
-# = Advanced Fixtures
-#
-# Fixtures that don't specify an ID get some extra features:
-#
-# * Stable, autogenerated IDs
-# * Label references for associations (belongs_to, has_one, has_many)
-# * HABTM associations as inline lists
-#
-# There are some more advanced features available even if the id is specified:
-#
-# * Autofilled timestamp columns
-# * Fixture label interpolation
-# * Support for YAML defaults
-#
-# == Stable, Autogenerated IDs
-#
-# Here, have a monkey fixture:
-#
-#   george:
-#     id: 1
-#     name: George the Monkey
-#
-#   reginald:
-#     id: 2
-#     name: Reginald the Pirate
-#
-# Each of these fixtures has two unique identifiers: one for the database
-# and one for the humans. Why don't we generate the primary key instead?
-# Hashing each fixture's label yields a consistent ID:
-#
-#   george: # generated id: 503576764
-#     name: George the Monkey
-#
-#   reginald: # generated id: 324201669
-#     name: Reginald the Pirate
-#
-# Active Record looks at the fixture's model class, discovers the correct
-# primary key, and generates it right before inserting the fixture
-# into the database.
-#
-# The generated ID for a given label is constant, so we can discover
-# any fixture's ID without loading anything, as long as we know the label.
-#
-# == Label references for associations (belongs_to, has_one, has_many)
-#
-# Specifying foreign keys in fixtures can be very fragile, not to
-# mention difficult to read. Since Active Record can figure out the ID of
-# any fixture from its label, you can specify FK's by label instead of ID.
-#
-# === belongs_to
-#
-# Let's break out some more monkeys and pirates.
-#
-#   ### in pirates.yml
-#
-#   reginald:
-#     id: 1
-#     name: Reginald the Pirate
-#     monkey_id: 1
-#
-#   ### in monkeys.yml
-#
-#   george:
-#     id: 1
-#     name: George the Monkey
-#     pirate_id: 1
-#
-# Add a few more monkeys and pirates and break this into multiple files,
-# and it gets pretty hard to keep track of what's going on. Let's
-# use labels instead of IDs:
-#
-#   ### in pirates.yml
-#
-#   reginald:
-#     name: Reginald the Pirate
-#     monkey: george
-#
-#   ### in monkeys.yml
-#
-#   george:
-#     name: George the Monkey
-#     pirate: reginald
-#
-# Pow! All is made clear. Active Record reflects on the fixture's model class,
-# finds all the +belongs_to+ associations, and allows you to specify
-# a target *label* for the *association* (monkey: george) rather than
-# a target *id* for the *FK* (<tt>monkey_id: 1</tt>).
-#
-# ==== Polymorphic belongs_to
-#
-# Supporting polymorphic relationships is a little bit more complicated, since
-# Active Record needs to know what type your association is pointing at. Something
-# like this should look familiar:
-#
-#   ### in fruit.rb
-#
-#   belongs_to :eater, polymorphic: true
-#
-#   ### in fruits.yml
-#
-#   apple:
-#     id: 1
-#     name: apple
-#     eater_id: 1
-#     eater_type: Monkey
-#
-# Can we do better? You bet!
-#
-#   apple:
-#     eater: george (Monkey)
-#
-# Just provide the polymorphic target type and Active Record will take care of the rest.
-#
-# === has_and_belongs_to_many
-#
-# Time to give our monkey some fruit.
-#
-#   ### in monkeys.yml
-#
-#   george:
-#     id: 1
-#     name: George the Monkey
-#
-#   ### in fruits.yml
-#
-#   apple:
-#     id: 1
-#     name: apple
-#
-#   orange:
-#     id: 2
-#     name: orange
-#
-#   grape:
-#     id: 3
-#     name: grape
-#
-#   ### in fruits_monkeys.yml
-#
-#   apple_george:
-#     fruit_id: 1
-#     monkey_id: 1
-#
-#   orange_george:
-#     fruit_id: 2
-#     monkey_id: 1
-#
-#   grape_george:
-#     fruit_id: 3
-#     monkey_id: 1
-#
-# Let's make the HABTM fixture go away.
-#
-#   ### in monkeys.yml
-#
-#   george:
-#     id: 1
-#     name: George the Monkey
-#     fruits: apple, orange, grape
-#
-#   ### in fruits.yml
-#
-#   apple:
-#     name: apple
-#
-#   orange:
-#     name: orange
-#
-#   grape:
-#     name: grape
-#
-# Zap! No more fruits_monkeys.yml file. We've specified the list of fruits
-# on George's fixture, but we could've just as easily specified a list
-# of monkeys on each fruit. As with +belongs_to+, Active Record reflects on
-# the fixture's model class and discovers the +has_and_belongs_to_many+
-# associations.
-#
-# == Autofilled Timestamp Columns
-#
-# If your table/model specifies any of Active Record's
-# standard timestamp columns (+created_at+, +created_on+, +updated_at+, +updated_on+),
-# they will automatically be set to <tt>Time.now</tt>.
-#
-# If you've set specific values, they'll be left alone.
-#
-# == Fixture label interpolation
-#
-# The label of the current fixture is always available as a column value:
-#
-#   geeksomnia:
-#     name: Geeksomnia's Account
-#     subdomain: $LABEL
-#     email: $LABEL@email.com
-#
-# Also, sometimes (like when porting older join table fixtures) you'll need
-# to be able to get a hold of the identifier for a given label. ERB
-# to the rescue:
-#
-#   george_reginald:
-#     monkey_id: <%= ActiveRecord::FixtureSet.identify(:reginald) %>
-#     pirate_id: <%= ActiveRecord::FixtureSet.identify(:george) %>
-#
-# == Support for YAML defaults
-#
-# You can set and reuse defaults in your fixtures YAML file.
-# This is the same technique used in the +database.yml+ file to specify
-# defaults:
-#
-#   DEFAULTS: &DEFAULTS
-#     created_on: <%= 3.weeks.ago.to_s(:db) %>
-#
-#   first:
-#     name: Smurf
-#     <<: *DEFAULTS
-#
-#   second:
-#     name: Fraggle
-#     <<: *DEFAULTS
-#
-# Any fixture labeled "DEFAULTS" is safely ignored.
-#
-# == Configure the fixture model class
-#
-# It's possible to set the fixture's model class directly in the YAML file.
-# This is helpful when fixtures are loaded outside tests and
-# +set_fixture_class+ is not available (e.g.
-# when running <tt>rails db:fixtures:load</tt>).
-#
-#   _fixture:
-#     model_class: User
-#   david:
-#     name: David
-#
-# Any fixtures labeled "_fixture" are safely ignored.
-class ActiveRecord::FixtureSet
   def self.default_fixture_model_name: (untyped fixture_set_name, ?untyped config) -> untyped
 
   def self.default_fixture_table_name: (untyped fixture_set_name, ?untyped config) -> untyped
@@ -12607,6 +12050,123 @@ class ActiveRecord::FixtureSet
   def yaml_file_path: (untyped path) -> ::String
 end
 
+class ActiveRecord::FixtureSet::File
+  # :nodoc:
+  include Enumerable
+
+  #
+  # Open a fixture file named +file+.  When called with a block, the block
+  # is called with the filehandle and the filehandle is automatically closed
+  # when the block finishes.
+  def self.open: (untyped file) { (untyped) -> untyped } -> untyped
+
+  def initialize: (untyped file) -> untyped
+
+  def each: () { () -> untyped } -> untyped
+
+  def model_class: () -> untyped
+
+  def rows: () -> untyped
+
+  def config_row: () -> untyped
+
+  def raw_rows: () -> untyped
+
+  def prepare_erb: (untyped content) -> untyped
+
+  def render: (untyped content) -> untyped
+
+  # Validate our unmarshalled data.
+  def validate: (untyped data) -> untyped
+end
+
+class ActiveRecord::FixtureSet::ModelMetadata
+  # :nodoc:
+  def initialize: (untyped model_class) -> untyped
+
+  def primary_key_name: () -> untyped
+
+  def primary_key_type: () -> untyped
+
+  def has_primary_key_column?: () -> untyped
+
+  def timestamp_column_names: () -> untyped
+
+  def inheritance_column_name: () -> untyped
+end
+
+class ActiveRecord::FixtureSet::RenderContext
+  # NOTE: This class has to be defined in compact style in
+  # order for rendering context subclassing to work correctly.
+  # :nodoc:
+  def self.create_subclass: () -> untyped
+end
+
+class ActiveRecord::FixtureSet::TableRow
+  def initialize: (untyped fixture, now: untyped now, label: untyped label, table_rows: untyped table_rows) -> untyped
+
+  def to_hash: () -> untyped
+
+  def model_metadata: () -> untyped
+
+  def model_class: () -> untyped
+
+  def fill_row_model_attributes: () -> (nil | untyped)
+
+  def reflection_class: () -> untyped
+
+  def fill_timestamps: () -> untyped
+
+  def interpolate_label: () -> untyped
+
+  def generate_primary_key: () -> untyped
+
+  def resolve_enums: () -> untyped
+
+  def resolve_sti_reflections: () -> untyped
+
+  def add_join_records: (untyped association) -> untyped
+end
+
+class ActiveRecord::FixtureSet::TableRow::ReflectionProxy
+  # :nodoc:
+  # :nodoc:
+  def initialize: (untyped association) -> untyped
+
+  def join_table: () -> untyped
+
+  def name: () -> untyped
+
+  def primary_key_type: () -> untyped
+end
+
+class ActiveRecord::FixtureSet::TableRow::HasManyThroughProxy < ReflectionProxy
+  # :nodoc:
+  def rhs_key: () -> untyped
+
+  def lhs_key: () -> untyped
+
+  def join_table: () -> untyped
+end
+
+class ActiveRecord::FixtureSet::TableRows
+  # :nodoc:
+  def initialize: (untyped table_name, config: untyped config, fixtures: untyped fixtures, model_class: untyped model_class) -> untyped
+
+  attr_reader tables: untyped
+
+  attr_reader model_class: untyped
+
+  def to_hash: () -> untyped
+
+  def model_metadata: () -> untyped
+
+  def build_table_rows_from: (untyped table_name, untyped fixtures, untyped config) -> untyped
+end
+
+class ActiveRecord::FixtureClassNotFound < ActiveRecord::ActiveRecordError
+end
+
 ActiveRecord::FixtureSet::MAX_ID: untyped
 
 class ActiveRecord::FixtureSet::ClassCache
@@ -12642,11 +12202,6 @@ class ActiveRecord::Fixture::FixtureError < StandardError
 end
 
 class ActiveRecord::Fixture::FormatError < FixtureError
-end
-
-module ActiveRecord
-  # Returns the version of the currently loaded Active Record as a <tt>Gem::Version</tt>
-  def self.gem_version: () -> untyped
 end
 
 module ActiveRecord::VERSION
@@ -12825,7 +12380,7 @@ class ActiveRecord::InsertAll
 
   attr_reader unique_by: untyped
 
-  def initialize: (untyped model, untyped inserts, on_duplicate: untyped on_duplicate, ?returning: untyped? returning, ?unique_by: untyped? unique_by) -> untyped
+  def initialize: (untyped model, untyped inserts, on_duplicate: untyped on_duplicate, ?unique_by: untyped? unique_by, ?returning: untyped? returning) -> untyped
 
   def execute: () -> untyped
 
@@ -13021,6 +12576,7 @@ module ActiveRecord::LegacyYamlAdapter::Rails41
 end
 
 module ActiveRecord::Locking
+  extend ActiveSupport::Autoload
 end
 
 # == What is Optimistic Locking
@@ -13222,6 +12778,7 @@ end
 ActiveRecord::LogSubscriber::IGNORE_PAYLOAD_NAMES: ::Array[untyped]
 
 module ActiveRecord::Middleware
+  extend ActiveSupport::Autoload
 end
 
 # The DatabaseSelector Middleware provides a framework for automatically
@@ -13272,9 +12829,6 @@ class ActiveRecord::Middleware::DatabaseSelector
   def reading_request?: (untyped request) -> untyped
 end
 
-class ActiveRecord::Middleware::DatabaseSelector
-end
-
 class ActiveRecord::Middleware::DatabaseSelector::Resolver
   def self.call: (untyped context, ?::Hash[untyped, untyped] options) -> untyped
 
@@ -13316,9 +12870,6 @@ end
 # :nodoc:
 ActiveRecord::Middleware::DatabaseSelector::Resolver::SEND_TO_REPLICA_DELAY: untyped
 
-class ActiveRecord::Middleware::DatabaseSelector::Resolver
-end
-
 class ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
   # The session class is used by the DatabaseSelector::Resolver to save
   # timestamps of the last write in the session.
@@ -13345,6 +12896,177 @@ class ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
 end
 
 class ActiveRecord::Migration
+  def self.inherited: (untyped subclass) -> untyped
+
+  def self.[]: (untyped version) -> untyped
+
+  def self.current_version: () -> untyped
+
+  attr_accessor delegate: untyped
+
+  attr_accessor disable_ddl_transaction: untyped
+
+  def self.nearest_delegate: () -> untyped
+
+  # Raises <tt>ActiveRecord::PendingMigrationError</tt> error if any migrations are pending.
+  def self.check_pending!: (?untyped connection) -> untyped
+
+  def self.load_schema_if_pending!: () -> untyped
+
+  def self.maintain_test_schema!: () -> untyped
+
+  def self.method_missing: (untyped name, *untyped args) { () -> untyped } -> untyped
+
+  def self.migrate: (untyped direction) -> untyped
+
+  # Disable the transaction wrapping this migration.
+  # You can still create your own transactions even after calling #disable_ddl_transaction!
+  #
+  # For more details read the {"Transactional Migrations" section above}[rdoc-ref:Migration].
+  def self.disable_ddl_transaction!: () -> untyped
+
+  def disable_ddl_transaction: () -> untyped
+
+  attr_accessor name: untyped
+
+  attr_accessor version: untyped
+
+  def initialize: (?untyped name, ?untyped? version) -> untyped
+
+  # Reverses the migration commands for the given block and
+  # the given migrations.
+  #
+  # The following migration will remove the table 'horses'
+  # and create the table 'apples' on the way up, and the reverse
+  # on the way down.
+  #
+  #   class FixTLMigration < ActiveRecord::Migration[5.0]
+  #     def change
+  #       revert do
+  #         create_table(:horses) do |t|
+  #           t.text :content
+  #           t.datetime :remind_at
+  #         end
+  #       end
+  #       create_table(:apples) do |t|
+  #         t.string :variety
+  #       end
+  #     end
+  #   end
+  #
+  # Or equivalently, if +TenderloveMigration+ is defined as in the
+  # documentation for Migration:
+  #
+  #   require_relative '20121212123456_tenderlove_migration'
+  #
+  #   class FixupTLMigration < ActiveRecord::Migration[5.0]
+  #     def change
+  #       revert TenderloveMigration
+  #
+  #       create_table(:apples) do |t|
+  #         t.string :variety
+  #       end
+  #     end
+  #   end
+  #
+  # This command can be nested.
+  def revert: (*untyped migration_classes) { () -> untyped } -> untyped
+
+  def reverting?: () -> untyped
+
+  # Used to specify an operation that can be run in one direction or another.
+  # Call the methods +up+ and +down+ of the yielded object to run a block
+  # only in one given direction.
+  # The whole block will be called in the right order within the migration.
+  #
+  # In the following example, the looping on users will always be done
+  # when the three columns 'first_name', 'last_name' and 'full_name' exist,
+  # even when migrating down:
+  #
+  #    class SplitNameMigration < ActiveRecord::Migration[5.0]
+  #      def change
+  #        add_column :users, :first_name, :string
+  #        add_column :users, :last_name, :string
+  #
+  #        reversible do |dir|
+  #          User.reset_column_information
+  #          User.all.each do |u|
+  #            dir.up   { u.first_name, u.last_name = u.full_name.split(' ') }
+  #            dir.down { u.full_name = "#{u.first_name} #{u.last_name}" }
+  #            u.save
+  #          end
+  #        end
+  #
+  #        revert { add_column :users, :full_name, :string }
+  #      end
+  #    end
+  def reversible: () { (untyped) -> untyped } -> untyped
+
+  # Used to specify an operation that is only run when migrating up
+  # (for example, populating a new column with its initial values).
+  #
+  # In the following example, the new column +published+ will be given
+  # the value +true+ for all existing records.
+  #
+  #    class AddPublishedToPosts < ActiveRecord::Migration[5.2]
+  #      def change
+  #        add_column :posts, :published, :boolean, default: false
+  #        up_only do
+  #          execute "update posts set published = 'true'"
+  #        end
+  #      end
+  #    end
+  def up_only: () { () -> untyped } -> untyped
+
+  # Runs the given migration classes.
+  # Last argument can specify options:
+  # - :direction (default is :up)
+  # - :revert (default is false)
+  def run: (*untyped migration_classes) -> untyped
+
+  def up: () -> (nil | untyped)
+
+  def down: () -> (nil | untyped)
+
+  # Execute this migration in the named direction
+  def migrate: (untyped direction) -> (nil | untyped)
+
+  def exec_migration: (untyped conn, untyped direction) -> untyped
+
+  def write: (?::String text) -> untyped
+
+  def announce: (untyped message) -> untyped
+
+  # Takes a message argument and outputs it as is.
+  # A second boolean argument can be passed to specify whether to indent or not.
+  def say: (untyped message, ?bool subitem) -> untyped
+
+  # Outputs text along with how long it took to run its block.
+  # If the block returns an integer it assumes it is the number of rows affected.
+  def say_with_time: (untyped message) { () -> untyped } -> untyped
+
+  # Takes a block as an argument and suppresses any output generated by the block.
+  def suppress_messages: () { () -> untyped } -> untyped
+
+  def connection: () -> untyped
+
+  def method_missing: (untyped method, *untyped arguments) { () -> untyped } -> untyped
+
+  def copy: (untyped destination, untyped sources, ?::Hash[untyped, untyped] options) -> untyped
+
+  # Finds the correct table name given an Active Record object.
+  # Uses the Active Record object's own table_name, or pre/suffix from the
+  # options passed in.
+  def proper_table_name: (untyped name, ?::Hash[untyped, untyped] options) -> untyped
+
+  # Determines the version number of the next migration.
+  def next_migration_number: (untyped number) -> untyped
+
+  def table_name_options: (?untyped config) -> { table_name_prefix: untyped, table_name_suffix: untyped }
+
+  def execute_block: () { () -> untyped } -> untyped
+
+  def command_recorder: () -> untyped
 end
 
 # <tt>ActiveRecord::Migration::CommandRecorder</tt> records commands done during
@@ -13663,514 +13385,7 @@ class ActiveRecord::ProtectedEnvironmentError < ActiveRecordError
 end
 
 class ActiveRecord::EnvironmentMismatchError < ActiveRecordError
-  def initialize: (?current: untyped? current, ?stored: untyped? stored) -> untyped
-end
-
-# = Active Record Migrations
-#
-# Migrations can manage the evolution of a schema used by several physical
-# databases. It's a solution to the common problem of adding a field to make
-# a new feature work in your local database, but being unsure of how to
-# push that change to other developers and to the production server. With
-# migrations, you can describe the transformations in self-contained classes
-# that can be checked into version control systems and executed against
-# another database that might be one, two, or five versions behind.
-#
-# Example of a simple migration:
-#
-#   class AddSsl < ActiveRecord::Migration[5.0]
-#     def up
-#       add_column :accounts, :ssl_enabled, :boolean, default: true
-#     end
-#
-#     def down
-#       remove_column :accounts, :ssl_enabled
-#     end
-#   end
-#
-# This migration will add a boolean flag to the accounts table and remove it
-# if you're backing out of the migration. It shows how all migrations have
-# two methods +up+ and +down+ that describes the transformations
-# required to implement or remove the migration. These methods can consist
-# of both the migration specific methods like +add_column+ and +remove_column+,
-# but may also contain regular Ruby code for generating data needed for the
-# transformations.
-#
-# Example of a more complex migration that also needs to initialize data:
-#
-#   class AddSystemSettings < ActiveRecord::Migration[5.0]
-#     def up
-#       create_table :system_settings do |t|
-#         t.string  :name
-#         t.string  :label
-#         t.text    :value
-#         t.string  :type
-#         t.integer :position
-#       end
-#
-#       SystemSetting.create  name:  'notice',
-#                             label: 'Use notice?',
-#                             value: 1
-#     end
-#
-#     def down
-#       drop_table :system_settings
-#     end
-#   end
-#
-# This migration first adds the +system_settings+ table, then creates the very
-# first row in it using the Active Record model that relies on the table. It
-# also uses the more advanced +create_table+ syntax where you can specify a
-# complete table schema in one block call.
-#
-# == Available transformations
-#
-# === Creation
-#
-# * <tt>create_join_table(table_1, table_2, options)</tt>: Creates a join
-#   table having its name as the lexical order of the first two
-#   arguments. See
-#   ActiveRecord::ConnectionAdapters::SchemaStatements#create_join_table for
-#   details.
-# * <tt>create_table(name, options)</tt>: Creates a table called +name+ and
-#   makes the table object available to a block that can then add columns to it,
-#   following the same format as +add_column+. See example above. The options hash
-#   is for fragments like "DEFAULT CHARSET=UTF-8" that are appended to the create
-#   table definition.
-# * <tt>add_column(table_name, column_name, type, options)</tt>: Adds a new column
-#   to the table called +table_name+
-#   named +column_name+ specified to be one of the following types:
-#   <tt>:string</tt>, <tt>:text</tt>, <tt>:integer</tt>, <tt>:float</tt>,
-#   <tt>:decimal</tt>, <tt>:datetime</tt>, <tt>:timestamp</tt>, <tt>:time</tt>,
-#   <tt>:date</tt>, <tt>:binary</tt>, <tt>:boolean</tt>. A default value can be
-#   specified by passing an +options+ hash like <tt>{ default: 11 }</tt>.
-#   Other options include <tt>:limit</tt> and <tt>:null</tt> (e.g.
-#   <tt>{ limit: 50, null: false }</tt>) -- see
-#   ActiveRecord::ConnectionAdapters::TableDefinition#column for details.
-# * <tt>add_foreign_key(from_table, to_table, options)</tt>: Adds a new
-#   foreign key. +from_table+ is the table with the key column, +to_table+ contains
-#   the referenced primary key.
-# * <tt>add_index(table_name, column_names, options)</tt>: Adds a new index
-#   with the name of the column. Other options include
-#   <tt>:name</tt>, <tt>:unique</tt> (e.g.
-#   <tt>{ name: 'users_name_index', unique: true }</tt>) and <tt>:order</tt>
-#   (e.g. <tt>{ order: { name: :desc } }</tt>).
-# * <tt>add_reference(:table_name, :reference_name)</tt>: Adds a new column
-#   +reference_name_id+ by default an integer. See
-#   ActiveRecord::ConnectionAdapters::SchemaStatements#add_reference for details.
-# * <tt>add_timestamps(table_name, options)</tt>: Adds timestamps (+created_at+
-#   and +updated_at+) columns to +table_name+.
-#
-# === Modification
-#
-# * <tt>change_column(table_name, column_name, type, options)</tt>:  Changes
-#   the column to a different type using the same parameters as add_column.
-# * <tt>change_column_default(table_name, column_name, default_or_changes)</tt>:
-#   Sets a default value for +column_name+ defined by +default_or_changes+ on
-#   +table_name+. Passing a hash containing <tt>:from</tt> and <tt>:to</tt>
-#   as +default_or_changes+ will make this change reversible in the migration.
-# * <tt>change_column_null(table_name, column_name, null, default = nil)</tt>:
-#   Sets or removes a +NOT NULL+ constraint on +column_name+. The +null+ flag
-#   indicates whether the value can be +NULL+. See
-#   ActiveRecord::ConnectionAdapters::SchemaStatements#change_column_null for
-#   details.
-# * <tt>change_table(name, options)</tt>: Allows to make column alterations to
-#   the table called +name+. It makes the table object available to a block that
-#   can then add/remove columns, indexes or foreign keys to it.
-# * <tt>rename_column(table_name, column_name, new_column_name)</tt>: Renames
-#   a column but keeps the type and content.
-# * <tt>rename_index(table_name, old_name, new_name)</tt>: Renames an index.
-# * <tt>rename_table(old_name, new_name)</tt>: Renames the table called +old_name+
-#   to +new_name+.
-#
-# === Deletion
-#
-# * <tt>drop_table(name)</tt>: Drops the table called +name+.
-# * <tt>drop_join_table(table_1, table_2, options)</tt>: Drops the join table
-#   specified by the given arguments.
-# * <tt>remove_column(table_name, column_name, type, options)</tt>: Removes the column
-#   named +column_name+ from the table called +table_name+.
-# * <tt>remove_columns(table_name, *column_names)</tt>: Removes the given
-#   columns from the table definition.
-# * <tt>remove_foreign_key(from_table, to_table = nil, **options)</tt>: Removes the
-#   given foreign key from the table called +table_name+.
-# * <tt>remove_index(table_name, column: column_names)</tt>: Removes the index
-#   specified by +column_names+.
-# * <tt>remove_index(table_name, name: index_name)</tt>: Removes the index
-#   specified by +index_name+.
-# * <tt>remove_reference(table_name, ref_name, options)</tt>: Removes the
-#   reference(s) on +table_name+ specified by +ref_name+.
-# * <tt>remove_timestamps(table_name, options)</tt>: Removes the timestamp
-#   columns (+created_at+ and +updated_at+) from the table definition.
-#
-# == Irreversible transformations
-#
-# Some transformations are destructive in a manner that cannot be reversed.
-# Migrations of that kind should raise an <tt>ActiveRecord::IrreversibleMigration</tt>
-# exception in their +down+ method.
-#
-# == Running migrations from within Rails
-#
-# The Rails package has several tools to help create and apply migrations.
-#
-# To generate a new migration, you can use
-#   rails generate migration MyNewMigration
-#
-# where MyNewMigration is the name of your migration. The generator will
-# create an empty migration file <tt>timestamp_my_new_migration.rb</tt>
-# in the <tt>db/migrate/</tt> directory where <tt>timestamp</tt> is the
-# UTC formatted date and time that the migration was generated.
-#
-# There is a special syntactic shortcut to generate migrations that add fields to a table.
-#
-#   rails generate migration add_fieldname_to_tablename fieldname:string
-#
-# This will generate the file <tt>timestamp_add_fieldname_to_tablename.rb</tt>, which will look like this:
-#   class AddFieldnameToTablename < ActiveRecord::Migration[5.0]
-#     def change
-#       add_column :tablenames, :fieldname, :string
-#     end
-#   end
-#
-# To run migrations against the currently configured database, use
-# <tt>rails db:migrate</tt>. This will update the database by running all of the
-# pending migrations, creating the <tt>schema_migrations</tt> table
-# (see "About the schema_migrations table" section below) if missing. It will also
-# invoke the db:schema:dump command, which will update your db/schema.rb file
-# to match the structure of your database.
-#
-# To roll the database back to a previous migration version, use
-# <tt>rails db:rollback VERSION=X</tt> where <tt>X</tt> is the version to which
-# you wish to downgrade. Alternatively, you can also use the STEP option if you
-# wish to rollback last few migrations. <tt>rails db:rollback STEP=2</tt> will rollback
-# the latest two migrations.
-#
-# If any of the migrations throw an <tt>ActiveRecord::IrreversibleMigration</tt> exception,
-# that step will fail and you'll have some manual work to do.
-#
-# == Database support
-#
-# Migrations are currently supported in MySQL, PostgreSQL, SQLite,
-# SQL Server, and Oracle (all supported databases except DB2).
-#
-# == More examples
-#
-# Not all migrations change the schema. Some just fix the data:
-#
-#   class RemoveEmptyTags < ActiveRecord::Migration[5.0]
-#     def up
-#       Tag.all.each { |tag| tag.destroy if tag.pages.empty? }
-#     end
-#
-#     def down
-#       # not much we can do to restore deleted data
-#       raise ActiveRecord::IrreversibleMigration, "Can't recover the deleted tags"
-#     end
-#   end
-#
-# Others remove columns when they migrate up instead of down:
-#
-#   class RemoveUnnecessaryItemAttributes < ActiveRecord::Migration[5.0]
-#     def up
-#       remove_column :items, :incomplete_items_count
-#       remove_column :items, :completed_items_count
-#     end
-#
-#     def down
-#       add_column :items, :incomplete_items_count
-#       add_column :items, :completed_items_count
-#     end
-#   end
-#
-# And sometimes you need to do something in SQL not abstracted directly by migrations:
-#
-#   class MakeJoinUnique < ActiveRecord::Migration[5.0]
-#     def up
-#       execute "ALTER TABLE `pages_linked_pages` ADD UNIQUE `page_id_linked_page_id` (`page_id`,`linked_page_id`)"
-#     end
-#
-#     def down
-#       execute "ALTER TABLE `pages_linked_pages` DROP INDEX `page_id_linked_page_id`"
-#     end
-#   end
-#
-# == Using a model after changing its table
-#
-# Sometimes you'll want to add a column in a migration and populate it
-# immediately after. In that case, you'll need to make a call to
-# <tt>Base#reset_column_information</tt> in order to ensure that the model has the
-# latest column data from after the new column was added. Example:
-#
-#   class AddPeopleSalary < ActiveRecord::Migration[5.0]
-#     def up
-#       add_column :people, :salary, :integer
-#       Person.reset_column_information
-#       Person.all.each do |p|
-#         p.update_attribute :salary, SalaryCalculator.compute(p)
-#       end
-#     end
-#   end
-#
-# == Controlling verbosity
-#
-# By default, migrations will describe the actions they are taking, writing
-# them to the console as they happen, along with benchmarks describing how
-# long each step took.
-#
-# You can quiet them down by setting ActiveRecord::Migration.verbose = false.
-#
-# You can also insert your own messages and benchmarks by using the +say_with_time+
-# method:
-#
-#   def up
-#     ...
-#     say_with_time "Updating salaries..." do
-#       Person.all.each do |p|
-#         p.update_attribute :salary, SalaryCalculator.compute(p)
-#       end
-#     end
-#     ...
-#   end
-#
-# The phrase "Updating salaries..." would then be printed, along with the
-# benchmark for the block when the block completes.
-#
-# == Timestamped Migrations
-#
-# By default, Rails generates migrations that look like:
-#
-#    20080717013526_your_migration_name.rb
-#
-# The prefix is a generation timestamp (in UTC).
-#
-# If you'd prefer to use numeric prefixes, you can turn timestamped migrations
-# off by setting:
-#
-#    config.active_record.timestamped_migrations = false
-#
-# In application.rb.
-#
-# == Reversible Migrations
-#
-# Reversible migrations are migrations that know how to go +down+ for you.
-# You simply supply the +up+ logic, and the Migration system figures out
-# how to execute the down commands for you.
-#
-# To define a reversible migration, define the +change+ method in your
-# migration like this:
-#
-#   class TenderloveMigration < ActiveRecord::Migration[5.0]
-#     def change
-#       create_table(:horses) do |t|
-#         t.column :content, :text
-#         t.column :remind_at, :datetime
-#       end
-#     end
-#   end
-#
-# This migration will create the horses table for you on the way up, and
-# automatically figure out how to drop the table on the way down.
-#
-# Some commands cannot be reversed. If you care to define how to move up
-# and down in these cases, you should define the +up+ and +down+ methods
-# as before.
-#
-# If a command cannot be reversed, an
-# <tt>ActiveRecord::IrreversibleMigration</tt> exception will be raised when
-# the migration is moving down.
-#
-# For a list of commands that are reversible, please see
-# <tt>ActiveRecord::Migration::CommandRecorder</tt>.
-#
-# == Transactional Migrations
-#
-# If the database adapter supports DDL transactions, all migrations will
-# automatically be wrapped in a transaction. There are queries that you
-# can't execute inside a transaction though, and for these situations
-# you can turn the automatic transactions off.
-#
-#   class ChangeEnum < ActiveRecord::Migration[5.0]
-#     disable_ddl_transaction!
-#
-#     def up
-#       execute "ALTER TYPE model_size ADD VALUE 'new_value'"
-#     end
-#   end
-#
-# Remember that you can still open your own transactions, even if you
-# are in a Migration with <tt>self.disable_ddl_transaction!</tt>.
-class ActiveRecord::Migration
-  def self.inherited: (untyped subclass) -> untyped
-
-  def self.[]: (untyped version) -> untyped
-
-  def self.current_version: () -> untyped
-
-  attr_accessor delegate: untyped
-
-  attr_accessor disable_ddl_transaction: untyped
-
-  def self.nearest_delegate: () -> untyped
-
-  # Raises <tt>ActiveRecord::PendingMigrationError</tt> error if any migrations are pending.
-  def self.check_pending!: (?untyped connection) -> untyped
-
-  def self.load_schema_if_pending!: () -> untyped
-
-  def self.maintain_test_schema!: () -> untyped
-
-  def self.method_missing: (untyped name, *untyped args) { () -> untyped } -> untyped
-
-  def self.migrate: (untyped direction) -> untyped
-
-  # Disable the transaction wrapping this migration.
-  # You can still create your own transactions even after calling #disable_ddl_transaction!
-  #
-  # For more details read the {"Transactional Migrations" section above}[rdoc-ref:Migration].
-  def self.disable_ddl_transaction!: () -> untyped
-
-  def disable_ddl_transaction: () -> untyped
-
-  attr_accessor name: untyped
-
-  attr_accessor version: untyped
-
-  def initialize: (?untyped name, ?untyped? version) -> untyped
-
-  # Reverses the migration commands for the given block and
-  # the given migrations.
-  #
-  # The following migration will remove the table 'horses'
-  # and create the table 'apples' on the way up, and the reverse
-  # on the way down.
-  #
-  #   class FixTLMigration < ActiveRecord::Migration[5.0]
-  #     def change
-  #       revert do
-  #         create_table(:horses) do |t|
-  #           t.text :content
-  #           t.datetime :remind_at
-  #         end
-  #       end
-  #       create_table(:apples) do |t|
-  #         t.string :variety
-  #       end
-  #     end
-  #   end
-  #
-  # Or equivalently, if +TenderloveMigration+ is defined as in the
-  # documentation for Migration:
-  #
-  #   require_relative '20121212123456_tenderlove_migration'
-  #
-  #   class FixupTLMigration < ActiveRecord::Migration[5.0]
-  #     def change
-  #       revert TenderloveMigration
-  #
-  #       create_table(:apples) do |t|
-  #         t.string :variety
-  #       end
-  #     end
-  #   end
-  #
-  # This command can be nested.
-  def revert: (*untyped migration_classes) { () -> untyped } -> untyped
-
-  def reverting?: () -> untyped
-
-  # Used to specify an operation that can be run in one direction or another.
-  # Call the methods +up+ and +down+ of the yielded object to run a block
-  # only in one given direction.
-  # The whole block will be called in the right order within the migration.
-  #
-  # In the following example, the looping on users will always be done
-  # when the three columns 'first_name', 'last_name' and 'full_name' exist,
-  # even when migrating down:
-  #
-  #    class SplitNameMigration < ActiveRecord::Migration[5.0]
-  #      def change
-  #        add_column :users, :first_name, :string
-  #        add_column :users, :last_name, :string
-  #
-  #        reversible do |dir|
-  #          User.reset_column_information
-  #          User.all.each do |u|
-  #            dir.up   { u.first_name, u.last_name = u.full_name.split(' ') }
-  #            dir.down { u.full_name = "#{u.first_name} #{u.last_name}" }
-  #            u.save
-  #          end
-  #        end
-  #
-  #        revert { add_column :users, :full_name, :string }
-  #      end
-  #    end
-  def reversible: () { (untyped) -> untyped } -> untyped
-
-  # Used to specify an operation that is only run when migrating up
-  # (for example, populating a new column with its initial values).
-  #
-  # In the following example, the new column +published+ will be given
-  # the value +true+ for all existing records.
-  #
-  #    class AddPublishedToPosts < ActiveRecord::Migration[5.2]
-  #      def change
-  #        add_column :posts, :published, :boolean, default: false
-  #        up_only do
-  #          execute "update posts set published = 'true'"
-  #        end
-  #      end
-  #    end
-  def up_only: () { () -> untyped } -> untyped
-
-  # Runs the given migration classes.
-  # Last argument can specify options:
-  # - :direction (default is :up)
-  # - :revert (default is false)
-  def run: (*untyped migration_classes) -> untyped
-
-  def up: () -> (nil | untyped)
-
-  def down: () -> (nil | untyped)
-
-  # Execute this migration in the named direction
-  def migrate: (untyped direction) -> (nil | untyped)
-
-  def exec_migration: (untyped conn, untyped direction) -> untyped
-
-  def write: (?::String text) -> untyped
-
-  def announce: (untyped message) -> untyped
-
-  # Takes a message argument and outputs it as is.
-  # A second boolean argument can be passed to specify whether to indent or not.
-  def say: (untyped message, ?bool subitem) -> untyped
-
-  # Outputs text along with how long it took to run its block.
-  # If the block returns an integer it assumes it is the number of rows affected.
-  def say_with_time: (untyped message) { () -> untyped } -> untyped
-
-  # Takes a block as an argument and suppresses any output generated by the block.
-  def suppress_messages: () { () -> untyped } -> untyped
-
-  def connection: () -> untyped
-
-  def method_missing: (untyped method, *untyped arguments) { () -> untyped } -> untyped
-
-  def copy: (untyped destination, untyped sources, ?::Hash[untyped, untyped] options) -> untyped
-
-  # Finds the correct table name given an Active Record object.
-  # Uses the Active Record object's own table_name, or pre/suffix from the
-  # options passed in.
-  def proper_table_name: (untyped name, ?::Hash[untyped, untyped] options) -> untyped
-
-  # Determines the version number of the next migration.
-  def next_migration_number: (untyped number) -> untyped
-
-  def table_name_options: (?untyped config) -> { table_name_prefix: untyped, table_name_suffix: untyped }
-
-  def execute_block: () { () -> untyped } -> untyped
-
-  def command_recorder: () -> untyped
+  def initialize: (?stored: untyped? stored, ?current: untyped? current) -> untyped
 end
 
 class ActiveRecord::Migration::Current < Migration
@@ -15408,7 +14623,7 @@ module ActiveRecord::Persistence::ClassMethods
   # go through Active Record's type casting and serialization.
   #
   # See <tt>ActiveRecord::Persistence#insert_all</tt> for documentation.
-  def insert: (untyped attributes, ?returning: untyped? returning, ?unique_by: untyped? unique_by) -> untyped
+  def insert: (untyped attributes, ?unique_by: untyped? unique_by, ?returning: untyped? returning) -> untyped
 
   # Inserts multiple records into the database in a single SQL INSERT
   # statement. It does not instantiate any models nor does it trigger
@@ -15463,7 +14678,7 @@ module ActiveRecord::Persistence::ClassMethods
   #     { id: 1, title: "Rework", author: "David" },
   #     { id: 1, title: "Eloquent Ruby", author: "Russ" }
   #   ])
-  def insert_all: (untyped attributes, ?returning: untyped? returning, ?unique_by: untyped? unique_by) -> untyped
+  def insert_all: (untyped attributes, ?unique_by: untyped? unique_by, ?returning: untyped? returning) -> untyped
 
   # Inserts a single record into the database in a single SQL INSERT
   # statement. It does not instantiate any models nor does it trigger
@@ -15521,7 +14736,7 @@ module ActiveRecord::Persistence::ClassMethods
   # go through Active Record's type casting and serialization.
   #
   # See <tt>ActiveRecord::Persistence#upsert_all</tt> for documentation.
-  def upsert: (untyped attributes, ?returning: untyped? returning, ?unique_by: untyped? unique_by) -> untyped
+  def upsert: (untyped attributes, ?unique_by: untyped? unique_by, ?returning: untyped? returning) -> untyped
 
   # Updates or inserts (upserts) multiple records into the database in a
   # single SQL INSERT statement. It does not instantiate any models nor does
@@ -15574,7 +14789,7 @@ module ActiveRecord::Persistence::ClassMethods
   #   ], unique_by: :isbn)
   #
   #   Book.find_by(isbn: "1").title # => "Eloquent Ruby"
-  def upsert_all: (untyped attributes, ?returning: untyped? returning, ?unique_by: untyped? unique_by) -> untyped
+  def upsert_all: (untyped attributes, ?unique_by: untyped? unique_by, ?returning: untyped? returning) -> untyped
 
   # Given an attributes hash, +instantiate+ returns a new instance of
   # the appropriate class. Accepts only keys as strings.
@@ -15750,7 +14965,7 @@ module ActiveRecord::Railties::CollectionCacheAssociationLoading
   # nodoc:
   def setup: (untyped context, untyped options, untyped as, untyped block) -> untyped
 
-  def relation_from_options: (?cached: untyped? cached, ?partial: untyped? partial, ?collection: untyped? collection, **untyped _) -> (nil | untyped)
+  def relation_from_options: (?collection: untyped? collection, ?partial: untyped? partial, ?cached: untyped? cached, **untyped _) -> (nil | untyped)
 
   def collection_without_template: () -> untyped
 
@@ -15774,26 +14989,18 @@ module ActiveRecord::Railties::ControllerRuntime::ClassMethods
   def log_process_action: (untyped payload) -> untyped
 end
 
-module ActiveRecord
-  extend ActiveSupport::Autoload
-
-  def self.eager_load!: () -> untyped
-end
-
-module ActiveRecord::AttributeMethods
-  extend ActiveSupport::Autoload
-end
-
-module ActiveRecord::Locking
-  extend ActiveSupport::Autoload
-end
-
 module ActiveRecord::Scoping
   extend ActiveSupport::Autoload
-end
 
-module ActiveRecord::Middleware
-  extend ActiveSupport::Autoload
+  extend ActiveSupport::Concern
+
+  include Default
+
+  include Named
+
+  def populate_with_current_scope_attributes: () -> (nil | untyped)
+
+  def initialize_internals_callback: () -> untyped
 end
 
 module ActiveRecord::Tasks
@@ -16342,45 +15549,6 @@ class ActiveRecord::Reflection::RuntimeReflection < AbstractReflection
 end
 
 module ActiveRecord::Batches
-end
-
-class ActiveRecord::Batches::BatchEnumerator
-  include Enumerable
-
-  def initialize: (relation: untyped relation, ?of: ::Integer of, ?start: untyped? start, ?finish: untyped? finish) -> untyped
-
-  # Looping through a collection of records from the database (using the
-  # +all+ method, for example) is very inefficient since it will try to
-  # instantiate all the objects at once.
-  #
-  # In that case, batch processing methods allow you to work with the
-  # records in batches, thereby greatly reducing memory consumption.
-  #
-  #   Person.in_batches.each_record do |person|
-  #     person.do_awesome_stuff
-  #   end
-  #
-  #   Person.where("age > 21").in_batches(of: 10).each_record do |person|
-  #     person.party_all_night!
-  #   end
-  #
-  # If you do not provide a block to #each_record, it will return an Enumerator
-  # for chaining with other methods:
-  #
-  #   Person.in_batches.each_record.with_index do |person, index|
-  #     person.award_trophy(index + 1)
-  #   end
-  def each_record: () { (untyped) -> untyped } -> untyped
-
-  # Yields an ActiveRecord::Relation object for each batch of records.
-  #
-  #   Person.in_batches.each do |relation|
-  #     relation.update_all(awesome: true)
-  #   end
-  def each: () { (untyped) -> untyped } -> untyped
-end
-
-module ActiveRecord::Batches
   # Looping through a collection of records from the database
   # (using the Scoping::Named::ClassMethods.all method, for example)
   # is very inefficient since it will try to instantiate all the objects at once.
@@ -16439,7 +15607,7 @@ module ActiveRecord::Batches
   #
   # NOTE: By its nature, batch processing is subject to race conditions if
   # other processes are modifying the database.
-  def find_each: (?start: untyped? start, ?finish: untyped? finish, ?batch_size: ::Integer batch_size, ?error_on_ignore: untyped? error_on_ignore) { (untyped) -> untyped } -> untyped
+  def find_each: (?error_on_ignore: untyped? error_on_ignore, ?batch_size: ::Integer batch_size, ?finish: untyped? finish, ?start: untyped? start) { (untyped) -> untyped } -> untyped
 
   # Yields each batch of records that was found by the find options as
   # an array.
@@ -16487,7 +15655,7 @@ module ActiveRecord::Batches
   #
   # NOTE: By its nature, batch processing is subject to race conditions if
   # other processes are modifying the database.
-  def find_in_batches: (?start: untyped? start, ?finish: untyped? finish, ?batch_size: ::Integer batch_size, ?error_on_ignore: untyped? error_on_ignore) { (untyped) -> untyped } -> untyped
+  def find_in_batches: (?error_on_ignore: untyped? error_on_ignore, ?batch_size: ::Integer batch_size, ?finish: untyped? finish, ?start: untyped? start) { (untyped) -> untyped } -> untyped
 
   # Yields ActiveRecord::Relation objects to work with a batch of records.
   #
@@ -16550,7 +15718,7 @@ module ActiveRecord::Batches
   #
   # NOTE: By its nature, batch processing is subject to race conditions if
   # other processes are modifying the database.
-  def in_batches: (?of: ::Integer of, ?start: untyped? start, ?finish: untyped? finish, ?load: bool load, ?error_on_ignore: untyped? error_on_ignore) { (untyped) -> untyped } -> untyped
+  def in_batches: (?error_on_ignore: untyped? error_on_ignore, ?load: bool load, ?finish: untyped? finish, ?start: untyped? start, ?of: ::Integer of) { (untyped) -> untyped } -> untyped
 
   def apply_limits: (untyped relation, untyped start, untyped finish) -> untyped
 
@@ -16561,6 +15729,42 @@ module ActiveRecord::Batches
   def batch_order: () -> untyped
 
   def act_on_ignored_order: (untyped error_on_ignore) -> untyped
+end
+
+class ActiveRecord::Batches::BatchEnumerator
+  include Enumerable
+
+  def initialize: (relation: untyped relation, ?finish: untyped? finish, ?start: untyped? start, ?of: ::Integer of) -> untyped
+
+  # Looping through a collection of records from the database (using the
+  # +all+ method, for example) is very inefficient since it will try to
+  # instantiate all the objects at once.
+  #
+  # In that case, batch processing methods allow you to work with the
+  # records in batches, thereby greatly reducing memory consumption.
+  #
+  #   Person.in_batches.each_record do |person|
+  #     person.do_awesome_stuff
+  #   end
+  #
+  #   Person.where("age > 21").in_batches(of: 10).each_record do |person|
+  #     person.party_all_night!
+  #   end
+  #
+  # If you do not provide a block to #each_record, it will return an Enumerator
+  # for chaining with other methods:
+  #
+  #   Person.in_batches.each_record.with_index do |person, index|
+  #     person.award_trophy(index + 1)
+  #   end
+  def each_record: () { (untyped) -> untyped } -> untyped
+
+  # Yields an ActiveRecord::Relation object for each batch of records.
+  #
+  #   Person.in_batches.each do |relation|
+  #     relation.update_all(awesome: true)
+  #   end
+  def each: () { (untyped) -> untyped } -> untyped
 end
 
 ActiveRecord::Batches::ORDER_IGNORE_MESSAGE: ::String
@@ -17079,6 +16283,462 @@ end
 ActiveRecord::FinderMethods::ONE_AS_ONE: ::String
 
 class ActiveRecord::Relation
+  include Enumerable
+
+  include FinderMethods
+
+  include Calculations
+
+  include SpawnMethods
+
+  include QueryMethods
+
+  include Batches
+
+  include Explain
+
+  include Delegation
+
+  attr_reader table: untyped
+
+  attr_reader klass: untyped
+
+  attr_reader loaded: untyped
+
+  attr_reader predicate_builder: untyped
+
+  attr_accessor skip_preloading_value: untyped
+
+  def initialize: (untyped klass, ?values: ::Hash[untyped, untyped] values, ?predicate_builder: untyped predicate_builder, ?table: untyped table) -> untyped
+
+  def initialize_copy: (untyped other) -> untyped
+
+  def arel_attribute: (untyped name) -> untyped
+
+  def bind_attribute: (untyped name, untyped value) { (untyped, untyped) -> untyped } -> untyped
+
+  # Initializes new record from relation while maintaining the current
+  # scope.
+  #
+  # Expects arguments in the same format as {ActiveRecord::Base.new}[rdoc-ref:Core.new].
+  #
+  #   users = User.where(name: 'DHH')
+  #   user = users.new # => #<User id: nil, name: "DHH", created_at: nil, updated_at: nil>
+  #
+  # You can also pass a block to new with the new record as argument:
+  #
+  #   user = users.new { |user| user.name = 'Oscar' }
+  #   user.name # => Oscar
+  def new: (?untyped? attributes) { () -> untyped } -> untyped
+
+  # Tries to create a new record with the same scoped attributes
+  # defined in the relation. Returns the initialized object if validation fails.
+  #
+  # Expects arguments in the same format as
+  # {ActiveRecord::Base.create}[rdoc-ref:Persistence::ClassMethods#create].
+  #
+  # ==== Examples
+  #
+  #   users = User.where(name: 'Oscar')
+  #   users.create # => #<User id: 3, name: "Oscar", ...>
+  #
+  #   users.create(name: 'fxn')
+  #   users.create # => #<User id: 4, name: "fxn", ...>
+  #
+  #   users.create { |user| user.name = 'tenderlove' }
+  #   # => #<User id: 5, name: "tenderlove", ...>
+  #
+  #   users.create(name: nil) # validation on name
+  #   # => #<User id: nil, name: nil, ...>
+  def create: (?untyped? attributes) { () -> untyped } -> untyped
+
+  # Similar to #create, but calls
+  # {create!}[rdoc-ref:Persistence::ClassMethods#create!]
+  # on the base class. Raises an exception if a validation error occurs.
+  #
+  # Expects arguments in the same format as
+  # {ActiveRecord::Base.create!}[rdoc-ref:Persistence::ClassMethods#create!].
+  def create!: (?untyped? attributes) { () -> untyped } -> untyped
+
+  def first_or_create: (?untyped? attributes) { () -> untyped } -> untyped
+
+  def first_or_create!: (?untyped? attributes) { () -> untyped } -> untyped
+
+  def first_or_initialize: (?untyped? attributes) { () -> untyped } -> untyped
+
+  # Finds the first record with the given attributes, or creates a record
+  # with the attributes if one is not found:
+  #
+  #   # Find the first user named "Penélope" or create a new one.
+  #   User.find_or_create_by(first_name: 'Penélope')
+  #   # => #<User id: 1, first_name: "Penélope", last_name: nil>
+  #
+  #   # Find the first user named "Penélope" or create a new one.
+  #   # We already have one so the existing record will be returned.
+  #   User.find_or_create_by(first_name: 'Penélope')
+  #   # => #<User id: 1, first_name: "Penélope", last_name: nil>
+  #
+  #   # Find the first user named "Scarlett" or create a new one with
+  #   # a particular last name.
+  #   User.create_with(last_name: 'Johansson').find_or_create_by(first_name: 'Scarlett')
+  #   # => #<User id: 2, first_name: "Scarlett", last_name: "Johansson">
+  #
+  # This method accepts a block, which is passed down to #create. The last example
+  # above can be alternatively written this way:
+  #
+  #   # Find the first user named "Scarlett" or create a new one with a
+  #   # different last name.
+  #   User.find_or_create_by(first_name: 'Scarlett') do |user|
+  #     user.last_name = 'Johansson'
+  #   end
+  #   # => #<User id: 2, first_name: "Scarlett", last_name: "Johansson">
+  #
+  # This method always returns a record, but if creation was attempted and
+  # failed due to validation errors it won't be persisted, you get what
+  # #create returns in such situation.
+  #
+  # Please note <b>this method is not atomic</b>, it runs first a SELECT, and if
+  # there are no results an INSERT is attempted. If there are other threads
+  # or processes there is a race condition between both calls and it could
+  # be the case that you end up with two similar records.
+  #
+  # If this might be a problem for your application, please see #create_or_find_by.
+  def find_or_create_by: (untyped attributes) { () -> untyped } -> untyped
+
+  # Like #find_or_create_by, but calls
+  # {create!}[rdoc-ref:Persistence::ClassMethods#create!] so an exception
+  # is raised if the created record is invalid.
+  def find_or_create_by!: (untyped attributes) { () -> untyped } -> untyped
+
+  # Attempts to create a record with the given attributes in a table that has a unique constraint
+  # on one or several of its columns. If a row already exists with one or several of these
+  # unique constraints, the exception such an insertion would normally raise is caught,
+  # and the existing record with those attributes is found using #find_by!.
+  #
+  # This is similar to #find_or_create_by, but avoids the problem of stale reads between the SELECT
+  # and the INSERT, as that method needs to first query the table, then attempt to insert a row
+  # if none is found.
+  #
+  # There are several drawbacks to #create_or_find_by, though:
+  #
+  # * The underlying table must have the relevant columns defined with unique constraints.
+  # * A unique constraint violation may be triggered by only one, or at least less than all,
+  #   of the given attributes. This means that the subsequent #find_by! may fail to find a
+  #   matching record, which will then raise an <tt>ActiveRecord::RecordNotFound</tt> exception,
+  #   rather than a record with the given attributes.
+  # * While we avoid the race condition between SELECT -> INSERT from #find_or_create_by,
+  #   we actually have another race condition between INSERT -> SELECT, which can be triggered
+  #   if a DELETE between those two statements is run by another client. But for most applications,
+  #   that's a significantly less likely condition to hit.
+  # * It relies on exception handling to handle control flow, which may be marginally slower.
+  # * The primary key may auto-increment on each create, even if it fails. This can accelerate
+  #   the problem of running out of integers, if the underlying table is still stuck on a primary
+  #   key of type int (note: All Rails apps since 5.1+ have defaulted to bigint, which is not liable
+  #   to this problem).
+  #
+  # This method will return a record if all given attributes are covered by unique constraints
+  # (unless the INSERT -> DELETE -> SELECT race condition is triggered), but if creation was attempted
+  # and failed due to validation errors it won't be persisted, you get what #create returns in
+  # such situation.
+  def create_or_find_by: (untyped attributes) { () -> untyped } -> untyped
+
+  # Like #create_or_find_by, but calls
+  # {create!}[rdoc-ref:Persistence::ClassMethods#create!] so an exception
+  # is raised if the created record is invalid.
+  def create_or_find_by!: (untyped attributes) { () -> untyped } -> untyped
+
+  # Like #find_or_create_by, but calls {new}[rdoc-ref:Core#new]
+  # instead of {create}[rdoc-ref:Persistence::ClassMethods#create].
+  def find_or_initialize_by: (untyped attributes) { () -> untyped } -> untyped
+
+  # Runs EXPLAIN on the query or queries triggered by this relation and
+  # returns the result as a string. The string is formatted imitating the
+  # ones printed by the database shell.
+  #
+  # Note that this method actually runs the queries, since the results of some
+  # are needed by the next ones when eager loading is going on.
+  #
+  # Please see further details in the
+  # {Active Record Query Interface guide}[https://guides.rubyonrails.org/active_record_querying.html#running-explain].
+  def explain: () -> untyped
+
+  # Converts relation objects to Array.
+  def to_ary: () -> untyped
+
+  def records: () -> untyped
+
+  # Serializes the relation objects Array.
+  def encode_with: (untyped coder) -> untyped
+
+  # Returns size of the records.
+  def size: () -> untyped
+
+  # Returns true if there are no records.
+  def empty?: () -> untyped
+
+  # Returns true if there are no records.
+  def none?: () -> untyped
+
+  # Returns true if there are any records.
+  def any?: () -> untyped
+
+  # Returns true if there is exactly one record.
+  def one?: () -> untyped
+
+  # Returns true if there is more than one record.
+  def many?: () -> untyped
+
+  # Returns a stable cache key that can be used to identify this query.
+  # The cache key is built with a fingerprint of the SQL query.
+  #
+  #    Product.where("name like ?", "%Cosmic Encounter%").cache_key
+  #    # => "products/query-1850ab3d302391b85b8693e941286659"
+  #
+  # If ActiveRecord::Base.collection_cache_versioning is turned off, as it was
+  # in Rails 6.0 and earlier, the cache key will also include a version.
+  #
+  #    ActiveRecord::Base.collection_cache_versioning = false
+  #    Product.where("name like ?", "%Cosmic Encounter%").cache_key
+  #    # => "products/query-1850ab3d302391b85b8693e941286659-1-20150714212553907087000"
+  #
+  # You can also pass a custom timestamp column to fetch the timestamp of the
+  # last updated record.
+  #
+  #   Product.where("name like ?", "%Game%").cache_key(:last_reviewed_at)
+  def cache_key: (?::Symbol timestamp_column) -> untyped
+
+  def compute_cache_key: (?::Symbol timestamp_column) -> untyped
+
+  # Returns a cache version that can be used together with the cache key to form
+  # a recyclable caching scheme. The cache version is built with the number of records
+  # matching the query, and the timestamp of the last updated record. When a new record
+  # comes to match the query, or any of the existing records is updated or deleted,
+  # the cache version changes.
+  #
+  # If the collection is loaded, the method will iterate through the records
+  # to generate the timestamp, otherwise it will trigger one SQL query like:
+  #
+  #    SELECT COUNT(*), MAX("products"."updated_at") FROM "products" WHERE (name like '%Cosmic Encounter%')
+  def cache_version: (?::Symbol timestamp_column) -> untyped
+
+  def compute_cache_version: (untyped timestamp_column) -> untyped
+
+  # Returns a cache key along with the version.
+  def cache_key_with_version: () -> untyped
+
+  # Scope all queries to the current scope.
+  #
+  #   Comment.where(post_id: 1).scoping do
+  #     Comment.first
+  #   end
+  #   # => SELECT "comments".* FROM "comments" WHERE "comments"."post_id" = 1 ORDER BY "comments"."id" ASC LIMIT 1
+  #
+  # Please check unscoped if you want to remove all previous scopes (including
+  # the default_scope) during the execution of a block.
+  def scoping: () { () -> untyped } -> untyped
+
+  def _exec_scope: (untyped name, *untyped args) { () -> untyped } -> untyped
+
+  # Updates all records in the current relation with details given. This method constructs a single SQL UPDATE
+  # statement and sends it straight to the database. It does not instantiate the involved models and it does not
+  # trigger Active Record callbacks or validations. However, values passed to #update_all will still go through
+  # Active Record's normal type casting and serialization.
+  #
+  # Note: As Active Record callbacks are not triggered, this method will not automatically update +updated_at+/+updated_on+ columns.
+  #
+  # ==== Parameters
+  #
+  # * +updates+ - A string, array, or hash representing the SET part of an SQL statement.
+  #
+  # ==== Examples
+  #
+  #   # Update all customers with the given attributes
+  #   Customer.update_all wants_email: true
+  #
+  #   # Update all books with 'Rails' in their title
+  #   Book.where('title LIKE ?', '%Rails%').update_all(author: 'David')
+  #
+  #   # Update all books that match conditions, but limit it to 5 ordered by date
+  #   Book.where('title LIKE ?', '%Rails%').order(:created_at).limit(5).update_all(author: 'David')
+  #
+  #   # Update all invoices and set the number column to its id value.
+  #   Invoice.update_all('number = id')
+  def update_all: (untyped updates) -> untyped
+
+  def update: (?::Symbol id, untyped attributes) -> untyped
+
+  def update_counters: (untyped counters) -> untyped
+
+  # Touches all records in the current relation without instantiating records first with the +updated_at+/+updated_on+ attributes
+  # set to the current time or the time specified.
+  # This method can be passed attribute names and an optional time argument.
+  # If attribute names are passed, they are updated along with +updated_at+/+updated_on+ attributes.
+  # If no time argument is passed, the current time is used as default.
+  #
+  # === Examples
+  #
+  #   # Touch all records
+  #   Person.all.touch_all
+  #   # => "UPDATE \"people\" SET \"updated_at\" = '2018-01-04 22:55:23.132670'"
+  #
+  #   # Touch multiple records with a custom attribute
+  #   Person.all.touch_all(:created_at)
+  #   # => "UPDATE \"people\" SET \"updated_at\" = '2018-01-04 22:55:23.132670', \"created_at\" = '2018-01-04 22:55:23.132670'"
+  #
+  #   # Touch multiple records with a specified time
+  #   Person.all.touch_all(time: Time.new(2020, 5, 16, 0, 0, 0))
+  #   # => "UPDATE \"people\" SET \"updated_at\" = '2020-05-16 00:00:00'"
+  #
+  #   # Touch records with scope
+  #   Person.where(name: 'David').touch_all
+  #   # => "UPDATE \"people\" SET \"updated_at\" = '2018-01-04 22:55:23.132670' WHERE \"people\".\"name\" = 'David'"
+  def touch_all: (*untyped names, ?time: untyped? time) -> untyped
+
+  # Destroys the records by instantiating each
+  # record and calling its {#destroy}[rdoc-ref:Persistence#destroy] method.
+  # Each object's callbacks are executed (including <tt>:dependent</tt> association options).
+  # Returns the collection of objects that were destroyed; each will be frozen, to
+  # reflect that no changes should be made (since they can't be persisted).
+  #
+  # Note: Instantiation, callback execution, and deletion of each
+  # record can be time consuming when you're removing many records at
+  # once. It generates at least one SQL +DELETE+ query per record (or
+  # possibly more, to enforce your callbacks). If you want to delete many
+  # rows quickly, without concern for their associations or callbacks, use
+  # #delete_all instead.
+  #
+  # ==== Examples
+  #
+  #   Person.where(age: 0..18).destroy_all
+  def destroy_all: () -> untyped
+
+  # Deletes the records without instantiating the records
+  # first, and hence not calling the {#destroy}[rdoc-ref:Persistence#destroy]
+  # method nor invoking callbacks.
+  # This is a single SQL DELETE statement that goes straight to the database, much more
+  # efficient than #destroy_all. Be careful with relations though, in particular
+  # <tt>:dependent</tt> rules defined on associations are not honored. Returns the
+  # number of rows affected.
+  #
+  #   Post.where(person_id: 5).where(category: ['Something', 'Else']).delete_all
+  #
+  # Both calls delete the affected posts all at once with a single DELETE statement.
+  # If you need to destroy dependent associations or call your <tt>before_*</tt> or
+  # +after_destroy+ callbacks, use the #destroy_all method instead.
+  #
+  # If an invalid method is supplied, #delete_all raises an ActiveRecordError:
+  #
+  #   Post.distinct.delete_all
+  #   # => ActiveRecord::ActiveRecordError: delete_all doesn't support distinct
+  def delete_all: () -> untyped
+
+  # Finds and destroys all records matching the specified conditions.
+  # This is short-hand for <tt>relation.where(condition).destroy_all</tt>.
+  # Returns the collection of objects that were destroyed.
+  #
+  # If no record is found, returns empty array.
+  #
+  #   Person.destroy_by(id: 13)
+  #   Person.destroy_by(name: 'Spartacus', rating: 4)
+  #   Person.destroy_by("published_at < ?", 2.weeks.ago)
+  def destroy_by: (*untyped args) -> untyped
+
+  # Finds and deletes all records matching the specified conditions.
+  # This is short-hand for <tt>relation.where(condition).delete_all</tt>.
+  # Returns the number of rows affected.
+  #
+  # If no record is found, returns <tt>0</tt> as zero rows were affected.
+  #
+  #   Person.delete_by(id: 13)
+  #   Person.delete_by(name: 'Spartacus', rating: 4)
+  #   Person.delete_by("published_at < ?", 2.weeks.ago)
+  def delete_by: (*untyped args) -> untyped
+
+  # Causes the records to be loaded from the database if they have not
+  # been loaded already. You can use this if for some reason you need
+  # to explicitly load some records before actually using them. The
+  # return value is the relation itself, not the records.
+  #
+  #   Post.where(published: true).load # => #<ActiveRecord::Relation>
+  def load: () { () -> untyped } -> untyped
+
+  # Forces reloading of relation.
+  def reload: () -> untyped
+
+  def reset: () -> untyped
+
+  # Returns sql statement for the relation.
+  #
+  #   User.where(name: 'Oscar').to_sql
+  #   # => SELECT "users".* FROM "users"  WHERE "users"."name" = 'Oscar'
+  def to_sql: () -> untyped
+
+  # Returns a hash of where conditions.
+  #
+  #   User.where(name: 'Oscar').where_values_hash
+  #   # => {name: "Oscar"}
+  def where_values_hash: (?untyped relation_table_name) -> untyped
+
+  def scope_for_create: () -> untyped
+
+  # Returns true if relation needs eager loading.
+  def eager_loading?: () -> untyped
+
+  # Joins that are also marked for preloading. In which case we should just eager load them.
+  # Note that this is a naive implementation because we could have strings and symbols which
+  # represent the same association, but that aren't matched by this. Also, we could have
+  # nested hashes which partially match, e.g. { a: :b } & { a: [:b, :c] }
+  def joined_includes_values: () -> untyped
+
+  # Compares two relations for equality.
+  def ==: (untyped other) -> untyped
+
+  def pretty_print: (untyped q) -> untyped
+
+  # Returns true if relation is blank.
+  def blank?: () -> untyped
+
+  def values: () -> untyped
+
+  def inspect: () -> ::String
+
+  def empty_scope?: () -> untyped
+
+  def has_limit_or_offset?: () -> untyped
+
+  def alias_tracker: (?untyped joins, ?untyped? aliases) -> untyped
+
+  def preload_associations: (untyped records) -> untyped
+
+  attr_reader _deprecated_scope_source: untyped
+
+  attr_writer _deprecated_scope_source: untyped
+
+  def load_records: (untyped records) -> untyped
+
+  def null_relation?: () -> untyped
+
+  def already_in_scope?: () -> untyped
+
+  def _deprecated_spawn: (untyped name) -> untyped
+
+  def _deprecated_scope_block: (untyped name) { (untyped) -> untyped } -> untyped
+
+  def _scoping: (untyped scope) { () -> untyped } -> untyped
+
+  def _substitute_values: (untyped values) -> untyped
+
+  def _increment_attribute: (untyped attribute, ?::Integer value) -> untyped
+
+  def exec_queries: () { () -> untyped } -> untyped
+
+  def skip_query_cache_if_necessary: () { () -> untyped } -> untyped
+
+  def build_preloader: () -> untyped
+
+  def references_eager_loaded_tables?: () -> untyped
+
+  def tables_in_string: (untyped string) -> (::Array[untyped] | untyped)
 end
 
 class ActiveRecord::Relation::FromClause
@@ -17151,6 +16811,36 @@ end
 ActiveRecord::Relation::Merger::NORMAL_VALUES: untyped
 
 class ActiveRecord::PredicateBuilder
+  def initialize: (untyped table) -> untyped
+
+  def build_from_hash: (untyped attributes) -> untyped
+
+  def self.references: (untyped attributes) -> untyped
+
+  # Define how a class is converted to Arel nodes when passed to +where+.
+  # The handler can be any object that responds to +call+, and will be used
+  # for any value that +===+ the class given. For example:
+  #
+  #     MyCustomDateRange = Struct.new(:start, :end)
+  #     handler = proc do |column, range|
+  #       Arel::Nodes::Between.new(column,
+  #         Arel::Nodes::And.new([range.start, range.end])
+  #       )
+  #     end
+  #     ActiveRecord::PredicateBuilder.new("users").register_handler(MyCustomDateRange, handler)
+  def register_handler: (untyped klass, untyped handler) -> untyped
+
+  def build: (untyped attribute, untyped value) -> untyped
+
+  def build_bind_attribute: (untyped column_name, untyped value) -> untyped
+
+  def expand_from_hash: (untyped attributes) -> (::Array["1=0"] | untyped)
+
+  attr_reader table: untyped
+
+  def convert_dot_notation_to_hash: (untyped attributes) -> untyped
+
+  def handler_for: (untyped object) -> untyped
 end
 
 class ActiveRecord::PredicateBuilder::ArrayHandler
@@ -17231,39 +16921,6 @@ end
 
 # :nodoc:
 ActiveRecord::PredicateBuilder::RangeHandler::RangeWithBinds: untyped
-
-class ActiveRecord::PredicateBuilder
-  def initialize: (untyped table) -> untyped
-
-  def build_from_hash: (untyped attributes) -> untyped
-
-  def self.references: (untyped attributes) -> untyped
-
-  # Define how a class is converted to Arel nodes when passed to +where+.
-  # The handler can be any object that responds to +call+, and will be used
-  # for any value that +===+ the class given. For example:
-  #
-  #     MyCustomDateRange = Struct.new(:start, :end)
-  #     handler = proc do |column, range|
-  #       Arel::Nodes::Between.new(column,
-  #         Arel::Nodes::And.new([range.start, range.end])
-  #       )
-  #     end
-  #     ActiveRecord::PredicateBuilder.new("users").register_handler(MyCustomDateRange, handler)
-  def register_handler: (untyped klass, untyped handler) -> untyped
-
-  def build: (untyped attribute, untyped value) -> untyped
-
-  def build_bind_attribute: (untyped column_name, untyped value) -> untyped
-
-  def expand_from_hash: (untyped attributes) -> (::Array["1=0"] | untyped)
-
-  attr_reader table: untyped
-
-  def convert_dot_notation_to_hash: (untyped attributes) -> untyped
-
-  def handler_for: (untyped object) -> untyped
-end
 
 class ActiveRecord::PredicateBuilder::RelationHandler
   # :nodoc:
@@ -18039,466 +17696,6 @@ ActiveRecord::QueryMethods::STRUCTURAL_OR_METHODS: untyped
 
 ActiveRecord::QueryMethods::DEFAULT_VALUES: ::Hash[untyped, untyped]
 
-# = Active Record \Relation
-class ActiveRecord::Relation
-  include Enumerable
-
-  include FinderMethods
-
-  include Calculations
-
-  include SpawnMethods
-
-  include QueryMethods
-
-  include Batches
-
-  include Explain
-
-  include Delegation
-
-  attr_reader table: untyped
-
-  attr_reader klass: untyped
-
-  attr_reader loaded: untyped
-
-  attr_reader predicate_builder: untyped
-
-  attr_accessor skip_preloading_value: untyped
-
-  def initialize: (untyped klass, ?table: untyped table, ?predicate_builder: untyped predicate_builder, ?values: ::Hash[untyped, untyped] values) -> untyped
-
-  def initialize_copy: (untyped other) -> untyped
-
-  def arel_attribute: (untyped name) -> untyped
-
-  def bind_attribute: (untyped name, untyped value) { (untyped, untyped) -> untyped } -> untyped
-
-  # Initializes new record from relation while maintaining the current
-  # scope.
-  #
-  # Expects arguments in the same format as {ActiveRecord::Base.new}[rdoc-ref:Core.new].
-  #
-  #   users = User.where(name: 'DHH')
-  #   user = users.new # => #<User id: nil, name: "DHH", created_at: nil, updated_at: nil>
-  #
-  # You can also pass a block to new with the new record as argument:
-  #
-  #   user = users.new { |user| user.name = 'Oscar' }
-  #   user.name # => Oscar
-  def new: (?untyped? attributes) { () -> untyped } -> untyped
-
-  # Tries to create a new record with the same scoped attributes
-  # defined in the relation. Returns the initialized object if validation fails.
-  #
-  # Expects arguments in the same format as
-  # {ActiveRecord::Base.create}[rdoc-ref:Persistence::ClassMethods#create].
-  #
-  # ==== Examples
-  #
-  #   users = User.where(name: 'Oscar')
-  #   users.create # => #<User id: 3, name: "Oscar", ...>
-  #
-  #   users.create(name: 'fxn')
-  #   users.create # => #<User id: 4, name: "fxn", ...>
-  #
-  #   users.create { |user| user.name = 'tenderlove' }
-  #   # => #<User id: 5, name: "tenderlove", ...>
-  #
-  #   users.create(name: nil) # validation on name
-  #   # => #<User id: nil, name: nil, ...>
-  def create: (?untyped? attributes) { () -> untyped } -> untyped
-
-  # Similar to #create, but calls
-  # {create!}[rdoc-ref:Persistence::ClassMethods#create!]
-  # on the base class. Raises an exception if a validation error occurs.
-  #
-  # Expects arguments in the same format as
-  # {ActiveRecord::Base.create!}[rdoc-ref:Persistence::ClassMethods#create!].
-  def create!: (?untyped? attributes) { () -> untyped } -> untyped
-
-  def first_or_create: (?untyped? attributes) { () -> untyped } -> untyped
-
-  def first_or_create!: (?untyped? attributes) { () -> untyped } -> untyped
-
-  def first_or_initialize: (?untyped? attributes) { () -> untyped } -> untyped
-
-  # Finds the first record with the given attributes, or creates a record
-  # with the attributes if one is not found:
-  #
-  #   # Find the first user named "Penélope" or create a new one.
-  #   User.find_or_create_by(first_name: 'Penélope')
-  #   # => #<User id: 1, first_name: "Penélope", last_name: nil>
-  #
-  #   # Find the first user named "Penélope" or create a new one.
-  #   # We already have one so the existing record will be returned.
-  #   User.find_or_create_by(first_name: 'Penélope')
-  #   # => #<User id: 1, first_name: "Penélope", last_name: nil>
-  #
-  #   # Find the first user named "Scarlett" or create a new one with
-  #   # a particular last name.
-  #   User.create_with(last_name: 'Johansson').find_or_create_by(first_name: 'Scarlett')
-  #   # => #<User id: 2, first_name: "Scarlett", last_name: "Johansson">
-  #
-  # This method accepts a block, which is passed down to #create. The last example
-  # above can be alternatively written this way:
-  #
-  #   # Find the first user named "Scarlett" or create a new one with a
-  #   # different last name.
-  #   User.find_or_create_by(first_name: 'Scarlett') do |user|
-  #     user.last_name = 'Johansson'
-  #   end
-  #   # => #<User id: 2, first_name: "Scarlett", last_name: "Johansson">
-  #
-  # This method always returns a record, but if creation was attempted and
-  # failed due to validation errors it won't be persisted, you get what
-  # #create returns in such situation.
-  #
-  # Please note <b>this method is not atomic</b>, it runs first a SELECT, and if
-  # there are no results an INSERT is attempted. If there are other threads
-  # or processes there is a race condition between both calls and it could
-  # be the case that you end up with two similar records.
-  #
-  # If this might be a problem for your application, please see #create_or_find_by.
-  def find_or_create_by: (untyped attributes) { () -> untyped } -> untyped
-
-  # Like #find_or_create_by, but calls
-  # {create!}[rdoc-ref:Persistence::ClassMethods#create!] so an exception
-  # is raised if the created record is invalid.
-  def find_or_create_by!: (untyped attributes) { () -> untyped } -> untyped
-
-  # Attempts to create a record with the given attributes in a table that has a unique constraint
-  # on one or several of its columns. If a row already exists with one or several of these
-  # unique constraints, the exception such an insertion would normally raise is caught,
-  # and the existing record with those attributes is found using #find_by!.
-  #
-  # This is similar to #find_or_create_by, but avoids the problem of stale reads between the SELECT
-  # and the INSERT, as that method needs to first query the table, then attempt to insert a row
-  # if none is found.
-  #
-  # There are several drawbacks to #create_or_find_by, though:
-  #
-  # * The underlying table must have the relevant columns defined with unique constraints.
-  # * A unique constraint violation may be triggered by only one, or at least less than all,
-  #   of the given attributes. This means that the subsequent #find_by! may fail to find a
-  #   matching record, which will then raise an <tt>ActiveRecord::RecordNotFound</tt> exception,
-  #   rather than a record with the given attributes.
-  # * While we avoid the race condition between SELECT -> INSERT from #find_or_create_by,
-  #   we actually have another race condition between INSERT -> SELECT, which can be triggered
-  #   if a DELETE between those two statements is run by another client. But for most applications,
-  #   that's a significantly less likely condition to hit.
-  # * It relies on exception handling to handle control flow, which may be marginally slower.
-  # * The primary key may auto-increment on each create, even if it fails. This can accelerate
-  #   the problem of running out of integers, if the underlying table is still stuck on a primary
-  #   key of type int (note: All Rails apps since 5.1+ have defaulted to bigint, which is not liable
-  #   to this problem).
-  #
-  # This method will return a record if all given attributes are covered by unique constraints
-  # (unless the INSERT -> DELETE -> SELECT race condition is triggered), but if creation was attempted
-  # and failed due to validation errors it won't be persisted, you get what #create returns in
-  # such situation.
-  def create_or_find_by: (untyped attributes) { () -> untyped } -> untyped
-
-  # Like #create_or_find_by, but calls
-  # {create!}[rdoc-ref:Persistence::ClassMethods#create!] so an exception
-  # is raised if the created record is invalid.
-  def create_or_find_by!: (untyped attributes) { () -> untyped } -> untyped
-
-  # Like #find_or_create_by, but calls {new}[rdoc-ref:Core#new]
-  # instead of {create}[rdoc-ref:Persistence::ClassMethods#create].
-  def find_or_initialize_by: (untyped attributes) { () -> untyped } -> untyped
-
-  # Runs EXPLAIN on the query or queries triggered by this relation and
-  # returns the result as a string. The string is formatted imitating the
-  # ones printed by the database shell.
-  #
-  # Note that this method actually runs the queries, since the results of some
-  # are needed by the next ones when eager loading is going on.
-  #
-  # Please see further details in the
-  # {Active Record Query Interface guide}[https://guides.rubyonrails.org/active_record_querying.html#running-explain].
-  def explain: () -> untyped
-
-  # Converts relation objects to Array.
-  def to_ary: () -> untyped
-
-  def records: () -> untyped
-
-  # Serializes the relation objects Array.
-  def encode_with: (untyped coder) -> untyped
-
-  # Returns size of the records.
-  def size: () -> untyped
-
-  # Returns true if there are no records.
-  def empty?: () -> untyped
-
-  # Returns true if there are no records.
-  def none?: () -> untyped
-
-  # Returns true if there are any records.
-  def any?: () -> untyped
-
-  # Returns true if there is exactly one record.
-  def one?: () -> untyped
-
-  # Returns true if there is more than one record.
-  def many?: () -> untyped
-
-  # Returns a stable cache key that can be used to identify this query.
-  # The cache key is built with a fingerprint of the SQL query.
-  #
-  #    Product.where("name like ?", "%Cosmic Encounter%").cache_key
-  #    # => "products/query-1850ab3d302391b85b8693e941286659"
-  #
-  # If ActiveRecord::Base.collection_cache_versioning is turned off, as it was
-  # in Rails 6.0 and earlier, the cache key will also include a version.
-  #
-  #    ActiveRecord::Base.collection_cache_versioning = false
-  #    Product.where("name like ?", "%Cosmic Encounter%").cache_key
-  #    # => "products/query-1850ab3d302391b85b8693e941286659-1-20150714212553907087000"
-  #
-  # You can also pass a custom timestamp column to fetch the timestamp of the
-  # last updated record.
-  #
-  #   Product.where("name like ?", "%Game%").cache_key(:last_reviewed_at)
-  def cache_key: (?::Symbol timestamp_column) -> untyped
-
-  def compute_cache_key: (?::Symbol timestamp_column) -> untyped
-
-  # Returns a cache version that can be used together with the cache key to form
-  # a recyclable caching scheme. The cache version is built with the number of records
-  # matching the query, and the timestamp of the last updated record. When a new record
-  # comes to match the query, or any of the existing records is updated or deleted,
-  # the cache version changes.
-  #
-  # If the collection is loaded, the method will iterate through the records
-  # to generate the timestamp, otherwise it will trigger one SQL query like:
-  #
-  #    SELECT COUNT(*), MAX("products"."updated_at") FROM "products" WHERE (name like '%Cosmic Encounter%')
-  def cache_version: (?::Symbol timestamp_column) -> untyped
-
-  def compute_cache_version: (untyped timestamp_column) -> untyped
-
-  # Returns a cache key along with the version.
-  def cache_key_with_version: () -> untyped
-
-  # Scope all queries to the current scope.
-  #
-  #   Comment.where(post_id: 1).scoping do
-  #     Comment.first
-  #   end
-  #   # => SELECT "comments".* FROM "comments" WHERE "comments"."post_id" = 1 ORDER BY "comments"."id" ASC LIMIT 1
-  #
-  # Please check unscoped if you want to remove all previous scopes (including
-  # the default_scope) during the execution of a block.
-  def scoping: () { () -> untyped } -> untyped
-
-  def _exec_scope: (untyped name, *untyped args) { () -> untyped } -> untyped
-
-  # Updates all records in the current relation with details given. This method constructs a single SQL UPDATE
-  # statement and sends it straight to the database. It does not instantiate the involved models and it does not
-  # trigger Active Record callbacks or validations. However, values passed to #update_all will still go through
-  # Active Record's normal type casting and serialization.
-  #
-  # Note: As Active Record callbacks are not triggered, this method will not automatically update +updated_at+/+updated_on+ columns.
-  #
-  # ==== Parameters
-  #
-  # * +updates+ - A string, array, or hash representing the SET part of an SQL statement.
-  #
-  # ==== Examples
-  #
-  #   # Update all customers with the given attributes
-  #   Customer.update_all wants_email: true
-  #
-  #   # Update all books with 'Rails' in their title
-  #   Book.where('title LIKE ?', '%Rails%').update_all(author: 'David')
-  #
-  #   # Update all books that match conditions, but limit it to 5 ordered by date
-  #   Book.where('title LIKE ?', '%Rails%').order(:created_at).limit(5).update_all(author: 'David')
-  #
-  #   # Update all invoices and set the number column to its id value.
-  #   Invoice.update_all('number = id')
-  def update_all: (untyped updates) -> untyped
-
-  def update: (?::Symbol id, untyped attributes) -> untyped
-
-  def update_counters: (untyped counters) -> untyped
-
-  # Touches all records in the current relation without instantiating records first with the +updated_at+/+updated_on+ attributes
-  # set to the current time or the time specified.
-  # This method can be passed attribute names and an optional time argument.
-  # If attribute names are passed, they are updated along with +updated_at+/+updated_on+ attributes.
-  # If no time argument is passed, the current time is used as default.
-  #
-  # === Examples
-  #
-  #   # Touch all records
-  #   Person.all.touch_all
-  #   # => "UPDATE \"people\" SET \"updated_at\" = '2018-01-04 22:55:23.132670'"
-  #
-  #   # Touch multiple records with a custom attribute
-  #   Person.all.touch_all(:created_at)
-  #   # => "UPDATE \"people\" SET \"updated_at\" = '2018-01-04 22:55:23.132670', \"created_at\" = '2018-01-04 22:55:23.132670'"
-  #
-  #   # Touch multiple records with a specified time
-  #   Person.all.touch_all(time: Time.new(2020, 5, 16, 0, 0, 0))
-  #   # => "UPDATE \"people\" SET \"updated_at\" = '2020-05-16 00:00:00'"
-  #
-  #   # Touch records with scope
-  #   Person.where(name: 'David').touch_all
-  #   # => "UPDATE \"people\" SET \"updated_at\" = '2018-01-04 22:55:23.132670' WHERE \"people\".\"name\" = 'David'"
-  def touch_all: (*untyped names, ?time: untyped? time) -> untyped
-
-  # Destroys the records by instantiating each
-  # record and calling its {#destroy}[rdoc-ref:Persistence#destroy] method.
-  # Each object's callbacks are executed (including <tt>:dependent</tt> association options).
-  # Returns the collection of objects that were destroyed; each will be frozen, to
-  # reflect that no changes should be made (since they can't be persisted).
-  #
-  # Note: Instantiation, callback execution, and deletion of each
-  # record can be time consuming when you're removing many records at
-  # once. It generates at least one SQL +DELETE+ query per record (or
-  # possibly more, to enforce your callbacks). If you want to delete many
-  # rows quickly, without concern for their associations or callbacks, use
-  # #delete_all instead.
-  #
-  # ==== Examples
-  #
-  #   Person.where(age: 0..18).destroy_all
-  def destroy_all: () -> untyped
-
-  # Deletes the records without instantiating the records
-  # first, and hence not calling the {#destroy}[rdoc-ref:Persistence#destroy]
-  # method nor invoking callbacks.
-  # This is a single SQL DELETE statement that goes straight to the database, much more
-  # efficient than #destroy_all. Be careful with relations though, in particular
-  # <tt>:dependent</tt> rules defined on associations are not honored. Returns the
-  # number of rows affected.
-  #
-  #   Post.where(person_id: 5).where(category: ['Something', 'Else']).delete_all
-  #
-  # Both calls delete the affected posts all at once with a single DELETE statement.
-  # If you need to destroy dependent associations or call your <tt>before_*</tt> or
-  # +after_destroy+ callbacks, use the #destroy_all method instead.
-  #
-  # If an invalid method is supplied, #delete_all raises an ActiveRecordError:
-  #
-  #   Post.distinct.delete_all
-  #   # => ActiveRecord::ActiveRecordError: delete_all doesn't support distinct
-  def delete_all: () -> untyped
-
-  # Finds and destroys all records matching the specified conditions.
-  # This is short-hand for <tt>relation.where(condition).destroy_all</tt>.
-  # Returns the collection of objects that were destroyed.
-  #
-  # If no record is found, returns empty array.
-  #
-  #   Person.destroy_by(id: 13)
-  #   Person.destroy_by(name: 'Spartacus', rating: 4)
-  #   Person.destroy_by("published_at < ?", 2.weeks.ago)
-  def destroy_by: (*untyped args) -> untyped
-
-  # Finds and deletes all records matching the specified conditions.
-  # This is short-hand for <tt>relation.where(condition).delete_all</tt>.
-  # Returns the number of rows affected.
-  #
-  # If no record is found, returns <tt>0</tt> as zero rows were affected.
-  #
-  #   Person.delete_by(id: 13)
-  #   Person.delete_by(name: 'Spartacus', rating: 4)
-  #   Person.delete_by("published_at < ?", 2.weeks.ago)
-  def delete_by: (*untyped args) -> untyped
-
-  # Causes the records to be loaded from the database if they have not
-  # been loaded already. You can use this if for some reason you need
-  # to explicitly load some records before actually using them. The
-  # return value is the relation itself, not the records.
-  #
-  #   Post.where(published: true).load # => #<ActiveRecord::Relation>
-  def load: () { () -> untyped } -> untyped
-
-  # Forces reloading of relation.
-  def reload: () -> untyped
-
-  def reset: () -> untyped
-
-  # Returns sql statement for the relation.
-  #
-  #   User.where(name: 'Oscar').to_sql
-  #   # => SELECT "users".* FROM "users"  WHERE "users"."name" = 'Oscar'
-  def to_sql: () -> untyped
-
-  # Returns a hash of where conditions.
-  #
-  #   User.where(name: 'Oscar').where_values_hash
-  #   # => {name: "Oscar"}
-  def where_values_hash: (?untyped relation_table_name) -> untyped
-
-  def scope_for_create: () -> untyped
-
-  # Returns true if relation needs eager loading.
-  def eager_loading?: () -> untyped
-
-  # Joins that are also marked for preloading. In which case we should just eager load them.
-  # Note that this is a naive implementation because we could have strings and symbols which
-  # represent the same association, but that aren't matched by this. Also, we could have
-  # nested hashes which partially match, e.g. { a: :b } & { a: [:b, :c] }
-  def joined_includes_values: () -> untyped
-
-  # Compares two relations for equality.
-  def ==: (untyped other) -> untyped
-
-  def pretty_print: (untyped q) -> untyped
-
-  # Returns true if relation is blank.
-  def blank?: () -> untyped
-
-  def values: () -> untyped
-
-  def inspect: () -> ::String
-
-  def empty_scope?: () -> untyped
-
-  def has_limit_or_offset?: () -> untyped
-
-  def alias_tracker: (?untyped joins, ?untyped? aliases) -> untyped
-
-  def preload_associations: (untyped records) -> untyped
-
-  attr_reader _deprecated_scope_source: untyped
-
-  attr_writer _deprecated_scope_source: untyped
-
-  def load_records: (untyped records) -> untyped
-
-  def null_relation?: () -> untyped
-
-  def already_in_scope?: () -> untyped
-
-  def _deprecated_spawn: (untyped name) -> untyped
-
-  def _deprecated_scope_block: (untyped name) { (untyped) -> untyped } -> untyped
-
-  def _scoping: (untyped scope) { () -> untyped } -> untyped
-
-  def _substitute_values: (untyped values) -> untyped
-
-  def _increment_attribute: (untyped attribute, ?::Integer value) -> untyped
-
-  def exec_queries: () { () -> untyped } -> untyped
-
-  def skip_query_cache_if_necessary: () { () -> untyped } -> untyped
-
-  def build_preloader: () -> untyped
-
-  def references_eager_loaded_tables?: () -> untyped
-
-  def tables_in_string: (untyped string) -> (::Array[untyped] | untyped)
-end
-
 ActiveRecord::Relation::MULTI_VALUE_METHODS: ::Array[untyped]
 
 ActiveRecord::Relation::SINGLE_VALUE_METHODS: ::Array[untyped]
@@ -18939,9 +18136,6 @@ class ActiveRecord::Schema < Migration::Current
   def define: (untyped info) { () -> untyped } -> untyped
 end
 
-module ActiveRecord::Scoping
-end
-
 module ActiveRecord::Scoping::Default
   extend ActiveSupport::Concern
 end
@@ -19115,18 +18309,6 @@ module ActiveRecord::Scoping::Named::ClassMethods
   def scope: (untyped name, untyped body) { () -> untyped } -> untyped
 
   def valid_scope_name?: (untyped name) -> untyped
-end
-
-module ActiveRecord::Scoping
-  extend ActiveSupport::Concern
-
-  include Default
-
-  include Named
-
-  def populate_with_current_scope_attributes: () -> (nil | untyped)
-
-  def initialize_internals_callback: () -> untyped
 end
 
 module ActiveRecord::Scoping::ClassMethods
@@ -19386,7 +18568,7 @@ end
 module ActiveRecord::Store::ClassMethods
   def store: (untyped store_attribute, ?::Hash[untyped, untyped] options) -> untyped
 
-  def store_accessor: (untyped store_attribute, *untyped keys, ?prefix: untyped? prefix, ?suffix: untyped? suffix) -> (::FalseClass | nil | untyped)
+  def store_accessor: (untyped store_attribute, *untyped keys, ?suffix: untyped? suffix, ?prefix: untyped? prefix) -> (::FalseClass | nil | untyped)
 
   def _store_accessors_module: () -> untyped
 
@@ -19504,9 +18686,6 @@ class ActiveRecord::TableMetadata
   attr_reader arel_table: untyped
 
   attr_reader association: untyped
-end
-
-module ActiveRecord::Tasks
 end
 
 class ActiveRecord::Tasks::DatabaseAlreadyExists < StandardError
@@ -19946,7 +19125,7 @@ module ActiveRecord::Transactions
 
   def committed!: (?should_run_callbacks: bool should_run_callbacks) -> untyped
 
-  def rolledback!: (?force_restore_state: bool force_restore_state, ?should_run_callbacks: bool should_run_callbacks) -> untyped
+  def rolledback!: (?should_run_callbacks: bool should_run_callbacks, ?force_restore_state: bool force_restore_state) -> untyped
 
   # Executes +method+ within a transaction and captures its return value as a
   # status flag. If the status is true the transaction is committed, otherwise
@@ -20252,6 +19431,23 @@ end
 
 # :stopdoc:
 module ActiveRecord::Type
+  attr_accessor registry: untyped
+
+  # Add a new type to the registry, allowing it to be referenced as a
+  # symbol by {ActiveRecord::Base.attribute}[rdoc-ref:Attributes::ClassMethods#attribute].
+  # If your type is only meant to be used with a specific database adapter, you can
+  # do so by passing <tt>adapter: :postgresql</tt>. If your type has the same
+  # name as a native type for the current adapter, an exception will be
+  # raised unless you specify an +:override+ option. <tt>override: true</tt> will
+  # cause your type to be used instead of the native type. <tt>override:
+  # false</tt> will cause the native type to be used over yours if one exists.
+  def self.register: (untyped type_name, ?untyped? klass, **untyped options) { () -> untyped } -> untyped
+
+  def self.lookup: (*untyped args, ?adapter: untyped adapter, **untyped kwargs) -> untyped
+
+  def self.default_value: () -> untyped
+
+  def self.current_adapter_name: () -> untyped
 end
 
 class ActiveRecord::Type::AdapterSpecificRegistry < ActiveModel::Type::Registry
@@ -20263,7 +19459,7 @@ class ActiveRecord::Type::AdapterSpecificRegistry < ActiveModel::Type::Registry
 end
 
 class ActiveRecord::Type::Registration
-  def initialize: (untyped name, untyped block, ?adapter: untyped? adapter, ?override: untyped? override) -> untyped
+  def initialize: (untyped name, untyped block, ?override: untyped? override, ?adapter: untyped? adapter) -> untyped
 
   def call: (untyped _registry, *untyped args, ?adapter: untyped? adapter, **untyped kwargs) -> untyped
 
@@ -20383,26 +19579,6 @@ class ActiveRecord::Type::Json < ActiveModel::Type::Value
   def accessor: () -> untyped
 end
 
-module ActiveRecord::Type
-  attr_accessor registry: untyped
-
-  # Add a new type to the registry, allowing it to be referenced as a
-  # symbol by {ActiveRecord::Base.attribute}[rdoc-ref:Attributes::ClassMethods#attribute].
-  # If your type is only meant to be used with a specific database adapter, you can
-  # do so by passing <tt>adapter: :postgresql</tt>. If your type has the same
-  # name as a native type for the current adapter, an exception will be
-  # raised unless you specify an +:override+ option. <tt>override: true</tt> will
-  # cause your type to be used instead of the native type. <tt>override:
-  # false</tt> will cause the native type to be used over yours if one exists.
-  def self.register: (untyped type_name, ?untyped? klass, **untyped options) { () -> untyped } -> untyped
-
-  def self.lookup: (*untyped args, ?adapter: untyped adapter, **untyped kwargs) -> untyped
-
-  def self.default_value: () -> untyped
-
-  def self.current_adapter_name: () -> untyped
-end
-
 ActiveRecord::Type::BigInteger: untyped
 
 ActiveRecord::Type::Binary: untyped
@@ -20487,6 +19663,37 @@ class ActiveRecord::Type::UnsignedInteger < ActiveModel::Type::Integer
 end
 
 module ActiveRecord::Validations
+  extend ActiveSupport::Concern
+
+  include ActiveModel::Validations
+
+  # The validation process on save can be skipped by passing <tt>validate: false</tt>.
+  # The validation context can be changed by passing <tt>context: context</tt>.
+  # The regular {ActiveRecord::Base#save}[rdoc-ref:Persistence#save] method is replaced
+  # with this when the validations module is mixed in, which it is by default.
+  def save: (**untyped options) -> untyped
+
+  # Attempts to save the record just like {ActiveRecord::Base#save}[rdoc-ref:Base#save] but
+  # will raise an ActiveRecord::RecordInvalid exception instead of returning +false+ if the record is not valid.
+  def save!: (**untyped options) -> untyped
+
+  # Runs all the validations within the specified context. Returns +true+ if
+  # no errors are found, +false+ otherwise.
+  #
+  # Aliased as #validate.
+  #
+  # If the argument is +false+ (default is +nil+), the context is set to <tt>:create</tt> if
+  # {new_record?}[rdoc-ref:Persistence#new_record?] is +true+, and to <tt>:update</tt> if it is not.
+  #
+  # \Validations with no <tt>:on</tt> option will run no matter the context. \Validations with
+  # some <tt>:on</tt> option will only run in the specified context.
+  def valid?: (?untyped? context) -> untyped
+
+  def default_validation_context: () -> untyped
+
+  def raise_validation_error: () -> untyped
+
+  def perform_validations: (?::Hash[untyped, untyped] options) -> untyped
 end
 
 class ActiveRecord::Validations::AbsenceValidator < ActiveModel::Validations::AbsenceValidator
@@ -20501,16 +19708,7 @@ module ActiveRecord::Validations::ClassMethods
   #
   # See ActiveModel::Validations::HelperMethods.validates_absence_of for more information.
   def validates_absence_of: (*untyped attr_names) -> untyped
-end
 
-class ActiveRecord::Validations::AssociatedValidator < ActiveModel::EachValidator
-  # nodoc:
-  def validate_each: (untyped record, untyped attribute, untyped value) -> untyped
-
-  def valid_object?: (untyped record) -> untyped
-end
-
-module ActiveRecord::Validations::ClassMethods
   # Validates whether the associated object or objects are all valid.
   # Works with any kind of association.
   #
@@ -20547,27 +19745,13 @@ module ActiveRecord::Validations::ClassMethods
   #   method, proc or string should return or evaluate to a +true+ or +false+
   #   value.
   def validates_associated: (*untyped attr_names) -> untyped
-end
 
-class ActiveRecord::Validations::LengthValidator < ActiveModel::Validations::LengthValidator
-  # :nodoc:
-  def validate_each: (untyped record, untyped attribute, untyped association_or_value) -> untyped
-end
-
-module ActiveRecord::Validations::ClassMethods
   # Validates that the specified attributes match the length restrictions supplied.
   # If the attribute is an association, records that are marked for destruction are not counted.
   #
   # See ActiveModel::Validations::HelperMethods.validates_length_of for more information.
   def validates_length_of: (*untyped attr_names) -> untyped
-end
 
-class ActiveRecord::Validations::PresenceValidator < ActiveModel::Validations::PresenceValidator
-  # :nodoc:
-  def validate_each: (untyped record, untyped attribute, untyped association_or_value) -> untyped
-end
-
-module ActiveRecord::Validations::ClassMethods
   # Validates that the specified attributes are not blank (as defined by
   # Object#blank?), and, if the attribute is an association, that the
   # associated object is not marked for destruction. Happens by default
@@ -20617,87 +19801,7 @@ module ActiveRecord::Validations::ClassMethods
   # * <tt>:strict</tt> - Specifies whether validation should be strict.
   #   See ActiveModel::Validations#validates! for more information.
   def validates_presence_of: (*untyped attr_names) -> untyped
-end
 
-# = Active Record \RecordInvalid
-#
-# Raised by {ActiveRecord::Base#save!}[rdoc-ref:Persistence#save!] and
-# {ActiveRecord::Base#create!}[rdoc-ref:Persistence::ClassMethods#create!] when the record is invalid.
-# Use the #record method to retrieve the record which did not validate.
-#
-#   begin
-#     complex_operation_that_internally_calls_save!
-#   rescue ActiveRecord::RecordInvalid => invalid
-#     puts invalid.record.errors
-#   end
-class ActiveRecord::RecordInvalid < ActiveRecordError
-  attr_reader record: untyped
-
-  def initialize: (?untyped? record) -> untyped
-end
-
-# = Active Record \Validations
-#
-# Active Record includes the majority of its validations from ActiveModel::Validations
-# all of which accept the <tt>:on</tt> argument to define the context where the
-# validations are active. Active Record will always supply either the context of
-# <tt>:create</tt> or <tt>:update</tt> dependent on whether the model is a
-# {new_record?}[rdoc-ref:Persistence#new_record?].
-module ActiveRecord::Validations
-  extend ActiveSupport::Concern
-
-  include ActiveModel::Validations
-
-  # The validation process on save can be skipped by passing <tt>validate: false</tt>.
-  # The validation context can be changed by passing <tt>context: context</tt>.
-  # The regular {ActiveRecord::Base#save}[rdoc-ref:Persistence#save] method is replaced
-  # with this when the validations module is mixed in, which it is by default.
-  def save: (**untyped options) -> untyped
-
-  # Attempts to save the record just like {ActiveRecord::Base#save}[rdoc-ref:Base#save] but
-  # will raise an ActiveRecord::RecordInvalid exception instead of returning +false+ if the record is not valid.
-  def save!: (**untyped options) -> untyped
-
-  # Runs all the validations within the specified context. Returns +true+ if
-  # no errors are found, +false+ otherwise.
-  #
-  # Aliased as #validate.
-  #
-  # If the argument is +false+ (default is +nil+), the context is set to <tt>:create</tt> if
-  # {new_record?}[rdoc-ref:Persistence#new_record?] is +true+, and to <tt>:update</tt> if it is not.
-  #
-  # \Validations with no <tt>:on</tt> option will run no matter the context. \Validations with
-  # some <tt>:on</tt> option will only run in the specified context.
-  def valid?: (?untyped? context) -> untyped
-
-  def default_validation_context: () -> untyped
-
-  def raise_validation_error: () -> untyped
-
-  def perform_validations: (?::Hash[untyped, untyped] options) -> untyped
-end
-
-class ActiveRecord::Validations::UniquenessValidator < ActiveModel::EachValidator
-  # :nodoc:
-  def initialize: (untyped options) -> untyped
-
-  def validate_each: (untyped record, untyped attribute, untyped value) -> untyped
-
-  # The check for an existing value should be run from a class that
-  # isn't abstract. This means working down from the current class
-  # (self), to the first non-abstract class. Since classes don't know
-  # their subclasses, we have to build the hierarchy between self and
-  # the record's class.
-  def find_finder_class_for: (untyped record) -> untyped
-
-  def build_relation: (untyped klass, untyped attribute, untyped value) -> untyped
-
-  def scope_relation: (untyped record, untyped relation) -> untyped
-
-  def map_enum_attribute: (untyped klass, untyped attribute, untyped value) -> untyped
-end
-
-module ActiveRecord::Validations::ClassMethods
   # Validates whether the value of the specified attributes are unique
   # across the system. Useful for making sure that only one user
   # can be named "davidhh".
@@ -20825,12 +19929,75 @@ module ActiveRecord::Validations::ClassMethods
   def validates_uniqueness_of: (*untyped attr_names) -> untyped
 end
 
-module ActiveRecord
-  # Returns the version of the currently loaded ActiveRecord as a <tt>Gem::Version</tt>
-  def self.version: () -> untyped
+class ActiveRecord::Validations::AssociatedValidator < ActiveModel::EachValidator
+  # nodoc:
+  def validate_each: (untyped record, untyped attribute, untyped value) -> untyped
+
+  def valid_object?: (untyped record) -> untyped
+end
+
+class ActiveRecord::Validations::LengthValidator < ActiveModel::Validations::LengthValidator
+  # :nodoc:
+  def validate_each: (untyped record, untyped attribute, untyped association_or_value) -> untyped
+end
+
+class ActiveRecord::Validations::PresenceValidator < ActiveModel::Validations::PresenceValidator
+  # :nodoc:
+  def validate_each: (untyped record, untyped attribute, untyped association_or_value) -> untyped
+end
+
+# = Active Record \RecordInvalid
+#
+# Raised by {ActiveRecord::Base#save!}[rdoc-ref:Persistence#save!] and
+# {ActiveRecord::Base#create!}[rdoc-ref:Persistence::ClassMethods#create!] when the record is invalid.
+# Use the #record method to retrieve the record which did not validate.
+#
+#   begin
+#     complex_operation_that_internally_calls_save!
+#   rescue ActiveRecord::RecordInvalid => invalid
+#     puts invalid.record.errors
+#   end
+class ActiveRecord::RecordInvalid < ActiveRecordError
+  attr_reader record: untyped
+
+  def initialize: (?untyped? record) -> untyped
+end
+
+class ActiveRecord::Validations::UniquenessValidator < ActiveModel::EachValidator
+  # :nodoc:
+  def initialize: (untyped options) -> untyped
+
+  def validate_each: (untyped record, untyped attribute, untyped value) -> untyped
+
+  # The check for an existing value should be run from a class that
+  # isn't abstract. This means working down from the current class
+  # (self), to the first non-abstract class. Since classes don't know
+  # their subclasses, we have to build the hierarchy between self and
+  # the record's class.
+  def find_finder_class_for: (untyped record) -> untyped
+
+  def build_relation: (untyped klass, untyped attribute, untyped value) -> untyped
+
+  def scope_relation: (untyped record, untyped relation) -> untyped
+
+  def map_enum_attribute: (untyped klass, untyped attribute, untyped value) -> untyped
 end
 
 module Arel
+  # Wrap a known-safe SQL string for passing to query methods, e.g.
+  #
+  #   Post.order(Arel.sql("length(title)")).last
+  #
+  # Great caution should be taken to avoid SQL injection vulnerabilities.
+  # This method should not be used with unsafe values such as request
+  # parameters or model attributes.
+  def self.sql: (untyped raw_sql) -> untyped
+
+  def self.star: () -> untyped
+
+  def self.arel_node?: (untyped value) -> untyped
+
+  def self.fetch_attribute: (untyped value) { (untyped) -> untyped } -> untyped
 end
 
 # :nodoc: all
@@ -20840,6 +20007,9 @@ end
 
 # :nodoc: all
 module Arel::Attributes
+  # #
+  # Factory method to wrap a raw database +column+ to an Arel Attribute.
+  def self.for: (untyped column) -> untyped
 end
 
 # NOTE: It inherits unnamed class, but omitted
@@ -20885,13 +20055,6 @@ class Arel::Attributes::Undefined < Attribute
 end
 
 Arel::Attribute: untyped
-
-# :nodoc: all
-module Arel::Attributes
-  # #
-  # Factory method to wrap a raw database +column+ to an Arel Attribute.
-  def self.for: (untyped column) -> untyped
-end
 
 # :nodoc: all
 module Arel::Collectors
@@ -21064,6 +20227,7 @@ end
 
 # :nodoc: all
 module Arel::Nodes
+  def self.build_quoted: (untyped other, ?untyped? attribute) -> untyped
 end
 
 class Arel::Nodes::And < Arel::Nodes::NodeExpression
@@ -21146,11 +20310,6 @@ class Arel::Nodes::When < Binary
 end
 
 class Arel::Nodes::Else < Unary
-end
-
-# :nodoc: all
-module Arel::Nodes
-  def self.build_quoted: (untyped other, ?untyped? attribute) -> untyped
 end
 
 class Arel::Nodes::Casted < Arel::Nodes::NodeExpression
@@ -21754,23 +20913,6 @@ module Arel::Predications
   def open_ended?: (untyped value) -> untyped
 end
 
-module Arel
-  # Wrap a known-safe SQL string for passing to query methods, e.g.
-  #
-  #   Post.order(Arel.sql("length(title)")).last
-  #
-  # Great caution should be taken to avoid SQL injection vulnerabilities.
-  # This method should not be used with unsafe values such as request
-  # parameters or model attributes.
-  def self.sql: (untyped raw_sql) -> untyped
-
-  def self.star: () -> untyped
-
-  def self.arel_node?: (untyped value) -> untyped
-
-  def self.fetch_attribute: (untyped value) { (untyped) -> untyped } -> untyped
-end
-
 Arel::VERSION: ::String
 
 Arel::Node: untyped
@@ -21870,7 +21012,7 @@ class Arel::Table
 
   attr_accessor table_alias: untyped
 
-  def initialize: (untyped name, ?as: untyped? as, ?type_caster: untyped? type_caster) -> untyped
+  def initialize: (untyped name, ?type_caster: untyped? type_caster, ?as: untyped? as) -> untyped
 
   def `alias`: (?::String name) -> untyped
 
@@ -22599,3 +21741,4 @@ class ActiveRecord::Generators::Base < Rails::Generators::NamedBase
   # Set the current directory as base for the inherited generators.
   def self.base_root: () -> untyped
 end
+
