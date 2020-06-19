@@ -431,7 +431,7 @@ class ActiveModel::AttributeMutationTracker
 
   def any_changes?: () -> untyped
 
-  def changed?: (untyped attr_name, ?from: untyped from, ?to: untyped to) -> untyped
+  def changed?: (untyped attr_name, ?to: untyped to, ?from: untyped from) -> untyped
 
   def changed_in_place?: (untyped attr_name) -> untyped
 
@@ -1261,7 +1261,7 @@ end
 #   person.errors.full_messages # => ["name cannot be nil"]
 #   # etc..
 class ActiveModel::Errors
-  include Enumerable
+  include Enumerable[untyped, untyped]
 
   attr_accessor i18n_customize_full_message: untyped
 
@@ -2569,7 +2569,7 @@ class ActiveModel::Type::Value
 
   attr_reader limit: untyped
 
-  def initialize: (?precision: untyped? precision, ?limit: untyped? limit, ?scale: untyped? scale) -> untyped
+  def initialize: (?scale: untyped? scale, ?limit: untyped? limit, ?precision: untyped? precision) -> untyped
 
   def `type`: () -> nil
 
