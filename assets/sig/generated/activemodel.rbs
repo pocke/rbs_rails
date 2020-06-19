@@ -1,4 +1,13 @@
 module ActiveModel
+  # Returns the version of the currently loaded \Active \Model as a <tt>Gem::Version</tt>
+  def self.gem_version: () -> untyped
+
+  extend ActiveSupport::Autoload
+
+  def self.eager_load!: () -> untyped
+
+  # Returns the version of the currently loaded \Active \Model as a <tt>Gem::Version</tt>
+  def self.version: () -> untyped
 end
 
 module ActiveModel::AttributeAssignment
@@ -422,7 +431,7 @@ class ActiveModel::AttributeMutationTracker
 
   def any_changes?: () -> untyped
 
-  def changed?: (untyped attr_name, ?from: untyped from, ?to: untyped to) -> untyped
+  def changed?: (untyped attr_name, ?to: untyped to, ?from: untyped from) -> untyped
 
   def changed_in_place?: (untyped attr_name) -> untyped
 
@@ -614,6 +623,47 @@ end
 ActiveModel::Attribute::Uninitialized::UNINITIALIZED_ORIGINAL_VALUE: untyped
 
 class ActiveModel::AttributeSet
+  def initialize: (untyped attributes) -> untyped
+
+  def []: (untyped name) -> untyped
+
+  def []=: (untyped name, untyped value) -> untyped
+
+  def values_before_type_cast: () -> untyped
+
+  def to_hash: () -> untyped
+
+  def key?: (untyped name) -> untyped
+
+  def keys: () -> untyped
+
+  def fetch_value: (untyped name) { () -> untyped } -> untyped
+
+  def write_from_database: (untyped name, untyped value) -> untyped
+
+  def write_from_user: (untyped name, untyped value) -> untyped
+
+  def write_cast_value: (untyped name, untyped value) -> untyped
+
+  def freeze: () -> untyped
+
+  def deep_dup: () -> untyped
+
+  def initialize_dup: (untyped _) -> untyped
+
+  def initialize_clone: (untyped _) -> untyped
+
+  def reset: (untyped key) -> untyped
+
+  def accessed: () -> untyped
+
+  def map: () { () -> untyped } -> untyped
+
+  def ==: (untyped other) -> untyped
+
+  attr_reader attributes: untyped
+
+  def initialized_attributes: () -> untyped
 end
 
 class ActiveModel::AttributeSet::Builder
@@ -664,50 +714,6 @@ class ActiveModel::LazyAttributeHash
   attr_reader default_attributes: untyped
 
   def assign_default_value: (untyped name) -> untyped
-end
-
-class ActiveModel::AttributeSet
-  def initialize: (untyped attributes) -> untyped
-
-  def []: (untyped name) -> untyped
-
-  def []=: (untyped name, untyped value) -> untyped
-
-  def values_before_type_cast: () -> untyped
-
-  def to_hash: () -> untyped
-
-  def key?: (untyped name) -> untyped
-
-  def keys: () -> untyped
-
-  def fetch_value: (untyped name) { () -> untyped } -> untyped
-
-  def write_from_database: (untyped name, untyped value) -> untyped
-
-  def write_from_user: (untyped name, untyped value) -> untyped
-
-  def write_cast_value: (untyped name, untyped value) -> untyped
-
-  def freeze: () -> untyped
-
-  def deep_dup: () -> untyped
-
-  def initialize_dup: (untyped _) -> untyped
-
-  def initialize_clone: (untyped _) -> untyped
-
-  def reset: (untyped key) -> untyped
-
-  def accessed: () -> untyped
-
-  def map: () { () -> untyped } -> untyped
-
-  def ==: (untyped other) -> untyped
-
-  attr_reader attributes: untyped
-
-  def initialized_attributes: () -> untyped
 end
 
 class ActiveModel::AttributeSet::YAMLEncoder
@@ -790,9 +796,6 @@ module ActiveModel::Attributes::ClassMethods
 end
 
 ActiveModel::Attributes::ClassMethods::NO_DEFAULT_PROVIDED: untyped
-
-class ActiveModel::Attribute
-end
 
 class ActiveModel::Attribute::UserProvidedDefault < FromUser
   # :nodoc:
@@ -1610,11 +1613,6 @@ module ActiveModel::ForbiddenAttributesProtection
   def sanitize_for_mass_assignment: (untyped attributes) -> untyped
 end
 
-module ActiveModel
-  # Returns the version of the currently loaded \Active \Model as a <tt>Gem::Version</tt>
-  def self.gem_version: () -> untyped
-end
-
 module ActiveModel::VERSION
 end
 
@@ -1944,12 +1942,6 @@ end
 class ActiveModel::Railtie < Rails::Railtie
 end
 
-module ActiveModel
-  extend ActiveSupport::Autoload
-
-  def self.eager_load!: () -> untyped
-end
-
 module ActiveModel::Serializers
   extend ActiveSupport::Autoload
 end
@@ -2140,9 +2132,6 @@ module ActiveModel::Serialization
   def serializable_add_includes: (?::Hash[untyped, untyped] options) { (untyped, untyped, untyped) -> untyped } -> (nil | untyped)
 end
 
-module ActiveModel::Serializers
-end
-
 # == Active \Model \JSON \Serializer
 module ActiveModel::Serializers::JSON
   extend ActiveSupport::Concern
@@ -2301,6 +2290,14 @@ module ActiveModel::Translation
 end
 
 module ActiveModel::Type
+  attr_accessor registry: untyped
+
+  # Add a new type to the registry, allowing it to be gotten through ActiveModel::Type#lookup
+  def self.register: (untyped type_name, ?untyped? klass, **untyped options) { () -> untyped } -> untyped
+
+  def self.lookup: (*untyped args, **untyped kwargs) -> untyped
+
+  def self.default_value: () -> untyped
 end
 
 class ActiveModel::Type::BigInteger < Integer
@@ -2518,17 +2515,6 @@ end
 # 4 bytes means an integer as opposed to smallint etc.
 ActiveModel::Type::Integer::DEFAULT_LIMIT: ::Integer
 
-module ActiveModel::Type
-  attr_accessor registry: untyped
-
-  # Add a new type to the registry, allowing it to be gotten through ActiveModel::Type#lookup
-  def self.register: (untyped type_name, ?untyped? klass, **untyped options) { () -> untyped } -> untyped
-
-  def self.lookup: (*untyped args, **untyped kwargs) -> untyped
-
-  def self.default_value: () -> untyped
-end
-
 class ActiveModel::Type::Registry
   def initialize: () -> untyped
 
@@ -2583,7 +2569,7 @@ class ActiveModel::Type::Value
 
   attr_reader limit: untyped
 
-  def initialize: (?precision: untyped? precision, ?limit: untyped? limit, ?scale: untyped? scale) -> untyped
+  def initialize: (?scale: untyped? scale, ?limit: untyped? limit, ?precision: untyped? precision) -> untyped
 
   def `type`: () -> nil
 
@@ -2657,6 +2643,147 @@ class ActiveModel::Type::Value
 end
 
 module ActiveModel::Validations
+  extend ActiveSupport::Concern
+
+  extend ActiveModel::Naming
+
+  extend ActiveModel::Callbacks
+
+  extend ActiveModel::Translation
+
+  extend HelperMethods
+
+  include HelperMethods
+
+  attr_accessor validation_context: untyped
+
+  def initialize_dup: (untyped other) -> untyped
+
+  # Returns the +Errors+ object that holds all information about attribute
+  # error messages.
+  #
+  #   class Person
+  #     include ActiveModel::Validations
+  #
+  #     attr_accessor :name
+  #     validates_presence_of :name
+  #   end
+  #
+  #   person = Person.new
+  #   person.valid? # => false
+  #   person.errors # => #<ActiveModel::Errors:0x007fe603816640 @messages={name:["can't be blank"]}>
+  def errors: () -> untyped
+
+  # Runs all the specified validations and returns +true+ if no errors were
+  # added otherwise +false+.
+  #
+  #   class Person
+  #     include ActiveModel::Validations
+  #
+  #     attr_accessor :name
+  #     validates_presence_of :name
+  #   end
+  #
+  #   person = Person.new
+  #   person.name = ''
+  #   person.valid? # => false
+  #   person.name = 'david'
+  #   person.valid? # => true
+  #
+  # Context can optionally be supplied to define which callbacks to test
+  # against (the context is defined on the validations using <tt>:on</tt>).
+  #
+  #   class Person
+  #     include ActiveModel::Validations
+  #
+  #     attr_accessor :name
+  #     validates_presence_of :name, on: :new
+  #   end
+  #
+  #   person = Person.new
+  #   person.valid?       # => true
+  #   person.valid?(:new) # => false
+  def valid?: (?untyped? context) -> untyped
+
+  # Performs the opposite of <tt>valid?</tt>. Returns +true+ if errors were
+  # added, +false+ otherwise.
+  #
+  #   class Person
+  #     include ActiveModel::Validations
+  #
+  #     attr_accessor :name
+  #     validates_presence_of :name
+  #   end
+  #
+  #   person = Person.new
+  #   person.name = ''
+  #   person.invalid? # => true
+  #   person.name = 'david'
+  #   person.invalid? # => false
+  #
+  # Context can optionally be supplied to define which callbacks to test
+  # against (the context is defined on the validations using <tt>:on</tt>).
+  #
+  #   class Person
+  #     include ActiveModel::Validations
+  #
+  #     attr_accessor :name
+  #     validates_presence_of :name, on: :new
+  #   end
+  #
+  #   person = Person.new
+  #   person.invalid?       # => false
+  #   person.invalid?(:new) # => true
+  def invalid?: (?untyped? context) -> untyped
+
+  # Runs all the validations within the specified context. Returns +true+ if
+  # no errors are found, raises +ValidationError+ otherwise.
+  #
+  # Validations with no <tt>:on</tt> option will run no matter the context. Validations with
+  # some <tt>:on</tt> option will only run in the specified context.
+  def validate!: (?untyped? context) -> untyped
+
+  def run_validations!: () -> untyped
+
+  def raise_validation_error: () -> untyped
+
+  # Passes the record off to the class or classes specified and allows them
+  # to add errors based on more complex conditions.
+  #
+  #   class Person
+  #     include ActiveModel::Validations
+  #
+  #     validate :instance_validations
+  #
+  #     def instance_validations
+  #       validates_with MyValidator
+  #     end
+  #   end
+  #
+  # Please consult the class method documentation for more information on
+  # creating your own validator.
+  #
+  # You may also pass it multiple classes, like so:
+  #
+  #   class Person
+  #     include ActiveModel::Validations
+  #
+  #     validate :instance_validations, on: :create
+  #
+  #     def instance_validations
+  #       validates_with MyValidator, MyOtherValidator
+  #     end
+  #   end
+  #
+  # Standard configuration options (<tt>:on</tt>, <tt>:if</tt> and
+  # <tt>:unless</tt>), which are available on the class version of
+  # +validates_with+, should instead be placed on the +validates+ method
+  # as these are applied and tested in the callback.
+  #
+  # If you pass any additional configuration options, they will be passed
+  # to the class and available as +options+, please refer to the
+  # class version of this method for more information.
+  def validates_with: (*untyped args) { () -> untyped } -> untyped
 end
 
 class ActiveModel::Validations::AbsenceValidator < EachValidator
@@ -2682,34 +2809,7 @@ module ActiveModel::Validations::HelperMethods
   # +:if+, +:unless+, +:on+, +:allow_nil+, +:allow_blank+, and +:strict+.
   # See <tt>ActiveModel::Validations#validates</tt> for more information
   def validates_absence_of: (*untyped attr_names) -> untyped
-end
 
-class ActiveModel::Validations::AcceptanceValidator < EachValidator
-  # :nodoc:
-  def initialize: (untyped options) -> untyped
-
-  def validate_each: (untyped record, untyped attribute, untyped value) -> untyped
-
-  def setup!: (untyped klass) -> untyped
-
-  def acceptable_option?: (untyped value) -> untyped
-end
-
-class ActiveModel::Validations::AcceptanceValidator::LazilyDefineAttributes < Module
-  def initialize: (untyped attributes) -> untyped
-
-  def included: (untyped klass) -> untyped
-
-  def matches?: (untyped method_name) -> untyped
-
-  def define_on: (untyped klass) -> untyped
-
-  def ==: (untyped other) -> untyped
-
-  attr_reader attributes: untyped
-end
-
-module ActiveModel::Validations::HelperMethods
   # Encapsulates the pattern of wanting to validate the acceptance of a
   # terms of service check box (or similar agreement).
   #
@@ -2736,6 +2836,305 @@ module ActiveModel::Validations::HelperMethods
   # +:if+, +:unless+, +:on+, +:allow_nil+, +:allow_blank+, and +:strict+.
   # See <tt>ActiveModel::Validations#validates</tt> for more information.
   def validates_acceptance_of: (*untyped attr_names) -> untyped
+
+  # Encapsulates the pattern of wanting to validate a password or email
+  # address field with a confirmation.
+  #
+  #   Model:
+  #     class Person < ActiveRecord::Base
+  #       validates_confirmation_of :user_name, :password
+  #       validates_confirmation_of :email_address,
+  #                                 message: 'should match confirmation'
+  #     end
+  #
+  #   View:
+  #     <%= password_field "person", "password" %>
+  #     <%= password_field "person", "password_confirmation" %>
+  #
+  # The added +password_confirmation+ attribute is virtual; it exists only
+  # as an in-memory attribute for validating the password. To achieve this,
+  # the validation adds accessors to the model for the confirmation
+  # attribute.
+  #
+  # NOTE: This check is performed only if +password_confirmation+ is not
+  # +nil+. To require confirmation, make sure to add a presence check for
+  # the confirmation attribute:
+  #
+  #   validates_presence_of :password_confirmation, if: :password_changed?
+  #
+  # Configuration options:
+  # * <tt>:message</tt> - A custom error message (default is: "doesn't match
+  #   <tt>%{translated_attribute_name}</tt>").
+  # * <tt>:case_sensitive</tt> - Looks for an exact match. Ignored by
+  #   non-text columns (+true+ by default).
+  #
+  # There is also a list of default options supported by every validator:
+  # +:if+, +:unless+, +:on+, +:allow_nil+, +:allow_blank+, and +:strict+.
+  # See <tt>ActiveModel::Validations#validates</tt> for more information
+  def validates_confirmation_of: (*untyped attr_names) -> untyped
+
+  # Validates that the value of the specified attribute is not in a
+  # particular enumerable object.
+  #
+  #   class Person < ActiveRecord::Base
+  #     validates_exclusion_of :username, in: %w( admin superuser ), message: "You don't belong here"
+  #     validates_exclusion_of :age, in: 30..60, message: 'This site is only for under 30 and over 60'
+  #     validates_exclusion_of :format, in: %w( mov avi ), message: "extension %{value} is not allowed"
+  #     validates_exclusion_of :password, in: ->(person) { [person.username, person.first_name] },
+  #                            message: 'should not be the same as your username or first name'
+  #     validates_exclusion_of :karma, in: :reserved_karmas
+  #   end
+  #
+  # Configuration options:
+  # * <tt>:in</tt> - An enumerable object of items that the value shouldn't
+  #   be part of. This can be supplied as a proc, lambda or symbol which returns an
+  #   enumerable. If the enumerable is a numerical, time or datetime range the test
+  #   is performed with <tt>Range#cover?</tt>, otherwise with <tt>include?</tt>. When
+  #   using a proc or lambda the instance under validation is passed as an argument.
+  # * <tt>:within</tt> - A synonym(or alias) for <tt>:in</tt>
+  #   <tt>Range#cover?</tt>, otherwise with <tt>include?</tt>.
+  # * <tt>:message</tt> - Specifies a custom error message (default is: "is
+  #   reserved").
+  #
+  # There is also a list of default options supported by every validator:
+  # +:if+, +:unless+, +:on+, +:allow_nil+, +:allow_blank+, and +:strict+.
+  # See <tt>ActiveModel::Validations#validates</tt> for more information
+  def validates_exclusion_of: (*untyped attr_names) -> untyped
+
+  # Validates whether the value of the specified attribute is of the correct
+  # form, going by the regular expression provided. You can require that the
+  # attribute matches the regular expression:
+  #
+  #   class Person < ActiveRecord::Base
+  #     validates_format_of :email, with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i, on: :create
+  #   end
+  #
+  # Alternatively, you can require that the specified attribute does _not_
+  # match the regular expression:
+  #
+  #   class Person < ActiveRecord::Base
+  #     validates_format_of :email, without: /NOSPAM/
+  #   end
+  #
+  # You can also provide a proc or lambda which will determine the regular
+  # expression that will be used to validate the attribute.
+  #
+  #   class Person < ActiveRecord::Base
+  #     # Admin can have number as a first letter in their screen name
+  #     validates_format_of :screen_name,
+  #                         with: ->(person) { person.admin? ? /\A[a-z0-9][a-z0-9_\-]*\z/i : /\A[a-z][a-z0-9_\-]*\z/i }
+  #   end
+  #
+  # Note: use <tt>\A</tt> and <tt>\z</tt> to match the start and end of the
+  # string, <tt>^</tt> and <tt>$</tt> match the start/end of a line.
+  #
+  # Due to frequent misuse of <tt>^</tt> and <tt>$</tt>, you need to pass
+  # the <tt>multiline: true</tt> option in case you use any of these two
+  # anchors in the provided regular expression. In most cases, you should be
+  # using <tt>\A</tt> and <tt>\z</tt>.
+  #
+  # You must pass either <tt>:with</tt> or <tt>:without</tt> as an option.
+  # In addition, both must be a regular expression or a proc or lambda, or
+  # else an exception will be raised.
+  #
+  # Configuration options:
+  # * <tt>:message</tt> - A custom error message (default is: "is invalid").
+  # * <tt>:with</tt> - Regular expression that if the attribute matches will
+  #   result in a successful validation. This can be provided as a proc or
+  #   lambda returning regular expression which will be called at runtime.
+  # * <tt>:without</tt> - Regular expression that if the attribute does not
+  #   match will result in a successful validation. This can be provided as
+  #   a proc or lambda returning regular expression which will be called at
+  #   runtime.
+  # * <tt>:multiline</tt> - Set to true if your regular expression contains
+  #   anchors that match the beginning or end of lines as opposed to the
+  #   beginning or end of the string. These anchors are <tt>^</tt> and <tt>$</tt>.
+  #
+  # There is also a list of default options supported by every validator:
+  # +:if+, +:unless+, +:on+, +:allow_nil+, +:allow_blank+, and +:strict+.
+  # See <tt>ActiveModel::Validations#validates</tt> for more information
+  def validates_format_of: (*untyped attr_names) -> untyped
+
+  def _merge_attributes: (untyped attr_names) -> untyped
+
+  # Validates whether the value of the specified attribute is available in a
+  # particular enumerable object.
+  #
+  #   class Person < ActiveRecord::Base
+  #     validates_inclusion_of :role, in: %w( admin contributor )
+  #     validates_inclusion_of :age, in: 0..99
+  #     validates_inclusion_of :format, in: %w( jpg gif png ), message: "extension %{value} is not included in the list"
+  #     validates_inclusion_of :states, in: ->(person) { STATES[person.country] }
+  #     validates_inclusion_of :karma, in: :available_karmas
+  #   end
+  #
+  # Configuration options:
+  # * <tt>:in</tt> - An enumerable object of available items. This can be
+  #   supplied as a proc, lambda or symbol which returns an enumerable. If the
+  #   enumerable is a numerical, time or datetime range the test is performed
+  #   with <tt>Range#cover?</tt>, otherwise with <tt>include?</tt>. When using
+  #   a proc or lambda the instance under validation is passed as an argument.
+  # * <tt>:within</tt> - A synonym(or alias) for <tt>:in</tt>
+  # * <tt>:message</tt> - Specifies a custom error message (default is: "is
+  #   not included in the list").
+  #
+  # There is also a list of default options supported by every validator:
+  # +:if+, +:unless+, +:on+, +:allow_nil+, +:allow_blank+, and +:strict+.
+  # See <tt>ActiveModel::Validations#validates</tt> for more information
+  def validates_inclusion_of: (*untyped attr_names) -> untyped
+
+  # Validates that the specified attributes match the length restrictions
+  # supplied. Only one constraint option can be used at a time apart from
+  # +:minimum+ and +:maximum+ that can be combined together:
+  #
+  #   class Person < ActiveRecord::Base
+  #     validates_length_of :first_name, maximum: 30
+  #     validates_length_of :last_name, maximum: 30, message: "less than 30 if you don't mind"
+  #     validates_length_of :fax, in: 7..32, allow_nil: true
+  #     validates_length_of :phone, in: 7..32, allow_blank: true
+  #     validates_length_of :user_name, within: 6..20, too_long: 'pick a shorter name', too_short: 'pick a longer name'
+  #     validates_length_of :zip_code, minimum: 5, too_short: 'please enter at least 5 characters'
+  #     validates_length_of :smurf_leader, is: 4, message: "papa is spelled with 4 characters... don't play me."
+  #     validates_length_of :words_in_essay, minimum: 100, too_short: 'Your essay must be at least 100 words.'
+  #
+  #     private
+  #
+  #     def words_in_essay
+  #       essay.scan(/\w+/)
+  #     end
+  #   end
+  #
+  # Constraint options:
+  #
+  # * <tt>:minimum</tt> - The minimum size of the attribute.
+  # * <tt>:maximum</tt> - The maximum size of the attribute. Allows +nil+ by
+  #   default if not used with +:minimum+.
+  # * <tt>:is</tt> - The exact size of the attribute.
+  # * <tt>:within</tt> - A range specifying the minimum and maximum size of
+  #   the attribute.
+  # * <tt>:in</tt> - A synonym (or alias) for <tt>:within</tt>.
+  #
+  # Other options:
+  #
+  # * <tt>:allow_nil</tt> - Attribute may be +nil+; skip validation.
+  # * <tt>:allow_blank</tt> - Attribute may be blank; skip validation.
+  # * <tt>:too_long</tt> - The error message if the attribute goes over the
+  #   maximum (default is: "is too long (maximum is %{count} characters)").
+  # * <tt>:too_short</tt> - The error message if the attribute goes under the
+  #   minimum (default is: "is too short (minimum is %{count} characters)").
+  # * <tt>:wrong_length</tt> - The error message if using the <tt>:is</tt>
+  #   method and the attribute is the wrong size (default is: "is the wrong
+  #   length (should be %{count} characters)").
+  # * <tt>:message</tt> - The error message to use for a <tt>:minimum</tt>,
+  #   <tt>:maximum</tt>, or <tt>:is</tt> violation. An alias of the appropriate
+  #   <tt>too_long</tt>/<tt>too_short</tt>/<tt>wrong_length</tt> message.
+  #
+  # There is also a list of default options supported by every validator:
+  # +:if+, +:unless+, +:on+ and +:strict+.
+  # See <tt>ActiveModel::Validations#validates</tt> for more information
+  def validates_length_of: (*untyped attr_names) -> untyped
+
+  # Validates whether the value of the specified attribute is numeric by
+  # trying to convert it to a float with Kernel.Float (if <tt>only_integer</tt>
+  # is +false+) or applying it to the regular expression <tt>/\A[\+\-]?\d+\z/</tt>
+  # (if <tt>only_integer</tt> is set to +true+).
+  #
+  #   class Person < ActiveRecord::Base
+  #     validates_numericality_of :value, on: :create
+  #   end
+  #
+  # Configuration options:
+  # * <tt>:message</tt> - A custom error message (default is: "is not a number").
+  # * <tt>:only_integer</tt> - Specifies whether the value has to be an
+  #   integer, e.g. an integral value (default is +false+).
+  # * <tt>:allow_nil</tt> - Skip validation if attribute is +nil+ (default is
+  #   +false+). Notice that for Integer and Float columns empty strings are
+  #   converted to +nil+.
+  # * <tt>:greater_than</tt> - Specifies the value must be greater than the
+  #   supplied value.
+  # * <tt>:greater_than_or_equal_to</tt> - Specifies the value must be
+  #   greater than or equal the supplied value.
+  # * <tt>:equal_to</tt> - Specifies the value must be equal to the supplied
+  #   value.
+  # * <tt>:less_than</tt> - Specifies the value must be less than the
+  #   supplied value.
+  # * <tt>:less_than_or_equal_to</tt> - Specifies the value must be less
+  #   than or equal the supplied value.
+  # * <tt>:other_than</tt> - Specifies the value must be other than the
+  #   supplied value.
+  # * <tt>:odd</tt> - Specifies the value must be an odd number.
+  # * <tt>:even</tt> - Specifies the value must be an even number.
+  #
+  # There is also a list of default options supported by every validator:
+  # +:if+, +:unless+, +:on+, +:allow_nil+, +:allow_blank+, and +:strict+ .
+  # See <tt>ActiveModel::Validations#validates</tt> for more information
+  #
+  # The following checks can also be supplied with a proc or a symbol which
+  # corresponds to a method:
+  #
+  # * <tt>:greater_than</tt>
+  # * <tt>:greater_than_or_equal_to</tt>
+  # * <tt>:equal_to</tt>
+  # * <tt>:less_than</tt>
+  # * <tt>:less_than_or_equal_to</tt>
+  # * <tt>:only_integer</tt>
+  #
+  # For example:
+  #
+  #   class Person < ActiveRecord::Base
+  #     validates_numericality_of :width, less_than: ->(person) { person.height }
+  #     validates_numericality_of :width, greater_than: :minimum_weight
+  #   end
+  def validates_numericality_of: (*untyped attr_names) -> untyped
+
+  # Validates that the specified attributes are not blank (as defined by
+  # Object#blank?). Happens by default on save.
+  #
+  #   class Person < ActiveRecord::Base
+  #     validates_presence_of :first_name
+  #   end
+  #
+  # The first_name attribute must be in the object and it cannot be blank.
+  #
+  # If you want to validate the presence of a boolean field (where the real
+  # values are +true+ and +false+), you will want to use
+  # <tt>validates_inclusion_of :field_name, in: [true, false]</tt>.
+  #
+  # This is due to the way Object#blank? handles boolean values:
+  # <tt>false.blank? # => true</tt>.
+  #
+  # Configuration options:
+  # * <tt>:message</tt> - A custom error message (default is: "can't be blank").
+  #
+  # There is also a list of default options supported by every validator:
+  # +:if+, +:unless+, +:on+, +:allow_nil+, +:allow_blank+, and +:strict+.
+  # See <tt>ActiveModel::Validations#validates</tt> for more information
+  def validates_presence_of: (*untyped attr_names) -> untyped
+end
+
+class ActiveModel::Validations::AcceptanceValidator < EachValidator
+  # :nodoc:
+  def initialize: (untyped options) -> untyped
+
+  def validate_each: (untyped record, untyped attribute, untyped value) -> untyped
+
+  def setup!: (untyped klass) -> untyped
+
+  def acceptable_option?: (untyped value) -> untyped
+end
+
+class ActiveModel::Validations::AcceptanceValidator::LazilyDefineAttributes < Module
+  def initialize: (untyped attributes) -> untyped
+
+  def included: (untyped klass) -> untyped
+
+  def matches?: (untyped method_name) -> untyped
+
+  def define_on: (untyped klass) -> untyped
+
+  def ==: (untyped other) -> untyped
+
+  attr_reader attributes: untyped
 end
 
 # == Active \Model \Validation \Callbacks
@@ -2848,79 +3247,11 @@ class ActiveModel::Validations::ConfirmationValidator < EachValidator
   def confirmation_value_equal?: (untyped record, untyped attribute, untyped value, untyped confirmed) -> untyped
 end
 
-module ActiveModel::Validations::HelperMethods
-  # Encapsulates the pattern of wanting to validate a password or email
-  # address field with a confirmation.
-  #
-  #   Model:
-  #     class Person < ActiveRecord::Base
-  #       validates_confirmation_of :user_name, :password
-  #       validates_confirmation_of :email_address,
-  #                                 message: 'should match confirmation'
-  #     end
-  #
-  #   View:
-  #     <%= password_field "person", "password" %>
-  #     <%= password_field "person", "password_confirmation" %>
-  #
-  # The added +password_confirmation+ attribute is virtual; it exists only
-  # as an in-memory attribute for validating the password. To achieve this,
-  # the validation adds accessors to the model for the confirmation
-  # attribute.
-  #
-  # NOTE: This check is performed only if +password_confirmation+ is not
-  # +nil+. To require confirmation, make sure to add a presence check for
-  # the confirmation attribute:
-  #
-  #   validates_presence_of :password_confirmation, if: :password_changed?
-  #
-  # Configuration options:
-  # * <tt>:message</tt> - A custom error message (default is: "doesn't match
-  #   <tt>%{translated_attribute_name}</tt>").
-  # * <tt>:case_sensitive</tt> - Looks for an exact match. Ignored by
-  #   non-text columns (+true+ by default).
-  #
-  # There is also a list of default options supported by every validator:
-  # +:if+, +:unless+, +:on+, +:allow_nil+, +:allow_blank+, and +:strict+.
-  # See <tt>ActiveModel::Validations#validates</tt> for more information
-  def validates_confirmation_of: (*untyped attr_names) -> untyped
-end
-
 class ActiveModel::Validations::ExclusionValidator < EachValidator
   # :nodoc:
   include Clusivity
 
   def validate_each: (untyped record, untyped attribute, untyped value) -> untyped
-end
-
-module ActiveModel::Validations::HelperMethods
-  # Validates that the value of the specified attribute is not in a
-  # particular enumerable object.
-  #
-  #   class Person < ActiveRecord::Base
-  #     validates_exclusion_of :username, in: %w( admin superuser ), message: "You don't belong here"
-  #     validates_exclusion_of :age, in: 30..60, message: 'This site is only for under 30 and over 60'
-  #     validates_exclusion_of :format, in: %w( mov avi ), message: "extension %{value} is not allowed"
-  #     validates_exclusion_of :password, in: ->(person) { [person.username, person.first_name] },
-  #                            message: 'should not be the same as your username or first name'
-  #     validates_exclusion_of :karma, in: :reserved_karmas
-  #   end
-  #
-  # Configuration options:
-  # * <tt>:in</tt> - An enumerable object of items that the value shouldn't
-  #   be part of. This can be supplied as a proc, lambda or symbol which returns an
-  #   enumerable. If the enumerable is a numerical, time or datetime range the test
-  #   is performed with <tt>Range#cover?</tt>, otherwise with <tt>include?</tt>. When
-  #   using a proc or lambda the instance under validation is passed as an argument.
-  # * <tt>:within</tt> - A synonym(or alias) for <tt>:in</tt>
-  #   <tt>Range#cover?</tt>, otherwise with <tt>include?</tt>.
-  # * <tt>:message</tt> - Specifies a custom error message (default is: "is
-  #   reserved").
-  #
-  # There is also a list of default options supported by every validator:
-  # +:if+, +:unless+, +:on+, +:allow_nil+, +:allow_blank+, and +:strict+.
-  # See <tt>ActiveModel::Validations#validates</tt> for more information
-  def validates_exclusion_of: (*untyped attr_names) -> untyped
 end
 
 class ActiveModel::Validations::FormatValidator < EachValidator
@@ -2938,99 +3269,11 @@ class ActiveModel::Validations::FormatValidator < EachValidator
   def regexp_using_multiline_anchors?: (untyped regexp) -> untyped
 end
 
-module ActiveModel::Validations::HelperMethods
-  # Validates whether the value of the specified attribute is of the correct
-  # form, going by the regular expression provided. You can require that the
-  # attribute matches the regular expression:
-  #
-  #   class Person < ActiveRecord::Base
-  #     validates_format_of :email, with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i, on: :create
-  #   end
-  #
-  # Alternatively, you can require that the specified attribute does _not_
-  # match the regular expression:
-  #
-  #   class Person < ActiveRecord::Base
-  #     validates_format_of :email, without: /NOSPAM/
-  #   end
-  #
-  # You can also provide a proc or lambda which will determine the regular
-  # expression that will be used to validate the attribute.
-  #
-  #   class Person < ActiveRecord::Base
-  #     # Admin can have number as a first letter in their screen name
-  #     validates_format_of :screen_name,
-  #                         with: ->(person) { person.admin? ? /\A[a-z0-9][a-z0-9_\-]*\z/i : /\A[a-z][a-z0-9_\-]*\z/i }
-  #   end
-  #
-  # Note: use <tt>\A</tt> and <tt>\z</tt> to match the start and end of the
-  # string, <tt>^</tt> and <tt>$</tt> match the start/end of a line.
-  #
-  # Due to frequent misuse of <tt>^</tt> and <tt>$</tt>, you need to pass
-  # the <tt>multiline: true</tt> option in case you use any of these two
-  # anchors in the provided regular expression. In most cases, you should be
-  # using <tt>\A</tt> and <tt>\z</tt>.
-  #
-  # You must pass either <tt>:with</tt> or <tt>:without</tt> as an option.
-  # In addition, both must be a regular expression or a proc or lambda, or
-  # else an exception will be raised.
-  #
-  # Configuration options:
-  # * <tt>:message</tt> - A custom error message (default is: "is invalid").
-  # * <tt>:with</tt> - Regular expression that if the attribute matches will
-  #   result in a successful validation. This can be provided as a proc or
-  #   lambda returning regular expression which will be called at runtime.
-  # * <tt>:without</tt> - Regular expression that if the attribute does not
-  #   match will result in a successful validation. This can be provided as
-  #   a proc or lambda returning regular expression which will be called at
-  #   runtime.
-  # * <tt>:multiline</tt> - Set to true if your regular expression contains
-  #   anchors that match the beginning or end of lines as opposed to the
-  #   beginning or end of the string. These anchors are <tt>^</tt> and <tt>$</tt>.
-  #
-  # There is also a list of default options supported by every validator:
-  # +:if+, +:unless+, +:on+, +:allow_nil+, +:allow_blank+, and +:strict+.
-  # See <tt>ActiveModel::Validations#validates</tt> for more information
-  def validates_format_of: (*untyped attr_names) -> untyped
-end
-
-module ActiveModel::Validations::HelperMethods
-  def _merge_attributes: (untyped attr_names) -> untyped
-end
-
 class ActiveModel::Validations::InclusionValidator < EachValidator
   # :nodoc:
   include Clusivity
 
   def validate_each: (untyped record, untyped attribute, untyped value) -> untyped
-end
-
-module ActiveModel::Validations::HelperMethods
-  # Validates whether the value of the specified attribute is available in a
-  # particular enumerable object.
-  #
-  #   class Person < ActiveRecord::Base
-  #     validates_inclusion_of :role, in: %w( admin contributor )
-  #     validates_inclusion_of :age, in: 0..99
-  #     validates_inclusion_of :format, in: %w( jpg gif png ), message: "extension %{value} is not included in the list"
-  #     validates_inclusion_of :states, in: ->(person) { STATES[person.country] }
-  #     validates_inclusion_of :karma, in: :available_karmas
-  #   end
-  #
-  # Configuration options:
-  # * <tt>:in</tt> - An enumerable object of available items. This can be
-  #   supplied as a proc, lambda or symbol which returns an enumerable. If the
-  #   enumerable is a numerical, time or datetime range the test is performed
-  #   with <tt>Range#cover?</tt>, otherwise with <tt>include?</tt>. When using
-  #   a proc or lambda the instance under validation is passed as an argument.
-  # * <tt>:within</tt> - A synonym(or alias) for <tt>:in</tt>
-  # * <tt>:message</tt> - Specifies a custom error message (default is: "is
-  #   not included in the list").
-  #
-  # There is also a list of default options supported by every validator:
-  # +:if+, +:unless+, +:on+, +:allow_nil+, +:allow_blank+, and +:strict+.
-  # See <tt>ActiveModel::Validations#validates</tt> for more information
-  def validates_inclusion_of: (*untyped attr_names) -> untyped
 end
 
 class ActiveModel::Validations::LengthValidator < EachValidator
@@ -3049,59 +3292,6 @@ ActiveModel::Validations::LengthValidator::MESSAGES: untyped
 ActiveModel::Validations::LengthValidator::CHECKS: untyped
 
 ActiveModel::Validations::LengthValidator::RESERVED_OPTIONS: ::Array[untyped]
-
-module ActiveModel::Validations::HelperMethods
-  # Validates that the specified attributes match the length restrictions
-  # supplied. Only one constraint option can be used at a time apart from
-  # +:minimum+ and +:maximum+ that can be combined together:
-  #
-  #   class Person < ActiveRecord::Base
-  #     validates_length_of :first_name, maximum: 30
-  #     validates_length_of :last_name, maximum: 30, message: "less than 30 if you don't mind"
-  #     validates_length_of :fax, in: 7..32, allow_nil: true
-  #     validates_length_of :phone, in: 7..32, allow_blank: true
-  #     validates_length_of :user_name, within: 6..20, too_long: 'pick a shorter name', too_short: 'pick a longer name'
-  #     validates_length_of :zip_code, minimum: 5, too_short: 'please enter at least 5 characters'
-  #     validates_length_of :smurf_leader, is: 4, message: "papa is spelled with 4 characters... don't play me."
-  #     validates_length_of :words_in_essay, minimum: 100, too_short: 'Your essay must be at least 100 words.'
-  #
-  #     private
-  #
-  #     def words_in_essay
-  #       essay.scan(/\w+/)
-  #     end
-  #   end
-  #
-  # Constraint options:
-  #
-  # * <tt>:minimum</tt> - The minimum size of the attribute.
-  # * <tt>:maximum</tt> - The maximum size of the attribute. Allows +nil+ by
-  #   default if not used with +:minimum+.
-  # * <tt>:is</tt> - The exact size of the attribute.
-  # * <tt>:within</tt> - A range specifying the minimum and maximum size of
-  #   the attribute.
-  # * <tt>:in</tt> - A synonym (or alias) for <tt>:within</tt>.
-  #
-  # Other options:
-  #
-  # * <tt>:allow_nil</tt> - Attribute may be +nil+; skip validation.
-  # * <tt>:allow_blank</tt> - Attribute may be blank; skip validation.
-  # * <tt>:too_long</tt> - The error message if the attribute goes over the
-  #   maximum (default is: "is too long (maximum is %{count} characters)").
-  # * <tt>:too_short</tt> - The error message if the attribute goes under the
-  #   minimum (default is: "is too short (minimum is %{count} characters)").
-  # * <tt>:wrong_length</tt> - The error message if using the <tt>:is</tt>
-  #   method and the attribute is the wrong size (default is: "is the wrong
-  #   length (should be %{count} characters)").
-  # * <tt>:message</tt> - The error message to use for a <tt>:minimum</tt>,
-  #   <tt>:maximum</tt>, or <tt>:is</tt> violation. An alias of the appropriate
-  #   <tt>too_long</tt>/<tt>too_short</tt>/<tt>wrong_length</tt> message.
-  #
-  # There is also a list of default options supported by every validator:
-  # +:if+, +:unless+, +:on+ and +:strict+.
-  # See <tt>ActiveModel::Validations#validates</tt> for more information
-  def validates_length_of: (*untyped attr_names) -> untyped
-end
 
 class ActiveModel::Validations::NumericalityValidator < EachValidator
   def check_validity!: () -> untyped
@@ -3132,227 +3322,9 @@ ActiveModel::Validations::NumericalityValidator::INTEGER_REGEX: untyped
 
 ActiveModel::Validations::NumericalityValidator::HEXADECIMAL_REGEX: untyped
 
-module ActiveModel::Validations::HelperMethods
-  # Validates whether the value of the specified attribute is numeric by
-  # trying to convert it to a float with Kernel.Float (if <tt>only_integer</tt>
-  # is +false+) or applying it to the regular expression <tt>/\A[\+\-]?\d+\z/</tt>
-  # (if <tt>only_integer</tt> is set to +true+).
-  #
-  #   class Person < ActiveRecord::Base
-  #     validates_numericality_of :value, on: :create
-  #   end
-  #
-  # Configuration options:
-  # * <tt>:message</tt> - A custom error message (default is: "is not a number").
-  # * <tt>:only_integer</tt> - Specifies whether the value has to be an
-  #   integer, e.g. an integral value (default is +false+).
-  # * <tt>:allow_nil</tt> - Skip validation if attribute is +nil+ (default is
-  #   +false+). Notice that for Integer and Float columns empty strings are
-  #   converted to +nil+.
-  # * <tt>:greater_than</tt> - Specifies the value must be greater than the
-  #   supplied value.
-  # * <tt>:greater_than_or_equal_to</tt> - Specifies the value must be
-  #   greater than or equal the supplied value.
-  # * <tt>:equal_to</tt> - Specifies the value must be equal to the supplied
-  #   value.
-  # * <tt>:less_than</tt> - Specifies the value must be less than the
-  #   supplied value.
-  # * <tt>:less_than_or_equal_to</tt> - Specifies the value must be less
-  #   than or equal the supplied value.
-  # * <tt>:other_than</tt> - Specifies the value must be other than the
-  #   supplied value.
-  # * <tt>:odd</tt> - Specifies the value must be an odd number.
-  # * <tt>:even</tt> - Specifies the value must be an even number.
-  #
-  # There is also a list of default options supported by every validator:
-  # +:if+, +:unless+, +:on+, +:allow_nil+, +:allow_blank+, and +:strict+ .
-  # See <tt>ActiveModel::Validations#validates</tt> for more information
-  #
-  # The following checks can also be supplied with a proc or a symbol which
-  # corresponds to a method:
-  #
-  # * <tt>:greater_than</tt>
-  # * <tt>:greater_than_or_equal_to</tt>
-  # * <tt>:equal_to</tt>
-  # * <tt>:less_than</tt>
-  # * <tt>:less_than_or_equal_to</tt>
-  # * <tt>:only_integer</tt>
-  #
-  # For example:
-  #
-  #   class Person < ActiveRecord::Base
-  #     validates_numericality_of :width, less_than: ->(person) { person.height }
-  #     validates_numericality_of :width, greater_than: :minimum_weight
-  #   end
-  def validates_numericality_of: (*untyped attr_names) -> untyped
-end
-
 class ActiveModel::Validations::PresenceValidator < EachValidator
   # :nodoc:
   def validate_each: (untyped record, untyped attr_name, untyped value) -> untyped
-end
-
-module ActiveModel::Validations::HelperMethods
-  # Validates that the specified attributes are not blank (as defined by
-  # Object#blank?). Happens by default on save.
-  #
-  #   class Person < ActiveRecord::Base
-  #     validates_presence_of :first_name
-  #   end
-  #
-  # The first_name attribute must be in the object and it cannot be blank.
-  #
-  # If you want to validate the presence of a boolean field (where the real
-  # values are +true+ and +false+), you will want to use
-  # <tt>validates_inclusion_of :field_name, in: [true, false]</tt>.
-  #
-  # This is due to the way Object#blank? handles boolean values:
-  # <tt>false.blank? # => true</tt>.
-  #
-  # Configuration options:
-  # * <tt>:message</tt> - A custom error message (default is: "can't be blank").
-  #
-  # There is also a list of default options supported by every validator:
-  # +:if+, +:unless+, +:on+, +:allow_nil+, +:allow_blank+, and +:strict+.
-  # See <tt>ActiveModel::Validations#validates</tt> for more information
-  def validates_presence_of: (*untyped attr_names) -> untyped
-end
-
-# == Active \Model \Validations
-#
-# Provides a full validation framework to your objects.
-#
-# A minimal implementation could be:
-#
-#   class Person
-#     include ActiveModel::Validations
-#
-#     attr_accessor :first_name, :last_name
-#
-#     validates_each :first_name, :last_name do |record, attr, value|
-#       record.errors.add attr, 'starts with z.' if value.to_s[0] == ?z
-#     end
-#   end
-#
-# Which provides you with the full standard validation stack that you
-# know from Active Record:
-#
-#   person = Person.new
-#   person.valid?                   # => true
-#   person.invalid?                 # => false
-#
-#   person.first_name = 'zoolander'
-#   person.valid?                   # => false
-#   person.invalid?                 # => true
-#   person.errors.messages          # => {first_name:["starts with z."]}
-#
-# Note that <tt>ActiveModel::Validations</tt> automatically adds an +errors+
-# method to your instances initialized with a new <tt>ActiveModel::Errors</tt>
-# object, so there is no need for you to do this manually.
-module ActiveModel::Validations
-  extend ActiveSupport::Concern
-
-  extend ActiveModel::Naming
-
-  extend ActiveModel::Callbacks
-
-  extend ActiveModel::Translation
-
-  extend HelperMethods
-
-  include HelperMethods
-
-  attr_accessor validation_context: untyped
-
-  def initialize_dup: (untyped other) -> untyped
-
-  # Returns the +Errors+ object that holds all information about attribute
-  # error messages.
-  #
-  #   class Person
-  #     include ActiveModel::Validations
-  #
-  #     attr_accessor :name
-  #     validates_presence_of :name
-  #   end
-  #
-  #   person = Person.new
-  #   person.valid? # => false
-  #   person.errors # => #<ActiveModel::Errors:0x007fe603816640 @messages={name:["can't be blank"]}>
-  def errors: () -> untyped
-
-  # Runs all the specified validations and returns +true+ if no errors were
-  # added otherwise +false+.
-  #
-  #   class Person
-  #     include ActiveModel::Validations
-  #
-  #     attr_accessor :name
-  #     validates_presence_of :name
-  #   end
-  #
-  #   person = Person.new
-  #   person.name = ''
-  #   person.valid? # => false
-  #   person.name = 'david'
-  #   person.valid? # => true
-  #
-  # Context can optionally be supplied to define which callbacks to test
-  # against (the context is defined on the validations using <tt>:on</tt>).
-  #
-  #   class Person
-  #     include ActiveModel::Validations
-  #
-  #     attr_accessor :name
-  #     validates_presence_of :name, on: :new
-  #   end
-  #
-  #   person = Person.new
-  #   person.valid?       # => true
-  #   person.valid?(:new) # => false
-  def valid?: (?untyped? context) -> untyped
-
-  # Performs the opposite of <tt>valid?</tt>. Returns +true+ if errors were
-  # added, +false+ otherwise.
-  #
-  #   class Person
-  #     include ActiveModel::Validations
-  #
-  #     attr_accessor :name
-  #     validates_presence_of :name
-  #   end
-  #
-  #   person = Person.new
-  #   person.name = ''
-  #   person.invalid? # => true
-  #   person.name = 'david'
-  #   person.invalid? # => false
-  #
-  # Context can optionally be supplied to define which callbacks to test
-  # against (the context is defined on the validations using <tt>:on</tt>).
-  #
-  #   class Person
-  #     include ActiveModel::Validations
-  #
-  #     attr_accessor :name
-  #     validates_presence_of :name, on: :new
-  #   end
-  #
-  #   person = Person.new
-  #   person.invalid?       # => false
-  #   person.invalid?(:new) # => true
-  def invalid?: (?untyped? context) -> untyped
-
-  # Runs all the validations within the specified context. Returns +true+ if
-  # no errors are found, raises +ValidationError+ otherwise.
-  #
-  # Validations with no <tt>:on</tt> option will run no matter the context. Validations with
-  # some <tt>:on</tt> option will only run in the specified context.
-  def validate!: (?untyped? context) -> untyped
-
-  def run_validations!: () -> untyped
-
-  def raise_validation_error: () -> untyped
 end
 
 module ActiveModel::Validations::ClassMethods
@@ -3539,27 +3511,7 @@ module ActiveModel::Validations::ClassMethods
   def attribute_method?: (untyped attribute) -> untyped
 
   def inherited: (untyped base) -> untyped
-end
 
-ActiveModel::Validations::ClassMethods::VALID_OPTIONS_FOR_VALIDATE: untyped
-
-# = Active Model ValidationError
-#
-# Raised by <tt>validate!</tt> when the model is invalid. Use the
-# +model+ method to retrieve the record which did not validate.
-#
-#   begin
-#     complex_operation_that_internally_calls_validate!
-#   rescue ActiveModel::ValidationError => invalid
-#     puts invalid.model.errors
-#   end
-class ActiveModel::ValidationError < StandardError
-  attr_reader model: untyped
-
-  def initialize: (untyped model) -> untyped
-end
-
-module ActiveModel::Validations::ClassMethods
   # This method is a shortcut to all default validators and any custom
   # validator classes ending in 'Validator'. Note that Rails default
   # validators can be overridden inside specific classes by creating
@@ -3684,54 +3636,7 @@ module ActiveModel::Validations::ClassMethods
   def _validates_default_keys: () -> ::Array[:if | :unless | :on | :allow_blank | :allow_nil | :strict]
 
   def _parse_validates_options: (untyped options) -> untyped
-end
 
-module ActiveModel::Validations
-  # Passes the record off to the class or classes specified and allows them
-  # to add errors based on more complex conditions.
-  #
-  #   class Person
-  #     include ActiveModel::Validations
-  #
-  #     validate :instance_validations
-  #
-  #     def instance_validations
-  #       validates_with MyValidator
-  #     end
-  #   end
-  #
-  # Please consult the class method documentation for more information on
-  # creating your own validator.
-  #
-  # You may also pass it multiple classes, like so:
-  #
-  #   class Person
-  #     include ActiveModel::Validations
-  #
-  #     validate :instance_validations, on: :create
-  #
-  #     def instance_validations
-  #       validates_with MyValidator, MyOtherValidator
-  #     end
-  #   end
-  #
-  # Standard configuration options (<tt>:on</tt>, <tt>:if</tt> and
-  # <tt>:unless</tt>), which are available on the class version of
-  # +validates_with+, should instead be placed on the +validates+ method
-  # as these are applied and tested in the callback.
-  #
-  # If you pass any additional configuration options, they will be passed
-  # to the class and available as +options+, please refer to the
-  # class version of this method for more information.
-  def validates_with: (*untyped args) { () -> untyped } -> untyped
-end
-
-class ActiveModel::Validations::WithValidator < EachValidator
-  # :nodoc:
-  def validate_each: (untyped record, untyped attr, untyped val) -> untyped
-end
-
-module ActiveModel::Validations::ClassMethods
   # Passes the record off to the class or classes specified and allows them
   # to add errors based on more complex conditions.
   #
@@ -3794,6 +3699,29 @@ module ActiveModel::Validations::ClassMethods
   #     end
   #   end
   def validates_with: (*untyped args) { () -> untyped } -> untyped
+end
+
+ActiveModel::Validations::ClassMethods::VALID_OPTIONS_FOR_VALIDATE: untyped
+
+# = Active Model ValidationError
+#
+# Raised by <tt>validate!</tt> when the model is invalid. Use the
+# +model+ method to retrieve the record which did not validate.
+#
+#   begin
+#     complex_operation_that_internally_calls_validate!
+#   rescue ActiveModel::ValidationError => invalid
+#     puts invalid.model.errors
+#   end
+class ActiveModel::ValidationError < StandardError
+  attr_reader model: untyped
+
+  def initialize: (untyped model) -> untyped
+end
+
+class ActiveModel::Validations::WithValidator < EachValidator
+  # :nodoc:
+  def validate_each: (untyped record, untyped attr, untyped val) -> untyped
 end
 
 # == Active \Model \Validator
@@ -3947,7 +3875,3 @@ class ActiveModel::BlockValidator < EachValidator
   def validate_each: (untyped record, untyped attribute, untyped value) -> untyped
 end
 
-module ActiveModel
-  # Returns the version of the currently loaded \Active \Model as a <tt>Gem::Version</tt>
-  def self.version: () -> untyped
-end
