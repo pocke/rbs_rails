@@ -1878,7 +1878,7 @@ class ActiveRecord::Associations::JoinDependency::JoinPart
   # operations (for example a has_and_belongs_to_many JoinAssociation would result in
   # two; one for the join table and one for the target table).
   # :nodoc:
-  include Enumerable
+  include Enumerable[untyped, untyped]
 
   # The Active Record class which this join part is associated 'about'; for a JoinBase
   # this is the actual base model, for a JoinAssociation this is the target model of the
@@ -4750,7 +4750,7 @@ module ActiveRecord::Attributes::ClassMethods
   #
   # +user_provided_default+ Whether the default value should be cast using
   # +cast+ or +deserialize+.
-  def define_attribute: (untyped name, untyped cast_type, ?user_provided_default: bool user_provided_default, ?default: untyped default) -> untyped
+  def define_attribute: (untyped name, untyped cast_type, ?default: untyped default, ?user_provided_default: bool user_provided_default) -> untyped
 
   def load_schema!: () -> untyped
 
@@ -5988,7 +5988,7 @@ class ActiveRecord::ConnectionAdapters::AbstractAdapter
 
   def log: (untyped sql, ?::String name, ?untyped binds, ?untyped type_casted_binds, ?untyped? statement_name) { () -> untyped } -> untyped
 
-  def translate_exception: (untyped exception, binds: untyped binds, sql: untyped sql, message: untyped message) -> untyped
+  def translate_exception: (untyped exception, message: untyped message, sql: untyped sql, binds: untyped binds) -> untyped
 
   def without_prepared_statement?: (untyped binds) -> untyped
 
@@ -6766,7 +6766,7 @@ module ActiveRecord::ConnectionAdapters::DatabaseStatements
   #
   # The mysql2 and postgresql adapters support setting the transaction
   # isolation level.
-  def transaction: (?joinable: bool joinable, ?isolation: untyped? isolation, ?requires_new: untyped? requires_new) { () -> untyped } -> untyped
+  def transaction: (?requires_new: untyped? requires_new, ?isolation: untyped? isolation, ?joinable: bool joinable) { () -> untyped } -> untyped
 
   attr_reader transaction_manager: untyped
 
@@ -7031,7 +7031,7 @@ class ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter < AbstractAdapter
 
   def extract_precision: (untyped sql_type) -> untyped
 
-  def translate_exception: (untyped exception, binds: untyped binds, sql: untyped sql, message: untyped message) -> untyped
+  def translate_exception: (untyped exception, message: untyped message, sql: untyped sql, binds: untyped binds) -> untyped
 
   def change_column_for_alter: (untyped table_name, untyped column_name, untyped `type`, ?::Hash[untyped, untyped] options) -> untyped
 
@@ -7053,7 +7053,7 @@ class ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter < AbstractAdapter
 
   def build_statement_pool: () -> untyped
 
-  def mismatched_foreign_key: (untyped message, binds: untyped binds, sql: untyped sql) -> untyped
+  def mismatched_foreign_key: (untyped message, sql: untyped sql, binds: untyped binds) -> untyped
 
   def version_string: (untyped full_version_string) -> untyped
 end
@@ -7381,7 +7381,7 @@ class ActiveRecord::ConnectionAdapters::IndexDefinition
   # :nodoc:
   attr_reader comment: untyped
 
-  def initialize: (untyped table, untyped name, ?bool unique, ?untyped columns, ?comment: untyped? comment, ?using: untyped? using, ?type: untyped? `type`, ?where: untyped? where, ?opclasses: ::Hash[untyped, untyped] opclasses, ?orders: ::Hash[untyped, untyped] orders, ?lengths: ::Hash[untyped, untyped] lengths) -> untyped
+  def initialize: (untyped table, untyped name, ?bool unique, ?untyped columns, ?lengths: ::Hash[untyped, untyped] lengths, ?orders: ::Hash[untyped, untyped] orders, ?opclasses: ::Hash[untyped, untyped] opclasses, ?where: untyped? where, ?type: untyped? `type`, ?using: untyped? using, ?comment: untyped? comment) -> untyped
 
   def concise_options: (untyped options) -> untyped
 end
@@ -7398,7 +7398,7 @@ ActiveRecord::ConnectionAdapters::ForeignKeyDefinition: untyped
 
 class ActiveRecord::ConnectionAdapters::ReferenceDefinition
   # :nodoc:
-  def initialize: (untyped name, ?type: ::Symbol `type`, ?foreign_key: bool foreign_key, ?index: bool index, ?polymorphic: bool polymorphic, **untyped options) -> untyped
+  def initialize: (untyped name, ?polymorphic: bool polymorphic, ?index: bool index, ?foreign_key: bool foreign_key, ?type: ::Symbol `type`, **untyped options) -> untyped
 
   def add_to: (untyped table) -> untyped
 
@@ -7478,7 +7478,7 @@ class ActiveRecord::ConnectionAdapters::TableDefinition
 
   attr_reader foreign_keys: untyped
 
-  def initialize: (untyped conn, untyped name, ?comment: untyped? comment, ?as: untyped? as, ?options: untyped? options, ?if_not_exists: bool if_not_exists, ?temporary: bool temporary) -> untyped
+  def initialize: (untyped conn, untyped name, ?temporary: bool temporary, ?if_not_exists: bool if_not_exists, ?options: untyped? options, ?as: untyped? as, ?comment: untyped? comment) -> untyped
 
   def primary_keys: (?untyped? name) -> untyped
 
@@ -8568,7 +8568,7 @@ module ActiveRecord::ConnectionAdapters::SchemaStatements
   #
   #   remove_reference(:products, :user, foreign_key: true)
   #
-  def remove_reference: (untyped table_name, untyped ref_name, ?polymorphic: bool polymorphic, ?foreign_key: bool foreign_key, **untyped options) -> untyped
+  def remove_reference: (untyped table_name, untyped ref_name, ?foreign_key: bool foreign_key, ?polymorphic: bool polymorphic, **untyped options) -> untyped
 
   # Returns an array of foreign keys for the given table.
   # The foreign keys are represented as ForeignKeyDefinition objects.
@@ -8670,7 +8670,7 @@ module ActiveRecord::ConnectionAdapters::SchemaStatements
 
   def assume_migrated_upto_version: (untyped version, ?untyped? migrations_paths) -> untyped
 
-  def type_to_sql: (untyped `type`, ?scale: untyped? scale, ?precision: untyped? precision, ?limit: untyped? limit) -> untyped
+  def type_to_sql: (untyped `type`, ?limit: untyped? limit, ?precision: untyped? precision, ?scale: untyped? scale) -> untyped
 
   def columns_for_distinct: (untyped columns, untyped orders) -> untyped
 
@@ -8932,7 +8932,7 @@ class ActiveRecord::ConnectionAdapters::Column
   # +default+ is the type-casted default value, such as +new+ in <tt>sales_stage varchar(20) default 'new'</tt>.
   # +sql_type_metadata+ is various information about the type of the column
   # +null+ determines if this column allows +NULL+ values.
-  def initialize: (untyped name, untyped default, ?untyped? sql_type_metadata, ?bool null, ?untyped? default_function, ?comment: untyped? comment, ?collation: untyped? collation) -> untyped
+  def initialize: (untyped name, untyped default, ?untyped? sql_type_metadata, ?bool null, ?untyped? default_function, ?collation: untyped? collation, ?comment: untyped? comment) -> untyped
 
   def has_default?: () -> untyped
 
@@ -9218,7 +9218,7 @@ module ActiveRecord::ConnectionHandling
   #
   # It is not recommended for use as it re-establishes a connection every
   # time it is called.
-  def connected_to: (?prevent_writes: bool prevent_writes, ?role: untyped? role, ?database: untyped? database) { () -> untyped } -> untyped
+  def connected_to: (?database: untyped? database, ?role: untyped? role, ?prevent_writes: bool prevent_writes) { () -> untyped } -> untyped
 
   # Returns true if role is the current connected role.
   #
@@ -9499,7 +9499,7 @@ module ActiveRecord::ConnectionAdapters::MySQL::SchemaStatements
   def create_schema_dumper: (untyped options) -> untyped
 
   # Maps logical Rails types to MySQL-specific data types.
-  def type_to_sql: (untyped `type`, ?unsigned: untyped? unsigned, ?size: untyped size, ?scale: untyped? scale, ?precision: untyped? precision, ?limit: untyped? limit) -> untyped
+  def type_to_sql: (untyped `type`, ?limit: untyped? limit, ?precision: untyped? precision, ?scale: untyped? scale, ?size: untyped size, ?unsigned: untyped? unsigned) -> untyped
 
   def table_alias_length: () -> 256
 
@@ -9695,7 +9695,7 @@ class ActiveRecord::ConnectionAdapters::PostgreSQLAdapter < AbstractAdapter
 
   def check_version: () -> untyped
 
-  def translate_exception: (untyped exception, binds: untyped binds, sql: untyped sql, message: untyped message) -> untyped
+  def translate_exception: (untyped exception, message: untyped message, sql: untyped sql, binds: untyped binds) -> untyped
 
   def get_oid_type: (untyped oid, untyped fmod, untyped column_name, ?::String sql_type) -> untyped
 
@@ -10496,7 +10496,7 @@ module ActiveRecord::ConnectionAdapters::PostgreSQL::SchemaStatements
 
   def foreign_table_exists?: (untyped table_name) -> untyped
 
-  def type_to_sql: (untyped `type`, ?array: untyped? array, ?scale: untyped? scale, ?precision: untyped? precision, ?limit: untyped? limit) -> untyped
+  def type_to_sql: (untyped `type`, ?limit: untyped? limit, ?precision: untyped? precision, ?scale: untyped? scale, ?array: untyped? array) -> untyped
 
   def columns_for_distinct: (untyped columns, untyped orders) -> untyped
 
@@ -10567,7 +10567,7 @@ class ActiveRecord::ConnectionAdapters::PostgreSQL::TypeMetadata
 
   attr_reader fmod: untyped
 
-  def initialize: (untyped type_metadata, ?fmod: untyped? fmod, ?oid: untyped? oid) -> untyped
+  def initialize: (untyped type_metadata, ?oid: untyped? oid, ?fmod: untyped? fmod) -> untyped
 
   def ==: (untyped other) -> untyped
 
@@ -10798,7 +10798,7 @@ class ActiveRecord::ConnectionAdapters::SQLite3Adapter < AbstractAdapter
 
   def copy_table_contents: (untyped from, untyped to, untyped columns, ?::Hash[untyped, untyped] rename) -> untyped
 
-  def translate_exception: (untyped exception, binds: untyped binds, sql: untyped sql, message: untyped message) -> untyped
+  def translate_exception: (untyped exception, message: untyped message, sql: untyped sql, binds: untyped binds) -> untyped
 
   def table_structure_with_collation: (untyped table_name, untyped basic_structure) -> untyped
 
@@ -10947,7 +10947,7 @@ class ActiveRecord::ConnectionAdapters::SqlTypeMetadata
 
   attr_reader scale: untyped
 
-  def initialize: (?scale: untyped? scale, ?precision: untyped? precision, ?limit: untyped? limit, ?type: untyped? `type`, ?sql_type: untyped? sql_type) -> untyped
+  def initialize: (?sql_type: untyped? sql_type, ?type: untyped? `type`, ?limit: untyped? limit, ?precision: untyped? precision, ?scale: untyped? scale) -> untyped
 
   def ==: (untyped other) -> untyped
 
@@ -10956,7 +10956,7 @@ end
 
 class ActiveRecord::ConnectionAdapters::StatementPool
   # :nodoc:
-  include Enumerable
+  include Enumerable[untyped, untyped]
 
   def initialize: (?untyped? statement_limit) -> untyped
 
@@ -11326,7 +11326,7 @@ class ActiveRecord::DatabaseConfigurations
   #   the returned list. Most of the time we're only iterating over the write
   #   connection (i.e. migrations don't need to run for the write and read connection).
   #   Defaults to +false+.
-  def configs_for: (?include_replicas: bool include_replicas, ?spec_name: untyped? spec_name, ?env_name: untyped? env_name) -> untyped
+  def configs_for: (?env_name: untyped? env_name, ?spec_name: untyped? spec_name, ?include_replicas: bool include_replicas) -> untyped
 
   # Returns the config hash that corresponds with the environment
   #
@@ -11580,7 +11580,7 @@ module ActiveRecord::Enum
 
   def detect_enum_conflict!: (untyped enum_name, untyped method_name, ?bool klass_method) -> untyped
 
-  def raise_conflict_error: (untyped enum_name, untyped method_name, ?source: ::String source, ?type: ::String `type`) -> untyped
+  def raise_conflict_error: (untyped enum_name, untyped method_name, ?type: ::String `type`, ?source: ::String source) -> untyped
 
   def detect_negative_condition!: (untyped method_name) -> untyped
 end
@@ -11697,7 +11697,7 @@ end
 #
 # Wraps the underlying database error as +cause+.
 class ActiveRecord::StatementInvalid < ActiveRecordError
-  def initialize: (?untyped? message, ?binds: untyped? binds, ?sql: untyped? sql) -> untyped
+  def initialize: (?untyped? message, ?sql: untyped? sql, ?binds: untyped? binds) -> untyped
 
   attr_reader sql: untyped
 
@@ -11720,7 +11720,7 @@ end
 
 # Raised when a foreign key constraint cannot be added because the column type does not match the referenced column type.
 class ActiveRecord::MismatchedForeignKey < StatementInvalid
-  def initialize: (?primary_key_column: untyped? primary_key_column, ?primary_key: untyped? primary_key, ?target_table: untyped? target_table, ?foreign_key: untyped? foreign_key, ?table: untyped? table, ?binds: untyped? binds, ?sql: untyped? sql, ?message: untyped? message) -> untyped
+  def initialize: (?message: untyped? message, ?sql: untyped? sql, ?binds: untyped? binds, ?table: untyped? table, ?foreign_key: untyped? foreign_key, ?target_table: untyped? target_table, ?primary_key: untyped? primary_key, ?primary_key_column: untyped? primary_key_column) -> untyped
 end
 
 # Raised when a record cannot be inserted or updated because it would violate a not null constraint.
@@ -12052,7 +12052,7 @@ end
 
 class ActiveRecord::FixtureSet::File
   # :nodoc:
-  include Enumerable
+  include Enumerable[untyped, untyped]
 
   #
   # Open a fixture file named +file+.  When called with a block, the block
@@ -12103,7 +12103,7 @@ class ActiveRecord::FixtureSet::RenderContext
 end
 
 class ActiveRecord::FixtureSet::TableRow
-  def initialize: (untyped fixture, now: untyped now, label: untyped label, table_rows: untyped table_rows) -> untyped
+  def initialize: (untyped fixture, table_rows: untyped table_rows, label: untyped label, now: untyped now) -> untyped
 
   def to_hash: () -> untyped
 
@@ -12151,7 +12151,7 @@ end
 
 class ActiveRecord::FixtureSet::TableRows
   # :nodoc:
-  def initialize: (untyped table_name, config: untyped config, fixtures: untyped fixtures, model_class: untyped model_class) -> untyped
+  def initialize: (untyped table_name, model_class: untyped model_class, fixtures: untyped fixtures, config: untyped config) -> untyped
 
   attr_reader tables: untyped
 
@@ -12181,7 +12181,7 @@ end
 
 class ActiveRecord::Fixture
   # nodoc:
-  include Enumerable
+  include Enumerable[untyped, untyped]
 
   attr_reader model_class: untyped
 
@@ -12380,7 +12380,7 @@ class ActiveRecord::InsertAll
 
   attr_reader unique_by: untyped
 
-  def initialize: (untyped model, untyped inserts, on_duplicate: untyped on_duplicate, ?unique_by: untyped? unique_by, ?returning: untyped? returning) -> untyped
+  def initialize: (untyped model, untyped inserts, on_duplicate: untyped on_duplicate, ?returning: untyped? returning, ?unique_by: untyped? unique_by) -> untyped
 
   def execute: () -> untyped
 
@@ -13385,7 +13385,7 @@ class ActiveRecord::ProtectedEnvironmentError < ActiveRecordError
 end
 
 class ActiveRecord::EnvironmentMismatchError < ActiveRecordError
-  def initialize: (?stored: untyped? stored, ?current: untyped? current) -> untyped
+  def initialize: (?current: untyped? current, ?stored: untyped? stored) -> untyped
 end
 
 class ActiveRecord::Migration::Current < Migration
@@ -14623,7 +14623,7 @@ module ActiveRecord::Persistence::ClassMethods
   # go through Active Record's type casting and serialization.
   #
   # See <tt>ActiveRecord::Persistence#insert_all</tt> for documentation.
-  def insert: (untyped attributes, ?unique_by: untyped? unique_by, ?returning: untyped? returning) -> untyped
+  def insert: (untyped attributes, ?returning: untyped? returning, ?unique_by: untyped? unique_by) -> untyped
 
   # Inserts multiple records into the database in a single SQL INSERT
   # statement. It does not instantiate any models nor does it trigger
@@ -14678,7 +14678,7 @@ module ActiveRecord::Persistence::ClassMethods
   #     { id: 1, title: "Rework", author: "David" },
   #     { id: 1, title: "Eloquent Ruby", author: "Russ" }
   #   ])
-  def insert_all: (untyped attributes, ?unique_by: untyped? unique_by, ?returning: untyped? returning) -> untyped
+  def insert_all: (untyped attributes, ?returning: untyped? returning, ?unique_by: untyped? unique_by) -> untyped
 
   # Inserts a single record into the database in a single SQL INSERT
   # statement. It does not instantiate any models nor does it trigger
@@ -14736,7 +14736,7 @@ module ActiveRecord::Persistence::ClassMethods
   # go through Active Record's type casting and serialization.
   #
   # See <tt>ActiveRecord::Persistence#upsert_all</tt> for documentation.
-  def upsert: (untyped attributes, ?unique_by: untyped? unique_by, ?returning: untyped? returning) -> untyped
+  def upsert: (untyped attributes, ?returning: untyped? returning, ?unique_by: untyped? unique_by) -> untyped
 
   # Updates or inserts (upserts) multiple records into the database in a
   # single SQL INSERT statement. It does not instantiate any models nor does
@@ -14789,7 +14789,7 @@ module ActiveRecord::Persistence::ClassMethods
   #   ], unique_by: :isbn)
   #
   #   Book.find_by(isbn: "1").title # => "Eloquent Ruby"
-  def upsert_all: (untyped attributes, ?unique_by: untyped? unique_by, ?returning: untyped? returning) -> untyped
+  def upsert_all: (untyped attributes, ?returning: untyped? returning, ?unique_by: untyped? unique_by) -> untyped
 
   # Given an attributes hash, +instantiate+ returns a new instance of
   # the appropriate class. Accepts only keys as strings.
@@ -14965,7 +14965,7 @@ module ActiveRecord::Railties::CollectionCacheAssociationLoading
   # nodoc:
   def setup: (untyped context, untyped options, untyped as, untyped block) -> untyped
 
-  def relation_from_options: (?collection: untyped? collection, ?partial: untyped? partial, ?cached: untyped? cached, **untyped _) -> (nil | untyped)
+  def relation_from_options: (?cached: untyped? cached, ?partial: untyped? partial, ?collection: untyped? collection, **untyped _) -> (nil | untyped)
 
   def collection_without_template: () -> untyped
 
@@ -15607,7 +15607,7 @@ module ActiveRecord::Batches
   #
   # NOTE: By its nature, batch processing is subject to race conditions if
   # other processes are modifying the database.
-  def find_each: (?error_on_ignore: untyped? error_on_ignore, ?batch_size: ::Integer batch_size, ?finish: untyped? finish, ?start: untyped? start) { (untyped) -> untyped } -> untyped
+  def find_each: (?start: untyped? start, ?finish: untyped? finish, ?batch_size: ::Integer batch_size, ?error_on_ignore: untyped? error_on_ignore) { (untyped) -> untyped } -> untyped
 
   # Yields each batch of records that was found by the find options as
   # an array.
@@ -15655,7 +15655,7 @@ module ActiveRecord::Batches
   #
   # NOTE: By its nature, batch processing is subject to race conditions if
   # other processes are modifying the database.
-  def find_in_batches: (?error_on_ignore: untyped? error_on_ignore, ?batch_size: ::Integer batch_size, ?finish: untyped? finish, ?start: untyped? start) { (untyped) -> untyped } -> untyped
+  def find_in_batches: (?start: untyped? start, ?finish: untyped? finish, ?batch_size: ::Integer batch_size, ?error_on_ignore: untyped? error_on_ignore) { (untyped) -> untyped } -> untyped
 
   # Yields ActiveRecord::Relation objects to work with a batch of records.
   #
@@ -15718,7 +15718,7 @@ module ActiveRecord::Batches
   #
   # NOTE: By its nature, batch processing is subject to race conditions if
   # other processes are modifying the database.
-  def in_batches: (?error_on_ignore: untyped? error_on_ignore, ?load: bool load, ?finish: untyped? finish, ?start: untyped? start, ?of: ::Integer of) { (untyped) -> untyped } -> untyped
+  def in_batches: (?of: ::Integer of, ?start: untyped? start, ?finish: untyped? finish, ?load: bool load, ?error_on_ignore: untyped? error_on_ignore) { (untyped) -> untyped } -> untyped
 
   def apply_limits: (untyped relation, untyped start, untyped finish) -> untyped
 
@@ -15732,9 +15732,9 @@ module ActiveRecord::Batches
 end
 
 class ActiveRecord::Batches::BatchEnumerator
-  include Enumerable
+  include Enumerable[untyped, untyped]
 
-  def initialize: (relation: untyped relation, ?finish: untyped? finish, ?start: untyped? start, ?of: ::Integer of) -> untyped
+  def initialize: (relation: untyped relation, ?of: ::Integer of, ?start: untyped? start, ?finish: untyped? finish) -> untyped
 
   # Looping through a collection of records from the database (using the
   # +all+ method, for example) is very inefficient since it will try to
@@ -16283,7 +16283,7 @@ end
 ActiveRecord::FinderMethods::ONE_AS_ONE: ::String
 
 class ActiveRecord::Relation
-  include Enumerable
+  include Enumerable[untyped, untyped]
 
   include FinderMethods
 
@@ -16309,7 +16309,7 @@ class ActiveRecord::Relation
 
   attr_accessor skip_preloading_value: untyped
 
-  def initialize: (untyped klass, ?values: ::Hash[untyped, untyped] values, ?predicate_builder: untyped predicate_builder, ?table: untyped table) -> untyped
+  def initialize: (untyped klass, ?table: untyped table, ?predicate_builder: untyped predicate_builder, ?values: ::Hash[untyped, untyped] values) -> untyped
 
   def initialize_copy: (untyped other) -> untyped
 
@@ -17860,7 +17860,7 @@ ActiveRecord::Relation::WhereClause::ARRAY_WITH_EMPTY_STRING: ::Array[untyped]
 #     puts row['title'] + " " + row['body']
 #   end
 class ActiveRecord::Result
-  include Enumerable
+  include Enumerable[untyped, untyped]
 
   attr_reader columns: untyped
 
@@ -18568,7 +18568,7 @@ end
 module ActiveRecord::Store::ClassMethods
   def store: (untyped store_attribute, ?::Hash[untyped, untyped] options) -> untyped
 
-  def store_accessor: (untyped store_attribute, *untyped keys, ?suffix: untyped? suffix, ?prefix: untyped? prefix) -> (::FalseClass | nil | untyped)
+  def store_accessor: (untyped store_attribute, *untyped keys, ?prefix: untyped? prefix, ?suffix: untyped? suffix) -> (::FalseClass | nil | untyped)
 
   def _store_accessors_module: () -> untyped
 
@@ -19125,7 +19125,7 @@ module ActiveRecord::Transactions
 
   def committed!: (?should_run_callbacks: bool should_run_callbacks) -> untyped
 
-  def rolledback!: (?should_run_callbacks: bool should_run_callbacks, ?force_restore_state: bool force_restore_state) -> untyped
+  def rolledback!: (?force_restore_state: bool force_restore_state, ?should_run_callbacks: bool should_run_callbacks) -> untyped
 
   # Executes +method+ within a transaction and captures its return value as a
   # status flag. If the status is true the transaction is committed, otherwise
@@ -19459,7 +19459,7 @@ class ActiveRecord::Type::AdapterSpecificRegistry < ActiveModel::Type::Registry
 end
 
 class ActiveRecord::Type::Registration
-  def initialize: (untyped name, untyped block, ?override: untyped? override, ?adapter: untyped? adapter) -> untyped
+  def initialize: (untyped name, untyped block, ?adapter: untyped? adapter, ?override: untyped? override) -> untyped
 
   def call: (untyped _registry, *untyped args, ?adapter: untyped? adapter, **untyped kwargs) -> untyped
 
@@ -20550,7 +20550,7 @@ end
 class Arel::Nodes::Node
   include Arel::FactoryMethods
 
-  include Enumerable
+  include Enumerable[untyped, untyped]
 
   # #
   # Factory method to create a Nodes::Not node that has the recipient of
@@ -21012,7 +21012,7 @@ class Arel::Table
 
   attr_accessor table_alias: untyped
 
-  def initialize: (untyped name, ?type_caster: untyped? type_caster, ?as: untyped? as) -> untyped
+  def initialize: (untyped name, ?as: untyped? as, ?type_caster: untyped? type_caster) -> untyped
 
   def `alias`: (?::String name) -> untyped
 
