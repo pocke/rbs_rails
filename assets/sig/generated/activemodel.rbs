@@ -48,7 +48,7 @@ end
 #   user = User.first
 #   user.pets.select(:id).first.user_id
 #   # => ActiveModel::MissingAttributeError: missing attribute: user_id
-class ActiveModel::MissingAttributeError < NoMethodError
+class ActiveModel::MissingAttributeError[T] < NoMethodError[T]
 end
 
 # == Active \Model \Attribute \Methods
@@ -431,7 +431,7 @@ class ActiveModel::AttributeMutationTracker
 
   def any_changes?: () -> untyped
 
-  def changed?: (untyped attr_name, ?to: untyped to, ?from: untyped from) -> untyped
+  def changed?: (untyped attr_name, ?from: untyped from, ?to: untyped to) -> untyped
 
   def changed_in_place?: (untyped attr_name) -> untyped
 
@@ -1586,7 +1586,7 @@ end
 #   person = Person.new
 #   person.assign_attributes(name: 'Gorby')
 #   # => ActiveModel::UnknownAttributeError: unknown attribute 'name' for Person.
-class ActiveModel::UnknownAttributeError < NoMethodError
+class ActiveModel::UnknownAttributeError[T] < NoMethodError[T]
   attr_reader record: untyped
 
   attr_reader attribute: untyped
@@ -2569,7 +2569,7 @@ class ActiveModel::Type::Value
 
   attr_reader limit: untyped
 
-  def initialize: (?scale: untyped? scale, ?limit: untyped? limit, ?precision: untyped? precision) -> untyped
+  def initialize: (?precision: untyped? precision, ?limit: untyped? limit, ?scale: untyped? scale) -> untyped
 
   def `type`: () -> nil
 
