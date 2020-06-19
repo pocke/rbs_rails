@@ -4493,7 +4493,8 @@ module ActiveRecord::AttributeMethods::TimeZoneConversion
   extend ActiveSupport::Concern
 end
 
-class ActiveRecord::AttributeMethods::TimeZoneConversion::TimeZoneConverter < 
+# NOTE: It inherits unnamed class, but omitted
+class ActiveRecord::AttributeMethods::TimeZoneConversion::TimeZoneConverter
   # :nodoc:
   def deserialize: (untyped value) -> untyped
 
@@ -9392,7 +9393,8 @@ end
 
 ActiveRecord::ConnectionAdapters::MySQL::SchemaStatements::CHARSETS_OF_4BYTES_MAXLEN: ::Array[untyped]
 
-class ActiveRecord::ConnectionAdapters::MySQL::TypeMetadata < 
+# NOTE: It inherits unnamed class, but omitted
+class ActiveRecord::ConnectionAdapters::MySQL::TypeMetadata
   attr_reader extra: untyped
 
   def initialize: (untyped type_metadata, ?extra: ::String extra) -> untyped
@@ -10422,7 +10424,8 @@ module ActiveRecord::ConnectionAdapters::PostgreSQL::SchemaStatements
   def extract_schema_qualified_name: (untyped string) -> ::Array[untyped]
 end
 
-class ActiveRecord::ConnectionAdapters::PostgreSQL::TypeMetadata < 
+# NOTE: It inherits unnamed class, but omitted
+class ActiveRecord::ConnectionAdapters::PostgreSQL::TypeMetadata
   attr_reader oid: untyped
 
   attr_reader fmod: untyped
@@ -11184,7 +11187,8 @@ module ActiveRecord::Core::ClassMethods
   def table_metadata: () -> untyped
 end
 
-class ActiveRecord::Core::InspectionMask < 
+# NOTE: It inherits unnamed class, but omitted
+class ActiveRecord::Core::InspectionMask
   def pretty_print: (untyped pp) -> untyped
 end
 
@@ -13108,7 +13112,8 @@ end
 
 ActiveRecord::Locking::Optimistic::ClassMethods::DEFAULT_LOCKING_COLUMN: ::String
 
-class ActiveRecord::Locking::LockingType < 
+# NOTE: It inherits unnamed class, but omitted
+class ActiveRecord::Locking::LockingType
   # In de/serialize we change `nil` to 0, so that we can allow passing
   # `nil` values to `lock_version`, and not result in `ActiveRecord::StaleObjectError`
   # during update record.
@@ -20414,7 +20419,8 @@ ActiveRecord::Type::String: untyped
 
 ActiveRecord::Type::Value: untyped
 
-class ActiveRecord::Type::Serialized < 
+# NOTE: It inherits unnamed class, but omitted
+class ActiveRecord::Type::Serialized
   include ActiveModel::Type::Helpers::Mutable
 
   attr_reader subtype: untyped
@@ -20453,7 +20459,8 @@ class ActiveRecord::Type::Time < ActiveModel::Type::Time
   def serialize: (untyped value) -> untyped
 end
 
-class ActiveRecord::Type::Time::Value < 
+# NOTE: It inherits unnamed class, but omitted
+class ActiveRecord::Type::Time::Value
 end
 
 class ActiveRecord::Type::TypeMap
@@ -20835,7 +20842,8 @@ end
 module Arel::Attributes
 end
 
-class Arel::Attributes::Attribute < 
+# NOTE: It inherits unnamed class, but omitted
+class Arel::Attributes::Attribute
   include Arel::Expressions
 
   include Arel::Predications
@@ -21216,7 +21224,7 @@ class Arel::Nodes::Descending < Ordering
 end
 
 class Arel::Nodes::Equality < Arel::Nodes::Binary
-  def operator: () -> :==
+  def operator: () -> Symbol
 end
 
 class Arel::Nodes::Extract < Arel::Nodes::Unary
@@ -22080,7 +22088,8 @@ class Arel::Visitors::Dot::Node
   def initialize: (untyped name, untyped id, ?untyped fields) -> untyped
 end
 
-class Arel::Visitors::Dot::Edge < 
+# NOTE: It inherits unnamed class, but omitted
+class Arel::Visitors::Dot::Edge
 end
 
 class Arel::Visitors::IBM_DB < Arel::Visitors::ToSql
