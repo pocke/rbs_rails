@@ -272,6 +272,8 @@ module RbsRails
           'untyped'
         when :time
           Time.name
+        when :inet
+          "IPAddr"
         else
           raise "unexpected: #{t.inspect}"
         end
