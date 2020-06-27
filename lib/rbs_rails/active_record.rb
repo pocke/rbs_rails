@@ -270,6 +270,8 @@ module RbsRails
           # TODO
           # Date.name
           'untyped'
+        when :time
+          Time.name
         else
           raise "unexpected: #{t.inspect}"
         end
