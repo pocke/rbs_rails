@@ -84,6 +84,8 @@ interface _ActiveRecord_Relation[Model]
   def find: (Integer id) -> Model
   def first: () -> Model
            | (Integer count) -> Array[Model]
+  def last: () -> Model
+           | (Integer count) -> Array[Model]
   def find_each: (?batch_size: Integer, ?start: Integer, ?finish: Integer, ?error_on_ignore: bool) { (Model) -> void } -> nil
   def find_in_batches: (?batch_size: Integer, ?start: Integer, ?finish: Integer, ?error_on_ignore: bool) { (self) -> void } -> nil
   def destroy_all: () -> untyped
@@ -121,6 +123,8 @@ interface _ActiveRecord_Relation_ClassMethods[Model, Relation]
   def find_by!: (*untyped) -> Model
   def find: (Integer id) -> Model
   def first: () -> Model
+           | (Integer count) -> Array[Model]
+  def last: () -> Model
            | (Integer count) -> Array[Model]
   def find_each: (?batch_size: Integer, ?start: Integer, ?finish: Integer, ?error_on_ignore: bool) { (Model) -> void } -> nil
   def find_in_batches: (?batch_size: Integer, ?start: Integer, ?finish: Integer, ?error_on_ignore: bool) { (self) -> void } -> nil
