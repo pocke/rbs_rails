@@ -246,8 +246,27 @@ module RbsRails
 
       private def columns
         klass.columns.map do |col|
-          "attr_accessor #{col.name} (): #{sql_type_to_class(col.type)}"
+          class_name = sql_type_to_class(col.type)
+          class_name_opt = optional(class_name)
+          sig = <<~EOS
+          attr_accessor #{col.name} (): #{class_name}
+          def #{col.name}_changed?: () -> bool
+          def #{col.name}_change: () -> [#{class_name_opt}, #{class_name_opt}]
+          def #{col.name}_will_change!: () -> void
+          def #{col.name}_was: () -> #{class_name_opt}
+          def #{col.name}_previously_changed?: () -> bool
+          def #{col.name}_previous_change: () -> Array[#{class_name_opt}]?
+          def #{col.name}_previously_was: () -> #{class_name_opt}
+          def restore_#{col.name}!: () -> void
+          def clear_#{col.name}_change: () -> void
+          EOS
+          sig << "attr_accessor #{col.name}? (): #{class_name}\n" if col.type == :boolean
+          sig
         end.join("\n")
+      end
+
+      private def optional(class_name)
+        class_name.include?("|") ? "(#{class_name})?" : "#{class_name}?"
       end
 
       private def sql_type_to_class(t)
