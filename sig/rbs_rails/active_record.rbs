@@ -53,6 +53,8 @@ class RbsRails::ActiveRecord::Generator
 
   def sql_type_to_class: (untyped t) -> untyped
 
+  def optional: (String) -> String
+
   attr_reader klass: singleton(ActiveRecord::Base)
 
   attr_reader mode: (:extension | :class)
