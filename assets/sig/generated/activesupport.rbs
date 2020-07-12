@@ -1824,7 +1824,7 @@ module ActiveSupport
   end
 end
 
-class Array[T]
+class Array[unchecked out Elem]
   # Returns the tail of the array from +position+.
   #
   #   %w( a b c d ).from(0)  # => ["a", "b", "c", "d"]
@@ -1899,7 +1899,7 @@ class Array[T]
   def second_to_last: () -> untyped
 end
 
-class Array[T]
+class Array[unchecked out Elem]
   # Converts the array to a comma-separated sentence where the last element is
   # joined by the connector word.
   #
@@ -2039,7 +2039,7 @@ class Array[T]
   def to_xml: (?::Hash[untyped, untyped] options) { (untyped) -> untyped } -> untyped
 end
 
-class Hash[T, U]
+class Hash[unchecked out K, unchecked out V]
   # By default, only instances of Hash itself are extractable.
   # Subclasses of Hash may implement this method and return
   # true to declare themselves as extractable. If a Hash
@@ -2048,7 +2048,7 @@ class Hash[T, U]
   def extractable_options?: () -> untyped
 end
 
-class Array[T]
+class Array[unchecked out Elem]
   # Extracts options from a set of arguments. Removes and returns the last
   # element in the array if it's a hash, otherwise returns a blank hash.
   #
@@ -2061,7 +2061,7 @@ class Array[T]
   def extract_options!: () -> untyped
 end
 
-class Array[T]
+class Array[unchecked out Elem]
   # Removes and returns the elements for which the block returns a true value.
   # If no block is given, an Enumerator is returned instead.
   #
@@ -2071,7 +2071,7 @@ class Array[T]
   def extract!: () { (untyped) -> untyped } -> untyped
 end
 
-class Array[T]
+class Array[unchecked out Elem]
   # Splits or iterates over the array in groups of size +number+,
   # padding any remaining slots with +fill_with+ unless it is +false+.
   #
@@ -2119,7 +2119,7 @@ class Array[T]
   def split: (?untyped? value) { (untyped) -> untyped } -> untyped
 end
 
-class Array[T]
+class Array[unchecked out Elem]
   # Wraps the array in an +ArrayInquirer+ object, which gives a friendlier way
   # to check its string-like contents.
   #
@@ -2133,7 +2133,7 @@ class Array[T]
   def inquiry: () -> untyped
 end
 
-class Array[T]
+class Array[unchecked out Elem]
   # Wraps its argument in an array unless it is already an array (or array-like).
   #
   # Specifically:
@@ -2885,7 +2885,7 @@ module Digest
   end
 end
 
-module Enumerable[T, U]
+module Enumerable[unchecked out Elem, out Return]
   INDEX_WITH_DEFAULT: untyped
 
   # Calculates a sum from the elements.
@@ -2969,14 +2969,14 @@ module Enumerable[T, U]
   def pluck: (*untyped keys) -> untyped
 end
 
-class Range[T]
+class Range[Elem]
   # nodoc:
   # Optimize range sum to use arithmetic progression if a block is not given and
   # we have a range of numeric values.
   def sum: (?untyped? identity) -> untyped
 end
 
-class Array[T]
+class Array[unchecked out Elem]
   # nodoc:
   # Array#sum was added in Ruby 2.4 but it only works with Numeric elements.
   def sum: (?untyped? init) { () -> untyped } -> untyped
@@ -3003,7 +3003,7 @@ class File
   def self.probe_stat_in: (untyped dir) -> untyped
 end
 
-class Hash[T, U]
+class Hash[unchecked out K, unchecked out V]
   # Returns a string containing an XML representation of its receiver:
   #
   #   { foo: 1, bar: 2 }.to_xml
@@ -3147,7 +3147,7 @@ module ActiveSupport
   end
 end
 
-class Hash[T, U]
+class Hash[unchecked out K, unchecked out V]
   # Returns a new hash with +self+ and +other_hash+ merged recursively.
   #
   #   h1 = { a: true, b: { c: [1, 2, 3] } }
@@ -3168,7 +3168,7 @@ class Hash[T, U]
   def deep_merge!: (untyped other_hash) { () -> untyped } -> untyped
 end
 
-class Hash[T, U]
+class Hash[unchecked out K, unchecked out V]
   # Returns a new hash with all values converted by the block operation.
   # This includes the values from the root hash and from all
   # nested hashes and arrays.
@@ -3190,7 +3190,7 @@ class Hash[T, U]
   def _deep_transform_values_in_object!: (untyped object) { (untyped) -> untyped } -> untyped
 end
 
-class Hash[T, U]
+class Hash[unchecked out K, unchecked out V]
   # Returns a hash that includes everything except given keys.
   #   hash = { a: true, b: false, c: nil }
   #   hash.except(:c)     # => { a: true, b: false }
@@ -3208,14 +3208,14 @@ class Hash[T, U]
   def except!: (*untyped keys) -> untyped
 end
 
-class Hash[T, U]
+class Hash[unchecked out K, unchecked out V]
   # Returns an <tt>ActiveSupport::HashWithIndifferentAccess</tt> out of its receiver:
   #
   #   { a: 1 }.with_indifferent_access['a'] # => 1
   def with_indifferent_access: () -> untyped
 end
 
-class Hash[T, U]
+class Hash[unchecked out K, unchecked out V]
   # Returns a new hash with all keys converted to strings.
   #
   #   hash = { name: 'Rob', age: '28' }
@@ -3303,7 +3303,7 @@ class Hash[T, U]
   def _deep_transform_keys_in_object!: (untyped object) { (untyped) -> untyped } -> untyped
 end
 
-class Hash[T, U]
+class Hash[unchecked out K, unchecked out V]
   # Merges the caller into +other_hash+. For example,
   #
   #   options = options.reverse_merge(size: 25, velocity: 10)
@@ -3320,7 +3320,7 @@ class Hash[T, U]
   def reverse_merge!: (untyped other_hash) -> untyped
 end
 
-class Hash[T, U]
+class Hash[unchecked out K, unchecked out V]
   # Replaces the hash with only the given keys.
   # Returns a hash containing the removed key/value pairs.
   #
@@ -4434,10 +4434,10 @@ class TrueClass
   def blank?: () -> ::FalseClass
 end
 
-class Array[T]
+class Array[unchecked out Elem]
 end
 
-class Hash[T, U]
+class Hash[unchecked out K, unchecked out V]
 end
 
 class String
@@ -4494,7 +4494,7 @@ class Object
   def deep_dup: () -> untyped
 end
 
-class Array[T]
+class Array[unchecked out Elem]
   # Returns a deep copy of array.
   #
   #   array = [1, [2, 3]]
@@ -4506,7 +4506,7 @@ class Array[T]
   def deep_dup: () -> untyped
 end
 
-class Hash[T, U]
+class Hash[unchecked out K, unchecked out V]
   # Returns a deep copy of hash.
   #
   #   hash = { a: { b: 'b' } }
@@ -4618,7 +4618,7 @@ class Object
   def as_json: (?untyped? options) -> untyped
 end
 
-class Struct[T]
+class Struct[Elem]
   # nodoc:
   def as_json: (?untyped? options) -> untyped
 end
@@ -4659,7 +4659,7 @@ class Regexp
   def as_json: (?untyped? options) -> untyped
 end
 
-module Enumerable[T, U]
+module Enumerable[unchecked out Elem, out Return]
   def as_json: (?untyped? options) -> untyped
 end
 
@@ -4667,15 +4667,15 @@ class IO
   def as_json: (?untyped? options) -> untyped
 end
 
-class Range[T]
+class Range[Elem]
   def as_json: (?untyped? options) -> untyped
 end
 
-class Array[T]
+class Array[unchecked out Elem]
   def as_json: (?untyped? options) -> untyped
 end
 
-class Hash[T, U]
+class Hash[unchecked out K, unchecked out V]
   def as_json: (?untyped? options) -> untyped
 end
 
@@ -4734,7 +4734,7 @@ class FalseClass
   def to_param: () -> untyped
 end
 
-class Array[T]
+class Array[unchecked out Elem]
   # Calls <tt>to_param</tt> on all its elements and joins the result with
   # slashes. This is used by <tt>url_for</tt> in Action Pack.
   def to_param: () -> untyped
@@ -4746,7 +4746,7 @@ class Array[T]
   def to_query: (untyped key) -> untyped
 end
 
-class Hash[T, U]
+class Hash[unchecked out K, unchecked out V]
   # Returns a string representation of the receiver suitable for use as a URL
   # query string:
   #
@@ -4963,7 +4963,7 @@ module ActiveSupport
   end
 end
 
-class Range[T]
+class Range[Elem]
   # Compare two ranges and see if they overlap each other
   #  (1..5).overlaps?(4..6) # => true
   #  (1..5).overlaps?(7..9) # => false
@@ -12216,8 +12216,4 @@ class Object
   def self.ms: () { () -> untyped } -> untyped
 
   def unescape: (untyped str, ?untyped escaped) -> untyped
-
-  # XXX: Java module is missing
-  # include Java
 end
-
