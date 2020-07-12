@@ -1790,7 +1790,7 @@ module ActiveSupport
   module Configurable
     extend ActiveSupport::Concern
 
-    class Configuration < ActiveSupport::InheritableOptions
+    class Configuration[T, U] < ActiveSupport::InheritableOptions[T, U]
       def compile_methods!: () -> untyped
 
       # Compiles reader methods so we don't have to go through method_missing.
@@ -10247,7 +10247,7 @@ module ActiveSupport
   #   h = ActiveSupport::InheritableOptions.new({ girl: 'Mary', boy: 'John' })
   #   h.girl # => 'Mary'
   #   h.boy  # => 'John'
-  class InheritableOptions < OrderedOptions
+  class InheritableOptions[T, U] < OrderedOptions[T, U]
     def initialize: (?untyped? parent) -> untyped
 
     def inheritable_copy: () -> untyped
