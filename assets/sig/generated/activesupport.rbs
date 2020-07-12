@@ -38,7 +38,7 @@ module ActiveSupport
   #   variants.phone?    # => true
   #   variants.tablet?   # => true
   #   variants.desktop?  # => false
-  class ArrayInquirer < Array
+  class ArrayInquirer[T] < Array[T]
     # Passes each element of +candidates+ collection to ArrayInquirer collection.
     # The method returns true if any element from the ArrayInquirer collection
     # is equal to the stringified or symbolized form of any element in the +candidates+ collection.
@@ -826,7 +826,7 @@ module ActiveSupport
 
       # Creates a new cache entry for the specified value. Options supported are
       # +:compress+, +:compress_threshold+, +:version+ and +:expires_in+.
-      def initialize: (untyped value, ?compress: bool compress, ?compress_threshold: untyped compress_threshold, ?version: untyped? version, ?expires_in: untyped? expires_in) -> untyped
+      def initialize: (untyped value, ?expires_in: untyped? expires_in, ?version: untyped? version, ?compress_threshold: untyped compress_threshold, ?compress: bool compress) -> untyped
 
       def value: () -> untyped
 
@@ -899,7 +899,7 @@ module ActiveSupport
         def write_multi_entries: (untyped entries, **untyped options) -> untyped
       end
 
-      def self.build_redis: (?redis: untyped? redis, ?url: untyped? url, **untyped redis_options) -> untyped
+      def self.build_redis: (?url: untyped? url, ?redis: untyped? redis, **untyped redis_options) -> untyped
 
       def self.build_redis_distributed_client: (urls: untyped urls, **untyped redis_options) -> untyped
 
@@ -936,7 +936,7 @@ module ActiveSupport
       # Race condition TTL is not set by default. This can be used to avoid
       # "thundering herd" cache writes when hot cache entries are expired.
       # See <tt>ActiveSupport::Cache::Store#fetch</tt> for more.
-      def initialize: (?namespace: untyped? namespace, ?compress: bool compress, ?compress_threshold: untyped compress_threshold, ?expires_in: untyped? expires_in, ?race_condition_ttl: untyped? race_condition_ttl, ?error_handler: untyped error_handler, **untyped redis_options) -> untyped
+      def initialize: (?error_handler: untyped error_handler, ?race_condition_ttl: untyped? race_condition_ttl, ?expires_in: untyped? expires_in, ?compress_threshold: untyped compress_threshold, ?compress: bool compress, ?namespace: untyped? namespace, **untyped redis_options) -> untyped
 
       def redis: () -> untyped
 
@@ -1014,7 +1014,7 @@ module ActiveSupport
       # Write an entry to the cache.
       #
       # Requires Redis 2.6.12+ for extended SET options.
-      def write_entry: (untyped key, untyped entry, ?unless_exist: bool unless_exist, ?raw: bool raw, ?expires_in: untyped? expires_in, ?race_condition_ttl: untyped? race_condition_ttl, **untyped options) -> untyped
+      def write_entry: (untyped key, untyped entry, ?race_condition_ttl: untyped? race_condition_ttl, ?expires_in: untyped? expires_in, ?raw: bool raw, ?unless_exist: bool unless_exist, **untyped options) -> untyped
 
       def write_key_expiry: (untyped client, untyped key, untyped options) -> untyped
 
@@ -1037,7 +1037,7 @@ module ActiveSupport
 
       def failsafe: (untyped method, ?returning: untyped? returning) { () -> untyped } -> untyped
 
-      def handle_exception: (exception: untyped exception, method: untyped method, returning: untyped returning) -> untyped
+      def handle_exception: (returning: untyped returning, method: untyped method, exception: untyped exception) -> untyped
     end
   end
 end
@@ -1287,7 +1287,7 @@ module ActiveSupport
 
       def raw_filter: () -> untyped
 
-      def merge_conditional_options: (untyped chain, if_option: untyped if_option, unless_option: untyped unless_option) -> untyped
+      def merge_conditional_options: (untyped chain, unless_option: untyped unless_option, if_option: untyped if_option) -> untyped
 
       def matches?: (untyped _kind, untyped _filter) -> untyped
 
@@ -1373,7 +1373,7 @@ module ActiveSupport
 
     class CallbackChain
       # nodoc:#
-      include Enumerable
+      include Enumerable[untyped, untyped]
 
       attr_reader name: untyped
 
@@ -1746,7 +1746,7 @@ module ActiveSupport
       # is awaiting a lock, it is not running any other code. With
       # +purpose+ matching, it is possible to yield only to other
       # threads whose activity will not interfere.
-      def start_exclusive: (?purpose: untyped? purpose, ?compatible: untyped compatible, ?no_wait: bool no_wait) -> untyped
+      def start_exclusive: (?no_wait: bool no_wait, ?compatible: untyped compatible, ?purpose: untyped? purpose) -> untyped
 
       # Relinquish the exclusive lock. Must only be called by the thread
       # that called start_exclusive (and currently holds the lock).
@@ -1762,7 +1762,7 @@ module ActiveSupport
       # the block.
       #
       # See +start_exclusive+ for other options.
-      def exclusive: (?purpose: untyped? purpose, ?compatible: untyped compatible, ?after_compatible: untyped after_compatible, ?no_wait: bool no_wait) { () -> untyped } -> untyped
+      def exclusive: (?no_wait: bool no_wait, ?after_compatible: untyped after_compatible, ?compatible: untyped compatible, ?purpose: untyped? purpose) { () -> untyped } -> untyped
 
       # Execute the supplied block while holding the Share lock.
       def sharing: () { () -> untyped } -> untyped
@@ -1770,7 +1770,7 @@ module ActiveSupport
       # Temporarily give up all held Share locks while executing the
       # supplied block, allowing any +compatible+ exclusive lock request
       # to proceed.
-      def yield_shares: (?purpose: untyped? purpose, ?compatible: untyped compatible, ?block_share: bool block_share) { () -> untyped } -> untyped
+      def yield_shares: (?block_share: bool block_share, ?compatible: untyped compatible, ?purpose: untyped? purpose) { () -> untyped } -> untyped
 
       # Must be called within synchronize
       def busy_for_exclusive?: (untyped purpose) -> untyped
@@ -1802,7 +1802,7 @@ module ActiveSupport
 
       def configure: () { (untyped) -> untyped } -> untyped
 
-      def config_accessor: (*untyped names, ?instance_reader: bool instance_reader, ?instance_writer: bool instance_writer, ?instance_accessor: bool instance_accessor) { () -> untyped } -> untyped
+      def config_accessor: (*untyped names, ?instance_accessor: bool instance_accessor, ?instance_writer: bool instance_writer, ?instance_reader: bool instance_reader) { () -> untyped } -> untyped
     end
 
     # Reads and writes attributes from a configuration <tt>OrderedHash</tt>.
@@ -1824,7 +1824,7 @@ module ActiveSupport
   end
 end
 
-class Array
+class Array[T]
   # Returns the tail of the array from +position+.
   #
   #   %w( a b c d ).from(0)  # => ["a", "b", "c", "d"]
@@ -1899,7 +1899,7 @@ class Array
   def second_to_last: () -> untyped
 end
 
-class Array
+class Array[T]
   # Converts the array to a comma-separated sentence where the last element is
   # joined by the connector word.
   #
@@ -2039,7 +2039,7 @@ class Array
   def to_xml: (?::Hash[untyped, untyped] options) { (untyped) -> untyped } -> untyped
 end
 
-class Hash
+class Hash[T, U]
   # By default, only instances of Hash itself are extractable.
   # Subclasses of Hash may implement this method and return
   # true to declare themselves as extractable. If a Hash
@@ -2048,7 +2048,7 @@ class Hash
   def extractable_options?: () -> untyped
 end
 
-class Array
+class Array[T]
   # Extracts options from a set of arguments. Removes and returns the last
   # element in the array if it's a hash, otherwise returns a blank hash.
   #
@@ -2061,7 +2061,7 @@ class Array
   def extract_options!: () -> untyped
 end
 
-class Array
+class Array[T]
   # Removes and returns the elements for which the block returns a true value.
   # If no block is given, an Enumerator is returned instead.
   #
@@ -2071,7 +2071,7 @@ class Array
   def extract!: () { (untyped) -> untyped } -> untyped
 end
 
-class Array
+class Array[T]
   # Splits or iterates over the array in groups of size +number+,
   # padding any remaining slots with +fill_with+ unless it is +false+.
   #
@@ -2119,7 +2119,7 @@ class Array
   def split: (?untyped? value) { (untyped) -> untyped } -> untyped
 end
 
-class Array
+class Array[T]
   # Wraps the array in an +ArrayInquirer+ object, which gives a friendlier way
   # to check its string-like contents.
   #
@@ -2133,7 +2133,7 @@ class Array
   def inquiry: () -> untyped
 end
 
-class Array
+class Array[T]
   # Wraps its argument in an array unless it is already an array (or array-like).
   #
   # Specifically:
@@ -2259,7 +2259,7 @@ class Class
   # To set a default value for the attribute, pass <tt>default:</tt>, like so:
   #
   #   class_attribute :settings, default: {}
-  def class_attribute: (*untyped attrs, ?instance_accessor: bool instance_accessor, ?instance_reader: untyped instance_reader, ?instance_writer: untyped instance_writer, ?instance_predicate: bool instance_predicate, ?default: untyped? default) -> untyped
+  def class_attribute: (*untyped attrs, ?default: untyped? default, ?instance_predicate: bool instance_predicate, ?instance_writer: untyped instance_writer, ?instance_reader: untyped instance_reader, ?instance_accessor: bool instance_accessor) -> untyped
 end
 
 class Class
@@ -2888,7 +2888,7 @@ module Digest
   end
 end
 
-module Enumerable
+module Enumerable[T, U]
   INDEX_WITH_DEFAULT: untyped
 
   # Calculates a sum from the elements.
@@ -2972,14 +2972,14 @@ module Enumerable
   def pluck: (*untyped keys) -> untyped
 end
 
-class Range
+class Range[T]
   # nodoc:
   # Optimize range sum to use arithmetic progression if a block is not given and
   # we have a range of numeric values.
   def sum: (?untyped? identity) -> untyped
 end
 
-class Array
+class Array[T]
   # nodoc:
   # Array#sum was added in Ruby 2.4 but it only works with Numeric elements.
   def sum: (?untyped? init) { () -> untyped } -> untyped
@@ -3006,7 +3006,7 @@ class File
   def self.probe_stat_in: (untyped dir) -> untyped
 end
 
-class Hash
+class Hash[T, U]
   # Returns a string containing an XML representation of its receiver:
   #
   #   { foo: 1, bar: 2 }.to_xml
@@ -3150,7 +3150,7 @@ module ActiveSupport
   end
 end
 
-class Hash
+class Hash[T, U]
   # Returns a new hash with +self+ and +other_hash+ merged recursively.
   #
   #   h1 = { a: true, b: { c: [1, 2, 3] } }
@@ -3171,7 +3171,7 @@ class Hash
   def deep_merge!: (untyped other_hash) { () -> untyped } -> untyped
 end
 
-class Hash
+class Hash[T, U]
   # Returns a new hash with all values converted by the block operation.
   # This includes the values from the root hash and from all
   # nested hashes and arrays.
@@ -3193,7 +3193,7 @@ class Hash
   def _deep_transform_values_in_object!: (untyped object) { (untyped) -> untyped } -> untyped
 end
 
-class Hash
+class Hash[T, U]
   # Returns a hash that includes everything except given keys.
   #   hash = { a: true, b: false, c: nil }
   #   hash.except(:c)     # => { a: true, b: false }
@@ -3211,14 +3211,14 @@ class Hash
   def except!: (*untyped keys) -> untyped
 end
 
-class Hash
+class Hash[T, U]
   # Returns an <tt>ActiveSupport::HashWithIndifferentAccess</tt> out of its receiver:
   #
   #   { a: 1 }.with_indifferent_access['a'] # => 1
   def with_indifferent_access: () -> untyped
 end
 
-class Hash
+class Hash[T, U]
   # Returns a new hash with all keys converted to strings.
   #
   #   hash = { name: 'Rob', age: '28' }
@@ -3306,7 +3306,7 @@ class Hash
   def _deep_transform_keys_in_object!: (untyped object) { (untyped) -> untyped } -> untyped
 end
 
-class Hash
+class Hash[T, U]
   # Merges the caller into +other_hash+. For example,
   #
   #   options = options.reverse_merge(size: 25, velocity: 10)
@@ -3323,7 +3323,7 @@ class Hash
   def reverse_merge!: (untyped other_hash) -> untyped
 end
 
-class Hash
+class Hash[T, U]
   # Replaces the hash with only the given keys.
   # Returns a hash containing the removed key/value pairs.
   #
@@ -3494,9 +3494,9 @@ end
 # So the values are scoped within the Thread.current space under the class name
 # of the module.
 class Module
-  def thread_mattr_reader: (*untyped syms, ?instance_reader: bool instance_reader, ?instance_accessor: bool instance_accessor) -> untyped
+  def thread_mattr_reader: (*untyped syms, ?instance_accessor: bool instance_accessor, ?instance_reader: bool instance_reader) -> untyped
 
-  def thread_mattr_writer: (*untyped syms, ?instance_writer: bool instance_writer, ?instance_accessor: bool instance_accessor) -> untyped
+  def thread_mattr_writer: (*untyped syms, ?instance_accessor: bool instance_accessor, ?instance_writer: bool instance_writer) -> untyped
 
   # Defines both class and instance accessors for class attributes.
   #
@@ -3537,7 +3537,7 @@ class Module
   #
   #   Current.new.user = "DHH"  # => NoMethodError
   #   Current.new.user          # => NoMethodError
-  def thread_mattr_accessor: (*untyped syms, ?instance_reader: bool instance_reader, ?instance_writer: bool instance_writer, ?instance_accessor: bool instance_accessor) -> untyped
+  def thread_mattr_accessor: (*untyped syms, ?instance_accessor: bool instance_accessor, ?instance_writer: bool instance_writer, ?instance_reader: bool instance_reader) -> untyped
 end
 
 # Extends the module object with class/module and instance accessors for
@@ -3588,7 +3588,7 @@ class Module
   #   end
   #
   #   Person.new.hair_colors # => [:brown, :black, :blonde, :red]
-  def mattr_reader: (*untyped syms, ?instance_reader: bool instance_reader, ?instance_accessor: bool instance_accessor, ?default: untyped? default) { () -> untyped } -> untyped
+  def mattr_reader: (*untyped syms, ?default: untyped? default, ?instance_accessor: bool instance_accessor, ?instance_reader: bool instance_reader) { () -> untyped } -> untyped
 
   # Defines a class attribute and creates a class and instance writer methods to
   # allow assignment to the attribute. All class and instance methods created
@@ -3632,7 +3632,7 @@ class Module
   #   end
   #
   #   Person.class_variable_get("@@hair_colors") # => [:brown, :black, :blonde, :red]
-  def mattr_writer: (*untyped syms, ?instance_writer: bool instance_writer, ?instance_accessor: bool instance_accessor, ?default: untyped? default) { () -> untyped } -> untyped
+  def mattr_writer: (*untyped syms, ?default: untyped? default, ?instance_accessor: bool instance_accessor, ?instance_writer: bool instance_writer) { () -> untyped } -> untyped
 
   # Defines both class and instance accessors for class attributes.
   # All class and instance methods created will be public, even if
@@ -3698,7 +3698,7 @@ class Module
   #   end
   #
   #   Person.class_variable_get("@@hair_colors") # => [:brown, :black, :blonde, :red]
-  def mattr_accessor: (*untyped syms, ?instance_reader: bool instance_reader, ?instance_writer: bool instance_writer, ?instance_accessor: bool instance_accessor, ?default: untyped? default) { () -> untyped } -> untyped
+  def mattr_accessor: (*untyped syms, ?default: untyped? default, ?instance_accessor: bool instance_accessor, ?instance_writer: bool instance_writer, ?instance_reader: bool instance_reader) { () -> untyped } -> untyped
 end
 
 class Module
@@ -3847,7 +3847,7 @@ end
 class Module
   # Error generated by +delegate+ when a method is called on +nil+ and +allow_nil+
   # option is not used.
-  class DelegationError < NoMethodError
+  class DelegationError[T] < NoMethodError[T]
   end
 
   RUBY_RESERVED_KEYWORDS: ::Array[untyped]
@@ -4009,7 +4009,7 @@ class Module
   #   Foo.new("Bar").name # raises NoMethodError: undefined method `name'
   #
   # The target method must be public, otherwise it will raise +NoMethodError+.
-  def delegate: (*untyped methods, ?to: untyped? to, ?prefix: untyped? prefix, ?allow_nil: untyped? allow_nil, ?private: untyped? `private`) -> untyped
+  def delegate: (*untyped methods, ?private: untyped? `private`, ?allow_nil: untyped? allow_nil, ?prefix: untyped? prefix, ?to: untyped? to) -> untyped
 
   # When building decorators, a common pattern may emerge:
   #
@@ -4150,7 +4150,7 @@ class Module
   def remove_possible_singleton_method: (untyped method) -> untyped
 end
 
-class NameError
+class NameError[T]
   # Extract the name of the missing constant from the exception message.
   #
   #   begin
@@ -4437,10 +4437,10 @@ class TrueClass
   def blank?: () -> ::FalseClass
 end
 
-class Array
+class Array[T]
 end
 
-class Hash
+class Hash[T, U]
 end
 
 class String
@@ -4497,7 +4497,7 @@ class Object
   def deep_dup: () -> untyped
 end
 
-class Array
+class Array[T]
   # Returns a deep copy of array.
   #
   #   array = [1, [2, 3]]
@@ -4509,7 +4509,7 @@ class Array
   def deep_dup: () -> untyped
 end
 
-class Hash
+class Hash[T, U]
   # Returns a deep copy of hash.
   #
   #   hash = { a: { b: 'b' } }
@@ -4621,7 +4621,7 @@ class Object
   def as_json: (?untyped? options) -> untyped
 end
 
-class Struct
+class Struct[T]
   # nodoc:
   def as_json: (?untyped? options) -> untyped
 end
@@ -4662,7 +4662,7 @@ class Regexp
   def as_json: (?untyped? options) -> untyped
 end
 
-module Enumerable
+module Enumerable[T, U]
   def as_json: (?untyped? options) -> untyped
 end
 
@@ -4670,15 +4670,15 @@ class IO
   def as_json: (?untyped? options) -> untyped
 end
 
-class Range
+class Range[T]
   def as_json: (?untyped? options) -> untyped
 end
 
-class Array
+class Array[T]
   def as_json: (?untyped? options) -> untyped
 end
 
-class Hash
+class Hash[T, U]
   def as_json: (?untyped? options) -> untyped
 end
 
@@ -4737,7 +4737,7 @@ class FalseClass
   def to_param: () -> untyped
 end
 
-class Array
+class Array[T]
   # Calls <tt>to_param</tt> on all its elements and joins the result with
   # slashes. This is used by <tt>url_for</tt> in Action Pack.
   def to_param: () -> untyped
@@ -4749,7 +4749,7 @@ class Array
   def to_query: (untyped key) -> untyped
 end
 
-class Hash
+class Hash[T, U]
   # Returns a string representation of the receiver suitable for use as a URL
   # query string:
   #
@@ -4966,7 +4966,7 @@ module ActiveSupport
   end
 end
 
-class Range
+class Range[T]
   # Compare two ranges and see if they overlap each other
   #  (1..5).overlaps?(4..6) # => true
   #  (1..5).overlaps?(7..9) # => false
@@ -5418,7 +5418,7 @@ class String
   #
   #   <%= link_to(@person.name, person_path) %>
   #   # => <a href="/person/1-Donald-E-Knuth">Donald E. Knuth</a>
-  def parameterize: (?separator: ::String separator, ?preserve_case: bool preserve_case, ?locale: untyped? locale) -> untyped
+  def parameterize: (?locale: untyped? locale, ?preserve_case: bool preserve_case, ?separator: ::String separator) -> untyped
 
   # Creates the name of a table like Rails does for models to table names. This method
   # uses the +pluralize+ method on the last word in the string.
@@ -5453,7 +5453,7 @@ class String
   #   'author_id'.humanize(capitalize: false)       # => "author"
   #   '_id'.humanize                                # => "Id"
   #   'author_id'.humanize(keep_id_suffix: true)    # => "Author Id"
-  def humanize: (?capitalize: bool capitalize, ?keep_id_suffix: bool keep_id_suffix) -> untyped
+  def humanize: (?keep_id_suffix: bool keep_id_suffix, ?capitalize: bool capitalize) -> untyped
 
   # Converts just the first character to uppercase.
   #
@@ -6211,7 +6211,7 @@ module ActiveSupport
     # This is handled by walking back up the watch stack and adding the constants
     # found by child.rb to the list of original constants in parent.rb.
     class WatchStack
-      include Enumerable
+      include Enumerable[untyped, untyped]
 
       attr_reader watching: untyped
 
@@ -6857,7 +6857,7 @@ module ActiveSupport
     class DescendantsArray
       # DescendantsArray is an array that contains weak references to classes.
       # :nodoc:
-      include Enumerable
+      include Enumerable[untyped, untyped]
 
       def initialize: () -> untyped
 
@@ -7156,7 +7156,7 @@ end
 
 module ActiveSupport
   class EncryptedConfiguration < EncryptedFile
-    def initialize: (config_path: untyped config_path, key_path: untyped key_path, env_key: untyped env_key, raise_if_missing_key: untyped raise_if_missing_key) -> untyped
+    def initialize: (raise_if_missing_key: untyped raise_if_missing_key, env_key: untyped env_key, key_path: untyped key_path, config_path: untyped config_path) -> untyped
 
     # Allow a config to be started without a file present
     def read: () -> untyped
@@ -7178,7 +7178,7 @@ module ActiveSupport
     end
 
     class MissingKeyError < RuntimeError
-      def initialize: (key_path: untyped key_path, env_key: untyped env_key) -> untyped
+      def initialize: (env_key: untyped env_key, key_path: untyped key_path) -> untyped
     end
 
     CIPHER: ::String
@@ -7193,7 +7193,7 @@ module ActiveSupport
 
     attr_reader raise_if_missing_key: untyped
 
-    def initialize: (content_path: untyped content_path, key_path: untyped key_path, env_key: untyped env_key, raise_if_missing_key: untyped raise_if_missing_key) -> untyped
+    def initialize: (raise_if_missing_key: untyped raise_if_missing_key, env_key: untyped env_key, key_path: untyped key_path, content_path: untyped content_path) -> untyped
 
     def key: () -> untyped
 
@@ -7508,7 +7508,7 @@ module ActiveSupport
   #   require "active_support/core_ext/hash/indifferent_access"
   #
   # which will, in turn, require this file.
-  class HashWithIndifferentAccess < Hash
+  class HashWithIndifferentAccess[T, U] < Hash[T, U]
     # Returns +true+ so that <tt>Array#extract_options!</tt> finds members of
     # this class.
     def extractable_options?: () -> ::TrueClass
@@ -7765,7 +7765,7 @@ module ActiveSupport
     # singularization rules that is runs. This guarantees that your rules run
     # before any of the rules that may already have been loaded.
     class Inflections
-      class Uncountables < Array
+      class Uncountables[T] < Array[T]
         def initialize: () -> untyped
 
         def delete: (untyped entry) -> untyped
@@ -8010,7 +8010,7 @@ module ActiveSupport
     #
     #   humanize('ssl_error') # => "SSL error"
     #
-    def humanize: (untyped lower_case_and_underscored_word, ?capitalize: bool capitalize, ?keep_id_suffix: bool keep_id_suffix) -> untyped
+    def humanize: (untyped lower_case_and_underscored_word, ?keep_id_suffix: bool keep_id_suffix, ?capitalize: bool capitalize) -> untyped
 
     # Converts just the first character to uppercase.
     #
@@ -8259,7 +8259,7 @@ module ActiveSupport
     # the word will be parameterized as a word of that language.
     # By default, this parameter is set to <tt>nil</tt> and it will use
     # the configured <tt>I18n.locale<tt>.
-    def parameterize: (untyped string, ?separator: ::String separator, ?preserve_case: bool preserve_case, ?locale: untyped? locale) -> untyped
+    def parameterize: (untyped string, ?locale: untyped? locale, ?preserve_case: bool preserve_case, ?separator: ::String separator) -> untyped
   end
 end
 
@@ -8772,7 +8772,7 @@ module ActiveSupport
 
     # Encrypt and sign a message. We need to sign the message in order to avoid
     # padding attacks. Reference: https://www.limited-entropy.com/padding-oracle-attacks/.
-    def encrypt_and_sign: (untyped value, ?expires_at: untyped? expires_at, ?expires_in: untyped? expires_in, ?purpose: untyped? purpose) -> untyped
+    def encrypt_and_sign: (untyped value, ?purpose: untyped? purpose, ?expires_in: untyped? expires_in, ?expires_at: untyped? expires_at) -> untyped
 
     # Decrypt and verify a message. We need to verify the message in order to
     # avoid padding attacks. Reference: https://www.limited-entropy.com/padding-oracle-attacks/.
@@ -8804,7 +8804,7 @@ module ActiveSupport
 
       def as_json: (?::Hash[untyped, untyped] options) -> { _rails: { message: untyped, exp: untyped, pur: untyped } }
 
-      def self.wrap: (untyped message, ?expires_at: untyped? expires_at, ?expires_in: untyped? expires_in, ?purpose: untyped? purpose) -> untyped
+      def self.wrap: (untyped message, ?purpose: untyped? purpose, ?expires_in: untyped? expires_in, ?expires_at: untyped? expires_at) -> untyped
 
       def self.verify: (untyped message, untyped purpose) -> untyped
 
@@ -9023,7 +9023,7 @@ module ActiveSupport
     #
     #   verifier = ActiveSupport::MessageVerifier.new 's3Krit'
     #   verifier.generate 'a private message' # => "BAhJIhRwcml2YXRlLW1lc3NhZ2UGOgZFVA==--e2d724331ebdee96a10fb99b089508d1c72bd772"
-    def generate: (untyped value, ?expires_at: untyped? expires_at, ?expires_in: untyped? expires_in, ?purpose: untyped? purpose) -> ::String
+    def generate: (untyped value, ?purpose: untyped? purpose, ?expires_in: untyped? expires_in, ?expires_at: untyped? expires_at) -> ::String
 
     def encode: (untyped data) -> untyped
 
@@ -10223,7 +10223,7 @@ module ActiveSupport
   #
   # <tt>ActiveSupport::OrderedHash</tt> is namespaced to prevent conflicts
   # with other implementations.
-  class OrderedHash < ::Hash
+  class OrderedHash[T, U] < ::Hash[T, U]
     def to_yaml_type: () -> "!tag:yaml.org,2002:omap"
 
     def encode_with: (untyped coder) -> untyped
@@ -10263,7 +10263,7 @@ module ActiveSupport
   #
   #   h.dog! # => raises KeyError: :dog is blank
   #
-  class OrderedOptions < Hash
+  class OrderedOptions[T, U] < Hash[T, U]
     def []=: (untyped key, untyped value) -> untyped
 
     def []: (untyped key) -> untyped
@@ -10538,7 +10538,7 @@ module ActiveSupport
       #     end
       #
       # Returns the exception if it was handled and +nil+ if it was not.
-      def rescue_with_handler: (untyped exception, ?object: untyped object, ?visited_exceptions: untyped visited_exceptions) -> untyped
+      def rescue_with_handler: (untyped exception, ?visited_exceptions: untyped visited_exceptions, ?object: untyped object) -> untyped
 
       def handler_for_rescue: (untyped exception, ?object: untyped object) -> untyped
 
@@ -10764,7 +10764,7 @@ module ActiveSupport
     #
     # The threaded parallelization uses minitest's parallel executor directly.
     # The processes parallelization uses a Ruby DRb server.
-    def self.parallelize: (?workers: ::Symbol workers, ?with: ::Symbol with) -> (nil | untyped)
+    def self.parallelize: (?with: ::Symbol with, ?workers: ::Symbol workers) -> (nil | untyped)
 
     # Set up hook for parallel testing. This can be used if you have multiple
     # databases or any behavior that needs to be run after the process is forked
@@ -10946,7 +10946,7 @@ module ActiveSupport
       #   assert_changes -> { Status.all_good? }, 'Expected the status to be bad' do
       #     post :create, params: { status: { incident: true } }
       #   end
-      def assert_changes: (untyped expression, ?untyped? message, ?from: untyped from, ?to: untyped to) { () -> untyped } -> untyped
+      def assert_changes: (untyped expression, ?untyped? message, ?to: untyped to, ?from: untyped from) { () -> untyped } -> untyped
 
       # Assertion that the result of evaluating an expression is not changed before
       # and after invoking the passed in block.
@@ -11078,13 +11078,13 @@ end
 module ActiveSupport
   module Testing
     module MethodCallAssertions
-      def assert_called: (untyped object, untyped method_name, ?untyped? message, ?times: ::Integer times, ?returns: untyped? returns) { () -> untyped } -> untyped
+      def assert_called: (untyped object, untyped method_name, ?untyped? message, ?returns: untyped? returns, ?times: ::Integer times) { () -> untyped } -> untyped
 
       def assert_called_with: (untyped object, untyped method_name, untyped args, ?returns: untyped? returns) { () -> untyped } -> untyped
 
       def assert_not_called: (untyped object, untyped method_name, ?untyped? message) { () -> untyped } -> untyped
 
-      def assert_called_on_instance_of: (untyped klass, untyped method_name, ?untyped? message, ?times: ::Integer times, ?returns: untyped? returns) { () -> untyped } -> untyped
+      def assert_called_on_instance_of: (untyped klass, untyped method_name, ?untyped? message, ?returns: untyped? returns, ?times: ::Integer times) { () -> untyped } -> untyped
 
       def assert_not_called_on_instance_of: (untyped klass, untyped method_name, ?untyped? message) { () -> untyped } -> untyped
 
@@ -12222,3 +12222,4 @@ class Object
 
   include Java
 end
+
