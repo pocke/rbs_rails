@@ -8593,7 +8593,7 @@ module ActiveSupport
       def teardown: () -> untyped
 
       class MockLogger
-        include ActiveSupport::Logger::Severity
+        include ::Logger::Severity
 
         attr_reader flush_count: untyped
 
