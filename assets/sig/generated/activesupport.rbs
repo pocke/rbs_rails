@@ -12220,6 +12220,7 @@ class Object
 
   def unescape: (untyped str, ?untyped escaped) -> untyped
 
-  include Java
+  # XXX: Java module is missing
+  # include Java
 end
 
