@@ -9398,13 +9398,9 @@ module ActiveSupport
 
       def now: () -> untyped
 
-      def now_cpu: () -> untyped
+      def now_cpu: () -> (untyped | 0)
 
-      def now_cpu: () -> 0
-
-      def now_allocations: () -> 0
-
-      def now_allocations: () -> untyped
+      def now_allocations: () -> (untyped | 0)
     end
   end
 end
@@ -10163,8 +10159,6 @@ module ActiveSupport
     def initialize: (untyped context, untyped options) -> untyped
 
     def method_missing: (untyped method, *untyped arguments) { () -> untyped } -> untyped
-
-    def invoke_method: (untyped method, untyped arguments, untyped options) { () -> untyped } -> untyped
 
     def invoke_method: (untyped method, untyped arguments, untyped options) { () -> untyped } -> untyped
   end
