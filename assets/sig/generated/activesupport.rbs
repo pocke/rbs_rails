@@ -2888,26 +2888,6 @@ end
 module Enumerable[unchecked out Elem, out Return]
   INDEX_WITH_DEFAULT: untyped
 
-  # Calculates a sum from the elements.
-  #
-  #  payments.sum { |p| p.price * p.tax_rate }
-  #  payments.sum(&:price)
-  #
-  # The latter is a shortcut for:
-  #
-  #  payments.inject(0) { |sum, p| sum + p.price }
-  #
-  # It can also calculate the sum without the use of a block.
-  #
-  #  [5, 15, 10].sum # => 30
-  #  ['foo', 'bar'].sum # => "foobar"
-  #  [[1, 2], [3, 1, 5]].sum # => [1, 2, 3, 1, 5]
-  #
-  # The default sum of an empty list is zero. You can override this default:
-  #
-  #  [].sum(Payment.new(0)) { |i| i.amount } # => Payment.new(0)
-  def sum: (?untyped? identity) { () -> untyped } -> untyped
-
   # Convert an enumerable to a hash keying it by the block return value.
   #
   #   people.index_by(&:login)
@@ -2967,19 +2947,6 @@ module Enumerable[unchecked out Elem, out Return]
   #   [{ id: 1, name: "David" }, { id: 2, name: "Rafael" }].pluck(:id, :name)
   #   # => [[1, "David"], [2, "Rafael"]]
   def pluck: (*untyped keys) -> untyped
-end
-
-class Range[Elem]
-  # nodoc:
-  # Optimize range sum to use arithmetic progression if a block is not given and
-  # we have a range of numeric values.
-  def sum: (?untyped? identity) -> untyped
-end
-
-class Array[unchecked out Elem]
-  # nodoc:
-  # Array#sum was added in Ruby 2.4 but it only works with Numeric elements.
-  def sum: (?untyped? init) { () -> untyped } -> untyped
 end
 
 class File
