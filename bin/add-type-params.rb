@@ -38,14 +38,7 @@ def apply_to_itself(decl)
   return unless type
   return if type.type_params.empty?
 
-  args = args(type.type_params.size)
-  type_params = RBS::AST::Declarations::ModuleTypeParams.new.tap do |tp|
-    args.each do |a|
-      tp.add RBS::AST::Declarations::ModuleTypeParams::TypeParam.new(name: a)
-    end
-  end
-
-  decl.instance_variable_set(:@type_params, type_params)
+  decl.instance_variable_set(:@type_params, type.type_params.dup)
 end
 
 def apply_to_includes(decl)
