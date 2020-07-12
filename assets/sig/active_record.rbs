@@ -1,3 +1,6 @@
+module ActiveRecord
+end
+
 class ActiveRecord::Base
   def self.abstract_class=: (bool) -> void
   def self.scope: (Symbol, ^(*untyped) -> untyped ) -> void
