@@ -9194,8 +9194,6 @@ module ActiveSupport
       # encoding is entirely CP1252 or ISO-8859-1.
       def tidy_bytes: (untyped string, ?bool force) -> untyped
 
-      def tidy_bytes: (untyped string, ?bool force) -> untyped
-
       # Returns the KC normalization of the string by default. NFKC is
       # considered the best normalization form for passing strings to databases
       # and validations.
