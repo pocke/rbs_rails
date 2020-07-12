@@ -1,3 +1,5 @@
+#!ruby
+
 require 'rbs'
 rbs = ARGF.read
 decls = RBS::Parser.parse_signature(rbs)
