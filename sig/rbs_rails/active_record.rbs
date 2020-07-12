@@ -1,11 +1,11 @@
 module RbsRails::ActiveRecord
-  def self.class_to_rbs: (untyped klass, mode: untyped mode) -> untyped
+  def self.class_to_rbs: (untyped klass) -> untyped
 end
 
 class RbsRails::ActiveRecord::Generator
   @parse_model_file: nil | Parser::AST::Node
 
-  def initialize: (singleton(ActiveRecord::Base) klass, mode: (:extension | :class) mode) -> untyped
+  def initialize: (singleton(ActiveRecord::Base) klass) -> untyped
 
   def generate: () -> String
 
@@ -56,6 +56,4 @@ class RbsRails::ActiveRecord::Generator
   def optional: (String) -> String
 
   attr_reader klass: singleton(ActiveRecord::Base)
-
-  attr_reader mode: (:extension | :class)
 end
