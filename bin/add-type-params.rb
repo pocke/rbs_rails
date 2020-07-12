@@ -1,8 +1,6 @@
 #!ruby
 
 require 'rbs'
-rbs = ARGF.read
-decls = RBS::Parser.parse_signature(rbs)
 
 def args(n)
   (:T..).take(n)
@@ -34,6 +32,22 @@ def apply_to_superclass(decl)
   decl.instance_variable_set(:@type_params, type_params)
 end
 
+def apply_to_itself(decl)
+  name = decl.name
+  type = env.class_decls[name] || env.class_decls[name.absolute!]
+  return unless type
+  return if type.type_params.empty?
+
+  args = args(type.type_params.size)
+  type_params = RBS::AST::Declarations::ModuleTypeParams.new.tap do |tp|
+    args.each do |a|
+      tp.add RBS::AST::Declarations::ModuleTypeParams::TypeParam.new(name: a)
+    end
+  end
+
+  decl.instance_variable_set(:@type_params, type_params)
+end
+
 def apply_to_includes(decl)
   decl.members.each do |member|
     next unless member.is_a?(RBS::AST::Members::Mixin)
@@ -52,16 +66,20 @@ def analyze(decls)
   decls.each do |decl|
     case decl
     when RBS::AST::Declarations::Class
+      apply_to_itself(decl)
       apply_to_superclass(decl)
       apply_to_includes(decl)
       analyze(decl.members)
     when RBS::AST::Declarations::Module, RBS::AST::Declarations::Interface
+      apply_to_itself(decl)
       apply_to_includes(decl)
       analyze(decl.members)
     end
   end
 end
 
+rbs = ARGF.read
+decls = RBS::Parser.parse_signature(rbs)
 analyze(decls)
 
 puts RBS::Writer.new(out: $stdout).write(decls)
