@@ -52,7 +52,7 @@ task generate_rbs_for_model: :environment do
     path = out_dir / "app/models/#{klass.name.underscore}.rbs"
     FileUtils.mkdir_p(path.dirname)
 
-    sig = RbsRails::ActiveRecord.class_to_rbs(klass, mode: :extension)
+    sig = RbsRails::ActiveRecord.class_to_rbs(klass)
     path.write sig
   end
 end

@@ -1,13 +1,12 @@
 module RbsRails
   module ActiveRecord
-    def self.class_to_rbs(klass, mode:)
-      Generator.new(klass, mode: mode).generate
+    def self.class_to_rbs(klass)
+      Generator.new(klass).generate
     end
 
     class Generator
-      def initialize(klass, mode:)
+      def initialize(klass)
         @klass = klass
-        @mode = mode
       end
 
       def generate
@@ -52,16 +51,9 @@ module RbsRails
 
 
       private def header
-        case mode
-        when :extension
-          "extension #{klass.name} (RbsRails)"
-        when :class
-          # @type var superclass: Class
-          superclass = _ = klass.superclass
-          "class #{klass.name} < #{superclass.name}"
-        else
-          raise "unexpected mode: #{mode}"
-        end
+        # @type var superclass: Class
+        superclass = _ = klass.superclass
+        "class #{klass.name} < #{superclass.name}"
       end
 
       private def associations
@@ -299,8 +291,8 @@ module RbsRails
       end
 
       private
-      # @dynamic klass, mode
-      attr_reader :klass, :mode
+      # @dynamic klass
+      attr_reader :klass
     end
   end
 end

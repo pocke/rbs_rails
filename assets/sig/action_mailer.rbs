@@ -1,5 +1,8 @@
-class ActionMailer::Base
-  extend ActionView::Layouts::ClassMethods
+module ActionMailer
+  class Base
+    # TODO
+    # extend ActionView::Layouts::ClassMethods
 
-  def self.default: (?Hash[Symbol, untyped] value) -> Hash[Symbol, untyped]
+    def self.default: (?Hash[Symbol, untyped] value) -> Hash[Symbol, untyped]
+  end
 end
