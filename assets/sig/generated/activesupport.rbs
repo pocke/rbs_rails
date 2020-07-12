@@ -2278,9 +2278,6 @@ class Class
   #   C.descendants # => [B, A, D]
   def descendants: () -> untyped
 
-  # JRuby 9.0.4.0 and earlier
-  def descendants: () -> untyped
-
   # Returns an array with the direct children of +self+.
   #
   #   class Foo; end
