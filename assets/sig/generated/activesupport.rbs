@@ -6032,6 +6032,8 @@ module ActiveSupport
   class CurrentAttributes
     include ActiveSupport::Callbacks
 
+    extend ::ActiveSupport::Callbacks::ClassMethods
+
     # Returns singleton instance for this class in this thread. If none exists, one is created.
     def self.`instance`: () -> untyped
 
@@ -7256,6 +7258,8 @@ end
 module ActiveSupport
   class ExecutionWrapper
     include ActiveSupport::Callbacks
+
+    extend ::ActiveSupport::Callbacks::ClassMethods
 
     Null: untyped
 
