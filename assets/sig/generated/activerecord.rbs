@@ -8064,7 +8064,7 @@ end
 
 module ActiveRecord
   module ConnectionAdapters
-    class SchemaDumper < SchemaDumper
+    class SchemaDumper < ActiveRecord::SchemaDumper
       # :nodoc:
       # :nodoc:
       def self.create: (untyped connection, untyped options) -> untyped
