@@ -1,2 +1,10 @@
-class Minitest::Test
+module Minitest
+  class Test
+  end
+
+  class SummaryReporter
+  end
+
+  class StatisticsReporter
+  end
 end
