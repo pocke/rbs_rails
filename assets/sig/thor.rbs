@@ -1,0 +1,7 @@
+class Thor
+  class Group
+  end
+
+  module Actions
+  end
+end
