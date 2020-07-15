@@ -39,7 +39,7 @@ module ActiveModel
   #   user = User.first
   #   user.pets.select(:id).first.user_id
   #   # => ActiveModel::MissingAttributeError: missing attribute: user_id
-  class MissingAttributeError < NoMethodError
+  class MissingAttributeError[T] < NoMethodError[T]
   end
 
   # == Active \Model \Attribute \Methods
@@ -427,7 +427,7 @@ module ActiveModel
 
     def any_changes?: () -> untyped
 
-    def changed?: (untyped attr_name, ?from: untyped from, ?to: untyped to) -> untyped
+    def changed?: (untyped attr_name, ?to: untyped to, ?from: untyped from) -> untyped
 
     def changed_in_place?: (untyped attr_name) -> untyped
 
@@ -1280,7 +1280,7 @@ module ActiveModel
   #   person.errors.full_messages # => ["name cannot be nil"]
   #   # etc..
   class Errors
-    include Enumerable
+    include Enumerable[untyped, untyped]
 
     CALLBACKS_OPTIONS: ::Array[untyped]
 
@@ -1605,7 +1605,7 @@ module ActiveModel
   #   person = Person.new
   #   person.assign_attributes(name: 'Gorby')
   #   # => ActiveModel::UnknownAttributeError: unknown attribute 'name' for Person.
-  class UnknownAttributeError < NoMethodError
+  class UnknownAttributeError[T] < NoMethodError[T]
     attr_reader record: untyped
 
     attr_reader attribute: untyped
@@ -2698,7 +2698,7 @@ module ActiveModel
 
       attr_reader limit: untyped
 
-      def initialize: (?precision: untyped? precision, ?limit: untyped? limit, ?scale: untyped? scale) -> untyped
+      def initialize: (?scale: untyped? scale, ?limit: untyped? limit, ?precision: untyped? precision) -> untyped
 
       def `type`: () -> nil
 
