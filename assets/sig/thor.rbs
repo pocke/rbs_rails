@@ -3,5 +3,10 @@ class Thor
   end
 
   module Actions
+    class CreateFile
+    end
+  end
+
+  class Error
   end
 end
