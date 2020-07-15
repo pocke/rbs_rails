@@ -619,7 +619,7 @@ end
 
 module Rails
   module Autoloaders
-    include Enumerable
+    include Enumerable[untyped, untyped]
 
     def self.main: () -> untyped
 
@@ -1492,7 +1492,7 @@ end
 module Rails
   class Engine < Railtie
     class Railties
-      include Enumerable
+      include Enumerable[untyped, untyped]
 
       attr_reader _all: untyped
 
@@ -3905,7 +3905,7 @@ module Rails
       def context_class: () -> untyped
     end
 
-    class Collection < Array
+    class Collection[T] < Array[T]
       include TSort
 
       def tsort_each_child: (untyped initializer) { () -> untyped } -> untyped
@@ -4023,7 +4023,7 @@ module Rails
     end
 
     class Path
-      include Enumerable
+      include Enumerable[untyped, untyped]
 
       attr_accessor glob: untyped
 
