@@ -742,6 +742,8 @@ module ActiveModel
 
     include ActiveModel::AttributeMethods
 
+    extend ::ActiveModel::AttributeMethods::ClassMethods
+
     module ClassMethods
       def attribute: (untyped name, ?untyped `type`, **untyped options) -> untyped
 
@@ -1145,6 +1147,8 @@ module ActiveModel
     extend ActiveSupport::Concern
 
     include ActiveModel::AttributeMethods
+
+    extend ::ActiveModel::AttributeMethods::ClassMethods
 
     def initialize_dup: (untyped other) -> untyped
 
@@ -1798,7 +1802,11 @@ module ActiveModel
 
     include ActiveModel::Validations
 
+    extend ::ActiveModel::Validations::ClassMethods
+
     include ActiveModel::Conversion
+
+    extend ::ActiveModel::Conversion::ClassMethods
 
     extend ActiveModel::Naming
 
@@ -2883,6 +2891,8 @@ module ActiveModel
       extend ActiveSupport::Concern
 
       include ActiveSupport::Callbacks
+
+      extend ::ActiveSupport::Callbacks::ClassMethods
 
       module ClassMethods
         # Defines a callback that will get called right before validation.
