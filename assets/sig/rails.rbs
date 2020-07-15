@@ -1,12 +1,7 @@
 module Rails
-  def self.root: () -> Pathname
-  def self.application: () -> Rails::Application
-  def self.env: () -> ActiveSupport::StringInquirer
+  overload def self.env: () -> ActiveSupport::StringInquirer
 end
 
 class Rails::Application
   def routes: () -> untyped
-end
-
-class Rails::Railtie
 end

@@ -1,0 +1,4 @@
+class ERB
+  class Compiler
+  end
+end
