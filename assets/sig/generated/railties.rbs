@@ -554,7 +554,7 @@ module Rails
 
     def build_middleware: () -> untyped
 
-    class NonSymbolAccessDeprecatedHash < HashWithIndifferentAccess
+    class NonSymbolAccessDeprecatedHash[T, U] < HashWithIndifferentAccess[T, U]
       # :nodoc:
       def initialize: (?untyped? value) -> untyped
 
