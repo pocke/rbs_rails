@@ -4621,7 +4621,8 @@ end
 module ActiveRecord
   module AttributeMethods
     module TimeZoneConversion
-      class TimeZoneConverter < 
+      # Note: It inherits unnamed class, but omitted
+      class TimeZoneConverter
         # :nodoc:
         def deserialize: (untyped value) -> untyped
 
@@ -9655,7 +9656,8 @@ end
 module ActiveRecord
   module ConnectionAdapters
     module MySQL
-      class TypeMetadata < 
+      # Note: It inherits unnamed class, but omitted
+      class TypeMetadata
         attr_reader extra: untyped
 
         def initialize: (untyped type_metadata, ?extra: ::String extra) -> untyped
@@ -10929,7 +10931,8 @@ module ActiveRecord
   # :stopdoc:
   module ConnectionAdapters
     module PostgreSQL
-      class TypeMetadata < 
+      # Note: It inherits unnamed class, but omitted
+      class TypeMetadata
         attr_reader oid: untyped
 
         attr_reader fmod: untyped
@@ -11756,7 +11759,8 @@ module ActiveRecord
 
     def custom_inspect_method_defined?: () -> untyped
 
-    class InspectionMask < 
+    # Note: It inherits unnamed class, but omitted
+    class InspectionMask
       def pretty_print: (untyped pp) -> untyped
     end
 
@@ -13734,7 +13738,8 @@ module ActiveRecord
       end
     end
 
-    class LockingType < 
+    # Note: It inherits unnamed class, but omitted
+    class LockingType
       # In de/serialize we change `nil` to 0, so that we can allow passing
       # `nil` values to `lock_version`, and not result in `ActiveRecord::StaleObjectError`
       # during update record.
@@ -21258,7 +21263,8 @@ end
 
 module ActiveRecord
   module Type
-    class Serialized < 
+    # Note: It inherits unnamed class, but omitted
+    class Serialized
       include ActiveModel::Type::Helpers::Mutable
 
       attr_reader subtype: untyped
@@ -21302,7 +21308,8 @@ module ActiveRecord
     class Time < ActiveModel::Type::Time
       include Internal::Timezone
 
-      class Value < 
+      # Note: It inherits unnamed class, but omitted
+      class Value
       end
 
       def serialize: (untyped value) -> untyped
@@ -21714,7 +21721,8 @@ end
 module Arel
   # :nodoc: all
   module Attributes
-    class Attribute < 
+    # Note: It inherits unnamed class, but omitted
+    class Attribute
       include Arel::Expressions
 
       include Arel::Predications
@@ -23151,7 +23159,8 @@ module Arel
         def initialize: (untyped name, untyped id, ?untyped fields) -> untyped
       end
 
-      class Edge < 
+      # Note: It inherits unnamed class, but omitted
+      class Edge
       end
 
       def initialize: () -> untyped
