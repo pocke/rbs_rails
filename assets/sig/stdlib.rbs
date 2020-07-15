@@ -6,3 +6,6 @@ end
 
 module TSort
 end
+
+class SimpleDelegator
+end
