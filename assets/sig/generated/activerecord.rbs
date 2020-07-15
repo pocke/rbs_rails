@@ -7334,7 +7334,7 @@ module ActiveRecord
 
       def version_string: (untyped full_version_string) -> untyped
 
-      class MysqlString < Type::String
+      class MysqlString < ActiveModel::Type::String
         # :nodoc:
         def serialize: (untyped value) -> untyped
 
