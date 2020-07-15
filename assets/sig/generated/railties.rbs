@@ -2257,7 +2257,8 @@ module Rails
 
       def skip_action_text?: () -> untyped
 
-      class GemfileEntry < 
+      # Note: It inherits unnamed class, but omitted
+      class GemfileEntry
         def initialize: (untyped name, untyped version, untyped comment, ?::Hash[untyped, untyped] options, ?bool commented_out) -> untyped
 
         def self.github: (untyped name, untyped github, ?untyped? branch, ?untyped? comment) -> untyped
@@ -4457,7 +4458,8 @@ module Rails
   # start with the tag optionally followed by a colon. Everything up to the end
   # of the line (or closing ERB comment tag) is considered to be their text.
   class SourceAnnotationExtractor
-    class Annotation < 
+    # Note: It inherits unnamed class, but omitted
+    class Annotation
       def self.directories: () -> untyped
 
       # Registers additional directories to be included
