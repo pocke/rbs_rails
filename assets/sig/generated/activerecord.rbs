@@ -11282,7 +11282,7 @@ module ActiveRecord
 
       def configure_connection: () -> untyped
 
-      class SQLite3Integer < Type::Integer
+      class SQLite3Integer < ActiveModel::Type::Integer
         def _limit: () -> untyped
       end
     end
@@ -14178,7 +14178,9 @@ module ActiveRecord
       # :nodoc: all
       def self.find: (untyped version) -> untyped
 
-      V6_0: untyped
+      # workaround: V6_0 and Current are the same object, but RBS doesn't have a syntax for class alias?
+      class V6_0 < Current
+      end
 
       class V5_2 < V6_0
         module TableDefinition
