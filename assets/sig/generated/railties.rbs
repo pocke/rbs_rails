@@ -710,6 +710,8 @@ end
 
 module Rails
   module Command
+    extend ::Rails::Command::Behavior::ClassMethods
+
     module Actions
       # Change to the application's path if there is no <tt>config.ru</tt> file in current directory.
       # This allows us to run <tt>rails server</tt> from other directories, but still get
@@ -895,6 +897,8 @@ end
 
 module Rails
   module Generators
+    extend ::Rails::Command::Behavior::ClassMethods
+
     class AppGenerator
       # :nodoc:
       # We want to exit on failure to be kind to other libraries
@@ -3556,6 +3560,8 @@ module Rails
     class TestCase < ActiveSupport::TestCase
       include Rails::Generators::Testing::Behaviour
 
+      extend ::Rails::Generators::Testing::Behaviour::ClassMethods
+
       include Rails::Generators::Testing::SetupAndTeardown
 
       include Rails::Generators::Testing::Assertions
@@ -4634,6 +4640,8 @@ class Object
   include ActiveRecord::TestDatabases
 
   include ActiveRecord::TestFixtures
+
+  extend ::ActiveRecord::TestFixtures::ClassMethods
 
   def before_setup: () -> untyped
 end

@@ -3994,6 +3994,18 @@ end
 
 module ActiveRecord
   module AttributeMethods
+    extend ::ActiveRecord::AttributeMethods::Serialization::ClassMethods
+
+    extend ::ActiveRecord::AttributeMethods::TimeZoneConversion::ClassMethods
+
+    extend ::ActiveRecord::AttributeMethods::PrimaryKey::ClassMethods
+
+    extend ::ActiveRecord::AttributeMethods::Write::ClassMethods
+
+    extend ::ActiveRecord::AttributeMethods::Read::ClassMethods
+
+    extend ::ActiveModel::AttributeMethods::ClassMethods
+
     # = Active Record Attribute Methods Before Type Cast
     #
     # ActiveRecord::AttributeMethods::BeforeTypeCast provides a way to
@@ -5429,67 +5441,121 @@ module ActiveRecord
 
     include Core
 
+    extend ::ActiveRecord::Core::ClassMethods
+
     include Persistence
+
+    extend ::ActiveRecord::Persistence::ClassMethods
 
     include ReadonlyAttributes
 
+    extend ::ActiveRecord::ReadonlyAttributes::ClassMethods
+
     include ModelSchema
+
+    extend ::ActiveRecord::ModelSchema::ClassMethods
 
     include Inheritance
 
+    extend ::ActiveRecord::Inheritance::ClassMethods
+
     include Scoping
 
+    extend ::ActiveRecord::Scoping::ClassMethods
+
     include Sanitization
+
+    extend ::ActiveRecord::Sanitization::ClassMethods
 
     include AttributeAssignment
 
     include ActiveModel::Conversion
 
+    extend ::ActiveModel::Conversion::ClassMethods
+
     include Integration
+
+    extend ::ActiveRecord::Integration::ClassMethods
 
     include Validations
 
+    extend ::ActiveRecord::Validations::ClassMethods
+
     include CounterCache
+
+    extend ::ActiveRecord::CounterCache::ClassMethods
 
     include Attributes
 
+    extend ::ActiveRecord::Attributes::ClassMethods
+
     include AttributeDecorators
 
+    extend ::ActiveRecord::AttributeDecorators::ClassMethods
+
     include Locking::Optimistic
+
+    extend ::ActiveRecord::Locking::Optimistic::ClassMethods
 
     include Locking::Pessimistic
 
     include DefineCallbacks
 
+    extend ::ActiveRecord::DefineCallbacks::ClassMethods
+
     include AttributeMethods
+
+    extend ::ActiveRecord::AttributeMethods::ClassMethods
 
     include Callbacks
 
     include Timestamp
 
+    extend ::ActiveRecord::Timestamp::ClassMethods
+
     include Associations
+
+    extend ::ActiveRecord::Associations::ClassMethods
 
     include ActiveModel::SecurePassword
 
+    extend ::ActiveModel::SecurePassword::ClassMethods
+
     include AutosaveAssociation
+
+    extend ::ActiveRecord::AutosaveAssociation::ClassMethods
 
     include NestedAttributes
 
+    extend ::ActiveRecord::NestedAttributes::ClassMethods
+
     include Transactions
+
+    extend ::ActiveRecord::Transactions::ClassMethods
 
     include TouchLater
 
     include NoTouching
 
+    extend ::ActiveRecord::NoTouching::ClassMethods
+
     include Reflection
+
+    extend ::ActiveRecord::Reflection::ClassMethods
 
     include Serialization
 
     include Store
 
+    extend ::ActiveRecord::Store::ClassMethods
+
     include SecureToken
 
+    extend ::ActiveRecord::SecureToken::ClassMethods
+
     include Suppressor
+
+    extend ::ActiveRecord::Suppressor::ClassMethods
   end
 end
 
@@ -5858,6 +5924,8 @@ module ActiveRecord
       ADAPTER_NAME: ::String
 
       include ActiveSupport::Callbacks
+
+      extend ::ActiveSupport::Callbacks::ClassMethods
 
       include Quoting
 
@@ -7654,6 +7722,8 @@ module ActiveRecord
     class TableDefinition
       include ColumnMethods
 
+      extend ::ActiveRecord::ConnectionAdapters::ColumnMethods::ClassMethods
+
       attr_reader name: untyped
 
       attr_reader temporary: untyped
@@ -7848,6 +7918,8 @@ module ActiveRecord
     #
     class Table
       include ColumnMethods
+
+      extend ::ActiveRecord::ConnectionAdapters::ColumnMethods::ClassMethods
 
       attr_reader name: untyped
 
@@ -12119,6 +12191,8 @@ module ActiveRecord
     end
 
     include ActiveModel::Validations::Callbacks
+
+    extend ::ActiveModel::Validations::Callbacks::ClassMethods
   end
 end
 
@@ -14293,6 +14367,8 @@ module ActiveRecord
     # nodoc:
     include ActiveSupport::ActionableError
 
+    extend ::ActiveSupport::ActionableError::ClassMethods
+
     def initialize: (?untyped? message) -> untyped
   end
 
@@ -16409,6 +16485,8 @@ end
 module ActiveRecord
   class Railtie < Rails::Railtie
     include ActiveRecord::Railties::ControllerRuntime
+
+    extend ::ActiveRecord::Railties::ControllerRuntime::ClassMethods
   end
 end
 
@@ -16468,6 +16546,10 @@ module ActiveRecord
   end
 
   module Scoping
+    extend ::ActiveRecord::Scoping::Named::ClassMethods
+
+    extend ::ActiveRecord::Scoping::Default::ClassMethods
+
     extend ActiveSupport::Autoload
   end
 
@@ -17775,6 +17857,8 @@ end
 
 module ActiveRecord
   class Relation
+    extend ::ActiveRecord::Delegation::ClassMethods
+
     class FromClause
       # :nodoc:
       attr_reader value: untyped
@@ -21350,6 +21434,8 @@ end
 
 module ActiveRecord
   module Validations
+    extend ::ActiveModel::Validations::ClassMethods
+
     class AbsenceValidator < ActiveModel::Validations::AbsenceValidator
       # :nodoc:
       def validate_each: (untyped record, untyped attribute, untyped association_or_value) -> untyped
@@ -23777,6 +23863,8 @@ module ActiveRecord
 
       include Rails::Generators::Migration
 
+      extend ::Rails::Generators::Migration::ClassMethods
+
       module ClassMethods
         # Implement the required interface for Rails::Generators::Migration.
         def next_migration_number: (untyped dirname) -> untyped
@@ -23817,6 +23905,8 @@ module ActiveRecord
       # :nodoc:
       # :nodoc:
       include ActiveRecord::Generators::Migration
+
+      extend ::ActiveRecord::Generators::Migration::ClassMethods
 
       # Set the current directory as base for the inherited generators.
       def self.base_root: () -> untyped
