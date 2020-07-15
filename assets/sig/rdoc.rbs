@@ -1,0 +1,9 @@
+module RDoc
+  module Generator
+    class SDoc
+    end
+  end
+
+  class Task
+  end
+end
