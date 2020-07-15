@@ -10133,7 +10133,7 @@ module ActiveRecord
   module ConnectionAdapters
     module PostgreSQL
       module OID
-        class Array[unchecked out Elem] < Type::Value
+        class Array[unchecked out Elem] < ActiveModel::Type::Value
           # :nodoc:
           # :nodoc:
           include ActiveModel::Type::Helpers::Mutable
@@ -10173,7 +10173,7 @@ module ActiveRecord
   module ConnectionAdapters
     module PostgreSQL
       module OID
-        class Bit < Type::Value
+        class Bit < ActiveModel::Type::Value
           # :nodoc:
           # :nodoc:
           def `type`: () -> :bit
@@ -10217,7 +10217,7 @@ module ActiveRecord
   module ConnectionAdapters
     module PostgreSQL
       module OID
-        class Bytea < Type::Binary
+        class Bytea < ActiveModel::Type::Binary
           # :nodoc:
           # :nodoc:
           def deserialize: (untyped value) -> (nil | untyped)
@@ -10231,7 +10231,7 @@ module ActiveRecord
   module ConnectionAdapters
     module PostgreSQL
       module OID
-        class Cidr < Type::Value
+        class Cidr < ActiveModel::Type::Value
           # :nodoc:
           # :nodoc:
           def `type`: () -> :cidr
@@ -10279,7 +10279,7 @@ module ActiveRecord
   module ConnectionAdapters
     module PostgreSQL
       module OID
-        class Decimal < Type::Decimal
+        class Decimal < ActiveModel::Type::Decimal
           # :nodoc:
           # :nodoc:
           def infinity: (?::Hash[untyped, untyped] options) -> untyped
@@ -10293,7 +10293,7 @@ module ActiveRecord
   module ConnectionAdapters
     module PostgreSQL
       module OID
-        class Enum < Type::Value
+        class Enum < ActiveModel::Type::Value
           # :nodoc:
           # :nodoc:
           def `type`: () -> :enum
@@ -10309,7 +10309,7 @@ module ActiveRecord
   module ConnectionAdapters
     module PostgreSQL
       module OID
-        class Hstore < Type::Value
+        class Hstore < ActiveModel::Type::Value
           # :nodoc:
           # :nodoc:
           include ActiveModel::Type::Helpers::Mutable
@@ -10369,7 +10369,7 @@ module ActiveRecord
   module ConnectionAdapters
     module PostgreSQL
       module OID
-        class LegacyPoint < Type::Value
+        class LegacyPoint < ActiveModel::Type::Value
           # :nodoc:
           # :nodoc:
           include ActiveModel::Type::Helpers::Mutable
@@ -10391,7 +10391,7 @@ module ActiveRecord
   module ConnectionAdapters
     module PostgreSQL
       module OID
-        class Money < Type::Decimal
+        class Money < ActiveModel::Type::Decimal
           # :nodoc:
           # :nodoc:
           def `type`: () -> :money
@@ -10425,7 +10425,7 @@ module ActiveRecord
   module ConnectionAdapters
     module PostgreSQL
       module OID
-        class Point < Type::Value
+        class Point < ActiveModel::Type::Value
           # :nodoc:
           # :nodoc:
           include ActiveModel::Type::Helpers::Mutable
@@ -10451,7 +10451,7 @@ module ActiveRecord
   module ConnectionAdapters
     module PostgreSQL
       module OID
-        class Range[Elem] < Type::Value
+        class Range[Elem] < ActiveModel::Type::Value
           # :nodoc:
           # :nodoc:
           attr_reader subtype: untyped
@@ -10502,7 +10502,7 @@ module ActiveRecord
   module ConnectionAdapters
     module PostgreSQL
       module OID
-        class SpecializedString < Type::String
+        class SpecializedString < ActiveModel::Type::String
           # :nodoc:
           # :nodoc:
           attr_reader type: untyped
@@ -10561,7 +10561,7 @@ module ActiveRecord
   module ConnectionAdapters
     module PostgreSQL
       module OID
-        class Uuid < Type::Value
+        class Uuid < ActiveModel::Type::Value
           # :nodoc:
           # :nodoc:
           ACCEPTABLE_UUID: untyped
@@ -10579,7 +10579,7 @@ module ActiveRecord
   module ConnectionAdapters
     module PostgreSQL
       module OID
-        class Vector < Type::Value
+        class Vector < ActiveModel::Type::Value
           # :nodoc:
           # :nodoc:
           attr_reader delim: untyped
@@ -10607,7 +10607,7 @@ module ActiveRecord
   module ConnectionAdapters
     module PostgreSQL
       module OID
-        class Xml < Type::String
+        class Xml < ActiveModel::Type::String
           # :nodoc:
           # :nodoc:
           def `type`: () -> :xml
@@ -12260,7 +12260,7 @@ module ActiveRecord
 
     def inherited: (untyped base) -> untyped
 
-    class EnumType < Type::Value
+    class EnumType < ActiveModel::Type::Value
       def initialize: (untyped name, untyped mapping, untyped subtype) -> untyped
 
       def cast: (untyped value) -> (nil | untyped)
