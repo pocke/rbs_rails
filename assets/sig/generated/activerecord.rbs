@@ -22188,7 +22188,7 @@ module Arel
   # :nodoc: all
   module Nodes
     class Equality < Arel::Nodes::Binary
-      def operator: () -> :==
+      def operator: () -> Symbol
     end
   end
 end
