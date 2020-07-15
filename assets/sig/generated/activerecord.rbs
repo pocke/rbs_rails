@@ -14923,7 +14923,10 @@ module ActiveRecord
 
   # MigrationProxy is used to defer loading of the actual migration classes
   # until they are needed
-  MigrationProxy: untyped
+  #
+  # NOTE: It is class inherits a Struct
+  class MigrationProxy
+  end
 
   class NullMigration < MigrationProxy
     # nodoc:
