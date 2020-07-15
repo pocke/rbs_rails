@@ -9,3 +9,6 @@ end
 
 class SimpleDelegator
 end
+
+module FileUtils
+end
