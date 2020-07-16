@@ -71,6 +71,24 @@ task generate_rbs_for_path_helpers: :environment do
 end
 ```
 
+### Steep integration
+
+You need to specify the following libraries by `Steepfile`.
+
+```ruby
+# Steepfile
+
+target :app do
+  signature 'sig'
+
+  check 'app'
+
+  library 'pathname'
+  library 'logger'
+  library 'mutex_m'
+end
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
