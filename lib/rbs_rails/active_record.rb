@@ -240,17 +240,18 @@ module RbsRails
         klass.columns.map do |col|
           class_name = sql_type_to_class(col.type)
           class_name_opt = optional(class_name)
+          column_type = col.null ? class_name_opt : class_name
           sig = <<~EOS
-          attr_accessor #{col.name} (): #{class_name}
-          def #{col.name}_changed?: () -> bool
-          def #{col.name}_change: () -> [#{class_name_opt}, #{class_name_opt}]
-          def #{col.name}_will_change!: () -> void
-          def #{col.name}_was: () -> #{class_name_opt}
-          def #{col.name}_previously_changed?: () -> bool
-          def #{col.name}_previous_change: () -> Array[#{class_name_opt}]?
-          def #{col.name}_previously_was: () -> #{class_name_opt}
-          def restore_#{col.name}!: () -> void
-          def clear_#{col.name}_change: () -> void
+            attr_accessor #{col.name} (): #{column_type}
+            def #{col.name}_changed?: () -> bool
+            def #{col.name}_change: () -> [#{class_name_opt}, #{class_name_opt}]
+            def #{col.name}_will_change!: () -> void
+            def #{col.name}_was: () -> #{class_name_opt}
+            def #{col.name}_previously_changed?: () -> bool
+            def #{col.name}_previous_change: () -> Array[#{class_name_opt}]?
+            def #{col.name}_previously_was: () -> #{class_name_opt}
+            def restore_#{col.name}!: () -> void
+            def clear_#{col.name}_change: () -> void
           EOS
           sig << "attr_accessor #{col.name}? (): #{class_name}\n" if col.type == :boolean
           sig
