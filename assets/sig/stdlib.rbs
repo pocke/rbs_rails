@@ -9,3 +9,8 @@ end
 
 class SimpleDelegator
 end
+
+module Gem
+  class Version
+  end
+end
