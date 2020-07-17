@@ -1911,9 +1911,20 @@ module ActiveRecord
 
         def column_alias: (untyped node, untyped column) -> untyped
 
-        Table: untyped
+        class Table < ::Struct[untyped]
+          attr_accessor node(): untyped
 
-        Column: untyped
+          attr_accessor columns(): untyped
+
+          # :nodoc:
+          def column_aliases: () -> untyped
+        end
+
+        class Column < ::Struct[untyped]
+          attr_accessor name(): untyped
+
+          attr_accessor alias(): untyped
+        end
       end
 
       def self.make_tree: (untyped associations) -> untyped
@@ -7644,17 +7655,65 @@ module ActiveRecord
       def concise_options: (untyped options) -> untyped
     end
 
-    # This class inherits Struct.new
-    class ColumnDefinition
+    class ColumnDefinition < ::Struct[untyped]
+      attr_accessor name(): untyped
+
+      attr_accessor type(): untyped
+
+      attr_accessor options(): untyped
+
+      attr_accessor sql_type(): untyped
+
+      # Abstract representation of a column definition. Instances of this type
+      # are typically created by methods in TableDefinition, and added to the
+      # +columns+ attribute of said TableDefinition object, in order to be used
+      # for generating a number of table creation or table changing SQL statements.
+      # :nodoc:
+      def primary_key?: () -> untyped
     end
 
-    AddColumnDefinition: untyped
+    class AddColumnDefinition < ::Struct[untyped]
+      attr_accessor column(): untyped
+    end
 
-    ChangeColumnDefinition: untyped
+    class ChangeColumnDefinition < ::Struct[untyped]
+      attr_accessor column(): untyped
 
-    PrimaryKeyDefinition: untyped
+      attr_accessor name(): untyped
+    end
 
-    ForeignKeyDefinition: untyped
+    class PrimaryKeyDefinition < ::Struct[untyped]
+      attr_accessor name(): untyped
+    end
+
+    class ForeignKeyDefinition < ::Struct[untyped]
+      attr_accessor from_table(): untyped
+
+      attr_accessor to_table(): untyped
+
+      attr_accessor options(): untyped
+
+      # nodoc:
+      def name: () -> untyped
+
+      def column: () -> untyped
+
+      def primary_key: () -> untyped
+
+      def on_delete: () -> untyped
+
+      def on_update: () -> untyped
+
+      def custom_primary_key?: () -> untyped
+
+      def validate?: () -> untyped
+
+      def export_name_on_schema_dump?: () -> untyped
+
+      def defined_for?: (?to_table: untyped? to_table, **untyped options) -> untyped
+
+      def default_primary_key: () -> "id"
+    end
 
     class ReferenceDefinition
       # :nodoc:
@@ -10140,7 +10199,11 @@ module ActiveRecord
           # :nodoc:
           include ActiveModel::Type::Helpers::Mutable
 
-          Data: untyped
+          class Data < ::Struct[untyped]
+            attr_accessor encoder(): untyped
+
+            attr_accessor values(): untyped
+          end
 
           attr_reader subtype: untyped
 
@@ -10422,8 +10485,10 @@ module ActiveRecord
 end
 
 module ActiveRecord
-  # Struct.new
-  class Point
+  class Point < ::Struct[untyped]
+    attr_accessor x(): untyped
+
+    attr_accessor y(): untyped
   end
 
   module ConnectionAdapters
@@ -14828,7 +14893,14 @@ module ActiveRecord
 
     def reverting?: () -> untyped
 
-    ReversibleBlockHelper: untyped
+    class ReversibleBlockHelper < ::Struct[untyped]
+      attr_accessor reverting(): untyped
+
+      # nodoc:
+      def up: () { () -> untyped } -> untyped
+
+      def down: () { () -> untyped } -> untyped
+    end
 
     # Used to specify an operation that can be run in one direction or another.
     # Call the methods +up+ and +down+ of the yielded object to run a block
@@ -14922,14 +14994,29 @@ module ActiveRecord
 
     def execute_block: () { () -> untyped } -> untyped
 
-    def command_recorder: () -> untyped
+    def command_recorder: () -> CommandRecorder
   end
 
   # MigrationProxy is used to defer loading of the actual migration classes
   # until they are needed
-  #
-  # NOTE: It is class inherits a Struct
-  class MigrationProxy
+  class MigrationProxy < ::Struct[untyped]
+    attr_accessor name(): untyped
+
+    attr_accessor version(): untyped
+
+    attr_accessor filename(): untyped
+
+    attr_accessor scope(): untyped
+
+    def initialize: (untyped name, untyped version, untyped filename, untyped scope) -> untyped
+
+    def basename: () -> untyped
+
+    def mtime: () -> untyped
+
+    def migration: () -> untyped
+
+    def load_migration: () -> untyped
   end
 
   class NullMigration < MigrationProxy
@@ -16682,8 +16769,10 @@ module ActiveRecord
       # <tt>has_many :clients</tt> returns <tt>'Client'</tt>
       def class_name: () -> untyped
 
-      # Struct.new
-      class JoinKeys
+      class JoinKeys < ::Struct[untyped]
+        attr_accessor key(): untyped
+
+        attr_accessor foreign_key(): untyped
       end
 
       def join_keys: () -> untyped
@@ -18037,7 +18126,13 @@ module ActiveRecord
   class PredicateBuilder
     class RangeHandler
       # :nodoc:
-      RangeWithBinds: untyped
+      class RangeWithBinds < ::Struct[untyped]
+        attr_accessor begin(): untyped
+
+        attr_accessor end(): untyped
+
+        attr_accessor exclude_end?(): untyped
+      end
 
       def initialize: (untyped predicate_builder) -> untyped
 
@@ -23371,8 +23466,8 @@ module Arel
   # :nodoc: all
   module Visitors
     class MSSQL < Arel::Visitors::ToSql
-      # Struct.new
-      class RowNumber
+      class RowNumber < ::Struct[untyped]
+        attr_accessor children(): untyped
       end
 
       def initialize: () -> untyped
