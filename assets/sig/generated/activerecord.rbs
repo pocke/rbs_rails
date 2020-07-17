@@ -7108,7 +7108,7 @@ module ActiveRecord
 
       def initialize: (untyped connection, untyped logger, untyped connection_options, untyped config) -> untyped
 
-      def get_database_version: () -> Version
+      def get_database_version: () -> AbstractAdapter::Version
 
       def mariadb?: () -> untyped
 
@@ -11246,7 +11246,7 @@ module ActiveRecord
 
       def build_insert_sql: (untyped insert) -> untyped
 
-      def get_database_version: () -> SQLite3Adapter::Version
+      def get_database_version: () -> AbstractAdapter::Version
 
       def check_version: () -> untyped
 
@@ -22688,7 +22688,7 @@ module Arel
   # :nodoc: all
   module Nodes
     class TableAlias < Arel::Nodes::Binary
-      def []: (untyped name) -> Attribute
+      def []: (untyped name) -> ::Arel::Attributes::Attribute
 
       def table_name: () -> untyped
 
