@@ -241,7 +241,7 @@ class DummyERB < ERB
   # values so we can evaluate the database.yml without evaluating
   # the ERB values.
   # :nodoc:
-  def make_compiler: (untyped trim_mode) -> untyped
+  def make_compiler: (untyped trim_mode) -> DummyCompiler
 end
 
 class DummyCompiler < ERB::Compiler
@@ -521,7 +521,7 @@ module Rails
     # Or to decrypt with a file, that should be version control ignored, relative to +Rails.root+:
     #
     #   Rails.application.encrypted("config/special_tokens.yml.enc", key_path: "config/special_tokens.key")
-    def encrypted: (untyped path, ?key_path: ::String key_path, ?env_key: ::String env_key) -> untyped
+    def encrypted: (untyped path, ?key_path: ::String key_path, ?env_key: ::String env_key) -> ActiveSupport::EncryptedConfiguration
 
     def to_app: () -> untyped
 
@@ -981,11 +981,11 @@ module Rails
 
       def key_path: () -> untyped
 
-      def encryption_key_file_generator: () -> untyped
+      def encryption_key_file_generator: () -> Rails::Generators::EncryptionKeyFileGenerator
 
-      def encrypted_file_generator: () -> untyped
+      def encrypted_file_generator: () -> Rails::Generators::EncryptedFileGenerator
 
-      def credentials_generator: () -> untyped
+      def credentials_generator: () -> Rails::Generators::CredentialsGenerator
     end
   end
 end
@@ -1069,9 +1069,9 @@ module Rails
 
       def change_encrypted_file_in_system_editor: (untyped file_path, untyped key_path) -> untyped
 
-      def encryption_key_file_generator: () -> untyped
+      def encryption_key_file_generator: () -> Rails::Generators::EncryptionKeyFileGenerator
 
-      def encrypted_file_generator: () -> untyped
+      def encrypted_file_generator: () -> Rails::Generators::EncryptedFileGenerator
 
       def missing_encrypted_message: (key: untyped key, key_path: untyped key_path, file_path: untyped file_path) -> untyped
     end
@@ -1181,7 +1181,7 @@ module Rails
     class RoutesCommand < Base
       def perform: () -> untyped
 
-      def inspector: () -> untyped
+      def inspector: () -> ActionDispatch::Routing::RoutesInspector
 
       def formatter: () -> untyped
 
@@ -1229,7 +1229,7 @@ module Rails
 
     def initialize: (?untyped? options) -> untyped
 
-    def opt_parser: () -> untyped
+    def opt_parser: () -> Options
 
     def set_environment: () -> untyped
 
@@ -1237,7 +1237,7 @@ module Rails
 
     def serveable?: () -> untyped
 
-    def middleware: () -> untyped
+    def middleware: () -> Hash
 
     def default_options: () -> untyped
 
@@ -1365,7 +1365,7 @@ module Rails
 
       def merge_into: (untyped other) -> untyped
 
-      def +: (untyped other) -> untyped
+      def +: (untyped other) -> MiddlewareStackProxy
 
       attr_reader operations: untyped
 
@@ -1927,9 +1927,9 @@ module Rails
 
     def has_migrations?: () -> untyped
 
-    def self.find_root_with_flag: (untyped flag, untyped root_path, ?untyped? default) -> untyped
+    def self.find_root_with_flag: (untyped flag, untyped root_path, ?untyped? default) -> Pathname
 
-    def default_middleware_stack: () -> untyped
+    def default_middleware_stack: () -> ActionDispatch::MiddlewareStack
 
     def _all_autoload_once_paths: () -> untyped
 
@@ -1955,7 +1955,7 @@ end
 
 module Rails
   # Returns the version of the currently loaded Rails as a <tt>Gem::Version</tt>
-  def self.gem_version: () -> untyped
+  def self.gem_version: () -> Gem::Version
 
   module VERSION
     MAJOR: ::Integer
@@ -2245,7 +2245,7 @@ module Rails
 
       def database_gemfile_entry: () -> (::Array[untyped] | untyped)
 
-      def web_server_gemfile_entry: () -> (::Array[untyped] | untyped)
+      def web_server_gemfile_entry: () -> (::Array[untyped] | GemfileEntry)
 
       def include_all_railties?: () -> untyped
 
@@ -2282,11 +2282,11 @@ module Rails
 
       def webpacker_gemfile_entry: () -> (::Array[untyped] | untyped)
 
-      def jbuilder_gemfile_entry: () -> untyped
+      def jbuilder_gemfile_entry: () -> GemfileEntry
 
       def javascript_gemfile_entry: () -> untyped
 
-      def psych_gemfile_entry: () -> (::Array[untyped] | untyped)
+      def psych_gemfile_entry: () -> (::Array[untyped] | GemfileEntry)
 
       def cable_gemfile_entry: () -> (::Array[untyped] | untyped)
 
@@ -3100,7 +3100,7 @@ module Rails
 
       def add_credentials_file_silently: (?untyped? template) -> untyped
 
-      def credentials: () -> untyped
+      def credentials: () -> ActiveSupport::EncryptedConfiguration
 
       def credentials_template: () -> ::String
     end
@@ -3207,7 +3207,7 @@ module Rails
 
       def ignore_master_key_file_silently: () -> untyped
 
-      def key_file_generator: () -> untyped
+      def key_file_generator: () -> EncryptionKeyFileGenerator
 
       def key_ignore: () -> untyped
     end
@@ -3906,7 +3906,7 @@ module Rails
 
       def run: (*untyped args) -> untyped
 
-      def bind: (untyped context) -> untyped
+      def bind: (untyped context) -> (untyped | Initializer)
 
       def context_class: () -> untyped
     end
@@ -3916,7 +3916,7 @@ module Rails
 
       def tsort_each_child: (untyped initializer) { () -> untyped } -> untyped
 
-      def +: (untyped other) -> untyped
+      def +: (untyped other) -> Collection
     end
 
     def run_initializers: (?::Symbol group, *untyped args) -> (nil | untyped)
@@ -3928,7 +3928,7 @@ module Rails
 
       def initializers_chain: () -> untyped
 
-      def initializers_for: (untyped binding) -> untyped
+      def initializers_for: (untyped binding) -> Collection
 
       def initializer: (untyped name, ?::Hash[untyped, untyped] opts) { () -> untyped } -> untyped
     end
