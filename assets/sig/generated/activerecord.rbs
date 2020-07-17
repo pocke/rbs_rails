@@ -7644,7 +7644,9 @@ module ActiveRecord
       def concise_options: (untyped options) -> untyped
     end
 
-    ColumnDefinition: untyped
+    # This class inherits Struct.new
+    class ColumnDefinition
+    end
 
     AddColumnDefinition: untyped
 
@@ -10420,7 +10422,9 @@ module ActiveRecord
 end
 
 module ActiveRecord
-  Point: untyped
+  # Struct.new
+  class Point
+  end
 
   module ConnectionAdapters
     module PostgreSQL
@@ -16678,7 +16682,9 @@ module ActiveRecord
       # <tt>has_many :clients</tt> returns <tt>'Client'</tt>
       def class_name: () -> untyped
 
-      JoinKeys: untyped
+      # Struct.new
+      class JoinKeys
+      end
 
       def join_keys: () -> untyped
 
@@ -23365,7 +23371,9 @@ module Arel
   # :nodoc: all
   module Visitors
     class MSSQL < Arel::Visitors::ToSql
-      RowNumber: untyped
+      # Struct.new
+      class RowNumber
+      end
 
       def initialize: () -> untyped
 
