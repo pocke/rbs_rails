@@ -1248,7 +1248,13 @@ module ActiveSupport
     end
 
     module Filters
-      Environment: untyped
+      class Environment < ::Struct[untyped]
+        attr_accessor target(): untyped
+
+        attr_accessor halted(): untyped
+
+        attr_accessor value(): untyped
+      end
 
       class Before
         def self.build: (untyped callback_sequence, untyped user_callback, untyped user_conditions, untyped chain_config, untyped filter) -> untyped
@@ -7269,9 +7275,19 @@ module ActiveSupport
 
     def self.to_complete: (*untyped args) { () -> untyped } -> untyped
 
-    RunHook: untyped
+    class RunHook < ::Struct[untyped]
+      attr_accessor hook(): untyped
 
-    CompleteHook: untyped
+      # :nodoc:
+      def before: (untyped target) -> untyped
+    end
+
+    class CompleteHook < ::Struct[untyped]
+      attr_accessor hook(): untyped
+
+      # :nodoc:
+      def before: (untyped target) -> untyped
+    end
 
     # Register an object to be invoked during both the +run+ and
     # +complete+ steps.
@@ -11159,7 +11175,13 @@ module ActiveSupport
   module Testing
     class SimpleStubs
       # :nodoc:
-      Stub: untyped
+      class Stub < ::Struct[untyped]
+        attr_accessor object(): untyped
+
+        attr_accessor method_name(): untyped
+
+        attr_accessor original_method(): untyped
+      end
 
       def initialize: () -> untyped
 
