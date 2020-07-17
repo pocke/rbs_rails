@@ -341,7 +341,11 @@ module ActiveModel
         # nodoc:
         attr_reader target: untyped
 
-        AttributeMethodMatch: untyped
+        class AttributeMethodMatch < ::Struct[untyped]
+          attr_accessor target(): untyped
+
+          attr_accessor attr_name(): untyped
+        end
 
         def initialize: (?::Hash[untyped, untyped] options) -> untyped
 
