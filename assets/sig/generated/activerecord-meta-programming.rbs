@@ -69,3 +69,30 @@ module Arel
     end
   end
 end
+
+# https://github.com/rails/rails/blob/fbe2433be6e052a1acac63c7faf287c52ed3c5ba/activerecord/lib/arel/nodes/equality.rb
+module Arel
+  module Nodes
+    class IsDistinctFrom < Equality
+    end
+
+    class IsNotDistinctFrom < Equality
+    end
+  end
+end
+
+# https://github.com/rails/rails/blob/fbe2433be6e052a1acac63c7faf287c52ed3c5ba/activerecord/lib/arel/nodes/function.rb
+module Arel
+  module Nodes
+    class Sum < Function
+    end
+    class Exists < Function
+    end
+    class Max < Function
+    end
+    class Min < Function
+    end
+    class Avg < Function
+    end
+  end
+end
