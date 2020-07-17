@@ -3179,7 +3179,7 @@ class Hash[unchecked out K, unchecked out V]
   # Returns an <tt>ActiveSupport::HashWithIndifferentAccess</tt> out of its receiver:
   #
   #   { a: 1 }.with_indifferent_access['a'] # => 1
-  def with_indifferent_access: () -> ActiveSupport::HashWithIndifferentAccess
+  def with_indifferent_access: () -> ActiveSupport::HashWithIndifferentAccess[K, V]
 end
 
 class Hash[unchecked out K, unchecked out V]
