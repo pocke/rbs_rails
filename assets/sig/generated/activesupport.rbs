@@ -1356,7 +1356,7 @@ module ActiveSupport
 
       def after: () { () -> untyped } -> untyped
 
-      def around: (untyped call_template, untyped user_conditions) -> untyped
+      def around: (untyped call_template, untyped user_conditions) -> CallbackSequence
 
       def skip?: (untyped arg) -> untyped
 
@@ -3179,7 +3179,7 @@ class Hash[unchecked out K, unchecked out V]
   # Returns an <tt>ActiveSupport::HashWithIndifferentAccess</tt> out of its receiver:
   #
   #   { a: 1 }.with_indifferent_access['a'] # => 1
-  def with_indifferent_access: () -> untyped
+  def with_indifferent_access: () -> ActiveSupport::HashWithIndifferentAccess[K, V]
 end
 
 class Hash[unchecked out K, unchecked out V]
@@ -5443,7 +5443,7 @@ class String
   #   env = 'production'.inquiry
   #   env.production?  # => true
   #   env.development? # => false
-  def inquiry: () -> untyped
+  def inquiry: () -> ActiveSupport::StringInquirer
 end
 
 class String
@@ -5643,7 +5643,7 @@ class String
   # string contains no malicious content. This method is equivalent to the
   # +raw+ helper in views. It is recommended that you use +sanitize+ instead of
   # this method. It should never be called on user input.
-  def html_safe: () -> untyped
+  def html_safe: () -> ActiveSupport::SafeBuffer
 end
 
 class String
@@ -5712,7 +5712,7 @@ class Time
   # If the time or offset components are missing then an +ArgumentError+ will be raised.
   #
   #   Time.rfc3339('1999-12-31') # => ArgumentError: invalid date
-  def self.rfc3339: (untyped str) -> untyped
+  def self.rfc3339: (untyped str) -> Time
 
   # Returns the number of seconds since 00:00:00.
   #
@@ -6946,9 +6946,9 @@ module ActiveSupport
 
       def initialize: (untyped value) -> untyped
 
-      def coerce: (untyped other) -> ::Array[untyped]
+      def coerce: (untyped other) -> ::Array[Scalar | untyped]
 
-      def -@: () -> untyped
+      def -@: () -> Scalar
 
       def <=>: (untyped other) -> untyped
 
@@ -7046,7 +7046,7 @@ module ActiveSupport
     # Numeric values are treated as seconds.
     def %: (untyped other) -> untyped
 
-    def -@: () -> untyped
+    def -@: () -> Duration
 
     def is_a?: (untyped klass) -> untyped
 
@@ -7392,7 +7392,7 @@ end
 
 module ActiveSupport
   # Returns the version of the currently loaded Active Support as a <tt>Gem::Version</tt>.
-  def self.gem_version: () -> untyped
+  def self.gem_version: () -> Gem::Version
 
   module VERSION
     MAJOR: ::Integer
@@ -8756,7 +8756,7 @@ module ActiveSupport
 
     def _decrypt: (untyped encrypted_message, untyped purpose) -> untyped
 
-    def new_cipher: () -> untyped
+    def new_cipher: () -> OpenSSL::Cipher
 
     attr_reader verifier: untyped
 
@@ -9301,7 +9301,7 @@ module ActiveSupport
 
           def finish: (untyped name, untyped id, untyped payload) -> untyped
 
-          def build_event: (untyped name, untyped id, untyped payload) -> untyped
+          def build_event: (untyped name, untyped id, untyped payload) -> ActiveSupport::Notifications::Event
         end
 
         class AllMessages
@@ -11650,7 +11650,7 @@ module ActiveSupport
     #   ActiveSupport::TimeZone.seconds_to_utc_offset(-21_600) # => "-06:00"
     def self.seconds_to_utc_offset: (untyped seconds, ?bool colon) -> untyped
 
-    def self.find_tzinfo: (untyped name) -> untyped
+    def self.find_tzinfo: (untyped name) -> TZInfo::Timezone
 
     # Returns a TimeZone instance with the given name, or +nil+ if no
     # such TimeZone instance exists. (This exists to support the use of
@@ -11722,7 +11722,7 @@ module ActiveSupport
     #
     #   Time.zone = 'Hawaii'                    # => "Hawaii"
     #   Time.zone.local(2007, 2, 1, 15, 30, 45) # => Thu, 01 Feb 2007 15:30:45 HST -10:00
-    def local: (*untyped args) -> untyped
+    def local: (*untyped args) -> ActiveSupport::TimeWithZone
 
     # Method for creating new ActiveSupport::TimeWithZone instance in time zone
     # of +self+ from number of seconds since the Unix epoch.
@@ -11784,7 +11784,7 @@ module ActiveSupport
     #
     #   Time.zone = 'Hawaii'            # => "Hawaii"
     #   Time.zone.rfc3339('1999-12-31') # => ArgumentError: invalid date
-    def rfc3339: (untyped str) -> untyped
+    def rfc3339: (untyped str) -> TimeWithZone
 
     # Parses +str+ according to +format+ and returns an ActiveSupport::TimeWithZone.
     #

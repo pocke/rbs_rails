@@ -499,15 +499,15 @@ end
 
 module ActiveModel
   class Attribute
-    def self.from_database: (untyped name, untyped value, untyped `type`) -> untyped
+    def self.from_database: (untyped name, untyped value, untyped `type`) -> FromDatabase
 
-    def self.from_user: (untyped name, untyped value, untyped `type`, ?untyped? original_attribute) -> untyped
+    def self.from_user: (untyped name, untyped value, untyped `type`, ?untyped? original_attribute) -> FromUser
 
-    def self.with_cast_value: (untyped name, untyped value, untyped `type`) -> untyped
+    def self.with_cast_value: (untyped name, untyped value, untyped `type`) -> WithCastValue
 
-    def self.null: (untyped name) -> untyped
+    def self.null: (untyped name) -> Null
 
-    def self.uninitialized: (untyped name, untyped `type`) -> untyped
+    def self.uninitialized: (untyped name, untyped `type`) -> Uninitialized
 
     attr_reader name: untyped
 
@@ -631,7 +631,7 @@ module ActiveModel
 
       def initialize: (untyped types, ?::Hash[untyped, untyped] default_attributes) -> untyped
 
-      def build_from_database: (?::Hash[untyped, untyped] values, ?::Hash[untyped, untyped] additional_types) -> untyped
+      def build_from_database: (?::Hash[untyped, untyped] values, ?::Hash[untyped, untyped] additional_types) -> AttributeSet
     end
   end
 
@@ -708,7 +708,7 @@ module ActiveModel
 
     def accessed: () -> untyped
 
-    def map: () { () -> untyped } -> untyped
+    def map: () { () -> untyped } -> AttributeSet
 
     def ==: (untyped other) -> untyped
 
@@ -1641,7 +1641,7 @@ end
 
 module ActiveModel
   # Returns the version of the currently loaded \Active \Model as a <tt>Gem::Version</tt>
-  def self.gem_version: () -> untyped
+  def self.gem_version: () -> Gem::Version
 
   module VERSION
     MAJOR: ::Integer
@@ -2364,7 +2364,7 @@ module ActiveModel
 
       def cast: (untyped value) -> untyped
 
-      def serialize: (untyped value) -> (nil | untyped)
+      def serialize: (untyped value) -> (nil | Data)
 
       def changed_in_place?: (untyped raw_old_value, untyped value) -> untyped
 

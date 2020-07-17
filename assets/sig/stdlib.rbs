@@ -9,3 +9,13 @@ end
 
 class SimpleDelegator
 end
+
+module Gem
+  class Version
+  end
+end
+
+module OpenSSL
+  class Cipher
+  end
+end

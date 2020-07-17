@@ -3981,7 +3981,7 @@ module ActiveRecord
     class TypeDecorator
       def initialize: (?::Hash[untyped, untyped] decorations) -> untyped
 
-      def merge: (*untyped args) -> untyped
+      def merge: (*untyped args) -> TypeDecorator
 
       def apply: (untyped name, untyped `type`) -> untyped
 
@@ -5975,7 +5975,7 @@ module ActiveRecord
 
       def migrations_paths: () -> untyped
 
-      def migration_context: () -> untyped
+      def migration_context: () -> MigrationContext
 
       def schema_migration: () -> untyped
 
@@ -6236,7 +6236,7 @@ module ActiveRecord
 
       def collector: () -> untyped
 
-      def arel_visitor: () -> untyped
+      def arel_visitor: () -> Arel::Visitors::ToSql
 
       def build_statement_pool: () -> nil
     end
@@ -7108,7 +7108,7 @@ module ActiveRecord
 
       def initialize: (untyped connection, untyped logger, untyped connection_options, untyped config) -> untyped
 
-      def get_database_version: () -> untyped
+      def get_database_version: () -> AbstractAdapter::Version
 
       def mariadb?: () -> untyped
 
@@ -7644,7 +7644,9 @@ module ActiveRecord
       def concise_options: (untyped options) -> untyped
     end
 
-    ColumnDefinition: untyped
+    # This class inherits Struct.new
+    class ColumnDefinition
+    end
 
     AddColumnDefinition: untyped
 
@@ -7848,7 +7850,7 @@ module ActiveRecord
 
       def new_column_definition: (untyped name, untyped `type`, **untyped options) -> untyped
 
-      def create_column_definition: (untyped name, untyped `type`, untyped options) -> untyped
+      def create_column_definition: (untyped name, untyped `type`, untyped options) -> ColumnDefinition
 
       def aliased_types: (untyped name, untyped fallback) -> untyped
 
@@ -8959,7 +8961,7 @@ module ActiveRecord
       #
       def remove_timestamps: (untyped table_name, **untyped options) -> untyped
 
-      def update_table_definition: (untyped table_name, untyped base) -> untyped
+      def update_table_definition: (untyped table_name, untyped base) -> Table
 
       def add_index_options: (untyped table_name, untyped column_name, ?comment: untyped? comment, **untyped options) -> ::Array[untyped]
 
@@ -9003,11 +9005,11 @@ module ActiveRecord
 
       def schema_creation: () -> untyped
 
-      def create_table_definition: (*untyped args, **untyped options) -> untyped
+      def create_table_definition: (*untyped args, **untyped options) -> TableDefinition
 
-      def create_alter_table: (untyped name) -> untyped
+      def create_alter_table: (untyped name) -> AlterTable
 
-      def fetch_type_metadata: (untyped sql_type) -> untyped
+      def fetch_type_metadata: (untyped sql_type) -> SqlTypeMetadata
 
       def index_column_names: (untyped column_names) -> untyped
 
@@ -9340,7 +9342,7 @@ module ActiveRecord
         #   spec.config
         #   # => { "host" => "localhost", "database" => "foo", "adapter" => "sqlite3" }
         #
-        def spec: (untyped config) -> untyped
+        def spec: (untyped config) -> ConnectionSpecification
 
         # Returns fully resolved connection, accepts hash, string or symbol.
         # Always returns a hash.
@@ -9695,13 +9697,13 @@ module ActiveRecord
 
         def default_row_format: () -> (nil | untyped)
 
-        def schema_creation: () -> untyped
+        def schema_creation: () -> MySQL::SchemaCreation
 
-        def create_table_definition: (*untyped args, **untyped options) -> untyped
+        def create_table_definition: (*untyped args, **untyped options) -> MySQL::TableDefinition
 
-        def new_column_from_field: (untyped table_name, untyped field) -> untyped
+        def new_column_from_field: (untyped table_name, untyped field) -> MySQL::Column
 
-        def fetch_type_metadata: (untyped sql_type, ?::String extra) -> untyped
+        def fetch_type_metadata: (untyped sql_type, ?::String extra) -> MySQL::TypeMetadata
 
         def extract_foreign_key_action: (untyped specifier) -> untyped
 
@@ -10014,9 +10016,9 @@ module ActiveRecord
 
       def extract_table_ref_from_insert_sql: (untyped sql) -> untyped
 
-      def arel_visitor: () -> untyped
+      def arel_visitor: () -> Arel::Visitors::PostgreSQL
 
-      def build_statement_pool: () -> untyped
+      def build_statement_pool: () -> StatementPool
 
       def can_perform_case_insensitive_comparison_for?: (untyped column) -> untyped
 
@@ -10420,7 +10422,9 @@ module ActiveRecord
 end
 
 module ActiveRecord
-  Point: untyped
+  # Struct.new
+  class Point
+  end
 
   module ConnectionAdapters
     module PostgreSQL
@@ -10440,7 +10444,7 @@ module ActiveRecord
 
           def number_for_point: (untyped number) -> untyped
 
-          def build_point: (untyped x, untyped y) -> untyped
+          def build_point: (untyped x, untyped y) -> ActiveRecord::Point
         end
       end
     end
@@ -10612,7 +10616,7 @@ module ActiveRecord
           # :nodoc:
           def `type`: () -> :xml
 
-          def serialize: (untyped value) -> (nil | untyped)
+          def serialize: (untyped value) -> (nil | Data)
 
           class Data
             # :nodoc:
@@ -10935,7 +10939,7 @@ module ActiveRecord
 
         def columns_for_distinct: (untyped columns, untyped orders) -> untyped
 
-        def update_table_definition: (untyped table_name, untyped base) -> untyped
+        def update_table_definition: (untyped table_name, untyped base) -> PostgreSQL::Table
 
         def create_schema_dumper: (untyped options) -> untyped
 
@@ -10963,15 +10967,15 @@ module ActiveRecord
         # The +options+ hash accepts the same keys as SchemaStatements#add_foreign_key.
         def validate_foreign_key: (untyped from_table, ?untyped? to_table, **untyped options) -> (nil | untyped)
 
-        def schema_creation: () -> untyped
+        def schema_creation: () -> PostgreSQL::SchemaCreation
 
-        def create_table_definition: (*untyped args, **untyped options) -> untyped
+        def create_table_definition: (*untyped args, **untyped options) -> PostgreSQL::TableDefinition
 
-        def create_alter_table: (untyped name) -> untyped
+        def create_alter_table: (untyped name) -> PostgreSQL::AlterTable
 
-        def new_column_from_field: (untyped table_name, untyped field) -> untyped
+        def new_column_from_field: (untyped table_name, untyped field) -> PostgreSQL::Column
 
-        def fetch_type_metadata: (untyped column_name, untyped sql_type, untyped oid, untyped fmod) -> untyped
+        def fetch_type_metadata: (untyped column_name, untyped sql_type, untyped oid, untyped fmod) -> PostgreSQL::TypeMetadata
 
         def sequence_name_from_parts: (untyped table_name, untyped column_name, untyped suffix) -> ::String
 
@@ -11064,7 +11068,7 @@ module ActiveRecord
         # * <tt>schema_name."table.name"</tt>
         # * <tt>"schema_name".table_name</tt>
         # * <tt>"schema.name"."table name"</tt>
-        def extract_schema_qualified_name: (untyped string) -> untyped
+        def extract_schema_qualified_name: (untyped string) -> PostgreSQL::Name
       end
     end
   end
@@ -11242,7 +11246,7 @@ module ActiveRecord
 
       def build_insert_sql: (untyped insert) -> untyped
 
-      def get_database_version: () -> untyped
+      def get_database_version: () -> AbstractAdapter::Version
 
       def check_version: () -> untyped
 
@@ -11274,9 +11278,9 @@ module ActiveRecord
 
       def table_structure_with_collation: (untyped table_name, untyped basic_structure) -> untyped
 
-      def arel_visitor: () -> untyped
+      def arel_visitor: () -> Arel::Visitors::SQLite
 
-      def build_statement_pool: () -> untyped
+      def build_statement_pool: () -> StatementPool
 
       def connect: () -> untyped
 
@@ -11425,11 +11429,11 @@ module ActiveRecord
 
         def create_schema_dumper: (untyped options) -> untyped
 
-        def schema_creation: () -> untyped
+        def schema_creation: () -> SQLite3::SchemaCreation
 
-        def create_table_definition: (*untyped args, **untyped options) -> untyped
+        def create_table_definition: (*untyped args, **untyped options) -> SQLite3::TableDefinition
 
-        def new_column_from_field: (untyped table_name, untyped field) -> untyped
+        def new_column_from_field: (untyped table_name, untyped field) -> Column
 
         def data_source_sql: (?untyped? name, ?type: untyped? `type`) -> untyped
 
@@ -11711,7 +11715,7 @@ module ActiveRecord
 
       def predicate_builder: () -> untyped
 
-      def type_caster: () -> untyped
+      def type_caster: () -> TypeCaster::Map
 
       def _internal?: () -> ::FalseClass
 
@@ -11719,7 +11723,7 @@ module ActiveRecord
 
       def relation: () -> untyped
 
-      def table_metadata: () -> untyped
+      def table_metadata: () -> TableMetadata
     end
 
     # New objects can be instantiated as either empty (pass no construction parameter) or pre-set with
@@ -12111,7 +12115,7 @@ module ActiveRecord
 
     def merge_db_environment_variables: (untyped current_env, untyped configs) -> untyped
 
-    def environment_url_config: (untyped env, untyped spec_name, untyped config) -> (nil | untyped)
+    def environment_url_config: (untyped env, untyped spec_name, untyped config) -> (nil | ActiveRecord::DatabaseConfigurations::UrlConfig)
 
     def environment_value_for: (untyped spec_name) -> untyped
 
@@ -13338,7 +13342,7 @@ end
 
 module ActiveRecord
   # Returns the version of the currently loaded Active Record as a <tt>Gem::Version</tt>
-  def self.gem_version: () -> untyped
+  def self.gem_version: () -> Gem::Version
 
   module VERSION
     MAJOR: ::Integer
@@ -14956,7 +14960,7 @@ module ActiveRecord
 
     def run: (untyped direction, untyped target_version) -> untyped
 
-    def open: () -> untyped
+    def open: () -> Migrator
 
     def get_all_versions: () -> untyped
 
@@ -16678,7 +16682,9 @@ module ActiveRecord
       # <tt>has_many :clients</tt> returns <tt>'Client'</tt>
       def class_name: () -> untyped
 
-      JoinKeys: untyped
+      # Struct.new
+      class JoinKeys
+      end
 
       def join_keys: () -> untyped
 
@@ -16726,7 +16732,7 @@ module ActiveRecord
 
       def chain: () -> untyped
 
-      def get_join_keys: (untyped association_klass) -> untyped
+      def get_join_keys: (untyped association_klass) -> JoinKeys
 
       def build_scope: (untyped table, ?untyped predicate_builder) -> untyped
 
@@ -16736,7 +16742,7 @@ module ActiveRecord
 
       def actual_source_reflection: () -> untyped
 
-      def predicate_builder: (untyped table) -> untyped
+      def predicate_builder: (untyped table) -> PredicateBuilder
 
       def primary_key: (untyped klass) -> untyped
     end
@@ -17327,7 +17333,7 @@ module ActiveRecord
     #
     # NOTE: By its nature, batch processing is subject to race conditions if
     # other processes are modifying the database.
-    def in_batches: (?error_on_ignore: untyped? error_on_ignore, ?load: bool load, ?finish: untyped? finish, ?start: untyped? start, ?of: ::Integer of) { (untyped) -> untyped } -> untyped
+    def in_batches: (?of: ::Integer of, ?start: untyped? start, ?finish: untyped? finish, ?load: bool load, ?error_on_ignore: untyped? error_on_ignore) { (untyped) -> untyped } -> (BatchEnumerator | untyped)
 
     def apply_limits: (untyped relation, untyped start, untyped finish) -> untyped
 
@@ -18065,7 +18071,7 @@ module ActiveRecord
 
     def build: (untyped attribute, untyped value) -> untyped
 
-    def build_bind_attribute: (untyped column_name, untyped value) -> untyped
+    def build_bind_attribute: (untyped column_name, untyped value) -> Arel::Nodes::BindParam
 
     def expand_from_hash: (untyped attributes) -> (::Array["1=0"] | untyped)
 
@@ -18094,7 +18100,7 @@ module ActiveRecord
 
       def value_for_database: () -> untyped
 
-      def with_cast_value: (untyped value) -> untyped
+      def with_cast_value: (untyped value) -> QueryAttribute
 
       def nil?: () -> untyped
 
@@ -18791,7 +18797,7 @@ module ActiveRecord
 
     def arel: (?untyped? aliases) -> untyped
 
-    def construct_join_dependency: (untyped associations, untyped join_type) -> untyped
+    def construct_join_dependency: (untyped associations, untyped join_type) -> ActiveRecord::Associations::JoinDependency
 
     def build_subquery: (untyped subquery_alias, untyped select_value) -> untyped
 
@@ -19325,7 +19331,7 @@ module ActiveRecord
 
     def skip_query_cache_if_necessary: () { () -> untyped } -> untyped
 
-    def build_preloader: () -> untyped
+    def build_preloader: () -> ActiveRecord::Associations::Preloader
 
     def references_eager_loaded_tables?: () -> untyped
 
@@ -19409,7 +19415,7 @@ module ActiveRecord
       # :nodoc:
       def initialize: (untyped klass, untyped predicate_builder) -> untyped
 
-      def build: (untyped opts, untyped other) -> untyped
+      def build: (untyped opts, untyped other) -> WhereClause
 
       attr_reader klass: untyped
 
@@ -19423,23 +19429,23 @@ module ActiveRecord
     class WhereClause
       def initialize: (untyped predicates) -> untyped
 
-      def +: (untyped other) -> untyped
+      def +: (untyped other) -> WhereClause
 
-      def -: (untyped other) -> untyped
+      def -: (untyped other) -> WhereClause
 
-      def merge: (untyped other) -> untyped
+      def merge: (untyped other) -> WhereClause
 
-      def except: (*untyped columns) -> untyped
+      def except: (*untyped columns) -> WhereClause
 
       def or: (untyped other) -> untyped
 
       def to_h: (?untyped? table_name) -> untyped
 
-      def ast: () -> untyped
+      def ast: () -> Arel::Nodes::And
 
       def ==: (untyped other) -> untyped
 
-      def invert: (?::Symbol as) -> untyped
+      def invert: (?::Symbol as) -> WhereClause
 
       def self.empty: () -> untyped
 
@@ -19463,7 +19469,7 @@ module ActiveRecord
 
       def non_empty_predicates: () -> untyped
 
-      def wrap_sql_literal: (untyped node) -> untyped
+      def wrap_sql_literal: (untyped node) -> Arel::Nodes::Grouping
 
       def extract_node_value: (untyped node) -> untyped
     end
@@ -20113,15 +20119,15 @@ module ActiveRecord
       def value: () -> ::Array[untyped]
     end
 
-    def self.query: (untyped sql) -> untyped
+    def self.query: (untyped sql) -> Query
 
-    def self.partial_query: (untyped values) -> untyped
+    def self.partial_query: (untyped values) -> PartialQuery
 
-    def self.partial_query_collector: () -> untyped
+    def self.partial_query_collector: () -> PartialQueryCollector
 
     class Params
       # :nodoc:
-      def bind: () -> untyped
+      def bind: () -> Substitute
     end
 
     class BindMap
@@ -21953,7 +21959,7 @@ module Arel
 
     def compile_insert: (untyped values) -> untyped
 
-    def create_insert: () -> untyped
+    def create_insert: () -> InsertManager
 
     def compile_delete: () -> untyped
   end
@@ -21982,17 +21988,17 @@ end
 module Arel
   # :nodoc: all
   module Expressions
-    def count: (?bool distinct) -> untyped
+    def count: (?bool distinct) -> Nodes::Count
 
-    def sum: () -> untyped
+    def sum: () -> Nodes::Sum
 
-    def maximum: () -> untyped
+    def maximum: () -> Nodes::Max
 
-    def minimum: () -> untyped
+    def minimum: () -> Nodes::Min
 
-    def average: () -> untyped
+    def average: () -> Nodes::Avg
 
-    def extract: (untyped field) -> untyped
+    def extract: (untyped field) -> Nodes::Extract
   end
 end
 
@@ -22001,27 +22007,27 @@ module Arel
   # #
   # Methods for creating various nodes
   module FactoryMethods
-    def create_true: () -> untyped
+    def create_true: () -> Arel::Nodes::True
 
-    def create_false: () -> untyped
+    def create_false: () -> Arel::Nodes::False
 
-    def create_table_alias: (untyped relation, untyped name) -> untyped
+    def create_table_alias: (untyped relation, untyped name) -> Nodes::TableAlias
 
     def create_join: (untyped to, ?untyped? constraint, ?untyped klass) -> untyped
 
     def create_string_join: (untyped to) -> untyped
 
-    def create_and: (untyped clauses) -> untyped
+    def create_and: (untyped clauses) -> Nodes::And
 
-    def create_on: (untyped expr) -> untyped
+    def create_on: (untyped expr) -> Nodes::On
 
-    def grouping: (untyped expr) -> untyped
+    def grouping: (untyped expr) -> Nodes::Grouping
 
     # #
     # Create a LOWER() function
-    def lower: (untyped column) -> untyped
+    def lower: (untyped column) -> Nodes::NamedFunction
 
-    def coalesce: (*untyped exprs) -> untyped
+    def coalesce: (*untyped exprs) -> Nodes::NamedFunction
   end
 end
 
@@ -22040,34 +22046,34 @@ module Arel
 
     def insert: (untyped fields) -> (nil | untyped)
 
-    def create_values: (untyped values) -> untyped
+    def create_values: (untyped values) -> Nodes::ValuesList
 
-    def create_values_list: (untyped rows) -> untyped
+    def create_values_list: (untyped rows) -> Nodes::ValuesList
   end
 end
 
 module Arel
   # :nodoc: all
   module Math
-    def *: (untyped other) -> untyped
+    def *: (untyped other) -> Arel::Nodes::Multiplication
 
-    def +: (untyped other) -> untyped
+    def +: (untyped other) -> Arel::Nodes::Grouping
 
-    def -: (untyped other) -> untyped
+    def -: (untyped other) -> Arel::Nodes::Grouping
 
-    def /: (untyped other) -> untyped
+    def /: (untyped other) -> Arel::Nodes::Division
 
-    def &: (untyped other) -> untyped
+    def &: (untyped other) -> Arel::Nodes::Grouping
 
-    def |: (untyped other) -> untyped
+    def |: (untyped other) -> Arel::Nodes::Grouping
 
-    def ^: (untyped other) -> untyped
+    def ^: (untyped other) -> Arel::Nodes::Grouping
 
-    def <<: (untyped other) -> untyped
+    def <<: (untyped other) -> Arel::Nodes::Grouping
 
-    def >>: (untyped other) -> untyped
+    def >>: (untyped other) -> Arel::Nodes::Grouping
 
-    def ~: () -> untyped
+    def ~: () -> Arel::Nodes::BitwiseNot
   end
 end
 
@@ -22094,7 +22100,7 @@ module Arel
   # :nodoc: all
   module Nodes
     class Ascending < Ordering
-      def reverse: () -> untyped
+      def reverse: () -> Descending
 
       def direction: () -> :asc
 
@@ -22264,7 +22270,7 @@ module Arel
   # :nodoc: all
   module Nodes
     class Descending < Ordering
-      def reverse: () -> untyped
+      def reverse: () -> Ascending
 
       def direction: () -> :desc
 
@@ -22521,16 +22527,16 @@ module Arel
       # #
       # Factory method to create a Nodes::Not node that has the recipient of
       # the caller as a child.
-      def not: () -> untyped
+      def not: () -> Nodes::Not
 
       # #
       # Factory method to create a Nodes::Grouping node that has an Nodes::Or
       # node as a child.
-      def or: (untyped right) -> untyped
+      def or: (untyped right) -> Nodes::Grouping
 
       # #
       # Factory method to create an Nodes::And node.
-      def and: (untyped right) -> untyped
+      def and: (untyped right) -> Nodes::And
 
       # FIXME: this method should go away.  I don't like people calling
       # to_sql on non-head nodes.  This forces us to walk the AST until we
@@ -22682,7 +22688,7 @@ module Arel
   # :nodoc: all
   module Nodes
     class TableAlias < Arel::Nodes::Binary
-      def []: (untyped name) -> untyped
+      def []: (untyped name) -> ::Arel::Attributes::Attribute
 
       def table_name: () -> untyped
 
@@ -22874,26 +22880,26 @@ end
 module Arel
   # :nodoc: all
   module OrderPredications
-    def asc: () -> untyped
+    def asc: () -> Nodes::Ascending
 
-    def desc: () -> untyped
+    def desc: () -> Nodes::Descending
   end
 end
 
 module Arel
   # :nodoc: all
   module Predications
-    def not_eq: (untyped other) -> untyped
+    def not_eq: (untyped other) -> Nodes::NotEqual
 
     def not_eq_any: (untyped others) -> untyped
 
     def not_eq_all: (untyped others) -> untyped
 
-    def eq: (untyped other) -> untyped
+    def eq: (untyped other) -> Nodes::Equality
 
-    def is_not_distinct_from: (untyped other) -> untyped
+    def is_not_distinct_from: (untyped other) -> Nodes::IsNotDistinctFrom
 
-    def is_distinct_from: (untyped other) -> untyped
+    def is_distinct_from: (untyped other) -> Nodes::IsDistinctFrom
 
     def eq_any: (untyped others) -> untyped
 
@@ -22915,41 +22921,41 @@ module Arel
 
     def not_in_all: (untyped others) -> untyped
 
-    def matches: (untyped other, ?untyped? escape, ?bool case_sensitive) -> untyped
+    def matches: (untyped other, ?untyped? escape, ?bool case_sensitive) -> Nodes::Matches
 
-    def matches_regexp: (untyped other, ?bool case_sensitive) -> untyped
+    def matches_regexp: (untyped other, ?bool case_sensitive) -> Nodes::Regexp
 
     def matches_any: (untyped others, ?untyped? escape, ?bool case_sensitive) -> untyped
 
     def matches_all: (untyped others, ?untyped? escape, ?bool case_sensitive) -> untyped
 
-    def does_not_match: (untyped other, ?untyped? escape, ?bool case_sensitive) -> untyped
+    def does_not_match: (untyped other, ?untyped? escape, ?bool case_sensitive) -> Nodes::DoesNotMatch
 
-    def does_not_match_regexp: (untyped other, ?bool case_sensitive) -> untyped
+    def does_not_match_regexp: (untyped other, ?bool case_sensitive) -> Nodes::NotRegexp
 
     def does_not_match_any: (untyped others, ?untyped? escape) -> untyped
 
     def does_not_match_all: (untyped others, ?untyped? escape) -> untyped
 
-    def gteq: (untyped right) -> untyped
+    def gteq: (untyped right) -> Nodes::GreaterThanOrEqual
 
     def gteq_any: (untyped others) -> untyped
 
     def gteq_all: (untyped others) -> untyped
 
-    def gt: (untyped right) -> untyped
+    def gt: (untyped right) -> Nodes::GreaterThan
 
     def gt_any: (untyped others) -> untyped
 
     def gt_all: (untyped others) -> untyped
 
-    def lt: (untyped right) -> untyped
+    def lt: (untyped right) -> Nodes::LessThan
 
     def lt_any: (untyped others) -> untyped
 
     def lt_all: (untyped others) -> untyped
 
-    def lteq: (untyped right) -> untyped
+    def lteq: (untyped right) -> Nodes::LessThanOrEqual
 
     def lteq_any: (untyped others) -> untyped
 
@@ -22957,11 +22963,11 @@ module Arel
 
     def when: (untyped right) -> untyped
 
-    def concat: (untyped other) -> untyped
+    def concat: (untyped other) -> Nodes::Concat
 
-    def grouping_any: (untyped method_id, untyped others, *untyped extras) -> untyped
+    def grouping_any: (untyped method_id, untyped others, *untyped extras) -> Nodes::Grouping
 
-    def grouping_all: (untyped method_id, untyped others, *untyped extras) -> untyped
+    def grouping_all: (untyped method_id, untyped others, *untyped extras) -> Nodes::Grouping
 
     def quoted_node: (untyped other) -> untyped
 
@@ -22985,7 +22991,7 @@ module Arel
   # Great caution should be taken to avoid SQL injection vulnerabilities.
   # This method should not be used with unsafe values such as request
   # parameters or model attributes.
-  def self.sql: (untyped raw_sql) -> untyped
+  def self.sql: (untyped raw_sql) -> Arel::Nodes::SqlLiteral
 
   def self.star: () -> untyped
 
@@ -23017,7 +23023,7 @@ module Arel
 
     # #
     # Produces an Arel::Nodes::Exists node
-    def exists: () -> untyped
+    def exists: () -> Arel::Nodes::Exists
 
     def as: (untyped other) -> untyped
 
@@ -23057,15 +23063,15 @@ module Arel
 
     def orders: () -> untyped
 
-    def where_sql: (?untyped engine) -> (nil | untyped)
+    def where_sql: (?untyped engine) -> (nil | Nodes::SqlLiteral)
 
     def union: (untyped operation, ?untyped? other) -> untyped
 
-    def intersect: (untyped other) -> untyped
+    def intersect: (untyped other) -> Nodes::Intersect
 
-    def except: (untyped other) -> untyped
+    def except: (untyped other) -> Nodes::Except
 
-    def lateral: (?untyped? table_name) -> untyped
+    def lateral: (?untyped? table_name) -> Nodes::Lateral
 
     def with: (*untyped subqueries) -> untyped
 
@@ -23096,9 +23102,9 @@ module Arel
 
     def initialize: (untyped name, ?type_caster: untyped? type_caster, ?as: untyped? as) -> untyped
 
-    def `alias`: (?::String name) -> untyped
+    def `alias`: (?::String name) -> Nodes::TableAlias
 
-    def from: () -> untyped
+    def from: () -> SelectManager
 
     def join: (untyped relation, ?untyped klass) -> untyped
 
@@ -23365,7 +23371,9 @@ module Arel
   # :nodoc: all
   module Visitors
     class MSSQL < Arel::Visitors::ToSql
-      RowNumber: untyped
+      # Struct.new
+      class RowNumber
+      end
 
       def initialize: () -> untyped
 
@@ -23389,7 +23397,7 @@ module Arel
 
       def determine_order_by: (untyped orders, untyped x) -> untyped
 
-      def row_num_literal: (untyped order_by) -> untyped
+      def row_num_literal: (untyped order_by) -> RowNumber
 
       def select_count?: (untyped x) -> untyped
 
@@ -23816,7 +23824,7 @@ end
 module Arel
   # :nodoc: all
   module WindowPredications
-    def over: (?untyped? expr) -> untyped
+    def over: (?untyped? expr) -> Nodes::Over
   end
 end
 

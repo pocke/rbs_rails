@@ -1,0 +1,4 @@
+module TZInfo
+  class Timezone
+  end
+end
