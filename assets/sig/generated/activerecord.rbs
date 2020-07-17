@@ -9001,7 +9001,7 @@ module ActiveRecord
 
       def rename_column_indexes: (untyped table_name, untyped column_name, untyped new_column_name) -> untyped
 
-      def schema_creation: () -> SchemaCreation
+      def schema_creation: () -> untyped
 
       def create_table_definition: (*untyped args, **untyped options) -> TableDefinition
 
