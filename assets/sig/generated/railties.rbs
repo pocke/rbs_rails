@@ -1237,7 +1237,7 @@ module Rails
 
     def serveable?: () -> untyped
 
-    def middleware: () -> Hash
+    def middleware: () -> Hash[untyped, untyped]
 
     def default_options: () -> untyped
 
@@ -3916,7 +3916,7 @@ module Rails
 
       def tsort_each_child: (untyped initializer) { () -> untyped } -> untyped
 
-      def +: (untyped other) -> Collection
+      def +: (untyped other) -> Collection[untyped]
     end
 
     def run_initializers: (?::Symbol group, *untyped args) -> (nil | untyped)
@@ -3928,7 +3928,7 @@ module Rails
 
       def initializers_chain: () -> untyped
 
-      def initializers_for: (untyped binding) -> Collection
+      def initializers_for: (untyped binding) -> Collection[untyped]
 
       def initializer: (untyped name, ?::Hash[untyped, untyped] opts) { () -> untyped } -> untyped
     end
