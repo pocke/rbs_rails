@@ -17,6 +17,8 @@ module AbstractController
   class Base
     include ActiveSupport::Configurable
 
+    extend ::ActiveSupport::Configurable::ClassMethods
+
     extend ActiveSupport::DescendantsTracker
 
     attr_reader abstract: untyped
@@ -255,6 +257,8 @@ module AbstractController
 
       def instrument_fragment_cache: (untyped name, untyped key) { () -> untyped } -> untyped
     end
+
+    extend ::AbstractController::Caching::Fragments::ClassMethods
   end
 end
 
@@ -316,6 +320,8 @@ module AbstractController
     # more details on the whole callback system, read the documentation
     # for ActiveSupport::Callbacks.
     include ActiveSupport::Callbacks
+
+    extend ::ActiveSupport::Callbacks::ClassMethods
 
     # Override <tt>AbstractController::Base#process_action</tt> to run the
     # <tt>process_action</tt> callbacks around the normal behavior.
@@ -611,6 +617,8 @@ module ActionController
     extend ActiveSupport::Concern
 
     include Rendering
+
+    extend ::ActionController::Rendering::ClassMethods
 
     def render_to_body: (?::Hash[untyped, untyped] options) -> untyped
   end
@@ -928,6 +936,8 @@ module ActionController
 
     include AbstractController::Caching
 
+    extend ::AbstractController::Caching::ClassMethods
+
     def instrument_payload: (untyped key) -> { controller: untyped, action: untyped, key: untyped }
 
     def instrument_name: () -> "action_controller"
@@ -1100,7 +1110,7 @@ module ActionController
     #
     #   before_action { fresh_when @article, template: 'widgets/show' }
     #
-    def fresh_when: (?untyped? object, ?template: untyped? template, ?public: bool `public`, ?last_modified: untyped? last_modified, ?strong_etag: untyped? strong_etag, ?weak_etag: untyped? weak_etag, ?etag: untyped? etag) -> untyped
+    def fresh_when: (?untyped? object, ?etag: untyped? etag, ?weak_etag: untyped? weak_etag, ?strong_etag: untyped? strong_etag, ?last_modified: untyped? last_modified, ?public: bool `public`, ?template: untyped? template) -> untyped
 
     # Sets the +etag+ and/or +last_modified+ on the response and checks it against
     # the client request. If the request doesn't match the options provided, the
@@ -1245,7 +1255,11 @@ module ActionController
 
     include AbstractController::Helpers
 
+    extend ::AbstractController::Helpers::ClassMethods
+
     include AbstractController::Callbacks
+
+    extend ::AbstractController::Callbacks::ClassMethods
 
     module ClassMethods
       def content_security_policy: (?bool enabled, **untyped options) { (untyped) -> untyped } -> untyped
@@ -1278,6 +1292,8 @@ module ActionController
     extend ActiveSupport::Concern
 
     include ActionController::Rendering
+
+    extend ::ActionController::Rendering::ClassMethods
 
     DEFAULT_SEND_FILE_TYPE: ::String
 
@@ -1313,6 +1329,8 @@ module ActionController
     extend ActiveSupport::Concern
 
     include ActionController::ConditionalGet
+
+    extend ::ActionController::ConditionalGet::ClassMethods
   end
 end
 
@@ -1338,6 +1356,8 @@ module ActionController
     extend ActiveSupport::Concern
 
     include ActionController::ConditionalGet
+
+    extend ::ActionController::ConditionalGet::ClassMethods
 
     def determine_template_etag: (untyped options) -> untyped
 
@@ -1457,6 +1477,8 @@ module ActionController
 
     include AbstractController::Callbacks
 
+    extend ::AbstractController::Callbacks::ClassMethods
+
     ACTION_OPTIONS: ::Array[untyped]
 
     URL_OPTIONS: ::Array[untyped]
@@ -1550,6 +1572,8 @@ module ActionController
     attr_accessor helpers_path: untyped
 
     include AbstractController::Helpers
+
+    extend ::AbstractController::Helpers::ClassMethods
 
     module ClassMethods
       # Declares helper accessors for controller attributes. For example, the
@@ -1654,10 +1678,10 @@ module ActionController
         extend ActiveSupport::Concern
 
         module ClassMethods
-          def http_basic_authenticate_with: (password: untyped password, name: untyped name, ?realm: untyped? realm, **untyped options) -> untyped
+          def http_basic_authenticate_with: (name: untyped name, password: untyped password, ?realm: untyped? realm, **untyped options) -> untyped
         end
 
-        def http_basic_authenticate_or_request_with: (password: untyped password, name: untyped name, ?message: untyped? message, ?realm: untyped? realm) -> untyped
+        def http_basic_authenticate_or_request_with: (name: untyped name, password: untyped password, ?realm: untyped? realm, ?message: untyped? message) -> untyped
 
         def authenticate_or_request_with_http_basic: (?untyped? realm, ?untyped? message) { () -> untyped } -> untyped
 
@@ -2867,6 +2891,8 @@ module ActionController
       extend ActiveSupport::Concern
 
       include Renderers
+
+      extend ::ActionController::Renderers::ClassMethods
     end
 
     # Adds a new renderer to call within controller actions.
@@ -3066,7 +3092,11 @@ module ActionController
 
     include AbstractController::Helpers
 
+    extend ::AbstractController::Helpers::ClassMethods
+
     include AbstractController::Callbacks
+
+    extend ::AbstractController::Callbacks::ClassMethods
 
     module ClassMethods
       # Turn on request forgery protection. Bear in mind that GET and HEAD requests are not checked.
@@ -3219,6 +3249,8 @@ module ActionController
     extend ActiveSupport::Concern
 
     include ActiveSupport::Rescuable
+
+    extend ::ActiveSupport::Rescuable::ClassMethods
 
     # Override this method if you want to customize when detailed
     # exceptions must be shown. This method is only called when
@@ -4113,6 +4145,8 @@ module ActionController
 
     include AbstractController::UrlFor
 
+    extend ::AbstractController::UrlFor::ClassMethods
+
     def url_options: () -> untyped
   end
 end
@@ -4407,6 +4441,8 @@ module ActionController
 
       include ActiveSupport::Testing::ConstantLookup
 
+      extend ::ActiveSupport::Testing::ConstantLookup::ClassMethods
+
       include Rails::Dom::Testing::Assertions
 
       attr_reader response: untyped
@@ -4501,7 +4537,7 @@ module ActionController
       # respectively which will make tests more expressive.
       #
       # Note that the request method is not verified.
-      def process: (untyped action, ?as: untyped? as, ?xhr: bool xhr, ?format: untyped? format, ?flash: ::Hash[untyped, untyped] flash, ?body: untyped? body, ?session: untyped? session, ?params: untyped? params, ?method: ::String method) -> untyped
+      def process: (untyped action, ?method: ::String method, ?params: untyped? params, ?session: untyped? session, ?body: untyped? body, ?flash: ::Hash[untyped, untyped] flash, ?format: untyped? format, ?xhr: bool xhr, ?as: untyped? as) -> untyped
 
       def controller_class_name: () -> untyped
 
@@ -4523,6 +4559,8 @@ module ActionController
 
       def check_required_ivars: () -> untyped
     end
+
+    extend ::ActionController::TestCase::Behavior::ClassMethods
 
     include Behavior
   end
@@ -4638,13 +4676,13 @@ module ActionDispatch
   module Http
     class ContentDisposition
       # :nodoc:
-      def self.format: (filename: untyped filename, disposition: untyped disposition) -> untyped
+      def self.format: (disposition: untyped disposition, filename: untyped filename) -> untyped
 
       attr_reader disposition: untyped
 
       attr_reader filename: untyped
 
-      def initialize: (filename: untyped filename, disposition: untyped disposition) -> untyped
+      def initialize: (disposition: untyped disposition, filename: untyped filename) -> untyped
 
       TRADITIONAL_ESCAPED_CHAR: untyped
 
@@ -5252,6 +5290,8 @@ module ActionDispatch
     include ActionDispatch::Http::MimeNegotiation
 
     include ActionDispatch::Http::Parameters
+
+    extend ::ActionDispatch::Http::Parameters::ClassMethods
 
     include ActionDispatch::Http::FilterParameters
 
@@ -6980,6 +7020,8 @@ module ActionDispatch
   class Callbacks
     include ActiveSupport::Callbacks
 
+    extend ::ActiveSupport::Callbacks::ClassMethods
+
     def self.before: (*untyped args) { () -> untyped } -> untyped
 
     def self.after: (*untyped args) { () -> untyped } -> untyped
@@ -8114,7 +8156,7 @@ module ActionDispatch
 
     def self.default_hsts_options: () -> { expires: untyped, subdomains: ::TrueClass, preload: ::FalseClass }
 
-    def initialize: (untyped app, ?secure_cookies: bool secure_cookies, ?hsts: ::Hash[untyped, untyped] hsts, ?redirect: ::Hash[untyped, untyped] redirect) -> untyped
+    def initialize: (untyped app, ?redirect: ::Hash[untyped, untyped] redirect, ?hsts: ::Hash[untyped, untyped] hsts, ?secure_cookies: bool secure_cookies) -> untyped
 
     def call: (untyped env) -> untyped
 
@@ -8216,7 +8258,7 @@ module ActionDispatch
   # located at +public/assets/application.js+ if the file exists. If the file
   # does not exist, a 404 "File not Found" response will be returned.
   class FileHandler
-    def initialize: (untyped root, ?headers: ::Hash[untyped, untyped] headers, ?index: ::String index) -> untyped
+    def initialize: (untyped root, ?index: ::String index, ?headers: ::Hash[untyped, untyped] headers) -> untyped
 
     # Takes a path to a file. If the file is found, has valid encoding, and has
     # correct read permissions, the return value is a URI-escaped string
@@ -8249,7 +8291,7 @@ module ActionDispatch
   # produce a directory traversal using this middleware. Only 'GET' and 'HEAD'
   # requests will result in a file being returned.
   class Static
-    def initialize: (untyped app, untyped path, ?headers: ::Hash[untyped, untyped] headers, ?index: ::String index) -> untyped
+    def initialize: (untyped app, untyped path, ?index: ::String index, ?headers: ::Hash[untyped, untyped] headers) -> untyped
 
     def call: (untyped env) -> untyped
   end
@@ -10919,7 +10961,7 @@ module ActionDispatch
     #   driven_by :selenium, using: :firefox
     #
     #   driven_by :selenium, using: :headless_firefox
-    def self.driven_by: (untyped driver, ?options: ::Hash[untyped, untyped] options, ?screen_size: ::Array[untyped] screen_size, ?using: ::Symbol using) { () -> untyped } -> untyped
+    def self.driven_by: (untyped driver, ?using: ::Symbol using, ?screen_size: ::Array[untyped] screen_size, ?options: ::Hash[untyped, untyped] options) { () -> untyped } -> untyped
 
     def method_missing: (untyped method, *untyped args) { () -> untyped } -> untyped
   end
@@ -11410,7 +11452,7 @@ module ActionDispatch
       #
       # Example:
       #   process :get, '/author', params: { since: 201501011400 }
-      def process: (untyped method, untyped path, ?as: untyped? as, ?xhr: bool xhr, ?env: untyped? env, ?headers: untyped? headers, ?params: untyped? params) -> untyped
+      def process: (untyped method, untyped path, ?params: untyped? params, ?headers: untyped? headers, ?env: untyped? env, ?xhr: bool xhr, ?as: untyped? as) -> untyped
 
       def _mock_session: () -> untyped
 
@@ -11504,6 +11546,8 @@ module ActionDispatch
       def document_root_element: () -> untyped
     end
 
+    extend ::ActionDispatch::IntegrationTest::Behavior::ClassMethods
+
     include Behavior
   end
 end
@@ -11535,7 +11579,7 @@ module ActionDispatch
 
     def self.encoder: (untyped name) -> untyped
 
-    def self.register_encoder: (untyped mime_name, ?response_parser: untyped? response_parser, ?param_encoder: untyped? param_encoder) -> untyped
+    def self.register_encoder: (untyped mime_name, ?param_encoder: untyped? param_encoder, ?response_parser: untyped? response_parser) -> untyped
   end
 end
 
