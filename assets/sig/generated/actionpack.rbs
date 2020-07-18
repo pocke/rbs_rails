@@ -5305,8 +5305,6 @@ module ActionDispatch
 
     def initialize: (untyped env) -> untyped
 
-    def commit_cookie_jar!: () -> nil
-
     PASS_NOT_FOUND: untyped
 
     def controller_class: () -> untyped
