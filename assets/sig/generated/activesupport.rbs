@@ -917,8 +917,8 @@ module ActiveSupport
       #   Option  Class       Result
       #   :redis  Proc    ->  options[:redis].call
       #   :redis  Object  ->  options[:redis]
-      #   :url    String  ->  Redis.new(url: …)
-      #   :url    Array   ->  Redis::Distributed.new([{ url: … }, { url: … }, …])
+      #   :url    String  ->  Redis.new(url: (trim non-ascii characters))
+      #   :url    Array   ->  Redis::Distributed.new([{ url: (trim non-ascii characters) }, { url: (trim non-ascii characters) }, (trim non-ascii characters)])
       #
       # No namespace is set by default. Provide one if the Redis cache
       # server is shared with other apps: <tt>namespace: 'myapp-cache'</tt>.
@@ -4217,7 +4217,7 @@ module ActiveSupport
     #  1234567890.50.to_s(:currency)                 # => "$1,234,567,890.50"
     #  1234567890.506.to_s(:currency)                # => "$1,234,567,890.51"
     #  1234567890.506.to_s(:currency, precision: 3)  # => "$1,234,567,890.506"
-    #  1234567890.506.to_s(:currency, locale: :fr)   # => "1 234 567 890,51 €"
+    #  1234567890.506.to_s(:currency, locale: :fr)   # => "1 234 567 890,51 (trim non-ascii characters)"
     #  -1234567890.50.to_s(:currency, negative_format: '(%u%n)')
     #  # => "($1,234,567,890.50)"
     #  1234567890.50.to_s(:currency, unit: '&pound;', separator: ',', delimiter: '')
@@ -5167,15 +5167,15 @@ class String
   # grapheme clusters ("perceptual characters") by truncating at combining
   # characters.
   #
-  #   >> "🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪".size
+  #   >> "(trim non-ascii characters)".size
   #   => 20
-  #   >> "🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪".bytesize
+  #   >> "(trim non-ascii characters)".bytesize
   #   => 80
-  #   >> "🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪🔪".truncate_bytes(20)
-  #   => "🔪🔪🔪🔪…"
+  #   >> "(trim non-ascii characters)".truncate_bytes(20)
+  #   => "(trim non-ascii characters)"
   #
   # The truncated text ends with the <tt>:omission</tt> string, defaulting
-  # to "…", for a total length not exceeding <tt>bytesize</tt>.
+  # to "(trim non-ascii characters)", for a total length not exceeding <tt>bytesize</tt>.
   def truncate_bytes: (untyped truncate_at, ?omission: ::String omission) -> untyped
 
   # Truncates a given +text+ after a given number of words (<tt>words_count</tt>):
@@ -5461,13 +5461,13 @@ class String
   # encapsulates the original string. A Unicode safe version of all the String methods are defined on this proxy
   # class. If the proxy class doesn't respond to a certain method, it's forwarded to the encapsulated string.
   #
-  #   >> "ǉ".mb_chars.upcase.to_s
-  #   => "Ǉ"
+  #   >> "(trim non-ascii characters)".mb_chars.upcase.to_s
+  #   => "(trim non-ascii characters)"
   #
   # NOTE: Ruby 2.4 and later support native Unicode case mappings:
   #
-  #   >> "ǉ".upcase
-  #   => "Ǉ"
+  #   >> "(trim non-ascii characters)".upcase
+  #   => "(trim non-ascii characters)"
   #
   # == Method chaining
   #
@@ -6529,7 +6529,7 @@ module ActiveSupport
     #
     #   PLANETS.map { |planet| planet.capitalize }
     #   # => DEPRECATION WARNING: PLANETS is deprecated! Use PLANETS_POST_2006 instead.
-    #        (Backtrace information…)
+    #        (Backtrace information(trim non-ascii characters))
     #        ["Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"]
     module DeprecatedConstantAccessor
       def self.included: (untyped base) -> untyped
@@ -6670,7 +6670,7 @@ module ActiveSupport
     #   example.old_request.to_s
     #   # => DEPRECATION WARNING: @request is deprecated! Call request.to_s instead of
     #      @request.to_s
-    #      (Backtrace information…)
+    #      (Backtrace information(trim non-ascii characters))
     #      "special_request"
     #
     #   example.request.to_s
@@ -6698,7 +6698,7 @@ module ActiveSupport
     #
     #   PLANETS.map { |planet| planet.capitalize }
     #   # => DEPRECATION WARNING: PLANETS is deprecated! Use PLANETS_POST_2006 instead.
-    #        (Backtrace information…)
+    #        (Backtrace information(trim non-ascii characters))
     #        ["Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"]
     class DeprecatedConstantProxy < Module
       def self.new: (*untyped args, **untyped kwargs) { () -> untyped } -> untyped
@@ -8167,15 +8167,15 @@ module ActiveSupport
     # Replaces non-ASCII characters with an ASCII approximation, or if none
     # exists, a replacement character which defaults to "?".
     #
-    #    transliterate('Ærøskøbing')
+    #    transliterate('(trim non-ascii characters)r(trim non-ascii characters)sk(trim non-ascii characters)bing')
     #    # => "AEroskobing"
     #
     # Default approximations are provided for Western/Latin characters,
-    # e.g, "ø", "ñ", "é", "ß", etc.
+    # e.g, "(trim non-ascii characters)", "(trim non-ascii characters)", "(trim non-ascii characters)", "(trim non-ascii characters)", etc.
     #
     # This method is I18n aware, so you can set up custom approximations for a
-    # locale. This can be useful, for example, to transliterate German's "ü"
-    # and "ö" to "ue" and "oe", or to add support for transliterating Russian
+    # locale. This can be useful, for example, to transliterate German's "(trim non-ascii characters)"
+    # and "(trim non-ascii characters)" to "ue" and "oe", or to add support for transliterating Russian
     # to ASCII.
     #
     # In order to make your custom transliterations available, you must set
@@ -8185,15 +8185,15 @@ module ActiveSupport
     #   i18n:
     #     transliterate:
     #       rule:
-    #         ü: "ue"
-    #         ö: "oe"
+    #         (trim non-ascii characters): "ue"
+    #         (trim non-ascii characters): "oe"
     #
     #   # Or set them using Ruby
     #   I18n.backend.store_translations(:de, i18n: {
     #     transliterate: {
     #       rule: {
-    #         'ü' => 'ue',
-    #         'ö' => 'oe'
+    #         '(trim non-ascii characters)' => 'ue',
+    #         '(trim non-ascii characters)' => 'oe'
     #       }
     #     }
     #   })
@@ -8210,10 +8210,10 @@ module ActiveSupport
     #
     # Now you can have different transliterations for each locale:
     #
-    #   transliterate('Jürgen', locale: :en)
+    #   transliterate('J(trim non-ascii characters)rgen', locale: :en)
     #   # => "Jurgen"
     #
-    #   transliterate('Jürgen', locale: :de)
+    #   transliterate('J(trim non-ascii characters)rgen', locale: :de)
     #   # => "Juergen"
     #
     # Transliteration is restricted to UTF-8, US-ASCII and GB18030 strings
@@ -8224,23 +8224,23 @@ module ActiveSupport
     # a 'pretty' URL.
     #
     #   parameterize("Donald E. Knuth") # => "donald-e-knuth"
-    #   parameterize("^très|Jolie-- ")  # => "tres-jolie"
+    #   parameterize("^tr(trim non-ascii characters)s|Jolie-- ")  # => "tres-jolie"
     #
     # To use a custom separator, override the +separator+ argument.
     #
     #   parameterize("Donald E. Knuth", separator: '_') # => "donald_e_knuth"
-    #   parameterize("^très|Jolie__ ", separator: '_')  # => "tres_jolie"
+    #   parameterize("^tr(trim non-ascii characters)s|Jolie__ ", separator: '_')  # => "tres_jolie"
     #
     # To preserve the case of the characters in a string, use the +preserve_case+ argument.
     #
     #   parameterize("Donald E. Knuth", preserve_case: true) # => "Donald-E-Knuth"
-    #   parameterize("^très|Jolie-- ", preserve_case: true) # => "tres-Jolie"
+    #   parameterize("^tr(trim non-ascii characters)s|Jolie-- ", preserve_case: true) # => "tres-Jolie"
     #
     # It preserves dashes and underscores unless they are used as separators:
     #
-    #   parameterize("^très|Jolie__ ")                 # => "tres-jolie__"
-    #   parameterize("^très|Jolie-- ", separator: "_") # => "tres_jolie--"
-    #   parameterize("^très_Jolie-- ", separator: ".") # => "tres_jolie--"
+    #   parameterize("^tr(trim non-ascii characters)s|Jolie__ ")                 # => "tres-jolie__"
+    #   parameterize("^tr(trim non-ascii characters)s|Jolie-- ", separator: "_") # => "tres_jolie--"
+    #   parameterize("^tr(trim non-ascii characters)s_Jolie-- ", separator: ".") # => "tres_jolie--"
     #
     # If the optional parameter +locale+ is specified,
     # the word will be parameterized as a word of that language.
@@ -9083,7 +9083,7 @@ module ActiveSupport
       # in the resulting list are Chars instances instead of String. This makes
       # chaining methods easier.
       #
-      #   'Café périferôl'.mb_chars.split(/é/).map { |part| part.upcase.to_s } # => ["CAF", " P", "RIFERÔL"]
+      #   'Caf(trim non-ascii characters) p(trim non-ascii characters)rifer(trim non-ascii characters)l'.mb_chars.split(/(trim non-ascii characters)/).map { |part| part.upcase.to_s } # => ["CAF", " P", "RIFER(trim non-ascii characters)L"]
       def split: (*untyped args) -> untyped
 
       # Works like <tt>String#slice!</tt>, but returns an instance of
@@ -9099,20 +9099,20 @@ module ActiveSupport
 
       # Reverses all characters in the string.
       #
-      #   'Café'.mb_chars.reverse.to_s # => 'éfaC'
+      #   'Caf(trim non-ascii characters)'.mb_chars.reverse.to_s # => '(trim non-ascii characters)faC'
       def reverse: () -> untyped
 
       # Limits the byte size of the string to a number of bytes without breaking
       # characters. Usable when the storage for a string is limited for some
       # reason.
       #
-      #   'こんにちは'.mb_chars.limit(7).to_s # => "こん"
+      #   '(trim non-ascii characters)'.mb_chars.limit(7).to_s # => "(trim non-ascii characters)"
       def limit: (untyped limit) -> untyped
 
       # Capitalizes the first letter of every word, when possible.
       #
-      #   "ÉL QUE SE ENTERÓ".mb_chars.titleize.to_s    # => "Él Que Se Enteró"
-      #   "日本語".mb_chars.titleize.to_s               # => "日本語"
+      #   "(trim non-ascii characters)L QUE SE ENTER(trim non-ascii characters)".mb_chars.titleize.to_s    # => "(trim non-ascii characters)l Que Se Enter(trim non-ascii characters)"
+      #   "(trim non-ascii characters)".mb_chars.titleize.to_s               # => "(trim non-ascii characters)"
       def titleize: () -> untyped
 
       # Returns the KC normalization of the string by default. NFKC is
@@ -9126,20 +9126,20 @@ module ActiveSupport
 
       # Performs canonical decomposition on all the characters.
       #
-      #   'é'.length                         # => 2
-      #   'é'.mb_chars.decompose.to_s.length # => 3
+      #   '(trim non-ascii characters)'.length                         # => 2
+      #   '(trim non-ascii characters)'.mb_chars.decompose.to_s.length # => 3
       def decompose: () -> untyped
 
       # Performs composition on all the characters.
       #
-      #   'é'.length                       # => 3
-      #   'é'.mb_chars.compose.to_s.length # => 2
+      #   '(trim non-ascii characters)'.length                       # => 3
+      #   '(trim non-ascii characters)'.mb_chars.compose.to_s.length # => 2
       def compose: () -> untyped
 
       # Returns the number of grapheme clusters in the string.
       #
-      #   'क्षि'.mb_chars.length   # => 4
-      #   'क्षि'.mb_chars.grapheme_length # => 3
+      #   '(trim non-ascii characters)'.mb_chars.length   # => 4
+      #   '(trim non-ascii characters)'.mb_chars.grapheme_length # => 3
       def grapheme_length: () -> untyped
 
       # Replaces all ISO-8859-1 or CP1252 characters by their UTF-8 equivalent
@@ -9195,13 +9195,13 @@ module ActiveSupport
       # Unpack the string at grapheme boundaries. Returns a list of character
       # lists.
       #
-      #   Unicode.unpack_graphemes('क्षि') # => [[2325, 2381], [2359], [2367]]
-      #   Unicode.unpack_graphemes('Café') # => [[67], [97], [102], [233]]
+      #   Unicode.unpack_graphemes('(trim non-ascii characters)') # => [[2325, 2381], [2359], [2367]]
+      #   Unicode.unpack_graphemes('Caf(trim non-ascii characters)') # => [[67], [97], [102], [233]]
       def unpack_graphemes: (untyped string) -> untyped
 
       # Reverse operation of unpack_graphemes.
       #
-      #   Unicode.pack_graphemes(Unicode.unpack_graphemes('क्षि')) # => 'क्षि'
+      #   Unicode.pack_graphemes(Unicode.unpack_graphemes('(trim non-ascii characters)')) # => '(trim non-ascii characters)'
       def pack_graphemes: (untyped unpacked) -> untyped
 
       # Decompose composed characters to the decomposed form.
@@ -9877,7 +9877,7 @@ module ActiveSupport
     #   number_to_currency(1234567890.50)                # => "$1,234,567,890.50"
     #   number_to_currency(1234567890.506)               # => "$1,234,567,890.51"
     #   number_to_currency(1234567890.506, precision: 3) # => "$1,234,567,890.506"
-    #   number_to_currency(1234567890.506, locale: :fr)  # => "1 234 567 890,51 €"
+    #   number_to_currency(1234567890.506, locale: :fr)  # => "1 234 567 890,51 (trim non-ascii characters)"
     #   number_to_currency('123a456')                    # => "$123a456"
     #
     #   number_to_currency("123a456", raise: true)       # => InvalidNumberError
@@ -10511,7 +10511,7 @@ module ActiveSupport
       # Be sure to re-raise unhandled exceptions if this is what you expect.
       #
       #     begin
-      #       …
+      #       (trim non-ascii characters)
       #     rescue => exception
       #       rescue_with_handler(exception) || raise
       #     end

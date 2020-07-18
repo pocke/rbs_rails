@@ -4415,7 +4415,7 @@ end
 
 module Rails
   class Secrets
-    # Greatly inspired by Ara T. Howard's magnificent sekrets gem. 😘
+    # Greatly inspired by Ara T. Howard's magnificent sekrets gem. (trim non-ascii characters)
     # :nodoc:
     class MissingKeyError < RuntimeError
       def initialize: () -> untyped
