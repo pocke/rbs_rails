@@ -4267,10 +4267,6 @@ module ActionController
     include Testing::Functional
   end
 
-  module Live
-    def new_controller_thread: () { () -> untyped } -> untyped
-  end
-
   class TestRequest < ActionDispatch::TestRequest
     # ActionController::TestCase will be deprecated and moved to a gem in the future.
     # Please use ActionDispatch::IntegrationTest going forward.
