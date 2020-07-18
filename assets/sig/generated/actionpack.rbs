@@ -1100,7 +1100,7 @@ module ActionController
     #
     #   before_action { fresh_when @article, template: 'widgets/show' }
     #
-    def fresh_when: (?untyped? object, ?etag: untyped? etag, ?weak_etag: untyped? weak_etag, ?strong_etag: untyped? strong_etag, ?last_modified: untyped? last_modified, ?public: bool `public`, ?template: untyped? template) -> untyped
+    def fresh_when: (?untyped? object, ?template: untyped? template, ?public: bool `public`, ?last_modified: untyped? last_modified, ?strong_etag: untyped? strong_etag, ?weak_etag: untyped? weak_etag, ?etag: untyped? etag) -> untyped
 
     # Sets the +etag+ and/or +last_modified+ on the response and checks it against
     # the client request. If the request doesn't match the options provided, the
@@ -1654,10 +1654,10 @@ module ActionController
         extend ActiveSupport::Concern
 
         module ClassMethods
-          def http_basic_authenticate_with: (name: untyped name, password: untyped password, ?realm: untyped? realm, **untyped options) -> untyped
+          def http_basic_authenticate_with: (password: untyped password, name: untyped name, ?realm: untyped? realm, **untyped options) -> untyped
         end
 
-        def http_basic_authenticate_or_request_with: (name: untyped name, password: untyped password, ?realm: untyped? realm, ?message: untyped? message) -> untyped
+        def http_basic_authenticate_or_request_with: (password: untyped password, name: untyped name, ?message: untyped? message, ?realm: untyped? realm) -> untyped
 
         def authenticate_or_request_with_http_basic: (?untyped? realm, ?untyped? message) { () -> untyped } -> untyped
 
@@ -3441,7 +3441,7 @@ module ActionController
   #   # => ActionController::ParameterMissing: param is missing or the value is empty: b
   #   params.require(:a)
   #   # => ActionController::ParameterMissing: param is missing or the value is empty: a
-  class ParameterMissing < KeyError
+  class ParameterMissing[T, U] < KeyError[T, U]
     attr_reader param: untyped
 
     def initialize: (untyped param) -> untyped
@@ -4501,7 +4501,7 @@ module ActionController
       # respectively which will make tests more expressive.
       #
       # Note that the request method is not verified.
-      def process: (untyped action, ?method: ::String method, ?params: untyped? params, ?session: untyped? session, ?body: untyped? body, ?flash: ::Hash[untyped, untyped] flash, ?format: untyped? format, ?xhr: bool xhr, ?as: untyped? as) -> untyped
+      def process: (untyped action, ?as: untyped? as, ?xhr: bool xhr, ?format: untyped? format, ?flash: ::Hash[untyped, untyped] flash, ?body: untyped? body, ?session: untyped? session, ?params: untyped? params, ?method: ::String method) -> untyped
 
       def controller_class_name: () -> untyped
 
@@ -4638,13 +4638,13 @@ module ActionDispatch
   module Http
     class ContentDisposition
       # :nodoc:
-      def self.format: (disposition: untyped disposition, filename: untyped filename) -> untyped
+      def self.format: (filename: untyped filename, disposition: untyped disposition) -> untyped
 
       attr_reader disposition: untyped
 
       attr_reader filename: untyped
 
-      def initialize: (disposition: untyped disposition, filename: untyped filename) -> untyped
+      def initialize: (filename: untyped filename, disposition: untyped disposition) -> untyped
 
       TRADITIONAL_ESCAPED_CHAR: untyped
 
@@ -4851,7 +4851,7 @@ module ActionDispatch
 
       HTTP_HEADER: untyped
 
-      include Enumerable
+      include Enumerable[untyped, untyped]
 
       def self.from_hash: (untyped hash) -> untyped
 
@@ -4976,7 +4976,7 @@ end
 
 module Mime
   class Mimes
-    include Enumerable
+    include Enumerable[untyped, untyped]
 
     def initialize: () -> untyped
 
@@ -5697,7 +5697,7 @@ module ActionDispatch
     #   assert_equal 'AuthorOfNewPage', r.cookies['author']
     def cookies: () -> untyped
 
-    class ContentTypeHeader < ::Struct[untyped]
+    class ContentTypeHeader[T] < ::Struct[T]
       attr_accessor mime_type(): untyped
 
       attr_accessor charset(): untyped
@@ -6253,7 +6253,7 @@ module ActionDispatch
         # :nodoc:
         # :nodoc:
         # :nodoc:
-        include Enumerable
+        include Enumerable[untyped, untyped]
 
         attr_accessor left: untyped
 
@@ -6748,7 +6748,7 @@ module ActionDispatch
       # The Routing table. Contains all routes for a system. Routes can be
       # added to the table by calling Routes#add_route.
       # :nodoc:
-      include Enumerable
+      include Enumerable[untyped, untyped]
 
       attr_reader routes: untyped
 
@@ -6815,7 +6815,7 @@ module ActionDispatch
 
       ESCAPE_SEGMENT: untyped
 
-      class Parameter < ::Struct[untyped]
+      class Parameter[T] < ::Struct[T]
         attr_accessor name(): untyped
 
         attr_accessor escaper(): untyped
@@ -7203,7 +7203,7 @@ module ActionDispatch
 
     class CookieJar
       # nodoc:
-      include Enumerable
+      include Enumerable[untyped, untyped]
 
       # nodoc:
       include ChainedCookieJars
@@ -7575,7 +7575,7 @@ module ActionDispatch
     end
 
     class FlashHash
-      include Enumerable
+      include Enumerable[untyped, untyped]
 
       def self.from_session_value: (untyped value) -> untyped
 
@@ -8114,7 +8114,7 @@ module ActionDispatch
 
     def self.default_hsts_options: () -> { expires: untyped, subdomains: ::TrueClass, preload: ::FalseClass }
 
-    def initialize: (untyped app, ?redirect: ::Hash[untyped, untyped] redirect, ?hsts: ::Hash[untyped, untyped] hsts, ?secure_cookies: bool secure_cookies) -> untyped
+    def initialize: (untyped app, ?secure_cookies: bool secure_cookies, ?hsts: ::Hash[untyped, untyped] hsts, ?redirect: ::Hash[untyped, untyped] redirect) -> untyped
 
     def call: (untyped env) -> untyped
 
@@ -8168,7 +8168,7 @@ module ActionDispatch
       def call: (untyped env) -> untyped
     end
 
-    include Enumerable
+    include Enumerable[untyped, untyped]
 
     attr_accessor middlewares: untyped
 
@@ -8216,7 +8216,7 @@ module ActionDispatch
   # located at +public/assets/application.js+ if the file exists. If the file
   # does not exist, a 404 "File not Found" response will be returned.
   class FileHandler
-    def initialize: (untyped root, ?index: ::String index, ?headers: ::Hash[untyped, untyped] headers) -> untyped
+    def initialize: (untyped root, ?headers: ::Hash[untyped, untyped] headers, ?index: ::String index) -> untyped
 
     # Takes a path to a file. If the file is found, has valid encoding, and has
     # correct read permissions, the return value is a URI-escaped string
@@ -8249,7 +8249,7 @@ module ActionDispatch
   # produce a directory traversal using this middleware. Only 'GET' and 'HEAD'
   # requests will result in a file being returned.
   class Static
-    def initialize: (untyped app, untyped path, ?index: ::String index, ?headers: ::Hash[untyped, untyped] headers) -> untyped
+    def initialize: (untyped app, untyped path, ?headers: ::Hash[untyped, untyped] headers, ?index: ::String index) -> untyped
 
     def call: (untyped env) -> untyped
   end
@@ -8269,7 +8269,7 @@ module ActionDispatch
   class IllegalStateError < StandardError
   end
 
-  class MissingController < NameError
+  class MissingController[T] < NameError[T]
   end
 
   module Http
@@ -9763,7 +9763,7 @@ module ActionDispatch
 
         def []: (untyped key) -> untyped
 
-        include Enumerable
+        include Enumerable[untyped, untyped]
 
         def each: () { (untyped) -> untyped } -> untyped
 
@@ -10326,7 +10326,7 @@ module ActionDispatch
       # maintains an anonymous module that can be used to install helpers for the
       # named routes.
       class NamedRouteCollection
-        include Enumerable
+        include Enumerable[untyped, untyped]
 
         attr_reader routes: untyped
 
@@ -10435,7 +10435,7 @@ module ActionDispatch
 
       def self.new_with_config: (untyped config) -> untyped
 
-      class Config < ::Struct[untyped]
+      class Config[T] < ::Struct[T]
         attr_accessor relative_url_root(): untyped
 
         attr_accessor api_only(): untyped
@@ -10919,7 +10919,7 @@ module ActionDispatch
     #   driven_by :selenium, using: :firefox
     #
     #   driven_by :selenium, using: :headless_firefox
-    def self.driven_by: (untyped driver, ?using: ::Symbol using, ?screen_size: ::Array[untyped] screen_size, ?options: ::Hash[untyped, untyped] options) { () -> untyped } -> untyped
+    def self.driven_by: (untyped driver, ?options: ::Hash[untyped, untyped] options, ?screen_size: ::Array[untyped] screen_size, ?using: ::Symbol using) { () -> untyped } -> untyped
 
     def method_missing: (untyped method, *untyped args) { () -> untyped } -> untyped
   end
@@ -11410,7 +11410,7 @@ module ActionDispatch
       #
       # Example:
       #   process :get, '/author', params: { since: 201501011400 }
-      def process: (untyped method, untyped path, ?params: untyped? params, ?headers: untyped? headers, ?env: untyped? env, ?xhr: bool xhr, ?as: untyped? as) -> untyped
+      def process: (untyped method, untyped path, ?as: untyped? as, ?xhr: bool xhr, ?env: untyped? env, ?headers: untyped? headers, ?params: untyped? params) -> untyped
 
       def _mock_session: () -> untyped
 
@@ -11535,7 +11535,7 @@ module ActionDispatch
 
     def self.encoder: (untyped name) -> untyped
 
-    def self.register_encoder: (untyped mime_name, ?param_encoder: untyped? param_encoder, ?response_parser: untyped? response_parser) -> untyped
+    def self.register_encoder: (untyped mime_name, ?response_parser: untyped? response_parser, ?param_encoder: untyped? param_encoder) -> untyped
   end
 end
 
