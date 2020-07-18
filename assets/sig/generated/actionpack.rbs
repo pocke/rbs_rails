@@ -6440,25 +6440,25 @@ module ActionDispatch
 
       Racc_debug_parser: bool
 
-      def _reduce_1: (untyped val, untyped _values) -> Cat
+      def _reduce_1: (untyped val, untyped _values) -> Nodes::Cat
 
       def _reduce_2: (untyped val, untyped _values) -> untyped
 
-      def _reduce_7: (untyped val, untyped _values) -> Group
+      def _reduce_7: (untyped val, untyped _values) -> Nodes::Group
 
-      def _reduce_8: (untyped val, untyped _values) -> Or
+      def _reduce_8: (untyped val, untyped _values) -> Nodes::Or
 
-      def _reduce_9: (untyped val, untyped _values) -> Or
+      def _reduce_9: (untyped val, untyped _values) -> Nodes::Or
 
-      def _reduce_10: (untyped val, untyped _values) -> Star
+      def _reduce_10: (untyped val, untyped _values) -> Nodes::Star
 
-      def _reduce_15: (untyped val, untyped _values) -> Slash
+      def _reduce_15: (untyped val, untyped _values) -> Nodes::Slash
 
-      def _reduce_16: (untyped val, untyped _values) -> Symbol
+      def _reduce_16: (untyped val, untyped _values) -> Nodes::Symbol
 
-      def _reduce_17: (untyped val, untyped _values) -> Literal
+      def _reduce_17: (untyped val, untyped _values) -> Nodes::Literal
 
-      def _reduce_18: (untyped val, untyped _values) -> Dot
+      def _reduce_18: (untyped val, untyped _values) -> Nodes::Dot
 
       def _reduce_none: (untyped val, untyped _values) -> untyped
     end
