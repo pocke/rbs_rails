@@ -6857,9 +6857,9 @@ module ActionDispatch
         def escape: (untyped value) -> untyped
       end
 
-      def self.required_path: (untyped symbol) -> Parameter
+      def self.required_path: (untyped symbol) -> Parameter[untyped]
 
-      def self.required_segment: (untyped symbol) -> Parameter
+      def self.required_segment: (untyped symbol) -> Parameter[untyped]
 
       def initialize: (untyped parts) -> untyped
 
