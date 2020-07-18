@@ -1,0 +1,6 @@
+module Rack
+  module Test
+    class UploadedFile
+    end
+  end
+end
