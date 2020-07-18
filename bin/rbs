@@ -1,0 +1,3 @@
+#!/bin/bash
+
+rbs -rlogger -rpathname -rmutex_m -Isig -Iassets/sig $@
