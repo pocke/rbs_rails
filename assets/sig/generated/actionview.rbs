@@ -9978,7 +9978,8 @@ module ActionView
     # just once and removes the source after it is compiled.
     def compile!: (untyped view) -> (nil | untyped)
 
-    class LegacyTemplate < 
+    # Note: It inherits unnamed class, but omitted
+    class LegacyTemplate
       # :nodoc:
       attr_reader source: untyped
 
