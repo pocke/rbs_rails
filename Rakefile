@@ -7,5 +7,5 @@ task :steep do
 end
 
 task :rbs_validate do
-  sh 'rbs', '-rlogger', '-rpathname', '-rmutex_m', '-Isig', '-Iassets/sig', 'validate'
+  sh 'bin/rbs validate'
 end
