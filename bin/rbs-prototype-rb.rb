@@ -46,7 +46,7 @@ using Module.new {
     def process_struct_new(node, decls:, comments:, singleton:)
       return unless node.type == :CDECL
 
-      name, rhs = node.children
+      name, *_, rhs = node.children
       fields, body = struct_new(rhs)
       return unless fields
 

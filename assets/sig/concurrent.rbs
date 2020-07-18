@@ -1,0 +1,4 @@
+module Concurrent
+  class Map
+  end
+end

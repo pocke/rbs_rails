@@ -1,0 +1,14 @@
+module Capybara
+  module DSL
+  end
+
+  module Minitest
+    module Assertions
+    end
+  end
+
+  module Poltergeist
+    class Driver
+    end
+  end
+end

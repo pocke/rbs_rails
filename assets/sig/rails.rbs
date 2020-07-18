@@ -1,18 +1,14 @@
 module Rails
   overload def self.env: () -> ActiveSupport::StringInquirer
+
+  module Dom
+    module Testing
+      module Assertions
+      end
+    end
+  end
 end
 
 class Rails::Application
   def routes: () -> untyped
-end
-
-# actionpack
-module ActionDispatch
-  class MiddlewareStack
-  end
-
-  module Routing
-    module RoutesInspector
-    end
-  end
 end

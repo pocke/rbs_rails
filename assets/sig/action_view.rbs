@@ -1,3 +1,0 @@
-module ActionView::Layouts::ClassMethods
-  def layout: (String) -> void
-end

@@ -7,4 +7,7 @@ module Minitest
 
   class StatisticsReporter
   end
+
+  module Assertions
+  end
 end
