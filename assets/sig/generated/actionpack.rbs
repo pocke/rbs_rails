@@ -2523,7 +2523,8 @@ module ActionController
 
     EXCLUDE_PARAMETERS: ::Array[untyped]
 
-    class Options < 
+    # Note: It inherits unnamed class, but omitted^
+    class Options
       # :nodoc:
       include Mutex_m
 
@@ -5511,7 +5512,8 @@ module ActionDispatch
   #    end
   #  end
   class Response
-    class Header < 
+    # Note: It inherits unnamed class, but omitted^
+    class Header
       # :nodoc:
       def initialize: (untyped response, untyped header) -> untyped
 
@@ -7986,7 +7988,8 @@ module ActionDispatch
     # Other useful options include <tt>:key</tt>, <tt>:secure</tt> and
     # <tt>:httponly</tt>.
     class CookieStore < AbstractSecureStore
-      class SessionId < 
+      # Note: It inherits unnamed class, but omitted^
+      class SessionId
         attr_reader cookie_value: untyped
 
         def initialize: (untyped session_id, ?::Hash[untyped, untyped] cookie_value) -> untyped
