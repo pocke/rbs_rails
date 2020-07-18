@@ -5,14 +5,3 @@ end
 class Rails::Application
   def routes: () -> untyped
 end
-
-# actionpack
-module ActionDispatch
-  class MiddlewareStack
-  end
-
-  module Routing
-    module RoutesInspector
-    end
-  end
-end
