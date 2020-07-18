@@ -9730,7 +9730,9 @@ module ActionView
     end
   end
 
-  TemplateError: untyped
+  # It is actual TemplateError = Template::Error, but we can't write it in RBS
+  class TemplateError < Template::Error
+  end
 
   class SyntaxErrorInTemplate < TemplateError
     # nodoc
