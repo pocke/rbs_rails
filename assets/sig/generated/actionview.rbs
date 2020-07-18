@@ -7071,7 +7071,7 @@ module ActionView
         # :nodoc:
         include CollectionHelpers
 
-        class CheckBoxBuilder < Builder
+        class CheckBoxBuilder < CollectionHelpers::Builder
           # :nodoc:
           def check_box: (?::Hash[untyped, untyped] extra_html_options) -> untyped
         end
@@ -7141,7 +7141,7 @@ module ActionView
         # :nodoc:
         include CollectionHelpers
 
-        class RadioButtonBuilder < Builder
+        class RadioButtonBuilder < CollectionHelpers::Builder
           # :nodoc:
           def radio_button: (?::Hash[untyped, untyped] extra_html_options) -> untyped
         end
