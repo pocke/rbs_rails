@@ -19,3 +19,6 @@ module OpenSSL
   class Cipher
   end
 end
+
+module FileUtils
+end
