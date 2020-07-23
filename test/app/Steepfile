@@ -1,0 +1,8 @@
+target :app do
+  signature "../sig"
+  check "app/models"
+
+  library "logger"
+  library "mutex_m"
+  library "pathname"
+end
