@@ -1,5 +1,5 @@
 target :app do
-  signature "../sig"
+  signature 'sig', "../sig"
   check "app/models"
 
   library "logger"
