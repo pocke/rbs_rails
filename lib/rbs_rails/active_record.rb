@@ -268,7 +268,7 @@ module RbsRails
           Integer.name
         when :float
           Float.name
-        when :string, :text, :uuid, :binary
+        when :string, :text, :uuid, :binary, :enum
           String.name
         when :datetime
           # TODO
