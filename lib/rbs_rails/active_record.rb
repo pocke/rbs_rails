@@ -265,17 +265,17 @@ module RbsRails
       private def sql_type_to_class(t)
         case t
         when :integer
-          Integer.name
+          'Integer'
         when :float
-          Float.name
+          'Float'
         when :decimal
-          BigDecimal.name
+          'BigDecimal'
         when :string, :text, :citext, :uuid, :binary
-          String.name
+          'String'
         when :datetime
           # TODO
           # ActiveSupport::TimeWithZone.name
-          Time.name
+          'Time'
         when :boolean
           "TrueClass | FalseClass"
         when :jsonb, :json
@@ -285,7 +285,7 @@ module RbsRails
           # Date.name
           'untyped'
         when :time
-          Time.name
+          'Time'
         when :inet
           "IPAddr"
         else
