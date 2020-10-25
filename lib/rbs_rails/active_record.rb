@@ -268,6 +268,8 @@ module RbsRails
           Integer.name
         when :float
           Float.name
+        when :decimal
+          BigDecimal.name
         when :string, :text, :citext, :uuid, :binary
           String.name
         when :datetime
