@@ -1,5 +1,7 @@
 require "bundler/gem_tasks"
-task :default => [:rbs_validate, :steep]
+require 'rake/testtask'
+
+task :default => [:rbs_validate, :steep, :test]
 
 desc 'run Steep'
 task :steep do
@@ -8,4 +10,10 @@ end
 
 task :rbs_validate do
   sh 'bin/rbs validate'
+end
+
+Rake::TestTask.new do |test|
+  test.libs << 'test'
+  test.test_files = Dir['test/**/*_test.rb']
+  test.verbose = true
 end
