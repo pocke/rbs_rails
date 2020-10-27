@@ -9,7 +9,7 @@ task :steep do
 end
 
 task :rbs_validate do
-  sh 'bin/rbs validate'
+  sh 'bin/rbs validate --silent'
 end
 
 Rake::TestTask.new do |test|
