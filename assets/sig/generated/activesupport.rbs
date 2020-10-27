@@ -4640,7 +4640,7 @@ class IO
   def as_json: (?untyped? options) -> untyped
 end
 
-class Range[Elem]
+class Range[out Elem]
   def as_json: (?untyped? options) -> untyped
 end
 
@@ -4936,7 +4936,7 @@ module ActiveSupport
   end
 end
 
-class Range[Elem]
+class Range[out Elem]
   # Compare two ranges and see if they overlap each other
   #  (1..5).overlaps?(4..6) # => true
   #  (1..5).overlaps?(7..9) # => false
