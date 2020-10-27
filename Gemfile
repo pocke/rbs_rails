@@ -4,6 +4,6 @@ source "https://rubygems.org"
 gemspec
 
 gem "rake", "~> 12.0"
-gem 'rbs', '>= 0.6.0'
+gem 'rbs', '>= 0.14.0'
 gem 'steep', '>= 0.34.0'
 gem 'minitest'
