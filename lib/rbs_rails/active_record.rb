@@ -66,21 +66,45 @@ module RbsRails
 
       private def has_many
         klass.reflect_on_all_associations(:has_many).map do |a|
-          "def #{a.name}: () -> #{a.klass.name}::ActiveRecord_Associations_CollectionProxy"
+          singular_name = a.name.to_s.singularize
+          type = a.klass.name
+          collection_type = "#{type}::ActiveRecord_Associations_CollectionProxy"
+          <<~RUBY.chomp
+            def #{a.name}: () -> #{collection_type}
+            def #{a.name}=: (#{collection_type} | Array[#{type}]) -> (#{collection_type} | Array[#{type}])
+            def #{singular_name}_ids: () -> Array[Integer]
+            def #{singular_name}_ids=: (Array[Integer]) -> Array[Integer]
+          RUBY
         end.join("\n")
       end
 
       private def has_one
         klass.reflect_on_all_associations(:has_one).map do |a|
           type = a.polymorphic? ? 'untyped' : a.klass.name
-          "def #{a.name}: () -> #{type}"
+          type_optional = optional(type)
+          <<~RUBY.chomp
+            def #{a.name}: () -> #{type}
+            def #{a.name}=: (#{type_optional}) -> #{type_optional}
+            def build_#{a.name}: (untyped) -> #{type}
+            def create_#{a.name}: (untyped) -> #{type}
+            def create_#{a.name}!: (untyped) -> #{type}
+            def reload_#{a.name}: () -> #{type_optional}
+          RUBY
         end.join("\n")
       end
 
       private def belongs_to
         klass.reflect_on_all_associations(:belongs_to).map do |a|
           type = a.polymorphic? ? 'untyped' : a.klass.name
-          "def #{a.name}: () -> #{type}"
+          type_optional = optional(type)
+          <<~RUBY.chomp
+            def #{a.name}: () -> #{type}
+            def #{a.name}=: (#{type_optional}) -> #{type_optional}
+            def build_#{a.name}: (untyped) -> #{type}
+            def create_#{a.name}: (untyped) -> #{type}
+            def create_#{a.name}!: (untyped) -> #{type}
+            def reload_#{a.name}: () -> #{type_optional}
+          RUBY
         end.join("\n")
       end
 
