@@ -238,7 +238,11 @@ module RbsRails
 
       private def columns
         klass.columns.map do |col|
-          class_name = sql_type_to_class(col.type)
+          class_name = if enum_definitions.any? { |hash| hash.key?(col.name) || hash.key?(col.name.to_sym) }
+                         'String'
+                       else
+                         sql_type_to_class(col.type)
+                       end
           class_name_opt = optional(class_name)
           column_type = col.null ? class_name_opt : class_name
           sig = <<~EOS
