@@ -1,0 +1,4 @@
+module Que
+  class Job
+  end
+end

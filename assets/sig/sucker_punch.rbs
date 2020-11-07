@@ -1,0 +1,4 @@
+module SuckerPunch
+  module Job
+  end
+end
