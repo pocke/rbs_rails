@@ -79,8 +79,10 @@ def may_eql_member?(a, b)
   a.name.to_s.split('::').last == b.name.to_s.split('::').last
 end
 
-def update!(update_targets:)
+def update!(update_targets:, only:)
   update_targets.group_by { |decl, _concern| decl.location.name }.each do |fname, target_decls|
+    next unless only.match?(fname)
+
     tree = RBS::Parser.parse_signature(File.read(fname))
     target_decls.each do |target_decl, concern|
       catch(:break) do
@@ -109,6 +111,8 @@ def run(argv)
   builder = RBS::DefinitionBuilder.new(env: env)
   matcher = FileMatcher.new(targets: targets)
 
+  only = ENV['ONLY']&.then { Regexp.new(_1) } || //
+
   update_targets = []
 
   env.class_decls.each do |_name, entry|
@@ -122,7 +126,7 @@ def run(argv)
     end
   end
 
-  update!(update_targets: update_targets)
+  update!(update_targets: update_targets, only: only)
 end
 
 run(ARGV)
