@@ -2,21 +2,26 @@
 
 # TODO: Expose me to user
 
+require 'bundler/inline'
+
+gemfile do
+  source 'https://rubygems.org'
+  gem 'rbs', '>= 0.16'
+end
+
 require 'rbs'
 require 'rbs/cli'
 require 'optparse'
 
 def env(options:)
-  loader = RBS::EnvironmentLoader.new()
-  options.setup(loader)
+  loader = options.loader
   RBS::Environment.from_loader(loader).resolve_type_names
 end
 
 def parse_option(argv)
   opt = OptionParser.new
   options = RBS::CLI::LibraryOptions.new
-  cli = RBS::CLI.new(stdout: nil, stderr: nil)
-  cli.library_parse(opt, options: options)
+  options.setup_library_options(opt)
 
   return opt.parse(argv), options
 end
