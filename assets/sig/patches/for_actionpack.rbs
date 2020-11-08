@@ -1,0 +1,53 @@
+
+module AbstractController
+  class Base
+    # alias bug: https://github.com/ruby/rbs/issues/458
+    def send: (String | Symbol name, *untyped args) ?{ (*untyped) -> untyped } -> untyped
+
+    # bug: rbs prototype rb isn't aware of `class << self` for attr_reader
+    # https://github.com/rails/rails/blob/fbe2433be6e052a1acac63c7faf287c52ed3c5ba/actionpack/lib/abstract_controller/base.rb#L34-L35
+    def self.abstract: () -> untyped
+  end
+end
+
+module ActionController
+  class Metal
+    # alias bug?: https://github.com/ruby/rbs/issues/458
+    def status: -> untyped
+  end
+
+  class LiveTestResponse < Live::Response
+    # alias bug?: https://github.com/ruby/rbs/issues/458
+    def successful?: -> untyped
+    def not_found?: -> untyped
+    def server_error?: -> untyped
+  end
+end
+
+module ActionDispatch
+  class Response
+    # alias bug: https://github.com/ruby/rbs/issues/458
+    attr_accessor cache_control: untyped
+
+    # alias bug: https://github.com/ruby/rbs/issues/458
+    def location: () -> untyped
+  end
+
+  class Cookies
+    class CookieJar
+      # alias bug: https://github.com/ruby/rbs/issues/458
+      def to_h: () -> ::Hash[untyped, untyped]
+              | [T, U] () { (untyped) -> [T, U] } -> ::Hash[T, U]
+    end
+  end
+
+  module Journey
+    module Nodes
+      class Terminal < Node
+        # alias bug: https://github.com/ruby/rbs/issues/458
+        def left: () -> untyped
+      end
+    end
+  end
+end
+
