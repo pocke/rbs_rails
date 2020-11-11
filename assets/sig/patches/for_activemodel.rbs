@@ -1,0 +1,11 @@
+module ActiveModel
+  module Serialization
+    # alias bug: https://github.com/ruby/rbs/issues/458
+    def `send`: (String name, *untyped args) ?{ (*untyped) -> untyped } -> untyped
+  end
+
+  module Validations
+    # alias bug: https://github.com/ruby/rbs/issues/458
+    def `send`: (String name, *untyped args) ?{ (*untyped) -> untyped } -> untyped
+  end
+end

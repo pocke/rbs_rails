@@ -68,8 +68,8 @@ end
 
 def main(rails_code_dir, name)
   if name == 'all'
-    # TODO: actionview, activemodel, activerecord, activesupport
-    %w[actionpack activejob railties].each do |n|
+    # TODO: actionview, activerecord, activesupport
+    %w[actionpack activejob railties activemodel].each do |n|
       generate!(rails_code_dir, n)
     end
   else
