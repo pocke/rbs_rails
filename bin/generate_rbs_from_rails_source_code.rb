@@ -31,6 +31,22 @@ def patch!(name, rbs)
 
     # XXX: I guess add-type-params.rb resolves this
     rbs.gsub!('-> Parameter', '-> Parameter[untyped]') || raise('it looks unnecessary')
+  when 'railties'
+    rbs.gsub!(
+      'class NonSymbolAccessDeprecatedHash < HashWithIndifferentAccess',
+      'class NonSymbolAccessDeprecatedHash[T, U] < HashWithIndifferentAccess[T, U]')
+    # XXX: I guess add-type-params.rb resolves this
+    rbs.gsub!(
+      'def middleware: () -> Hash',
+      'def middleware: () -> Hash[untyped, untyped]')
+    # XXX: I guess add-type-params.rb resolves this
+    rbs.gsub!(
+      'def +: (untyped other) -> Collection',
+      'def +: (untyped other) -> Collection[untyped]')
+    # XXX: I guess add-type-params.rb resolves this
+    rbs.gsub!(
+      'def initializers_for: (untyped binding) -> Collection',
+      'def initializers_for: (untyped binding) -> Collection[untyped]')
   end
 end
 
@@ -52,8 +68,8 @@ end
 
 def main(rails_code_dir, name)
   if name == 'all'
-    # TODO: actionview, activemodel, activerecord, activesupport, railties
-    %w[actionpack activejob].each do |n|
+    # TODO: actionview, activemodel, activerecord, activesupport
+    %w[actionpack activejob railties].each do |n|
       generate!(rails_code_dir, n)
     end
   else
