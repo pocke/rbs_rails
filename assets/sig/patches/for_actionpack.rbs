@@ -49,5 +49,26 @@ module ActionDispatch
       end
     end
   end
+
+  module Routing
+    class Mapper
+      module Resources
+        class SingletonResource < Resource
+          # alias bug: https://github.com/ruby/rbs/issues/458
+          attr_reader path: untyped
+        end
+      end
+    end
+
+    class OptionRedirect < Redirect
+      # alias bug: https://github.com/ruby/rbs/issues/458
+      attr_reader block: untyped
+    end
+
+    class RouteSet
+      # alias bug: https://github.com/ruby/rbs/issues/458
+      def to_s: () -> String
+    end
+  end
 end
 
