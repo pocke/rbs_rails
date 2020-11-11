@@ -34,7 +34,7 @@ def patch!(name, rbs)
   end
 end
 
-def main(rails_code_dir, name)
+def generate!(rails_code_dir, name)
   files = Pathname(rails_code_dir).join(name, 'lib').glob('**/*.rb').map(&:to_s)
   generated_rbs_path = SIG_DIR.join("#{name}.rbs")
 
@@ -48,6 +48,17 @@ def main(rails_code_dir, name)
   generated_rbs_path.write(rbs)
 
   sh!({ 'ONLY' => name }, 'ruby', bin('postprocess.rb'), '-rlogger', '-rmutex_m', '-Iassets/sig', '-Isig', 'assets/')
+end
+
+def main(rails_code_dir, name)
+  if name == 'all'
+    # TODO: actionview, activemodel, activerecord, activesupport, railties
+    %w[actionpack activejob].each do |n|
+      generate!(rails_code_dir, n)
+    end
+  else
+    generate!(rails_code_dir, name)
+  end
 end
 
 main(*ARGV)
