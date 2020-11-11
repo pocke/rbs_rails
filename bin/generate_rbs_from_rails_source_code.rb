@@ -47,6 +47,47 @@ def patch!(name, rbs)
     rbs.gsub!(
       'def initializers_for: (untyped binding) -> Collection',
       'def initializers_for: (untyped binding) -> Collection[untyped]')
+  when 'activesupport'
+    rbs.gsub!(
+      /^  include Java$/,
+      '  # include Java # Java module is missing')
+    # XXX: I guess add-type-params.rb resolves this
+    rbs.gsub!(
+      'class Configuration < ActiveSupport::InheritableOptions',
+      'class Configuration[T, U] < ActiveSupport::InheritableOptions[T, U]')
+    # XXX: I guess add-type-params.rb resolves this
+    rbs.gsub!(
+      'class InheritableOptions < OrderedOptions',
+      'class InheritableOptions[T, U] < OrderedOptions[T, U]')
+    rbs.gsub!( # ref: 5c507aaae492ff5b2002fdd3ece2044b283b5d6f
+      'include ActiveSupport::Logger::Severity',
+      'include ::Logger::Severity')
+    # XXX: I guess add-type-params.rb resolves this
+    rbs.gsub!(
+      'def with_indifferent_access: () -> ActiveSupport::HashWithIndifferentAccess',
+      'def with_indifferent_access: () -> ActiveSupport::HashWithIndifferentAccess[K, V]')
+    # XXX: I guess add-type-params.rb resolves this
+    rbs.gsub!(
+      'def inquiry: () -> ActiveSupport::ArrayInquirer',
+      'def inquiry: () -> ActiveSupport::ArrayInquirer[Elem]')
+
+    # These aliases are actually defined, but it causes duplicated method definition
+    rbs.gsub!('alias to_s to_formatted_s', '')
+    rbs.gsub!('alias + plus_with_duration', '')
+    rbs.gsub!('alias - minus_with_duration', '')
+    rbs.gsub!('alias - minus_with_coercion', '')
+    rbs.gsub!('alias <=> compare_with_coercion', '')
+    rbs.gsub!('alias eql? eql_with_coercion', '')
+    rbs.gsub!('alias self.at self.at_with_coercion', '')
+    rbs.gsub!('alias inspect readable_inspect', '')
+    rbs.gsub!('alias default_inspect inspect', '')
+
+    rbs.gsub!('HashWithIndifferentAccess: untyped', <<~RBS)
+      # NOTE: HashWithIndifferentAccess and ActiveSupport::HashWithIndifferentAccess are the same object
+      #       but RBS doesn't have class alias syntax
+      class HashWithIndifferentAccess[T, U] < ActiveSupport::HashWithIndifferentAccess[T, U]
+      end
+    RBS
   end
 end
 
@@ -68,8 +109,8 @@ end
 
 def main(rails_code_dir, name)
   if name == 'all'
-    # TODO: actionview, activerecord, activesupport
-    %w[actionpack activejob railties activemodel].each do |n|
+    # TODO: actionview, activerecord
+    %w[actionpack activejob railties activemodel activesupport].each do |n|
       generate!(rails_code_dir, n)
     end
   else
