@@ -230,6 +230,8 @@ module ActiveRecord
 
     def build: (?untyped? attributes) { () -> untyped } -> untyped
 
+    alias new build
+
     def create: (?untyped? attributes) { () -> untyped } -> untyped
 
     def create!: (?untyped? attributes) { () -> untyped } -> untyped
@@ -400,6 +402,8 @@ module ActiveRecord
       def remove_inverse_instance: (untyped record) -> untyped
 
       def inversed_from: (untyped record) -> untyped
+
+      alias inversed_from_queries inversed_from
 
       # Returns the class of the target. belongs_to polymorphic overrides this to look at the
       # polymorphic_type field on the owner.
@@ -1107,6 +1111,8 @@ module ActiveRecord
       #   person.pets.count # => 0 # count from database
       def build: (?::Hash[untyped, untyped] attributes) { () -> untyped } -> untyped
 
+      alias new build
+
       # Returns a new object of the collection type that has been instantiated with
       # attributes, linked to this object and that has already been saved (if it
       # passes the validations).
@@ -1585,6 +1591,12 @@ module ActiveRecord
       #   #    ]
       def <<: (*untyped records) -> untyped
 
+      alias push <<
+
+      alias append <<
+
+      alias concat <<
+
       def `prepend`: (*untyped args) -> untyped
 
       # Equivalent to +delete_all+. The difference is that returns +self+, instead
@@ -1911,7 +1923,7 @@ module ActiveRecord
 
         def column_alias: (untyped node, untyped column) -> untyped
 
-        class Table < ::Struct[untyped]
+        class Table[T] < ::Struct[T]
           attr_accessor node(): untyped
 
           attr_accessor columns(): untyped
@@ -1920,7 +1932,7 @@ module ActiveRecord
           def column_aliases: () -> untyped
         end
 
-        class Column < ::Struct[untyped]
+        class Column[T] < ::Struct[T]
           attr_accessor name(): untyped
 
           attr_accessor alias(): untyped
@@ -2026,6 +2038,37 @@ module ActiveRecord
         def reflection_scope: () -> untyped
 
         def build_scope: () -> untyped
+      end
+    end
+  end
+end
+
+module ActiveRecord
+  module Associations
+    class Preloader
+      class ThroughAssociation < Association
+        # :nodoc:
+        PRELOADER: untyped
+
+        def initialize: () -> untyped
+
+        def preloaded_records: () -> untyped
+
+        def records_by_owner: () -> untyped
+
+        def source_preloaders: () -> untyped
+
+        def middle_records: () -> untyped
+
+        def through_preloaders: () -> untyped
+
+        def through_reflection: () -> untyped
+
+        def source_reflection: () -> untyped
+
+        def preload_index: () -> untyped
+
+        def through_scope: () -> untyped
       end
     end
   end
@@ -2159,31 +2202,71 @@ end
 
 module ActiveRecord
   module Associations
-    class Preloader
-      class ThroughAssociation < Association
-        # :nodoc:
-        PRELOADER: untyped
+    class SingularAssociation < Association
+      # nodoc:
+      # Implements the reader method, e.g. foo.bar for Foo.has_one :bar
+      def reader: () -> untyped
 
-        def initialize: () -> untyped
+      # Implements the writer method, e.g. foo.bar= for Foo.belongs_to :bar
+      def writer: (untyped record) -> untyped
 
-        def preloaded_records: () -> untyped
+      def build: (?::Hash[untyped, untyped] attributes) { () -> untyped } -> untyped
 
-        def records_by_owner: () -> untyped
+      # Implements the reload reader method, e.g. foo.reload_bar for
+      # Foo.has_one :bar
+      def force_reload_reader: () -> untyped
 
-        def source_preloaders: () -> untyped
+      def scope_for_create: () -> untyped
 
-        def middle_records: () -> untyped
+      def find_target: () -> untyped
 
-        def through_preloaders: () -> untyped
+      def replace: (untyped record) -> untyped
 
-        def through_reflection: () -> untyped
+      def set_new_record: (untyped record) -> untyped
 
-        def source_reflection: () -> untyped
+      def _create_record: (untyped attributes, ?bool raise_error) { () -> untyped } -> untyped
+    end
+  end
+end
 
-        def preload_index: () -> untyped
+module ActiveRecord
+  module Associations
+    module ThroughAssociation
+      def through_reflection: () -> untyped
 
-        def through_scope: () -> untyped
-      end
+      def through_association: () -> untyped
+
+      # We merge in these scopes for two reasons:
+      #
+      #   1. To get the default_scope conditions for any of the other reflections in the chain
+      #   2. To get the type conditions for any STI models in the chain
+      def target_scope: () -> untyped
+
+      # Construct attributes for :through pointing to owner and associate. This is used by the
+      # methods which create and delete records on the association.
+      #
+      # We only support indirectly modifying through associations which have a belongs_to source.
+      # This is the "has_many :tags, through: :taggings" situation, where the join model
+      # typically has a belongs_to on both side. In other words, associations which could also
+      # be represented as has_and_belongs_to_many associations.
+      #
+      # We do not support creating/deleting records on the association where the source has
+      # some other type, because this opens up a whole can of worms, and in basically any
+      # situation it is more natural for the user to just create or modify their join records
+      # directly as required.
+      def construct_join_attributes: (*untyped records) -> untyped
+
+      # Note: this does not capture all cases, for example it would be crazy to try to
+      # properly support stale-checking for nested associations.
+      def stale_state: () -> untyped
+
+      def foreign_key_present?: () -> untyped
+
+      def ensure_mutable: () -> untyped
+
+      def ensure_not_nested: () -> untyped
+
+      def build_record: (untyped attributes) -> untyped
     end
   end
 end
@@ -3856,77 +3939,6 @@ module ActiveRecord
 end
 
 module ActiveRecord
-  module Associations
-    class SingularAssociation < Association
-      # nodoc:
-      # Implements the reader method, e.g. foo.bar for Foo.has_one :bar
-      def reader: () -> untyped
-
-      # Implements the writer method, e.g. foo.bar= for Foo.belongs_to :bar
-      def writer: (untyped record) -> untyped
-
-      def build: (?::Hash[untyped, untyped] attributes) { () -> untyped } -> untyped
-
-      # Implements the reload reader method, e.g. foo.reload_bar for
-      # Foo.has_one :bar
-      def force_reload_reader: () -> untyped
-
-      def scope_for_create: () -> untyped
-
-      def find_target: () -> untyped
-
-      def replace: (untyped record) -> untyped
-
-      def set_new_record: (untyped record) -> untyped
-
-      def _create_record: (untyped attributes, ?bool raise_error) { () -> untyped } -> untyped
-    end
-  end
-end
-
-module ActiveRecord
-  module Associations
-    module ThroughAssociation
-      def through_reflection: () -> untyped
-
-      def through_association: () -> untyped
-
-      # We merge in these scopes for two reasons:
-      #
-      #   1. To get the default_scope conditions for any of the other reflections in the chain
-      #   2. To get the type conditions for any STI models in the chain
-      def target_scope: () -> untyped
-
-      # Construct attributes for :through pointing to owner and associate. This is used by the
-      # methods which create and delete records on the association.
-      #
-      # We only support indirectly modifying through associations which have a belongs_to source.
-      # This is the "has_many :tags, through: :taggings" situation, where the join model
-      # typically has a belongs_to on both side. In other words, associations which could also
-      # be represented as has_and_belongs_to_many associations.
-      #
-      # We do not support creating/deleting records on the association where the source has
-      # some other type, because this opens up a whole can of worms, and in basically any
-      # situation it is more natural for the user to just create or modify their join records
-      # directly as required.
-      def construct_join_attributes: (*untyped records) -> untyped
-
-      # Note: this does not capture all cases, for example it would be crazy to try to
-      # properly support stale-checking for nested associations.
-      def stale_state: () -> untyped
-
-      def foreign_key_present?: () -> untyped
-
-      def ensure_mutable: () -> untyped
-
-      def ensure_not_nested: () -> untyped
-
-      def build_record: (untyped attributes) -> untyped
-    end
-  end
-end
-
-module ActiveRecord
   module AttributeAssignment
     include ActiveModel::AttributeAssignment
 
@@ -4287,6 +4299,137 @@ module ActiveRecord
 end
 
 module ActiveRecord
+  module AttributeMethods
+    module Read
+      extend ActiveSupport::Concern
+
+      module ClassMethods
+        def define_method_attribute: (untyped name) -> untyped
+      end
+
+      # Returns the value of the attribute identified by <tt>attr_name</tt> after
+      # it has been typecast (for example, "2004-12-12" in a date column is cast
+      # to a date object, like Date.new(2004, 12, 12)).
+      def read_attribute: (untyped attr_name) { () -> untyped } -> untyped
+
+      def _read_attribute: (untyped attr_name) { () -> untyped } -> untyped
+
+      alias attribute _read_attribute
+    end
+  end
+end
+
+module ActiveRecord
+  module AttributeMethods
+    module Serialization
+      extend ActiveSupport::Concern
+
+      class ColumnNotSerializableError < StandardError
+        def initialize: (untyped name, untyped `type`) -> untyped
+      end
+
+      module ClassMethods
+        # If you have an attribute that needs to be saved to the database as an
+        # object, and retrieved as the same object, then specify the name of that
+        # attribute using this method and it will be handled automatically. The
+        # serialization is done through YAML. If +class_name+ is specified, the
+        # serialized object must be of that class on assignment and retrieval.
+        # Otherwise SerializationTypeMismatch will be raised.
+        #
+        # Empty objects as <tt>{}</tt>, in the case of +Hash+, or <tt>[]</tt>, in the case of
+        # +Array+, will always be persisted as null.
+        #
+        # Keep in mind that database adapters handle certain serialization tasks
+        # for you. For instance: +json+ and +jsonb+ types in PostgreSQL will be
+        # converted between JSON object/array syntax and Ruby +Hash+ or +Array+
+        # objects transparently. There is no need to use #serialize in this
+        # case.
+        #
+        # For more complex cases, such as conversion to or from your application
+        # domain objects, consider using the ActiveRecord::Attributes API.
+        #
+        # ==== Parameters
+        #
+        # * +attr_name+ - The field name that should be serialized.
+        # * +class_name_or_coder+ - Optional, a coder object, which responds to +.load+ and +.dump+
+        #   or a class name that the object type should be equal to.
+        #
+        # ==== Example
+        #
+        #   # Serialize a preferences attribute.
+        #   class User < ActiveRecord::Base
+        #     serialize :preferences
+        #   end
+        #
+        #   # Serialize preferences using JSON as coder.
+        #   class User < ActiveRecord::Base
+        #     serialize :preferences, JSON
+        #   end
+        #
+        #   # Serialize preferences as Hash using YAML coder.
+        #   class User < ActiveRecord::Base
+        #     serialize :preferences, Hash
+        #   end
+        def serialize: (untyped attr_name, ?untyped class_name_or_coder) -> untyped
+
+        def type_incompatible_with_serialize?: (untyped `type`, untyped class_name) -> untyped
+      end
+    end
+  end
+end
+
+module ActiveRecord
+  module AttributeMethods
+    module TimeZoneConversion
+      class TimeZoneConverter
+        # :nodoc:
+        def deserialize: (untyped value) -> untyped
+
+        def cast: (untyped value) -> (nil | untyped)
+
+        def convert_time_to_time_zone: (untyped value) -> (nil | untyped)
+
+        def set_time_zone_without_conversion: (untyped value) -> untyped
+
+        def map_avoiding_infinite_recursion: (untyped value) { (untyped) -> untyped } -> untyped
+      end
+
+      extend ActiveSupport::Concern
+
+      module ClassMethods
+        def inherited: (untyped subclass) -> untyped
+
+        def create_time_zone_conversion_attribute?: (untyped name, untyped cast_type) -> untyped
+      end
+    end
+  end
+end
+
+module ActiveRecord
+  module AttributeMethods
+    module Write
+      extend ActiveSupport::Concern
+
+      module ClassMethods
+        def define_method_attribute=: (untyped name) -> untyped
+      end
+
+      # Updates the attribute identified by <tt>attr_name</tt> with the
+      # specified +value+. Empty strings for Integer and Float columns are
+      # turned into +nil+.
+      def write_attribute: (untyped attr_name, untyped value) -> untyped
+
+      def _write_attribute: (untyped attr_name, untyped value) -> untyped
+
+      def write_attribute_without_type_cast: (untyped attr_name, untyped value) -> untyped
+
+      # Dispatch target for <tt>*=</tt> attribute methods.
+      def attribute=: (untyped attribute_name, untyped value) -> untyped
+    end
+  end
+end
+
+module ActiveRecord
   # = Active Record Attribute Methods
   module AttributeMethods
     extend ActiveSupport::Concern
@@ -4564,136 +4707,6 @@ module ActiveRecord
 end
 
 module ActiveRecord
-  module AttributeMethods
-    module Read
-      extend ActiveSupport::Concern
-
-      module ClassMethods
-        def define_method_attribute: (untyped name) -> untyped
-      end
-
-      # Returns the value of the attribute identified by <tt>attr_name</tt> after
-      # it has been typecast (for example, "2004-12-12" in a date column is cast
-      # to a date object, like Date.new(2004, 12, 12)).
-      def read_attribute: (untyped attr_name) { () -> untyped } -> untyped
-
-      def _read_attribute: (untyped attr_name) { () -> untyped } -> untyped
-    end
-  end
-end
-
-module ActiveRecord
-  module AttributeMethods
-    module Serialization
-      extend ActiveSupport::Concern
-
-      class ColumnNotSerializableError < StandardError
-        def initialize: (untyped name, untyped `type`) -> untyped
-      end
-
-      module ClassMethods
-        # If you have an attribute that needs to be saved to the database as an
-        # object, and retrieved as the same object, then specify the name of that
-        # attribute using this method and it will be handled automatically. The
-        # serialization is done through YAML. If +class_name+ is specified, the
-        # serialized object must be of that class on assignment and retrieval.
-        # Otherwise SerializationTypeMismatch will be raised.
-        #
-        # Empty objects as <tt>{}</tt>, in the case of +Hash+, or <tt>[]</tt>, in the case of
-        # +Array+, will always be persisted as null.
-        #
-        # Keep in mind that database adapters handle certain serialization tasks
-        # for you. For instance: +json+ and +jsonb+ types in PostgreSQL will be
-        # converted between JSON object/array syntax and Ruby +Hash+ or +Array+
-        # objects transparently. There is no need to use #serialize in this
-        # case.
-        #
-        # For more complex cases, such as conversion to or from your application
-        # domain objects, consider using the ActiveRecord::Attributes API.
-        #
-        # ==== Parameters
-        #
-        # * +attr_name+ - The field name that should be serialized.
-        # * +class_name_or_coder+ - Optional, a coder object, which responds to +.load+ and +.dump+
-        #   or a class name that the object type should be equal to.
-        #
-        # ==== Example
-        #
-        #   # Serialize a preferences attribute.
-        #   class User < ActiveRecord::Base
-        #     serialize :preferences
-        #   end
-        #
-        #   # Serialize preferences using JSON as coder.
-        #   class User < ActiveRecord::Base
-        #     serialize :preferences, JSON
-        #   end
-        #
-        #   # Serialize preferences as Hash using YAML coder.
-        #   class User < ActiveRecord::Base
-        #     serialize :preferences, Hash
-        #   end
-        def serialize: (untyped attr_name, ?untyped class_name_or_coder) -> untyped
-
-        def type_incompatible_with_serialize?: (untyped `type`, untyped class_name) -> untyped
-      end
-    end
-  end
-end
-
-module ActiveRecord
-  module AttributeMethods
-    module TimeZoneConversion
-      # Note: It inherits unnamed class, but omitted
-      class TimeZoneConverter
-        # :nodoc:
-        def deserialize: (untyped value) -> untyped
-
-        def cast: (untyped value) -> (nil | untyped)
-
-        def convert_time_to_time_zone: (untyped value) -> (nil | untyped)
-
-        def set_time_zone_without_conversion: (untyped value) -> untyped
-
-        def map_avoiding_infinite_recursion: (untyped value) { (untyped) -> untyped } -> untyped
-      end
-
-      extend ActiveSupport::Concern
-
-      module ClassMethods
-        def inherited: (untyped subclass) -> untyped
-
-        def create_time_zone_conversion_attribute?: (untyped name, untyped cast_type) -> untyped
-      end
-    end
-  end
-end
-
-module ActiveRecord
-  module AttributeMethods
-    module Write
-      extend ActiveSupport::Concern
-
-      module ClassMethods
-        def define_method_attribute=: (untyped name) -> untyped
-      end
-
-      # Updates the attribute identified by <tt>attr_name</tt> with the
-      # specified +value+. Empty strings for Integer and Float columns are
-      # turned into +nil+.
-      def write_attribute: (untyped attr_name, untyped value) -> untyped
-
-      def _write_attribute: (untyped attr_name, untyped value) -> untyped
-
-      def write_attribute_without_type_cast: (untyped attr_name, untyped value) -> untyped
-
-      # Dispatch target for <tt>*=</tt> attribute methods.
-      def attribute=: (untyped attribute_name, untyped value) -> untyped
-    end
-  end
-end
-
-module ActiveRecord
   # See ActiveRecord::Attributes::ClassMethods for documentation
   module Attributes
     extend ActiveSupport::Concern
@@ -4857,7 +4870,7 @@ module ActiveRecord
       #   class Money < Struct.new(:amount, :currency)
       #   end
       #
-      #   class MoneyType < Type::Value
+      #   class MoneyType < ActiveModel::Type::Value
       #     def initialize(currency_converter:)
       #       @currency_converter = currency_converter
       #     end
@@ -4912,7 +4925,7 @@ module ActiveRecord
       #
       # +user_provided_default+ Whether the default value should be cast using
       # +cast+ or +deserialize+.
-      def define_attribute: (untyped name, untyped cast_type, ?user_provided_default: bool user_provided_default, ?default: untyped default) -> untyped
+      def define_attribute: (untyped name, untyped cast_type, ?default: untyped default, ?user_provided_default: bool user_provided_default) -> untyped
 
       def load_schema!: () -> untyped
 
@@ -5914,347 +5927,6 @@ module ActiveRecord
 end
 
 module ActiveRecord
-  module ConnectionAdapters
-    # :nodoc:
-    extend ActiveSupport::Autoload
-
-    # Active Record supports multiple database systems. AbstractAdapter and
-    # related classes form the abstraction layer which makes this possible.
-    # An AbstractAdapter represents a connection to a database, and provides an
-    # abstract interface for database-specific functionality such as establishing
-    # a connection, escaping values, building the right SQL fragments for +:offset+
-    # and +:limit+ options, etc.
-    #
-    # All the concrete database adapters follow the interface laid down in this class.
-    # {ActiveRecord::Base.connection}[rdoc-ref:ConnectionHandling#connection] returns an AbstractAdapter object, which
-    # you can use.
-    #
-    # Most of the methods in the adapter are useful during migrations. Most
-    # notably, the instance methods provided by SchemaStatements are very useful.
-    class AbstractAdapter
-      ADAPTER_NAME: ::String
-
-      include ActiveSupport::Callbacks
-
-      extend ::ActiveSupport::Callbacks::ClassMethods
-
-      include Quoting
-
-      include DatabaseStatements
-
-      include SchemaStatements
-
-      include DatabaseLimits
-
-      include QueryCache
-
-      include Savepoints
-
-      SIMPLE_INT: untyped
-
-      COMMENT_REGEX: untyped
-
-      attr_accessor pool: untyped
-
-      attr_reader visitor: untyped
-
-      attr_reader owner: untyped
-
-      attr_reader logger: untyped
-
-      attr_reader lock: untyped
-
-      def self.type_cast_config_to_integer: (untyped config) -> untyped
-
-      def self.type_cast_config_to_boolean: (untyped config) -> untyped
-
-      def self.build_read_query_regexp: (*untyped parts) -> ::Regexp
-
-      def self.quoted_column_names: () -> untyped
-
-      def self.quoted_table_names: () -> untyped
-
-      def initialize: (untyped connection, ?untyped? logger, ?::Hash[untyped, untyped] config) -> untyped
-
-      def replica?: () -> untyped
-
-      # Determines whether writes are currently being prevents.
-      #
-      # Returns true if the connection is a replica, or if +prevent_writes+
-      # is set to true.
-      def preventing_writes?: () -> untyped
-
-      def migrations_paths: () -> untyped
-
-      def migration_context: () -> MigrationContext
-
-      def schema_migration: () -> untyped
-
-      def prepared_statements: () -> untyped
-
-      def prepared_statements_disabled_cache: () -> untyped
-
-      class Version
-        include Comparable
-
-        attr_reader full_version_string: untyped
-
-        def initialize: (untyped version_string, ?untyped? full_version_string) -> untyped
-
-        def <=>: (untyped version_string) -> untyped
-
-        def to_s: () -> untyped
-      end
-
-      def valid_type?: (untyped `type`) -> untyped
-
-      # this method must only be called while holding connection pool's mutex
-      def lease: () -> untyped
-
-      def schema_cache: () -> untyped
-
-      def schema_cache=: (untyped cache) -> untyped
-
-      # this method must only be called while holding connection pool's mutex
-      def expire: () -> untyped
-
-      def steal!: () -> untyped
-
-      def seconds_idle: () -> (0 | untyped)
-
-      def unprepared_statement: () { () -> untyped } -> untyped
-
-      # Returns the human-readable name of the adapter. Use mixed case - one
-      # can always use downcase if needed.
-      def adapter_name: () -> untyped
-
-      # Does the database for this adapter exist?
-      def self.database_exists?: (untyped config) -> untyped
-
-      # Does this adapter support DDL rollbacks in transactions? That is, would
-      # CREATE TABLE or ALTER TABLE get rolled back by a transaction?
-      def supports_ddl_transactions?: () -> ::FalseClass
-
-      def supports_bulk_alter?: () -> ::FalseClass
-
-      # Does this adapter support savepoints?
-      def supports_savepoints?: () -> ::FalseClass
-
-      # Does this adapter support application-enforced advisory locking?
-      def supports_advisory_locks?: () -> ::FalseClass
-
-      # Should primary key values be selected from their corresponding
-      # sequence before the insert statement? If true, next_sequence_value
-      # is called before each insert to set the record's primary key.
-      def prefetch_primary_key?: (?untyped? table_name) -> ::FalseClass
-
-      def supports_partitioned_indexes?: () -> ::FalseClass
-
-      # Does this adapter support index sort order?
-      def supports_index_sort_order?: () -> ::FalseClass
-
-      # Does this adapter support partial indices?
-      def supports_partial_index?: () -> ::FalseClass
-
-      # Does this adapter support expression indices?
-      def supports_expression_index?: () -> ::FalseClass
-
-      # Does this adapter support explain?
-      def supports_explain?: () -> ::FalseClass
-
-      # Does this adapter support setting the isolation level for a transaction?
-      def supports_transaction_isolation?: () -> ::FalseClass
-
-      # Does this adapter support database extensions?
-      def supports_extensions?: () -> ::FalseClass
-
-      # Does this adapter support creating indexes in the same statement as
-      # creating the table?
-      def supports_indexes_in_create?: () -> ::FalseClass
-
-      # Does this adapter support creating foreign key constraints?
-      def supports_foreign_keys?: () -> ::FalseClass
-
-      # Does this adapter support creating invalid constraints?
-      def supports_validate_constraints?: () -> ::FalseClass
-
-      # Does this adapter support creating foreign key constraints
-      # in the same statement as creating the table?
-      def supports_foreign_keys_in_create?: () -> untyped
-
-      # Does this adapter support views?
-      def supports_views?: () -> ::FalseClass
-
-      # Does this adapter support materialized views?
-      def supports_materialized_views?: () -> ::FalseClass
-
-      # Does this adapter support datetime with precision?
-      def supports_datetime_with_precision?: () -> ::FalseClass
-
-      # Does this adapter support json data type?
-      def supports_json?: () -> ::FalseClass
-
-      # Does this adapter support metadata comments on database objects (tables, columns, indexes)?
-      def supports_comments?: () -> ::FalseClass
-
-      # Can comments for tables, columns, and indexes be specified in create/alter table statements?
-      def supports_comments_in_create?: () -> ::FalseClass
-
-      # Does this adapter support multi-value insert?
-      def supports_multi_insert?: () -> ::TrueClass
-
-      # Does this adapter support virtual columns?
-      def supports_virtual_columns?: () -> ::FalseClass
-
-      # Does this adapter support foreign/external tables?
-      def supports_foreign_tables?: () -> ::FalseClass
-
-      # Does this adapter support optimizer hints?
-      def supports_optimizer_hints?: () -> ::FalseClass
-
-      def supports_common_table_expressions?: () -> ::FalseClass
-
-      def supports_lazy_transactions?: () -> ::FalseClass
-
-      def supports_insert_returning?: () -> ::FalseClass
-
-      def supports_insert_on_duplicate_skip?: () -> ::FalseClass
-
-      def supports_insert_on_duplicate_update?: () -> ::FalseClass
-
-      def supports_insert_conflict_target?: () -> ::FalseClass
-
-      # This is meant to be implemented by the adapters that support extensions
-      def disable_extension: (untyped name) -> nil
-
-      # This is meant to be implemented by the adapters that support extensions
-      def enable_extension: (untyped name) -> nil
-
-      def advisory_locks_enabled?: () -> untyped
-
-      def get_advisory_lock: (untyped lock_id) -> nil
-
-      def release_advisory_lock: (untyped lock_id) -> nil
-
-      # A list of extensions, to be filled in by adapters that support them.
-      def extensions: () -> ::Array[untyped]
-
-      # A list of index algorithms, to be filled by adapters that support them.
-      def index_algorithms: () -> ::Hash[untyped, untyped]
-
-      # Override to turn off referential integrity while executing <tt>&block</tt>.
-      def disable_referential_integrity: () { () -> untyped } -> untyped
-
-      # Checks whether the connection to the database is still active. This includes
-      # checking whether the database is actually capable of responding, i.e. whether
-      # the connection isn't stale.
-      def active?: () -> nil
-
-      # Disconnects from the database if already connected, and establishes a
-      # new connection with the database. Implementors should call super if they
-      # override the default implementation.
-      def reconnect!: () -> untyped
-
-      # Disconnects from the database if already connected. Otherwise, this
-      # method does nothing.
-      def disconnect!: () -> untyped
-
-      # Immediately forget this connection ever existed. Unlike disconnect!,
-      # this will not communicate with the server.
-      #
-      # After calling this method, the behavior of all other methods becomes
-      # undefined. This is called internally just before a forked process gets
-      # rid of a connection that belonged to its parent.
-      def discard!: () -> untyped
-
-      # Reset the state of this connection, directing the DBMS to clear
-      # transactions and other connection-related server-side state. Usually a
-      # database-dependent operation.
-      #
-      # The default implementation does nothing; the implementation should be
-      # overridden by concrete adapters.
-      def reset!: () -> nil
-
-      # Clear any caching the database adapter may be doing.
-      def clear_cache!: () -> untyped
-
-      # Returns true if its required to reload the connection between requests for development mode.
-      def requires_reloading?: () -> ::FalseClass
-
-      # Checks whether the connection to the database is still active (i.e. not stale).
-      # This is done under the hood by calling #active?. If the connection
-      # is no longer active, then this method will reconnect to the database.
-      def verify!: () -> untyped
-
-      # Provides access to the underlying database driver for this adapter. For
-      # example, this method returns a Mysql2::Client object in case of Mysql2Adapter,
-      # and a PG::Connection object in case of PostgreSQLAdapter.
-      #
-      # This is useful for when you need to call a proprietary method such as
-      # PostgreSQL's lo_* methods.
-      def raw_connection: () -> untyped
-
-      def default_uniqueness_comparison: (untyped attribute, untyped value, untyped klass) -> untyped
-
-      def case_sensitive_comparison: (untyped attribute, untyped value) -> untyped
-
-      def case_insensitive_comparison: (untyped attribute, untyped value) -> untyped
-
-      def can_perform_case_insensitive_comparison_for?: (untyped column) -> ::TrueClass
-
-      # Check the connection back in to the connection pool
-      def close: () -> untyped
-
-      def column_name_for_operation: (untyped operation, untyped node) -> untyped
-
-      def default_index_type?: (untyped index) -> untyped
-
-      def build_insert_sql: (untyped insert) -> ::String
-
-      def get_database_version: () -> nil
-
-      def database_version: () -> untyped
-
-      def check_version: () -> nil
-
-      def type_map: () -> untyped
-
-      def initialize_type_map: (?untyped m) -> untyped
-
-      def reload_type_map: () -> untyped
-
-      def register_class_with_limit: (untyped mapping, untyped key, untyped klass) -> untyped
-
-      def register_class_with_precision: (untyped mapping, untyped key, untyped klass) -> untyped
-
-      def extract_scale: (untyped sql_type) -> untyped
-
-      def extract_precision: (untyped sql_type) -> untyped
-
-      def extract_limit: (untyped sql_type) -> untyped
-
-      def translate_exception_class: (untyped e, untyped sql, untyped binds) -> untyped
-
-      def log: (untyped sql, ?::String name, ?untyped binds, ?untyped type_casted_binds, ?untyped? statement_name) { () -> untyped } -> untyped
-
-      def translate_exception: (untyped exception, binds: untyped binds, sql: untyped sql, message: untyped message) -> untyped
-
-      def without_prepared_statement?: (untyped binds) -> untyped
-
-      def column_for: (untyped table_name, untyped column_name) -> untyped
-
-      def column_for_attribute: (untyped attribute) -> untyped
-
-      def collector: () -> untyped
-
-      def arel_visitor: () -> Arel::Visitors::ToSql
-
-      def build_statement_pool: () -> nil
-    end
-  end
-end
-
-module ActiveRecord
   # Raised when a connection could not be obtained within the connection
   # acquisition timeout period: because max connections in pool
   # are in use.
@@ -6664,6 +6336,8 @@ module ActiveRecord
       # if owner_thread param is omitted, this must be called in synchronize block
       def remove_connection_from_thread_cache: (untyped conn, ?untyped owner_thread) -> untyped
 
+      alias release remove_connection_from_thread_cache
+
       def new_connection: () -> untyped
 
       # If the pool is not at a <tt>@size</tt> limit, establish new connection. Connecting
@@ -6748,6 +6422,8 @@ module ActiveRecord
       def while_preventing_writes: (?bool enabled) { () -> untyped } -> untyped
 
       def connection_pool_list: () -> untyped
+
+      alias connection_pools connection_pool_list
 
       def establish_connection: (untyped config) -> untyped
 
@@ -6924,6 +6600,8 @@ module ActiveRecord
       # passed in as +id_value+.
       def insert: (untyped arel, ?untyped? name, ?untyped? pk, ?untyped? id_value, ?untyped? sequence_name, ?untyped binds) -> untyped
 
+      alias create insert
+
       # Executes the update statement and returns the number of rows affected.
       def update: (untyped arel, ?untyped? name, ?untyped binds) -> untyped
 
@@ -7009,7 +6687,7 @@ module ActiveRecord
       #
       # The mysql2 and postgresql adapters support setting the transaction
       # isolation level.
-      def transaction: (?joinable: bool joinable, ?isolation: untyped? isolation, ?requires_new: untyped? requires_new) { () -> untyped } -> untyped
+      def transaction: (?requires_new: untyped? requires_new, ?isolation: untyped? isolation, ?joinable: bool joinable) { () -> untyped } -> untyped
 
       attr_reader transaction_manager: untyped
 
@@ -7100,257 +6778,6 @@ module ActiveRecord
       def single_value_from_rows: (untyped rows) -> untyped
 
       def arel_from_relation: (untyped relation) -> untyped
-    end
-  end
-end
-
-module ActiveRecord
-  module ConnectionAdapters
-    class AbstractMysqlAdapter < AbstractAdapter
-      include MySQL::Quoting
-
-      include MySQL::SchemaStatements
-
-      NATIVE_DATABASE_TYPES: ::Hash[untyped, untyped]
-
-      class StatementPool < ConnectionAdapters::StatementPool
-        def dealloc: (untyped stmt) -> untyped
-      end
-
-      def initialize: (untyped connection, untyped logger, untyped connection_options, untyped config) -> untyped
-
-      def get_database_version: () -> AbstractAdapter::Version
-
-      def mariadb?: () -> untyped
-
-      def supports_bulk_alter?: () -> ::TrueClass
-
-      def supports_index_sort_order?: () -> untyped
-
-      def supports_expression_index?: () -> untyped
-
-      def supports_transaction_isolation?: () -> ::TrueClass
-
-      def supports_explain?: () -> ::TrueClass
-
-      def supports_indexes_in_create?: () -> ::TrueClass
-
-      def supports_foreign_keys?: () -> ::TrueClass
-
-      def supports_views?: () -> ::TrueClass
-
-      def supports_datetime_with_precision?: () -> untyped
-
-      def supports_virtual_columns?: () -> untyped
-
-      # See https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html for more details.
-      def supports_optimizer_hints?: () -> untyped
-
-      def supports_common_table_expressions?: () -> untyped
-
-      def supports_advisory_locks?: () -> ::TrueClass
-
-      def supports_insert_on_duplicate_skip?: () -> ::TrueClass
-
-      def supports_insert_on_duplicate_update?: () -> ::TrueClass
-
-      def get_advisory_lock: (untyped lock_name, ?::Integer timeout) -> untyped
-
-      def release_advisory_lock: (untyped lock_name) -> untyped
-
-      def native_database_types: () -> untyped
-
-      def index_algorithms: () -> { default: untyped, copy: untyped, inplace: untyped }
-
-      def each_hash: (untyped result) -> untyped
-
-      def error_number: (untyped exception) -> untyped
-
-      def disable_referential_integrity: () { () -> untyped } -> untyped
-
-      def clear_cache!: () -> untyped
-
-      def explain: (untyped arel, ?untyped binds) -> untyped
-
-      # Executes the SQL statement in the context of this connection.
-      def execute: (untyped sql, ?untyped? name) -> untyped
-
-      def execute_and_free: (untyped sql, ?untyped? name) { (untyped) -> untyped } -> untyped
-
-      def begin_db_transaction: () -> untyped
-
-      def begin_isolated_db_transaction: (untyped isolation) -> untyped
-
-      def commit_db_transaction: () -> untyped
-
-      def exec_rollback_db_transaction: () -> untyped
-
-      def empty_insert_statement_value: (?untyped? primary_key) -> "VALUES ()"
-
-      # Drops the database specified on the +name+ attribute
-      # and creates it again using the provided +options+.
-      def recreate_database: (untyped name, ?::Hash[untyped, untyped] options) -> untyped
-
-      # Create a new MySQL database with optional <tt>:charset</tt> and <tt>:collation</tt>.
-      # Charset defaults to utf8mb4.
-      #
-      # Example:
-      #   create_database 'charset_test', charset: 'latin1', collation: 'latin1_bin'
-      #   create_database 'matt_development'
-      #   create_database 'matt_development', charset: :big5
-      def create_database: (untyped name, ?::Hash[untyped, untyped] options) -> untyped
-
-      def drop_database: (untyped name) -> untyped
-
-      def current_database: () -> untyped
-
-      # Returns the database character set.
-      def charset: () -> untyped
-
-      # Returns the database collation strategy.
-      def collation: () -> untyped
-
-      def table_comment: (untyped table_name) -> untyped
-
-      def change_table_comment: (untyped table_name, untyped comment_or_changes) -> untyped
-
-      # Renames a table.
-      #
-      # Example:
-      #   rename_table('octopuses', 'octopi')
-      def rename_table: (untyped table_name, untyped new_name) -> untyped
-
-      # Drops a table from the database.
-      #
-      # [<tt>:force</tt>]
-      #   Set to +:cascade+ to drop dependent objects as well.
-      #   Defaults to false.
-      # [<tt>:if_exists</tt>]
-      #   Set to +true+ to only drop the table if it exists.
-      #   Defaults to false.
-      # [<tt>:temporary</tt>]
-      #   Set to +true+ to drop temporary table.
-      #   Defaults to false.
-      #
-      # Although this command ignores most +options+ and the block if one is given,
-      # it can be helpful to provide these in a migration's +change+ method so it can be reverted.
-      # In that case, +options+ and the block will be used by create_table.
-      def drop_table: (untyped table_name, ?::Hash[untyped, untyped] options) -> untyped
-
-      def rename_index: (untyped table_name, untyped old_name, untyped new_name) -> untyped
-
-      def change_column_default: (untyped table_name, untyped column_name, untyped default_or_changes) -> untyped
-
-      def change_column_null: (untyped table_name, untyped column_name, untyped null, ?untyped? default) -> untyped
-
-      def change_column_comment: (untyped table_name, untyped column_name, untyped comment_or_changes) -> untyped
-
-      def change_column: (untyped table_name, untyped column_name, untyped `type`, ?::Hash[untyped, untyped] options) -> untyped
-
-      def rename_column: (untyped table_name, untyped column_name, untyped new_column_name) -> untyped
-
-      def add_index: (untyped table_name, untyped column_name, ?::Hash[untyped, untyped] options) -> untyped
-
-      def add_sql_comment!: (untyped sql, untyped comment) -> untyped
-
-      def foreign_keys: (untyped table_name) -> untyped
-
-      def table_options: (untyped table_name) -> untyped
-
-      # SHOW VARIABLES LIKE 'name'
-      def show_variable: (untyped name) -> untyped
-
-      def primary_keys: (untyped table_name) -> untyped
-
-      def default_uniqueness_comparison: (untyped attribute, untyped value, untyped klass) -> untyped
-
-      def case_sensitive_comparison: (untyped attribute, untyped value) -> untyped
-
-      def can_perform_case_insensitive_comparison_for?: (untyped column) -> untyped
-
-      def columns_for_distinct: (untyped columns, untyped orders) -> untyped
-
-      def strict_mode?: () -> untyped
-
-      def default_index_type?: (untyped index) -> untyped
-
-      def build_insert_sql: (untyped insert) -> untyped
-
-      def check_version: () -> untyped
-
-      def initialize_type_map: (?untyped m) -> untyped
-
-      def register_integer_type: (untyped mapping, untyped key, **untyped options) -> untyped
-
-      def extract_precision: (untyped sql_type) -> untyped
-
-      # See https://dev.mysql.com/doc/refman/5.7/en/error-messages-server.html
-      ER_FILSORT_ABORT: ::Integer
-
-      ER_DUP_ENTRY: ::Integer
-
-      ER_NOT_NULL_VIOLATION: ::Integer
-
-      ER_NO_REFERENCED_ROW: ::Integer
-
-      ER_ROW_IS_REFERENCED: ::Integer
-
-      ER_DO_NOT_HAVE_DEFAULT: ::Integer
-
-      ER_ROW_IS_REFERENCED_2: ::Integer
-
-      ER_NO_REFERENCED_ROW_2: ::Integer
-
-      ER_DATA_TOO_LONG: ::Integer
-
-      ER_OUT_OF_RANGE: ::Integer
-
-      ER_LOCK_DEADLOCK: ::Integer
-
-      ER_CANNOT_ADD_FOREIGN: ::Integer
-
-      ER_CANNOT_CREATE_TABLE: ::Integer
-
-      ER_LOCK_WAIT_TIMEOUT: ::Integer
-
-      ER_QUERY_INTERRUPTED: ::Integer
-
-      ER_QUERY_TIMEOUT: ::Integer
-
-      ER_FK_INCOMPATIBLE_COLUMNS: ::Integer
-
-      def translate_exception: (untyped exception, binds: untyped binds, sql: untyped sql, message: untyped message) -> untyped
-
-      def change_column_for_alter: (untyped table_name, untyped column_name, untyped `type`, ?::Hash[untyped, untyped] options) -> untyped
-
-      def rename_column_for_alter: (untyped table_name, untyped column_name, untyped new_column_name) -> untyped
-
-      def add_index_for_alter: (untyped table_name, untyped column_name, ?::Hash[untyped, untyped] options) -> ::String
-
-      def remove_index_for_alter: (untyped table_name, ?::Hash[untyped, untyped] options) -> ::String
-
-      def supports_rename_index?: () -> untyped
-
-      def configure_connection: () -> untyped
-
-      def column_definitions: (untyped table_name) -> untyped
-
-      def create_table_info: (untyped table_name) -> untyped
-
-      def arel_visitor: () -> untyped
-
-      def build_statement_pool: () -> untyped
-
-      def mismatched_foreign_key: (untyped message, binds: untyped binds, sql: untyped sql) -> untyped
-
-      def version_string: (untyped full_version_string) -> untyped
-
-      class MysqlString < ActiveModel::Type::String
-        # :nodoc:
-        def serialize: (untyped value) -> untyped
-
-        def cast_value: (untyped value) -> untyped
-      end
     end
   end
 end
@@ -7525,6 +6952,8 @@ end
 module ActiveRecord
   module ConnectionAdapters
     class AbstractAdapter
+      extend ::ActiveSupport::Callbacks::ClassMethods
+
       class SchemaCreation
         # :nodoc:
         def initialize: (untyped conn) -> untyped
@@ -7650,12 +7079,12 @@ module ActiveRecord
       # :nodoc:
       attr_reader comment: untyped
 
-      def initialize: (untyped table, untyped name, ?bool unique, ?untyped columns, ?comment: untyped? comment, ?using: untyped? using, ?type: untyped? `type`, ?where: untyped? where, ?opclasses: ::Hash[untyped, untyped] opclasses, ?orders: ::Hash[untyped, untyped] orders, ?lengths: ::Hash[untyped, untyped] lengths) -> untyped
+      def initialize: (untyped table, untyped name, ?bool unique, ?untyped columns, ?lengths: ::Hash[untyped, untyped] lengths, ?orders: ::Hash[untyped, untyped] orders, ?opclasses: ::Hash[untyped, untyped] opclasses, ?where: untyped? where, ?type: untyped? `type`, ?using: untyped? using, ?comment: untyped? comment) -> untyped
 
       def concise_options: (untyped options) -> untyped
     end
 
-    class ColumnDefinition < ::Struct[untyped]
+    class ColumnDefinition[T] < ::Struct[T]
       attr_accessor name(): untyped
 
       attr_accessor type(): untyped
@@ -7672,21 +7101,21 @@ module ActiveRecord
       def primary_key?: () -> untyped
     end
 
-    class AddColumnDefinition < ::Struct[untyped]
+    class AddColumnDefinition[T] < ::Struct[T]
       attr_accessor column(): untyped
     end
 
-    class ChangeColumnDefinition < ::Struct[untyped]
+    class ChangeColumnDefinition[T] < ::Struct[T]
       attr_accessor column(): untyped
 
       attr_accessor name(): untyped
     end
 
-    class PrimaryKeyDefinition < ::Struct[untyped]
+    class PrimaryKeyDefinition[T] < ::Struct[T]
       attr_accessor name(): untyped
     end
 
-    class ForeignKeyDefinition < ::Struct[untyped]
+    class ForeignKeyDefinition[T] < ::Struct[T]
       attr_accessor from_table(): untyped
 
       attr_accessor to_table(): untyped
@@ -7708,6 +7137,8 @@ module ActiveRecord
 
       def validate?: () -> untyped
 
+      alias validated? validate?
+
       def export_name_on_schema_dump?: () -> untyped
 
       def defined_for?: (?to_table: untyped? to_table, **untyped options) -> untyped
@@ -7717,7 +7148,7 @@ module ActiveRecord
 
     class ReferenceDefinition
       # :nodoc:
-      def initialize: (untyped name, ?type: ::Symbol `type`, ?foreign_key: bool foreign_key, ?index: bool index, ?polymorphic: bool polymorphic, **untyped options) -> untyped
+      def initialize: (untyped name, ?polymorphic: bool polymorphic, ?index: bool index, ?foreign_key: bool foreign_key, ?type: ::Symbol `type`, **untyped options) -> untyped
 
       def add_to: (untyped table) -> untyped
 
@@ -7801,7 +7232,7 @@ module ActiveRecord
 
       attr_reader foreign_keys: untyped
 
-      def initialize: (untyped conn, untyped name, ?comment: untyped? comment, ?as: untyped? as, ?options: untyped? options, ?if_not_exists: bool if_not_exists, ?temporary: bool temporary) -> untyped
+      def initialize: (untyped conn, untyped name, ?temporary: bool temporary, ?if_not_exists: bool if_not_exists, ?options: untyped? options, ?as: untyped? as, ?comment: untyped? comment) -> untyped
 
       def primary_keys: (?untyped? name) -> untyped
 
@@ -7907,9 +7338,11 @@ module ActiveRecord
       # See {connection.add_reference}[rdoc-ref:SchemaStatements#add_reference] for details of the options you can use.
       def references: (*untyped args, **untyped options) -> untyped
 
+      alias belongs_to references
+
       def new_column_definition: (untyped name, untyped `type`, **untyped options) -> untyped
 
-      def create_column_definition: (untyped name, untyped `type`, untyped options) -> ColumnDefinition
+      def create_column_definition: (untyped name, untyped `type`, untyped options) -> ColumnDefinition[untyped]
 
       def aliased_types: (untyped name, untyped fallback) -> untyped
 
@@ -8089,6 +7522,8 @@ module ActiveRecord
       # See {connection.add_reference}[rdoc-ref:SchemaStatements#add_reference] for details of the options you can use.
       def references: (*untyped args, **untyped options) -> untyped
 
+      alias belongs_to references
+
       # Removes a reference. Optionally removes a +type+ column.
       #
       #  t.remove_references(:user)
@@ -8096,6 +7531,8 @@ module ActiveRecord
       #
       # See {connection.remove_reference}[rdoc-ref:SchemaStatements#remove_reference]
       def remove_references: (*untyped args, **untyped options) -> untyped
+
+      alias remove_belongs_to remove_references
 
       # Adds a foreign key to the table using a supplied table name.
       #
@@ -8886,6 +8323,8 @@ module ActiveRecord
       #
       def add_reference: (untyped table_name, untyped ref_name, **untyped options) -> untyped
 
+      alias add_belongs_to add_reference
+
       # Removes the reference(s). Also removes a +type+ column if one exists.
       # #remove_reference and #remove_belongs_to are acceptable.
       #
@@ -8901,7 +8340,9 @@ module ActiveRecord
       #
       #   remove_reference(:products, :user, foreign_key: true)
       #
-      def remove_reference: (untyped table_name, untyped ref_name, ?polymorphic: bool polymorphic, ?foreign_key: bool foreign_key, **untyped options) -> untyped
+      def remove_reference: (untyped table_name, untyped ref_name, ?foreign_key: bool foreign_key, ?polymorphic: bool polymorphic, **untyped options) -> untyped
+
+      alias remove_belongs_to remove_reference
 
       # Returns an array of foreign keys for the given table.
       # The foreign keys are represented as ForeignKeyDefinition objects.
@@ -9003,7 +8444,7 @@ module ActiveRecord
 
       def assume_migrated_upto_version: (untyped version, ?untyped? migrations_paths) -> untyped
 
-      def type_to_sql: (untyped `type`, ?scale: untyped? scale, ?precision: untyped? precision, ?limit: untyped? limit) -> untyped
+      def type_to_sql: (untyped `type`, ?limit: untyped? limit, ?precision: untyped? precision, ?scale: untyped? scale) -> untyped
 
       def columns_for_distinct: (untyped columns, untyped orders) -> untyped
 
@@ -9087,6 +8528,8 @@ module ActiveRecord
       def validate_index_length!: (untyped table_name, untyped new_name, ?bool internal) -> untyped
 
       def extract_new_default_value: (untyped default_or_changes) -> untyped
+
+      alias extract_new_comment_value extract_new_default_value
 
       def can_remove_index_by_name?: (untyped options) -> untyped
 
@@ -9250,6 +8693,598 @@ module ActiveRecord
 end
 
 module ActiveRecord
+  module ConnectionAdapters
+    # :nodoc:
+    extend ActiveSupport::Autoload
+
+    # Active Record supports multiple database systems. AbstractAdapter and
+    # related classes form the abstraction layer which makes this possible.
+    # An AbstractAdapter represents a connection to a database, and provides an
+    # abstract interface for database-specific functionality such as establishing
+    # a connection, escaping values, building the right SQL fragments for +:offset+
+    # and +:limit+ options, etc.
+    #
+    # All the concrete database adapters follow the interface laid down in this class.
+    # {ActiveRecord::Base.connection}[rdoc-ref:ConnectionHandling#connection] returns an AbstractAdapter object, which
+    # you can use.
+    #
+    # Most of the methods in the adapter are useful during migrations. Most
+    # notably, the instance methods provided by SchemaStatements are very useful.
+    class AbstractAdapter
+      ADAPTER_NAME: ::String
+
+      include ActiveSupport::Callbacks
+
+      include Quoting
+
+      include DatabaseStatements
+
+      include SchemaStatements
+
+      include DatabaseLimits
+
+      include QueryCache
+
+      include Savepoints
+
+      SIMPLE_INT: untyped
+
+      COMMENT_REGEX: untyped
+
+      attr_accessor pool: untyped
+
+      attr_reader visitor: untyped
+
+      attr_reader owner: untyped
+
+      attr_reader logger: untyped
+
+      attr_reader lock: untyped
+
+      alias in_use? owner
+
+      def self.type_cast_config_to_integer: (untyped config) -> untyped
+
+      def self.type_cast_config_to_boolean: (untyped config) -> untyped
+
+      def self.build_read_query_regexp: (*untyped parts) -> ::Regexp
+
+      def self.quoted_column_names: () -> untyped
+
+      def self.quoted_table_names: () -> untyped
+
+      def initialize: (untyped connection, ?untyped? logger, ?::Hash[untyped, untyped] config) -> untyped
+
+      def replica?: () -> untyped
+
+      # Determines whether writes are currently being prevents.
+      #
+      # Returns true if the connection is a replica, or if +prevent_writes+
+      # is set to true.
+      def preventing_writes?: () -> untyped
+
+      def migrations_paths: () -> untyped
+
+      def migration_context: () -> MigrationContext
+
+      def schema_migration: () -> untyped
+
+      def prepared_statements: () -> untyped
+
+      def prepared_statements_disabled_cache: () -> untyped
+
+      class Version
+        include Comparable
+
+        attr_reader full_version_string: untyped
+
+        def initialize: (untyped version_string, ?untyped? full_version_string) -> untyped
+
+        def <=>: (untyped version_string) -> untyped
+
+        def to_s: () -> untyped
+      end
+
+      def valid_type?: (untyped `type`) -> untyped
+
+      # this method must only be called while holding connection pool's mutex
+      def lease: () -> untyped
+
+      def schema_cache: () -> untyped
+
+      def schema_cache=: (untyped cache) -> untyped
+
+      # this method must only be called while holding connection pool's mutex
+      def expire: () -> untyped
+
+      def steal!: () -> untyped
+
+      def seconds_idle: () -> (0 | untyped)
+
+      def unprepared_statement: () { () -> untyped } -> untyped
+
+      # Returns the human-readable name of the adapter. Use mixed case - one
+      # can always use downcase if needed.
+      def adapter_name: () -> untyped
+
+      # Does the database for this adapter exist?
+      def self.database_exists?: (untyped config) -> untyped
+
+      # Does this adapter support DDL rollbacks in transactions? That is, would
+      # CREATE TABLE or ALTER TABLE get rolled back by a transaction?
+      def supports_ddl_transactions?: () -> ::FalseClass
+
+      def supports_bulk_alter?: () -> ::FalseClass
+
+      # Does this adapter support savepoints?
+      def supports_savepoints?: () -> ::FalseClass
+
+      # Does this adapter support application-enforced advisory locking?
+      def supports_advisory_locks?: () -> ::FalseClass
+
+      # Should primary key values be selected from their corresponding
+      # sequence before the insert statement? If true, next_sequence_value
+      # is called before each insert to set the record's primary key.
+      def prefetch_primary_key?: (?untyped? table_name) -> ::FalseClass
+
+      def supports_partitioned_indexes?: () -> ::FalseClass
+
+      # Does this adapter support index sort order?
+      def supports_index_sort_order?: () -> ::FalseClass
+
+      # Does this adapter support partial indices?
+      def supports_partial_index?: () -> ::FalseClass
+
+      # Does this adapter support expression indices?
+      def supports_expression_index?: () -> ::FalseClass
+
+      # Does this adapter support explain?
+      def supports_explain?: () -> ::FalseClass
+
+      # Does this adapter support setting the isolation level for a transaction?
+      def supports_transaction_isolation?: () -> ::FalseClass
+
+      # Does this adapter support database extensions?
+      def supports_extensions?: () -> ::FalseClass
+
+      # Does this adapter support creating indexes in the same statement as
+      # creating the table?
+      def supports_indexes_in_create?: () -> ::FalseClass
+
+      # Does this adapter support creating foreign key constraints?
+      def supports_foreign_keys?: () -> ::FalseClass
+
+      # Does this adapter support creating invalid constraints?
+      def supports_validate_constraints?: () -> ::FalseClass
+
+      # Does this adapter support creating foreign key constraints
+      # in the same statement as creating the table?
+      def supports_foreign_keys_in_create?: () -> untyped
+
+      # Does this adapter support views?
+      def supports_views?: () -> ::FalseClass
+
+      # Does this adapter support materialized views?
+      def supports_materialized_views?: () -> ::FalseClass
+
+      # Does this adapter support datetime with precision?
+      def supports_datetime_with_precision?: () -> ::FalseClass
+
+      # Does this adapter support json data type?
+      def supports_json?: () -> ::FalseClass
+
+      # Does this adapter support metadata comments on database objects (tables, columns, indexes)?
+      def supports_comments?: () -> ::FalseClass
+
+      # Can comments for tables, columns, and indexes be specified in create/alter table statements?
+      def supports_comments_in_create?: () -> ::FalseClass
+
+      # Does this adapter support multi-value insert?
+      def supports_multi_insert?: () -> ::TrueClass
+
+      # Does this adapter support virtual columns?
+      def supports_virtual_columns?: () -> ::FalseClass
+
+      # Does this adapter support foreign/external tables?
+      def supports_foreign_tables?: () -> ::FalseClass
+
+      # Does this adapter support optimizer hints?
+      def supports_optimizer_hints?: () -> ::FalseClass
+
+      def supports_common_table_expressions?: () -> ::FalseClass
+
+      def supports_lazy_transactions?: () -> ::FalseClass
+
+      def supports_insert_returning?: () -> ::FalseClass
+
+      def supports_insert_on_duplicate_skip?: () -> ::FalseClass
+
+      def supports_insert_on_duplicate_update?: () -> ::FalseClass
+
+      def supports_insert_conflict_target?: () -> ::FalseClass
+
+      # This is meant to be implemented by the adapters that support extensions
+      def disable_extension: (untyped name) -> nil
+
+      # This is meant to be implemented by the adapters that support extensions
+      def enable_extension: (untyped name) -> nil
+
+      def advisory_locks_enabled?: () -> untyped
+
+      def get_advisory_lock: (untyped lock_id) -> nil
+
+      def release_advisory_lock: (untyped lock_id) -> nil
+
+      # A list of extensions, to be filled in by adapters that support them.
+      def extensions: () -> ::Array[untyped]
+
+      # A list of index algorithms, to be filled by adapters that support them.
+      def index_algorithms: () -> ::Hash[untyped, untyped]
+
+      # Override to turn off referential integrity while executing <tt>&block</tt>.
+      def disable_referential_integrity: () { () -> untyped } -> untyped
+
+      # Checks whether the connection to the database is still active. This includes
+      # checking whether the database is actually capable of responding, i.e. whether
+      # the connection isn't stale.
+      def active?: () -> nil
+
+      # Disconnects from the database if already connected, and establishes a
+      # new connection with the database. Implementors should call super if they
+      # override the default implementation.
+      def reconnect!: () -> untyped
+
+      # Disconnects from the database if already connected. Otherwise, this
+      # method does nothing.
+      def disconnect!: () -> untyped
+
+      # Immediately forget this connection ever existed. Unlike disconnect!,
+      # this will not communicate with the server.
+      #
+      # After calling this method, the behavior of all other methods becomes
+      # undefined. This is called internally just before a forked process gets
+      # rid of a connection that belonged to its parent.
+      def discard!: () -> untyped
+
+      # Reset the state of this connection, directing the DBMS to clear
+      # transactions and other connection-related server-side state. Usually a
+      # database-dependent operation.
+      #
+      # The default implementation does nothing; the implementation should be
+      # overridden by concrete adapters.
+      def reset!: () -> nil
+
+      # Clear any caching the database adapter may be doing.
+      def clear_cache!: () -> untyped
+
+      # Returns true if its required to reload the connection between requests for development mode.
+      def requires_reloading?: () -> ::FalseClass
+
+      # Checks whether the connection to the database is still active (i.e. not stale).
+      # This is done under the hood by calling #active?. If the connection
+      # is no longer active, then this method will reconnect to the database.
+      def verify!: () -> untyped
+
+      # Provides access to the underlying database driver for this adapter. For
+      # example, this method returns a Mysql2::Client object in case of Mysql2Adapter,
+      # and a PG::Connection object in case of PostgreSQLAdapter.
+      #
+      # This is useful for when you need to call a proprietary method such as
+      # PostgreSQL's lo_* methods.
+      def raw_connection: () -> untyped
+
+      def default_uniqueness_comparison: (untyped attribute, untyped value, untyped klass) -> untyped
+
+      def case_sensitive_comparison: (untyped attribute, untyped value) -> untyped
+
+      def case_insensitive_comparison: (untyped attribute, untyped value) -> untyped
+
+      def can_perform_case_insensitive_comparison_for?: (untyped column) -> ::TrueClass
+
+      # Check the connection back in to the connection pool
+      def close: () -> untyped
+
+      def column_name_for_operation: (untyped operation, untyped node) -> untyped
+
+      def default_index_type?: (untyped index) -> untyped
+
+      def build_insert_sql: (untyped insert) -> ::String
+
+      def get_database_version: () -> nil
+
+      def database_version: () -> untyped
+
+      def check_version: () -> nil
+
+      def type_map: () -> untyped
+
+      def initialize_type_map: (?untyped m) -> untyped
+
+      def reload_type_map: () -> untyped
+
+      def register_class_with_limit: (untyped mapping, untyped key, untyped klass) -> untyped
+
+      def register_class_with_precision: (untyped mapping, untyped key, untyped klass) -> untyped
+
+      def extract_scale: (untyped sql_type) -> untyped
+
+      def extract_precision: (untyped sql_type) -> untyped
+
+      def extract_limit: (untyped sql_type) -> untyped
+
+      def translate_exception_class: (untyped e, untyped sql, untyped binds) -> untyped
+
+      def log: (untyped sql, ?::String name, ?untyped binds, ?untyped type_casted_binds, ?untyped? statement_name) { () -> untyped } -> untyped
+
+      def translate_exception: (untyped exception, message: untyped message, sql: untyped sql, binds: untyped binds) -> untyped
+
+      def without_prepared_statement?: (untyped binds) -> untyped
+
+      def column_for: (untyped table_name, untyped column_name) -> untyped
+
+      def column_for_attribute: (untyped attribute) -> untyped
+
+      def collector: () -> untyped
+
+      def arel_visitor: () -> Arel::Visitors::ToSql
+
+      def build_statement_pool: () -> nil
+    end
+  end
+end
+
+module ActiveRecord
+  module ConnectionAdapters
+    class AbstractMysqlAdapter < AbstractAdapter
+      include MySQL::Quoting
+
+      include MySQL::SchemaStatements
+
+      NATIVE_DATABASE_TYPES: ::Hash[untyped, untyped]
+
+      class StatementPool < ConnectionAdapters::StatementPool
+        def dealloc: (untyped stmt) -> untyped
+      end
+
+      def initialize: (untyped connection, untyped logger, untyped connection_options, untyped config) -> untyped
+
+      def get_database_version: () -> AbstractAdapter::Version
+
+      def mariadb?: () -> untyped
+
+      def supports_bulk_alter?: () -> ::TrueClass
+
+      def supports_index_sort_order?: () -> untyped
+
+      def supports_expression_index?: () -> untyped
+
+      def supports_transaction_isolation?: () -> ::TrueClass
+
+      def supports_explain?: () -> ::TrueClass
+
+      def supports_indexes_in_create?: () -> ::TrueClass
+
+      def supports_foreign_keys?: () -> ::TrueClass
+
+      def supports_views?: () -> ::TrueClass
+
+      def supports_datetime_with_precision?: () -> untyped
+
+      def supports_virtual_columns?: () -> untyped
+
+      # See https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html for more details.
+      def supports_optimizer_hints?: () -> untyped
+
+      def supports_common_table_expressions?: () -> untyped
+
+      def supports_advisory_locks?: () -> ::TrueClass
+
+      def supports_insert_on_duplicate_skip?: () -> ::TrueClass
+
+      def supports_insert_on_duplicate_update?: () -> ::TrueClass
+
+      def get_advisory_lock: (untyped lock_name, ?::Integer timeout) -> untyped
+
+      def release_advisory_lock: (untyped lock_name) -> untyped
+
+      def native_database_types: () -> untyped
+
+      def index_algorithms: () -> { default: untyped, copy: untyped, inplace: untyped }
+
+      def each_hash: (untyped result) -> untyped
+
+      def error_number: (untyped exception) -> untyped
+
+      def disable_referential_integrity: () { () -> untyped } -> untyped
+
+      def clear_cache!: () -> untyped
+
+      def explain: (untyped arel, ?untyped binds) -> untyped
+
+      # Executes the SQL statement in the context of this connection.
+      def execute: (untyped sql, ?untyped? name) -> untyped
+
+      def execute_and_free: (untyped sql, ?untyped? name) { (untyped) -> untyped } -> untyped
+
+      def begin_db_transaction: () -> untyped
+
+      def begin_isolated_db_transaction: (untyped isolation) -> untyped
+
+      def commit_db_transaction: () -> untyped
+
+      def exec_rollback_db_transaction: () -> untyped
+
+      def empty_insert_statement_value: (?untyped? primary_key) -> "VALUES ()"
+
+      # Drops the database specified on the +name+ attribute
+      # and creates it again using the provided +options+.
+      def recreate_database: (untyped name, ?::Hash[untyped, untyped] options) -> untyped
+
+      # Create a new MySQL database with optional <tt>:charset</tt> and <tt>:collation</tt>.
+      # Charset defaults to utf8mb4.
+      #
+      # Example:
+      #   create_database 'charset_test', charset: 'latin1', collation: 'latin1_bin'
+      #   create_database 'matt_development'
+      #   create_database 'matt_development', charset: :big5
+      def create_database: (untyped name, ?::Hash[untyped, untyped] options) -> untyped
+
+      def drop_database: (untyped name) -> untyped
+
+      def current_database: () -> untyped
+
+      # Returns the database character set.
+      def charset: () -> untyped
+
+      # Returns the database collation strategy.
+      def collation: () -> untyped
+
+      def table_comment: (untyped table_name) -> untyped
+
+      def change_table_comment: (untyped table_name, untyped comment_or_changes) -> untyped
+
+      # Renames a table.
+      #
+      # Example:
+      #   rename_table('octopuses', 'octopi')
+      def rename_table: (untyped table_name, untyped new_name) -> untyped
+
+      # Drops a table from the database.
+      #
+      # [<tt>:force</tt>]
+      #   Set to +:cascade+ to drop dependent objects as well.
+      #   Defaults to false.
+      # [<tt>:if_exists</tt>]
+      #   Set to +true+ to only drop the table if it exists.
+      #   Defaults to false.
+      # [<tt>:temporary</tt>]
+      #   Set to +true+ to drop temporary table.
+      #   Defaults to false.
+      #
+      # Although this command ignores most +options+ and the block if one is given,
+      # it can be helpful to provide these in a migration's +change+ method so it can be reverted.
+      # In that case, +options+ and the block will be used by create_table.
+      def drop_table: (untyped table_name, ?::Hash[untyped, untyped] options) -> untyped
+
+      def rename_index: (untyped table_name, untyped old_name, untyped new_name) -> untyped
+
+      def change_column_default: (untyped table_name, untyped column_name, untyped default_or_changes) -> untyped
+
+      def change_column_null: (untyped table_name, untyped column_name, untyped null, ?untyped? default) -> untyped
+
+      def change_column_comment: (untyped table_name, untyped column_name, untyped comment_or_changes) -> untyped
+
+      def change_column: (untyped table_name, untyped column_name, untyped `type`, ?::Hash[untyped, untyped] options) -> untyped
+
+      def rename_column: (untyped table_name, untyped column_name, untyped new_column_name) -> untyped
+
+      def add_index: (untyped table_name, untyped column_name, ?::Hash[untyped, untyped] options) -> untyped
+
+      def add_sql_comment!: (untyped sql, untyped comment) -> untyped
+
+      def foreign_keys: (untyped table_name) -> untyped
+
+      def table_options: (untyped table_name) -> untyped
+
+      # SHOW VARIABLES LIKE 'name'
+      def show_variable: (untyped name) -> untyped
+
+      def primary_keys: (untyped table_name) -> untyped
+
+      def default_uniqueness_comparison: (untyped attribute, untyped value, untyped klass) -> untyped
+
+      def case_sensitive_comparison: (untyped attribute, untyped value) -> untyped
+
+      def can_perform_case_insensitive_comparison_for?: (untyped column) -> untyped
+
+      def columns_for_distinct: (untyped columns, untyped orders) -> untyped
+
+      def strict_mode?: () -> untyped
+
+      def default_index_type?: (untyped index) -> untyped
+
+      def build_insert_sql: (untyped insert) -> untyped
+
+      def check_version: () -> untyped
+
+      def initialize_type_map: (?untyped m) -> untyped
+
+      def register_integer_type: (untyped mapping, untyped key, **untyped options) -> untyped
+
+      def extract_precision: (untyped sql_type) -> untyped
+
+      # See https://dev.mysql.com/doc/refman/5.7/en/error-messages-server.html
+      ER_FILSORT_ABORT: ::Integer
+
+      ER_DUP_ENTRY: ::Integer
+
+      ER_NOT_NULL_VIOLATION: ::Integer
+
+      ER_NO_REFERENCED_ROW: ::Integer
+
+      ER_ROW_IS_REFERENCED: ::Integer
+
+      ER_DO_NOT_HAVE_DEFAULT: ::Integer
+
+      ER_ROW_IS_REFERENCED_2: ::Integer
+
+      ER_NO_REFERENCED_ROW_2: ::Integer
+
+      ER_DATA_TOO_LONG: ::Integer
+
+      ER_OUT_OF_RANGE: ::Integer
+
+      ER_LOCK_DEADLOCK: ::Integer
+
+      ER_CANNOT_ADD_FOREIGN: ::Integer
+
+      ER_CANNOT_CREATE_TABLE: ::Integer
+
+      ER_LOCK_WAIT_TIMEOUT: ::Integer
+
+      ER_QUERY_INTERRUPTED: ::Integer
+
+      ER_QUERY_TIMEOUT: ::Integer
+
+      ER_FK_INCOMPATIBLE_COLUMNS: ::Integer
+
+      def translate_exception: (untyped exception, message: untyped message, sql: untyped sql, binds: untyped binds) -> untyped
+
+      def change_column_for_alter: (untyped table_name, untyped column_name, untyped `type`, ?::Hash[untyped, untyped] options) -> untyped
+
+      def rename_column_for_alter: (untyped table_name, untyped column_name, untyped new_column_name) -> untyped
+
+      def add_index_for_alter: (untyped table_name, untyped column_name, ?::Hash[untyped, untyped] options) -> ::String
+
+      def remove_index_for_alter: (untyped table_name, ?::Hash[untyped, untyped] options) -> ::String
+
+      def supports_rename_index?: () -> untyped
+
+      def configure_connection: () -> untyped
+
+      def column_definitions: (untyped table_name) -> untyped
+
+      def create_table_info: (untyped table_name) -> untyped
+
+      def arel_visitor: () -> Arel::Visitors::MySQL
+
+      def build_statement_pool: () -> StatementPool
+
+      def mismatched_foreign_key: (untyped message, sql: untyped sql, binds: untyped binds) -> MismatchedForeignKey
+
+      def version_string: (untyped full_version_string) -> untyped
+
+      class MysqlString < ActiveModel::Type::String
+        # :nodoc:
+        def serialize: (untyped value) -> untyped
+
+        def cast_value: (untyped value) -> untyped
+      end
+    end
+  end
+end
+
+module ActiveRecord
   # :stopdoc:
   module ConnectionAdapters
     # An abstract definition of a column in a table.
@@ -9274,7 +9309,7 @@ module ActiveRecord
       # +default+ is the type-casted default value, such as +new+ in <tt>sales_stage varchar(20) default 'new'</tt>.
       # +sql_type_metadata+ is various information about the type of the column
       # +null+ determines if this column allows +NULL+ values.
-      def initialize: (untyped name, untyped default, ?untyped? sql_type_metadata, ?bool null, ?untyped? default_function, ?comment: untyped? comment, ?collation: untyped? collation) -> untyped
+      def initialize: (untyped name, untyped default, ?untyped? sql_type_metadata, ?bool null, ?untyped? default_function, ?collation: untyped? collation, ?comment: untyped? comment) -> untyped
 
       def has_default?: () -> untyped
 
@@ -9291,6 +9326,8 @@ module ActiveRecord
       def encode_with: (untyped coder) -> untyped
 
       def ==: (untyped other) -> untyped
+
+      alias eql? ==
 
       def hash: () -> untyped
     end
@@ -9479,62 +9516,6 @@ module ActiveRecord
 end
 
 module ActiveRecord
-  module ConnectionHandling
-    # :nodoc:
-    ER_BAD_DB_ERROR: ::Integer
-
-    # Establishes a connection to the database that's used by all Active Record objects.
-    def mysql2_connection: (untyped config) -> untyped
-  end
-
-  module ConnectionAdapters
-    class Mysql2Adapter < AbstractMysqlAdapter
-      ADAPTER_NAME: ::String
-
-      include MySQL::DatabaseStatements
-
-      def initialize: (untyped connection, untyped logger, untyped connection_options, untyped config) -> untyped
-
-      def self.database_exists?: (untyped config) -> untyped
-
-      def supports_json?: () -> untyped
-
-      def supports_comments?: () -> ::TrueClass
-
-      def supports_comments_in_create?: () -> ::TrueClass
-
-      def supports_savepoints?: () -> ::TrueClass
-
-      def supports_lazy_transactions?: () -> ::TrueClass
-
-      def each_hash: (untyped result) { (untyped) -> untyped } -> untyped
-
-      def error_number: (untyped exception) -> untyped
-
-      def quote_string: (untyped string) -> untyped
-
-      def active?: () -> untyped
-
-      def reconnect!: () -> untyped
-
-      # Disconnects from the database if already connected.
-      # Otherwise, this method does nothing.
-      def disconnect!: () -> untyped
-
-      def discard!: () -> untyped
-
-      def connect: () -> untyped
-
-      def configure_connection: () -> untyped
-
-      def full_version: () -> untyped
-
-      def get_full_version: () -> untyped
-    end
-  end
-end
-
-module ActiveRecord
   module ConnectionAdapters
     module MySQL
       class Column < ConnectionAdapters::Column
@@ -9568,6 +9549,8 @@ module ActiveRecord
         def exec_query: (untyped sql, ?::String name, ?untyped binds, ?prepare: bool prepare) -> untyped
 
         def exec_delete: (untyped sql, ?untyped? name, ?untyped binds) -> untyped
+
+        alias exec_update exec_delete
 
         def execute_batch: (untyped statements, ?untyped? name) -> untyped
 
@@ -9741,12 +9724,12 @@ module ActiveRecord
 
         def internal_string_options_for_primary_key: () -> untyped
 
-        def update_table_definition: (untyped table_name, untyped base) -> untyped
+        def update_table_definition: (untyped table_name, untyped base) -> MySQL::Table
 
         def create_schema_dumper: (untyped options) -> untyped
 
         # Maps logical Rails types to MySQL-specific data types.
-        def type_to_sql: (untyped `type`, ?unsigned: untyped? unsigned, ?size: untyped size, ?scale: untyped? scale, ?precision: untyped? precision, ?limit: untyped? limit) -> untyped
+        def type_to_sql: (untyped `type`, ?limit: untyped? limit, ?precision: untyped? precision, ?scale: untyped? scale, ?size: untyped size, ?unsigned: untyped? unsigned) -> untyped
 
         def table_alias_length: () -> 256
 
@@ -9789,13 +9772,15 @@ end
 module ActiveRecord
   module ConnectionAdapters
     module MySQL
-      # Note: It inherits unnamed class, but omitted
       class TypeMetadata
+        # Note: It inherits unnamed class, but omitted
         attr_reader extra: untyped
 
         def initialize: (untyped type_metadata, ?extra: ::String extra) -> untyped
 
         def ==: (untyped other) -> untyped
+
+        alias eql? ==
 
         def hash: () -> untyped
       end
@@ -9803,291 +9788,60 @@ module ActiveRecord
   end
 end
 
-class ::PG::Connection
-end
-
 module ActiveRecord
   module ConnectionHandling
     # :nodoc:
-    # Establishes a connection to the database that's used by all Active Record objects
-    def postgresql_connection: (untyped config) -> untyped
+    ER_BAD_DB_ERROR: ::Integer
+
+    # Establishes a connection to the database that's used by all Active Record objects.
+    def mysql2_connection: (untyped config) -> untyped
   end
 
   module ConnectionAdapters
-    # The PostgreSQL adapter works with the native C (https://bitbucket.org/ged/ruby-pg) driver.
-    #
-    # Options:
-    #
-    # * <tt>:host</tt> - Defaults to a Unix-domain socket in /tmp. On machines without Unix-domain sockets,
-    #   the default is to connect to localhost.
-    # * <tt>:port</tt> - Defaults to 5432.
-    # * <tt>:username</tt> - Defaults to be the same as the operating system name of the user running the application.
-    # * <tt>:password</tt> - Password to be used if the server demands password authentication.
-    # * <tt>:database</tt> - Defaults to be the same as the user name.
-    # * <tt>:schema_search_path</tt> - An optional schema search path for the connection given
-    #   as a string of comma-separated schema names. This is backward-compatible with the <tt>:schema_order</tt> option.
-    # * <tt>:encoding</tt> - An optional client encoding that is used in a <tt>SET client_encoding TO
-    #   <encoding></tt> call on the connection.
-    # * <tt>:min_messages</tt> - An optional client min messages that is used in a
-    #   <tt>SET client_min_messages TO <min_messages></tt> call on the connection.
-    # * <tt>:variables</tt> - An optional hash of additional parameters that
-    #   will be used in <tt>SET SESSION key = val</tt> calls on the connection.
-    # * <tt>:insert_returning</tt> - An optional boolean to control the use of <tt>RETURNING</tt> for <tt>INSERT</tt> statements
-    #   defaults to true.
-    #
-    # Any further options are used as connection parameters to libpq. See
-    # https://www.postgresql.org/docs/current/static/libpq-connect.html for the
-    # list of parameters.
-    #
-    # In addition, default connection parameters of libpq can be set per environment variables.
-    # See https://www.postgresql.org/docs/current/static/libpq-envars.html .
-    class PostgreSQLAdapter < AbstractAdapter
+    class Mysql2Adapter < AbstractMysqlAdapter
       ADAPTER_NAME: ::String
 
-      NATIVE_DATABASE_TYPES: ::Hash[untyped, untyped]
+      include MySQL::DatabaseStatements
 
-      OID: untyped
-
-      include PostgreSQL::Quoting
-
-      include PostgreSQL::ReferentialIntegrity
-
-      include PostgreSQL::SchemaStatements
-
-      include PostgreSQL::DatabaseStatements
-
-      def supports_bulk_alter?: () -> ::TrueClass
-
-      def supports_index_sort_order?: () -> ::TrueClass
-
-      def supports_partitioned_indexes?: () -> untyped
-
-      def supports_partial_index?: () -> ::TrueClass
-
-      def supports_expression_index?: () -> ::TrueClass
-
-      def supports_transaction_isolation?: () -> ::TrueClass
-
-      def supports_foreign_keys?: () -> ::TrueClass
-
-      def supports_validate_constraints?: () -> ::TrueClass
-
-      def supports_views?: () -> ::TrueClass
-
-      def supports_datetime_with_precision?: () -> ::TrueClass
-
-      def supports_json?: () -> ::TrueClass
-
-      def supports_comments?: () -> ::TrueClass
-
-      def supports_savepoints?: () -> ::TrueClass
-
-      def supports_insert_returning?: () -> ::TrueClass
-
-      def supports_insert_on_conflict?: () -> untyped
-
-      def index_algorithms: () -> { concurrently: "CONCURRENTLY" }
-
-      class StatementPool < ConnectionAdapters::StatementPool
-        # :nodoc:
-        def initialize: (untyped connection, untyped max) -> untyped
-
-        def next_key: () -> ::String
-
-        def []=: (untyped sql, untyped key) -> untyped
-
-        def dealloc: (untyped key) -> untyped
-
-        def connection_active?: () -> untyped
-      end
-
-      # Initializes and connects a PostgreSQL adapter.
-      def initialize: (untyped connection, untyped logger, untyped connection_parameters, untyped config) -> untyped
+      def initialize: (untyped connection, untyped logger, untyped connection_options, untyped config) -> untyped
 
       def self.database_exists?: (untyped config) -> untyped
 
-      # Is this connection alive and ready for queries?
+      def supports_json?: () -> untyped
+
+      def supports_comments?: () -> ::TrueClass
+
+      def supports_comments_in_create?: () -> ::TrueClass
+
+      def supports_savepoints?: () -> ::TrueClass
+
+      def supports_lazy_transactions?: () -> ::TrueClass
+
+      def each_hash: (untyped result) { (untyped) -> untyped } -> untyped
+
+      def error_number: (untyped exception) -> untyped
+
+      def quote_string: (untyped string) -> untyped
+
       def active?: () -> untyped
 
-      # Close then reopen the connection.
       def reconnect!: () -> untyped
 
-      def reset!: () -> untyped
+      alias reset! reconnect!
 
-      # Disconnects from the database if already connected. Otherwise, this
-      # method does nothing.
+      # Disconnects from the database if already connected.
+      # Otherwise, this method does nothing.
       def disconnect!: () -> untyped
 
       def discard!: () -> untyped
 
-      def native_database_types: () -> untyped
-
-      def set_standard_conforming_strings: () -> untyped
-
-      def supports_ddl_transactions?: () -> ::TrueClass
-
-      def supports_advisory_locks?: () -> ::TrueClass
-
-      def supports_explain?: () -> ::TrueClass
-
-      def supports_extensions?: () -> ::TrueClass
-
-      def supports_ranges?: () -> ::TrueClass
-
-      def supports_materialized_views?: () -> ::TrueClass
-
-      def supports_foreign_tables?: () -> ::TrueClass
-
-      def supports_pgcrypto_uuid?: () -> untyped
-
-      def supports_optimizer_hints?: () -> untyped
-
-      def supports_common_table_expressions?: () -> ::TrueClass
-
-      def supports_lazy_transactions?: () -> ::TrueClass
-
-      def get_advisory_lock: (untyped lock_id) -> untyped
-
-      def release_advisory_lock: (untyped lock_id) -> untyped
-
-      def enable_extension: (untyped name) -> untyped
-
-      def disable_extension: (untyped name) -> untyped
-
-      def extension_available?: (untyped name) -> untyped
-
-      def extension_enabled?: (untyped name) -> untyped
-
-      def extensions: () -> untyped
-
-      # Returns the configured supported identifier length supported by PostgreSQL
-      def max_identifier_length: () -> untyped
-
-      # Set the authorized user for this session
-      def session_auth=: (untyped user) -> untyped
-
-      def use_insert_returning?: () -> untyped
-
-      def column_name_for_operation: (untyped operation, untyped node) -> untyped
-
-      OPERATION_ALIASES: ::Hash[untyped, untyped]
-
-      def get_database_version: () -> untyped
-
-      def default_index_type?: (untyped index) -> untyped
-
-      def build_insert_sql: (untyped insert) -> untyped
-
-      def check_version: () -> untyped
-
-      # See https://www.postgresql.org/docs/current/static/errcodes-appendix.html
-      VALUE_LIMIT_VIOLATION: ::String
-
-      NUMERIC_VALUE_OUT_OF_RANGE: ::String
-
-      NOT_NULL_VIOLATION: ::String
-
-      FOREIGN_KEY_VIOLATION: ::String
-
-      UNIQUE_VIOLATION: ::String
-
-      SERIALIZATION_FAILURE: ::String
-
-      DEADLOCK_DETECTED: ::String
-
-      LOCK_NOT_AVAILABLE: ::String
-
-      QUERY_CANCELED: ::String
-
-      def translate_exception: (untyped exception, binds: untyped binds, sql: untyped sql, message: untyped message) -> untyped
-
-      def get_oid_type: (untyped oid, untyped fmod, untyped column_name, ?::String sql_type) -> untyped
-
-      def initialize_type_map: (?untyped m) -> untyped
-
-      # Extracts the value from a PostgreSQL column default definition.
-      def extract_value_from_default: (untyped default) -> untyped
-
-      def extract_default_function: (untyped default_value, untyped default) -> untyped
-
-      def has_default_function?: (untyped default_value, untyped default) -> untyped
-
-      def load_additional_types: (?untyped? oids) -> untyped
-
-      FEATURE_NOT_SUPPORTED: ::String
-
-      def execute_and_clear: (untyped sql, untyped name, untyped binds, ?prepare: bool prepare) { (untyped) -> untyped } -> untyped
-
-      def exec_no_cache: (untyped sql, untyped name, untyped binds) -> untyped
-
-      def exec_cache: (untyped sql, untyped name, untyped binds) -> untyped
-
-      # Annoyingly, the code for prepared statements whose return value may
-      # have changed is FEATURE_NOT_SUPPORTED.
-      #
-      # This covers various different error types so we need to do additional
-      # work to classify the exception definitively as a
-      # ActiveRecord::PreparedStatementCacheExpired
-      #
-      # Check here for more details:
-      # https://git.postgresql.org/gitweb/?p=postgresql.git;a=blob;f=src/backend/utils/cache/plancache.c#l573
-      CACHED_PLAN_HEURISTIC: ::String
-
-      def is_cached_plan_failure?: (untyped e) -> untyped
-
-      def in_transaction?: () -> untyped
-
-      # Returns the statement identifier for the client side cache
-      # of statements
-      def sql_key: (untyped sql) -> ::String
-
-      # Prepare the statement if it hasn't been prepared, return
-      # the statement key.
-      def prepare_statement: (untyped sql, untyped binds) -> untyped
-
-      # Connects to a PostgreSQL server and sets up the adapter depending on the
-      # connected server's characteristics.
       def connect: () -> untyped
 
-      # Configures the encoding, verbosity, schema search path, and time zone of the connection.
-      # This is called by #connect and should not be called manually.
       def configure_connection: () -> untyped
 
-      # Returns the list of a table's column names, data types, and default values.
-      #
-      # The underlying query is roughly:
-      #  SELECT column.name, column.type, default.value, column.comment
-      #    FROM column LEFT JOIN default
-      #      ON column.table_id = default.table_id
-      #     AND column.num = default.column_num
-      #   WHERE column.table_id = get_table_id('table_name')
-      #     AND column.num > 0
-      #     AND NOT column.is_dropped
-      #   ORDER BY column.num
-      #
-      # If the table name is not prefixed with a schema, the database will
-      # take the first match from the schema search path.
-      #
-      # Query implementation notes:
-      #  - format_type includes the column size constraint, e.g. varchar(50)
-      #  - ::regclass is a function that gives the id for a table name
-      def column_definitions: (untyped table_name) -> untyped
+      def full_version: () -> untyped
 
-      def extract_table_ref_from_insert_sql: (untyped sql) -> untyped
-
-      def arel_visitor: () -> Arel::Visitors::PostgreSQL
-
-      def build_statement_pool: () -> StatementPool
-
-      def can_perform_case_insensitive_comparison_for?: (untyped column) -> untyped
-
-      def add_pg_encoders: () -> untyped
-
-      def update_typemap_for_default_timezone: () -> untyped
-
-      def add_pg_decoders: () -> untyped
-
-      def construct_coder: (untyped row, untyped coder_class) -> (nil | untyped)
+      def get_full_version: () -> untyped
     end
   end
 end
@@ -10101,6 +9855,8 @@ module ActiveRecord
         def serial?: () -> untyped
 
         def array: () -> untyped
+
+        alias array? array
 
         def sql_type: () -> untyped
       end
@@ -10137,6 +9893,8 @@ module ActiveRecord
         def exec_query: (untyped sql, ?::String name, ?untyped binds, ?prepare: bool prepare) -> untyped
 
         def exec_delete: (untyped sql, ?untyped? name, ?untyped binds) -> untyped
+
+        alias exec_update exec_delete
 
         def sql_for_insert: (untyped sql, untyped pk, untyped binds) -> untyped
 
@@ -10199,7 +9957,7 @@ module ActiveRecord
           # :nodoc:
           include ActiveModel::Type::Helpers::Mutable
 
-          class Data < ::Struct[untyped]
+          class Data[T] < ::Struct[T]
             attr_accessor encoder(): untyped
 
             attr_accessor values(): untyped
@@ -10485,7 +10243,7 @@ module ActiveRecord
 end
 
 module ActiveRecord
-  class Point < ::Struct[untyped]
+  class Point[T] < ::Struct[T]
     attr_accessor x(): untyped
 
     attr_accessor y(): untyped
@@ -10509,7 +10267,7 @@ module ActiveRecord
 
           def number_for_point: (untyped number) -> untyped
 
-          def build_point: (untyped x, untyped y) -> ActiveRecord::Point
+          def build_point: (untyped x, untyped y) -> ActiveRecord::Point[untyped]
         end
       end
     end
@@ -10520,7 +10278,7 @@ module ActiveRecord
   module ConnectionAdapters
     module PostgreSQL
       module OID
-        class Range[Elem] < ActiveModel::Type::Value
+        class Range[out Elem] < ActiveModel::Type::Value
           # :nodoc:
           # :nodoc:
           attr_reader subtype: untyped
@@ -10553,15 +10311,6 @@ module ActiveRecord
 
           def infinity?: (untyped value) -> untyped
         end
-      end
-    end
-  end
-end
-
-module ActiveRecord
-  module ConnectionAdapters
-    module PostgreSQL
-      module OID
       end
     end
   end
@@ -10635,6 +10384,8 @@ module ActiveRecord
           # :nodoc:
           ACCEPTABLE_UUID: untyped
 
+          alias serialize deserialize
+
           def `type`: () -> :uuid
 
           def cast_value: (untyped value) -> untyped
@@ -10690,6 +10441,15 @@ module ActiveRecord
             def to_s: () -> untyped
           end
         end
+      end
+    end
+  end
+end
+
+module ActiveRecord
+  module ConnectionAdapters
+    module PostgreSQL
+      module OID
       end
     end
   end
@@ -11000,7 +10760,7 @@ module ActiveRecord
 
         def foreign_table_exists?: (untyped table_name) -> untyped
 
-        def type_to_sql: (untyped `type`, ?array: untyped? array, ?scale: untyped? scale, ?precision: untyped? precision, ?limit: untyped? limit) -> untyped
+        def type_to_sql: (untyped `type`, ?limit: untyped? limit, ?precision: untyped? precision, ?scale: untyped? scale, ?array: untyped? array) -> untyped
 
         def columns_for_distinct: (untyped columns, untyped orders) -> untyped
 
@@ -11072,15 +10832,17 @@ module ActiveRecord
   # :stopdoc:
   module ConnectionAdapters
     module PostgreSQL
-      # Note: It inherits unnamed class, but omitted
       class TypeMetadata
+        # Note: It inherits unnamed class, but omitted
         attr_reader oid: untyped
 
         attr_reader fmod: untyped
 
-        def initialize: (untyped type_metadata, ?fmod: untyped? fmod, ?oid: untyped? oid) -> untyped
+        def initialize: (untyped type_metadata, ?oid: untyped? oid, ?fmod: untyped? fmod) -> untyped
 
         def ==: (untyped other) -> untyped
+
+        alias eql? ==
 
         def hash: () -> untyped
       end
@@ -11113,6 +10875,8 @@ module ActiveRecord
 
         def ==: (untyped o) -> untyped
 
+        alias eql? ==
+
         def hash: () -> untyped
 
         def parts: () -> untyped
@@ -11135,6 +10899,304 @@ module ActiveRecord
         # * <tt>"schema.name"."table name"</tt>
         def extract_schema_qualified_name: (untyped string) -> PostgreSQL::Name
       end
+    end
+  end
+end
+
+class ::PG::Connection
+  alias exec_params async_exec
+end
+
+module ActiveRecord
+  module ConnectionHandling
+    # :nodoc:
+    # Establishes a connection to the database that's used by all Active Record objects
+    def postgresql_connection: (untyped config) -> untyped
+  end
+
+  module ConnectionAdapters
+    # The PostgreSQL adapter works with the native C (https://bitbucket.org/ged/ruby-pg) driver.
+    #
+    # Options:
+    #
+    # * <tt>:host</tt> - Defaults to a Unix-domain socket in /tmp. On machines without Unix-domain sockets,
+    #   the default is to connect to localhost.
+    # * <tt>:port</tt> - Defaults to 5432.
+    # * <tt>:username</tt> - Defaults to be the same as the operating system name of the user running the application.
+    # * <tt>:password</tt> - Password to be used if the server demands password authentication.
+    # * <tt>:database</tt> - Defaults to be the same as the user name.
+    # * <tt>:schema_search_path</tt> - An optional schema search path for the connection given
+    #   as a string of comma-separated schema names. This is backward-compatible with the <tt>:schema_order</tt> option.
+    # * <tt>:encoding</tt> - An optional client encoding that is used in a <tt>SET client_encoding TO
+    #   <encoding></tt> call on the connection.
+    # * <tt>:min_messages</tt> - An optional client min messages that is used in a
+    #   <tt>SET client_min_messages TO <min_messages></tt> call on the connection.
+    # * <tt>:variables</tt> - An optional hash of additional parameters that
+    #   will be used in <tt>SET SESSION key = val</tt> calls on the connection.
+    # * <tt>:insert_returning</tt> - An optional boolean to control the use of <tt>RETURNING</tt> for <tt>INSERT</tt> statements
+    #   defaults to true.
+    #
+    # Any further options are used as connection parameters to libpq. See
+    # https://www.postgresql.org/docs/current/static/libpq-connect.html for the
+    # list of parameters.
+    #
+    # In addition, default connection parameters of libpq can be set per environment variables.
+    # See https://www.postgresql.org/docs/current/static/libpq-envars.html .
+    class PostgreSQLAdapter < AbstractAdapter
+      ADAPTER_NAME: ::String
+
+      NATIVE_DATABASE_TYPES: ::Hash[untyped, untyped]
+
+      OID: untyped
+
+      include PostgreSQL::Quoting
+
+      include PostgreSQL::ReferentialIntegrity
+
+      include PostgreSQL::SchemaStatements
+
+      include PostgreSQL::DatabaseStatements
+
+      def supports_bulk_alter?: () -> ::TrueClass
+
+      def supports_index_sort_order?: () -> ::TrueClass
+
+      def supports_partitioned_indexes?: () -> untyped
+
+      def supports_partial_index?: () -> ::TrueClass
+
+      def supports_expression_index?: () -> ::TrueClass
+
+      def supports_transaction_isolation?: () -> ::TrueClass
+
+      def supports_foreign_keys?: () -> ::TrueClass
+
+      def supports_validate_constraints?: () -> ::TrueClass
+
+      def supports_views?: () -> ::TrueClass
+
+      def supports_datetime_with_precision?: () -> ::TrueClass
+
+      def supports_json?: () -> ::TrueClass
+
+      def supports_comments?: () -> ::TrueClass
+
+      def supports_savepoints?: () -> ::TrueClass
+
+      def supports_insert_returning?: () -> ::TrueClass
+
+      def supports_insert_on_conflict?: () -> untyped
+
+      alias supports_insert_on_duplicate_skip? supports_insert_on_conflict?
+
+      alias supports_insert_on_duplicate_update? supports_insert_on_conflict?
+
+      alias supports_insert_conflict_target? supports_insert_on_conflict?
+
+      def index_algorithms: () -> { concurrently: "CONCURRENTLY" }
+
+      class StatementPool < ConnectionAdapters::StatementPool
+        # :nodoc:
+        def initialize: (untyped connection, untyped max) -> untyped
+
+        def next_key: () -> ::String
+
+        def []=: (untyped sql, untyped key) -> untyped
+
+        def dealloc: (untyped key) -> untyped
+
+        def connection_active?: () -> untyped
+      end
+
+      # Initializes and connects a PostgreSQL adapter.
+      def initialize: (untyped connection, untyped logger, untyped connection_parameters, untyped config) -> untyped
+
+      def self.database_exists?: (untyped config) -> untyped
+
+      # Is this connection alive and ready for queries?
+      def active?: () -> untyped
+
+      # Close then reopen the connection.
+      def reconnect!: () -> untyped
+
+      def reset!: () -> untyped
+
+      # Disconnects from the database if already connected. Otherwise, this
+      # method does nothing.
+      def disconnect!: () -> untyped
+
+      def discard!: () -> untyped
+
+      def native_database_types: () -> untyped
+
+      def set_standard_conforming_strings: () -> untyped
+
+      def supports_ddl_transactions?: () -> ::TrueClass
+
+      def supports_advisory_locks?: () -> ::TrueClass
+
+      def supports_explain?: () -> ::TrueClass
+
+      def supports_extensions?: () -> ::TrueClass
+
+      def supports_ranges?: () -> ::TrueClass
+
+      def supports_materialized_views?: () -> ::TrueClass
+
+      def supports_foreign_tables?: () -> ::TrueClass
+
+      def supports_pgcrypto_uuid?: () -> untyped
+
+      def supports_optimizer_hints?: () -> untyped
+
+      def supports_common_table_expressions?: () -> ::TrueClass
+
+      def supports_lazy_transactions?: () -> ::TrueClass
+
+      def get_advisory_lock: (untyped lock_id) -> untyped
+
+      def release_advisory_lock: (untyped lock_id) -> untyped
+
+      def enable_extension: (untyped name) -> untyped
+
+      def disable_extension: (untyped name) -> untyped
+
+      def extension_available?: (untyped name) -> untyped
+
+      def extension_enabled?: (untyped name) -> untyped
+
+      def extensions: () -> untyped
+
+      # Returns the configured supported identifier length supported by PostgreSQL
+      def max_identifier_length: () -> untyped
+
+      # Set the authorized user for this session
+      def session_auth=: (untyped user) -> untyped
+
+      def use_insert_returning?: () -> untyped
+
+      def column_name_for_operation: (untyped operation, untyped node) -> untyped
+
+      OPERATION_ALIASES: ::Hash[untyped, untyped]
+
+      def get_database_version: () -> untyped
+
+      alias postgresql_version database_version
+
+      def default_index_type?: (untyped index) -> untyped
+
+      def build_insert_sql: (untyped insert) -> untyped
+
+      def check_version: () -> untyped
+
+      # See https://www.postgresql.org/docs/current/static/errcodes-appendix.html
+      VALUE_LIMIT_VIOLATION: ::String
+
+      NUMERIC_VALUE_OUT_OF_RANGE: ::String
+
+      NOT_NULL_VIOLATION: ::String
+
+      FOREIGN_KEY_VIOLATION: ::String
+
+      UNIQUE_VIOLATION: ::String
+
+      SERIALIZATION_FAILURE: ::String
+
+      DEADLOCK_DETECTED: ::String
+
+      LOCK_NOT_AVAILABLE: ::String
+
+      QUERY_CANCELED: ::String
+
+      def translate_exception: (untyped exception, message: untyped message, sql: untyped sql, binds: untyped binds) -> untyped
+
+      def get_oid_type: (untyped oid, untyped fmod, untyped column_name, ?::String sql_type) -> untyped
+
+      def initialize_type_map: (?untyped m) -> untyped
+
+      # Extracts the value from a PostgreSQL column default definition.
+      def extract_value_from_default: (untyped default) -> untyped
+
+      def extract_default_function: (untyped default_value, untyped default) -> untyped
+
+      def has_default_function?: (untyped default_value, untyped default) -> untyped
+
+      def load_additional_types: (?untyped? oids) -> untyped
+
+      FEATURE_NOT_SUPPORTED: ::String
+
+      def execute_and_clear: (untyped sql, untyped name, untyped binds, ?prepare: bool prepare) { (untyped) -> untyped } -> untyped
+
+      def exec_no_cache: (untyped sql, untyped name, untyped binds) -> untyped
+
+      def exec_cache: (untyped sql, untyped name, untyped binds) -> untyped
+
+      # Annoyingly, the code for prepared statements whose return value may
+      # have changed is FEATURE_NOT_SUPPORTED.
+      #
+      # This covers various different error types so we need to do additional
+      # work to classify the exception definitively as a
+      # ActiveRecord::PreparedStatementCacheExpired
+      #
+      # Check here for more details:
+      # https://git.postgresql.org/gitweb/?p=postgresql.git;a=blob;f=src/backend/utils/cache/plancache.c#l573
+      CACHED_PLAN_HEURISTIC: ::String
+
+      def is_cached_plan_failure?: (untyped e) -> untyped
+
+      def in_transaction?: () -> untyped
+
+      # Returns the statement identifier for the client side cache
+      # of statements
+      def sql_key: (untyped sql) -> ::String
+
+      # Prepare the statement if it hasn't been prepared, return
+      # the statement key.
+      def prepare_statement: (untyped sql, untyped binds) -> untyped
+
+      # Connects to a PostgreSQL server and sets up the adapter depending on the
+      # connected server's characteristics.
+      def connect: () -> untyped
+
+      # Configures the encoding, verbosity, schema search path, and time zone of the connection.
+      # This is called by #connect and should not be called manually.
+      def configure_connection: () -> untyped
+
+      # Returns the list of a table's column names, data types, and default values.
+      #
+      # The underlying query is roughly:
+      #  SELECT column.name, column.type, default.value, column.comment
+      #    FROM column LEFT JOIN default
+      #      ON column.table_id = default.table_id
+      #     AND column.num = default.column_num
+      #   WHERE column.table_id = get_table_id('table_name')
+      #     AND column.num > 0
+      #     AND NOT column.is_dropped
+      #   ORDER BY column.num
+      #
+      # If the table name is not prefixed with a schema, the database will
+      # take the first match from the schema search path.
+      #
+      # Query implementation notes:
+      #  - format_type includes the column size constraint, e.g. varchar(50)
+      #  - ::regclass is a function that gives the id for a table name
+      def column_definitions: (untyped table_name) -> untyped
+
+      def extract_table_ref_from_insert_sql: (untyped sql) -> untyped
+
+      def arel_visitor: () -> Arel::Visitors::PostgreSQL
+
+      def build_statement_pool: () -> StatementPool
+
+      def can_perform_case_insensitive_comparison_for?: (untyped column) -> untyped
+
+      def add_pg_encoders: () -> untyped
+
+      def update_typemap_for_default_timezone: () -> untyped
+
+      def add_pg_decoders: () -> untyped
+
+      def construct_coder: (untyped row, untyped coder_class) -> (nil | untyped)
     end
   end
 end
@@ -11196,164 +11258,26 @@ module ActiveRecord
 end
 
 module ActiveRecord
-  module ConnectionHandling
-    # :nodoc:
-    def sqlite3_connection: (untyped config) -> untyped
-  end
-
+  # :stopdoc:
   module ConnectionAdapters
-    # nodoc:
-    # The SQLite3 adapter works SQLite 3.6.16 or newer
-    # with the sqlite3-ruby drivers (available as gem from https://rubygems.org/gems/sqlite3).
-    #
-    # Options:
-    #
-    # * <tt>:database</tt> - Path to the database file.
-    class SQLite3Adapter < AbstractAdapter
-      ADAPTER_NAME: ::String
+    class SqlTypeMetadata
+      attr_reader sql_type: untyped
 
-      include SQLite3::Quoting
+      attr_reader type: untyped
 
-      include SQLite3::SchemaStatements
+      attr_reader limit: untyped
 
-      include SQLite3::DatabaseStatements
+      attr_reader precision: untyped
 
-      NATIVE_DATABASE_TYPES: ::Hash[untyped, untyped]
+      attr_reader scale: untyped
 
-      def self.represent_boolean_as_integer=: (untyped value) -> untyped
+      def initialize: (?sql_type: untyped? sql_type, ?type: untyped? `type`, ?limit: untyped? limit, ?precision: untyped? precision, ?scale: untyped? scale) -> untyped
 
-      class StatementPool < ConnectionAdapters::StatementPool
-        def dealloc: (untyped stmt) -> untyped
-      end
+      def ==: (untyped other) -> untyped
 
-      def initialize: (untyped connection, untyped logger, untyped connection_options, untyped config) -> untyped
+      alias eql? ==
 
-      def self.database_exists?: (untyped config) -> untyped
-
-      def supports_ddl_transactions?: () -> ::TrueClass
-
-      def supports_savepoints?: () -> ::TrueClass
-
-      def supports_partial_index?: () -> ::TrueClass
-
-      def supports_expression_index?: () -> untyped
-
-      def requires_reloading?: () -> ::TrueClass
-
-      def supports_foreign_keys?: () -> ::TrueClass
-
-      def supports_views?: () -> ::TrueClass
-
-      def supports_datetime_with_precision?: () -> ::TrueClass
-
-      def supports_json?: () -> ::TrueClass
-
-      def supports_common_table_expressions?: () -> untyped
-
-      def supports_insert_on_conflict?: () -> untyped
-
-      def active?: () -> untyped
-
-      def reconnect!: () -> untyped
-
-      # Disconnects from the database if already connected. Otherwise, this
-      # method does nothing.
-      def disconnect!: () -> untyped
-
-      def supports_index_sort_order?: () -> ::TrueClass
-
-      # Returns 62. SQLite supports index names up to 64
-      # characters. The rest is used by Rails internally to perform
-      # temporary rename operations
-      def allowed_index_name_length: () -> untyped
-
-      def native_database_types: () -> untyped
-
-      # Returns the current database encoding format as a string, eg: 'UTF-8'
-      def encoding: () -> untyped
-
-      def supports_explain?: () -> ::TrueClass
-
-      def supports_lazy_transactions?: () -> ::TrueClass
-
-      def disable_referential_integrity: () { () -> untyped } -> untyped
-
-      # -
-      # DATABASE STATEMENTS ======================================
-      # +
-      def explain: (untyped arel, ?untyped binds) -> untyped
-
-      def primary_keys: (untyped table_name) -> untyped
-
-      def remove_index: (untyped table_name, ?::Hash[untyped, untyped] options) -> untyped
-
-      # Renames a table.
-      #
-      # Example:
-      #   rename_table('octopuses', 'octopi')
-      def rename_table: (untyped table_name, untyped new_name) -> untyped
-
-      def add_column: (untyped table_name, untyped column_name, untyped `type`, **untyped options) -> untyped
-
-      def remove_column: (untyped table_name, untyped column_name, ?untyped? `type`, **untyped options) -> untyped
-
-      def change_column_default: (untyped table_name, untyped column_name, untyped default_or_changes) -> untyped
-
-      def change_column_null: (untyped table_name, untyped column_name, untyped null, ?untyped? default) -> untyped
-
-      def change_column: (untyped table_name, untyped column_name, untyped `type`, ?::Hash[untyped, untyped] options) -> untyped
-
-      def rename_column: (untyped table_name, untyped column_name, untyped new_column_name) -> untyped
-
-      def add_reference: (untyped table_name, untyped ref_name, **untyped options) -> untyped
-
-      def foreign_keys: (untyped table_name) -> untyped
-
-      def build_insert_sql: (untyped insert) -> untyped
-
-      def get_database_version: () -> AbstractAdapter::Version
-
-      def check_version: () -> untyped
-
-      # See https://www.sqlite.org/limits.html,
-      # the default value is 999 when not configured.
-      def bind_params_length: () -> 999
-
-      def initialize_type_map: (?untyped m) -> untyped
-
-      def table_structure: (untyped table_name) -> untyped
-
-      # See: https://www.sqlite.org/lang_altertable.html
-      # SQLite has an additional restriction on the ALTER TABLE statement
-      def invalid_alter_table_type?: (untyped `type`, untyped options) -> untyped
-
-      def alter_table: (untyped table_name, ?untyped foreign_keys, **untyped options) { (untyped) -> untyped } -> untyped
-
-      def move_table: (untyped from, untyped to, ?::Hash[untyped, untyped] options) { () -> untyped } -> untyped
-
-      def copy_table: (untyped from, untyped to, ?::Hash[untyped, untyped] options) { (untyped) -> untyped } -> untyped
-
-      def copy_table_indexes: (untyped from, untyped to, ?::Hash[untyped, untyped] rename) -> untyped
-
-      def copy_table_contents: (untyped from, untyped to, untyped columns, ?::Hash[untyped, untyped] rename) -> untyped
-
-      def translate_exception: (untyped exception, binds: untyped binds, sql: untyped sql, message: untyped message) -> untyped
-
-      COLLATE_REGEX: untyped
-
-      def table_structure_with_collation: (untyped table_name, untyped basic_structure) -> untyped
-
-      def arel_visitor: () -> Arel::Visitors::SQLite
-
-      def build_statement_pool: () -> StatementPool
-
-      def connect: () -> untyped
-
-      def configure_connection: () -> untyped
-
-      class SQLite3Integer < ActiveModel::Type::Integer
-        def _limit: () -> untyped
-      end
+      def hash: () -> untyped
     end
   end
 end
@@ -11371,6 +11295,8 @@ module ActiveRecord
         def exec_query: (untyped sql, ?untyped? name, ?untyped binds, ?prepare: bool prepare) -> untyped
 
         def exec_delete: (untyped sql, ?::String name, ?untyped binds) -> untyped
+
+        alias exec_update exec_delete
 
         def begin_db_transaction: () -> untyped
 
@@ -11462,6 +11388,8 @@ module ActiveRecord
       class TableDefinition < ActiveRecord::ConnectionAdapters::TableDefinition
         def references: (*untyped args, **untyped options) -> untyped
 
+        alias belongs_to references
+
         def integer_like_primary_key_type: (untyped `type`, untyped options) -> :primary_key
       end
     end
@@ -11509,24 +11437,174 @@ module ActiveRecord
 end
 
 module ActiveRecord
-  # :stopdoc:
+  module ConnectionHandling
+    # :nodoc:
+    def sqlite3_connection: (untyped config) -> untyped
+  end
+
   module ConnectionAdapters
-    class SqlTypeMetadata
-      attr_reader sql_type: untyped
+    # nodoc:
+    # The SQLite3 adapter works SQLite 3.6.16 or newer
+    # with the sqlite3-ruby drivers (available as gem from https://rubygems.org/gems/sqlite3).
+    #
+    # Options:
+    #
+    # * <tt>:database</tt> - Path to the database file.
+    class SQLite3Adapter < AbstractAdapter
+      ADAPTER_NAME: ::String
 
-      attr_reader type: untyped
+      include SQLite3::Quoting
 
-      attr_reader limit: untyped
+      include SQLite3::SchemaStatements
 
-      attr_reader precision: untyped
+      include SQLite3::DatabaseStatements
 
-      attr_reader scale: untyped
+      NATIVE_DATABASE_TYPES: ::Hash[untyped, untyped]
 
-      def initialize: (?scale: untyped? scale, ?precision: untyped? precision, ?limit: untyped? limit, ?type: untyped? `type`, ?sql_type: untyped? sql_type) -> untyped
+      def self.represent_boolean_as_integer=: (untyped value) -> untyped
 
-      def ==: (untyped other) -> untyped
+      class StatementPool < ConnectionAdapters::StatementPool
+        def dealloc: (untyped stmt) -> untyped
+      end
 
-      def hash: () -> untyped
+      def initialize: (untyped connection, untyped logger, untyped connection_options, untyped config) -> untyped
+
+      def self.database_exists?: (untyped config) -> untyped
+
+      def supports_ddl_transactions?: () -> ::TrueClass
+
+      def supports_savepoints?: () -> ::TrueClass
+
+      def supports_partial_index?: () -> ::TrueClass
+
+      def supports_expression_index?: () -> untyped
+
+      def requires_reloading?: () -> ::TrueClass
+
+      def supports_foreign_keys?: () -> ::TrueClass
+
+      def supports_views?: () -> ::TrueClass
+
+      def supports_datetime_with_precision?: () -> ::TrueClass
+
+      def supports_json?: () -> ::TrueClass
+
+      def supports_common_table_expressions?: () -> untyped
+
+      def supports_insert_on_conflict?: () -> untyped
+
+      alias supports_insert_on_duplicate_skip? supports_insert_on_conflict?
+
+      alias supports_insert_on_duplicate_update? supports_insert_on_conflict?
+
+      alias supports_insert_conflict_target? supports_insert_on_conflict?
+
+      def active?: () -> untyped
+
+      def reconnect!: () -> untyped
+
+      # Disconnects from the database if already connected. Otherwise, this
+      # method does nothing.
+      def disconnect!: () -> untyped
+
+      def supports_index_sort_order?: () -> ::TrueClass
+
+      # Returns 62. SQLite supports index names up to 64
+      # characters. The rest is used by Rails internally to perform
+      # temporary rename operations
+      def allowed_index_name_length: () -> untyped
+
+      def native_database_types: () -> untyped
+
+      # Returns the current database encoding format as a string, eg: 'UTF-8'
+      def encoding: () -> untyped
+
+      def supports_explain?: () -> ::TrueClass
+
+      def supports_lazy_transactions?: () -> ::TrueClass
+
+      def disable_referential_integrity: () { () -> untyped } -> untyped
+
+      # -
+      # DATABASE STATEMENTS ======================================
+      # +
+      def explain: (untyped arel, ?untyped binds) -> untyped
+
+      def primary_keys: (untyped table_name) -> untyped
+
+      def remove_index: (untyped table_name, ?::Hash[untyped, untyped] options) -> untyped
+
+      # Renames a table.
+      #
+      # Example:
+      #   rename_table('octopuses', 'octopi')
+      def rename_table: (untyped table_name, untyped new_name) -> untyped
+
+      def add_column: (untyped table_name, untyped column_name, untyped `type`, **untyped options) -> untyped
+
+      def remove_column: (untyped table_name, untyped column_name, ?untyped? `type`, **untyped options) -> untyped
+
+      def change_column_default: (untyped table_name, untyped column_name, untyped default_or_changes) -> untyped
+
+      def change_column_null: (untyped table_name, untyped column_name, untyped null, ?untyped? default) -> untyped
+
+      def change_column: (untyped table_name, untyped column_name, untyped `type`, ?::Hash[untyped, untyped] options) -> untyped
+
+      def rename_column: (untyped table_name, untyped column_name, untyped new_column_name) -> untyped
+
+      def add_reference: (untyped table_name, untyped ref_name, **untyped options) -> untyped
+
+      alias add_belongs_to add_reference
+
+      def foreign_keys: (untyped table_name) -> untyped
+
+      def build_insert_sql: (untyped insert) -> untyped
+
+      def get_database_version: () -> AbstractAdapter::Version
+
+      def check_version: () -> untyped
+
+      # See https://www.sqlite.org/limits.html,
+      # the default value is 999 when not configured.
+      def bind_params_length: () -> 999
+
+      def initialize_type_map: (?untyped m) -> untyped
+
+      def table_structure: (untyped table_name) -> untyped
+
+      alias column_definitions table_structure
+
+      # See: https://www.sqlite.org/lang_altertable.html
+      # SQLite has an additional restriction on the ALTER TABLE statement
+      def invalid_alter_table_type?: (untyped `type`, untyped options) -> untyped
+
+      def alter_table: (untyped table_name, ?untyped foreign_keys, **untyped options) { (untyped) -> untyped } -> untyped
+
+      def move_table: (untyped from, untyped to, ?::Hash[untyped, untyped] options) { () -> untyped } -> untyped
+
+      def copy_table: (untyped from, untyped to, ?::Hash[untyped, untyped] options) { (untyped) -> untyped } -> untyped
+
+      def copy_table_indexes: (untyped from, untyped to, ?::Hash[untyped, untyped] rename) -> untyped
+
+      def copy_table_contents: (untyped from, untyped to, untyped columns, ?::Hash[untyped, untyped] rename) -> untyped
+
+      def translate_exception: (untyped exception, message: untyped message, sql: untyped sql, binds: untyped binds) -> untyped
+
+      COLLATE_REGEX: untyped
+
+      def table_structure_with_collation: (untyped table_name, untyped basic_structure) -> untyped
+
+      def arel_visitor: () -> Arel::Visitors::SQLite
+
+      def build_statement_pool: () -> StatementPool
+
+      def connect: () -> untyped
+
+      def configure_connection: () -> untyped
+
+      class SQLite3Integer < ActiveModel::Type::Integer
+        def _limit: () -> untyped
+      end
     end
   end
 end
@@ -11649,7 +11727,7 @@ module ActiveRecord
     #
     # It is not recommended for use as it re-establishes a connection every
     # time it is called.
-    def connected_to: (?prevent_writes: bool prevent_writes, ?role: untyped? role, ?database: untyped? database) { () -> untyped } -> untyped
+    def connected_to: (?database: untyped? database, ?role: untyped? role, ?prevent_writes: bool prevent_writes) { () -> untyped } -> untyped
 
     # Returns true if role is the current connected role.
     #
@@ -11846,6 +11924,8 @@ module ActiveRecord
     # models are still comparable.
     def ==: (untyped comparison_object) -> untyped
 
+    alias eql? ==
+
     # Delegates to id in order to allow two records of the same type and id to work with something like:
     #   [ Person.find(1), Person.find(2), Person.find(3) ] & [ Person.find(1), Person.find(4) ] # => [ Person.find(1) ]
     def hash: () -> untyped
@@ -11900,8 +11980,8 @@ module ActiveRecord
 
     def custom_inspect_method_defined?: () -> untyped
 
-    # Note: It inherits unnamed class, but omitted
     class InspectionMask
+      # Note: It inherits unnamed class, but omitted
       def pretty_print: (untyped pp) -> untyped
     end
 
@@ -12110,89 +12190,6 @@ module ActiveRecord
 end
 
 module ActiveRecord
-  # ActiveRecord::DatabaseConfigurations returns an array of DatabaseConfig
-  # objects (either a HashConfig or UrlConfig) that are constructed from the
-  # application's database configuration hash or URL string.
-  class DatabaseConfigurations
-    class InvalidConfigurationError < StandardError
-    end
-
-    attr_reader configurations: untyped
-
-    def initialize: (?::Hash[untyped, untyped] configurations) -> untyped
-
-    # Collects the configs for the environment and optionally the specification
-    # name passed in. To include replica configurations pass <tt>include_replicas: true</tt>.
-    #
-    # If a spec name is provided a single DatabaseConfig object will be
-    # returned, otherwise an array of DatabaseConfig objects will be
-    # returned that corresponds with the environment and type requested.
-    #
-    # ==== Options
-    #
-    # * <tt>env_name:</tt> The environment name. Defaults to +nil+ which will collect
-    #   configs for all environments.
-    # * <tt>spec_name:</tt> The specification name (i.e. primary, animals, etc.). Defaults
-    #   to +nil+.
-    # * <tt>include_replicas:</tt> Determines whether to include replicas in
-    #   the returned list. Most of the time we're only iterating over the write
-    #   connection (i.e. migrations don't need to run for the write and read connection).
-    #   Defaults to +false+.
-    def configs_for: (?include_replicas: bool include_replicas, ?spec_name: untyped? spec_name, ?env_name: untyped? env_name) -> untyped
-
-    # Returns the config hash that corresponds with the environment
-    #
-    # If the application has multiple databases +default_hash+ will
-    # return the first config hash for the environment.
-    #
-    #   { database: "my_db", adapter: "mysql2" }
-    def default_hash: (?untyped env) -> untyped
-
-    # Returns a single DatabaseConfig object based on the requested environment.
-    #
-    # If the application has multiple databases +find_db_config+ will return
-    # the first DatabaseConfig for the environment.
-    def find_db_config: (untyped env) -> untyped
-
-    # Returns the DatabaseConfigurations object as a Hash.
-    def to_h: () -> untyped
-
-    # Checks if the application's configurations are empty.
-    #
-    # Aliased to blank?
-    def empty?: () -> untyped
-
-    def each: () { (untyped) -> untyped } -> untyped
-
-    def first: () -> ::Array[untyped]
-
-    def env_with_configs: (?untyped? env) -> untyped
-
-    def build_configs: (untyped configs) -> untyped
-
-    def walk_configs: (untyped env_name, untyped config) -> untyped
-
-    def build_db_config_from_raw_config: (untyped env_name, untyped spec_name, untyped config) -> untyped
-
-    def build_db_config_from_string: (untyped env_name, untyped spec_name, untyped config) -> untyped
-
-    def build_db_config_from_hash: (untyped env_name, untyped spec_name, untyped config) -> untyped
-
-    def merge_db_environment_variables: (untyped current_env, untyped configs) -> untyped
-
-    def environment_url_config: (untyped env, untyped spec_name, untyped config) -> (nil | ActiveRecord::DatabaseConfigurations::UrlConfig)
-
-    def environment_value_for: (untyped spec_name) -> untyped
-
-    def method_missing: (untyped method, *untyped args) { () -> untyped } -> untyped
-
-    def throw_setter_deprecation: (untyped method) -> untyped
-
-    def throw_getter_deprecation: (untyped method) -> untyped
-  end
-end
-
-module ActiveRecord
   class DatabaseConfigurations
     # A UrlConfig object is created for each database configuration
     # entry that is created from a URL. This can either be a URL string
@@ -12243,6 +12240,93 @@ module ActiveRecord
 
       def build_config: (untyped original_config, untyped url) -> untyped
     end
+  end
+end
+
+module ActiveRecord
+  # ActiveRecord::DatabaseConfigurations returns an array of DatabaseConfig
+  # objects (either a HashConfig or UrlConfig) that are constructed from the
+  # application's database configuration hash or URL string.
+  class DatabaseConfigurations
+    class InvalidConfigurationError < StandardError
+    end
+
+    attr_reader configurations: untyped
+
+    def initialize: (?::Hash[untyped, untyped] configurations) -> untyped
+
+    # Collects the configs for the environment and optionally the specification
+    # name passed in. To include replica configurations pass <tt>include_replicas: true</tt>.
+    #
+    # If a spec name is provided a single DatabaseConfig object will be
+    # returned, otherwise an array of DatabaseConfig objects will be
+    # returned that corresponds with the environment and type requested.
+    #
+    # ==== Options
+    #
+    # * <tt>env_name:</tt> The environment name. Defaults to +nil+ which will collect
+    #   configs for all environments.
+    # * <tt>spec_name:</tt> The specification name (i.e. primary, animals, etc.). Defaults
+    #   to +nil+.
+    # * <tt>include_replicas:</tt> Determines whether to include replicas in
+    #   the returned list. Most of the time we're only iterating over the write
+    #   connection (i.e. migrations don't need to run for the write and read connection).
+    #   Defaults to +false+.
+    def configs_for: (?env_name: untyped? env_name, ?spec_name: untyped? spec_name, ?include_replicas: bool include_replicas) -> untyped
+
+    # Returns the config hash that corresponds with the environment
+    #
+    # If the application has multiple databases +default_hash+ will
+    # return the first config hash for the environment.
+    #
+    #   { database: "my_db", adapter: "mysql2" }
+    def default_hash: (?untyped env) -> untyped
+
+    alias [] default_hash
+
+    # Returns a single DatabaseConfig object based on the requested environment.
+    #
+    # If the application has multiple databases +find_db_config+ will return
+    # the first DatabaseConfig for the environment.
+    def find_db_config: (untyped env) -> untyped
+
+    # Returns the DatabaseConfigurations object as a Hash.
+    def to_h: () -> untyped
+
+    # Checks if the application's configurations are empty.
+    #
+    # Aliased to blank?
+    def empty?: () -> untyped
+
+    alias blank? empty?
+
+    def each: () { (untyped) -> untyped } -> untyped
+
+    def first: () -> ::Array[untyped]
+
+    def env_with_configs: (?untyped? env) -> untyped
+
+    def build_configs: (untyped configs) -> untyped
+
+    def walk_configs: (untyped env_name, untyped config) -> untyped
+
+    def build_db_config_from_raw_config: (untyped env_name, untyped spec_name, untyped config) -> untyped
+
+    def build_db_config_from_string: (untyped env_name, untyped spec_name, untyped config) -> untyped
+
+    def build_db_config_from_hash: (untyped env_name, untyped spec_name, untyped config) -> untyped
+
+    def merge_db_environment_variables: (untyped current_env, untyped configs) -> untyped
+
+    def environment_url_config: (untyped env, untyped spec_name, untyped config) -> (nil | ActiveRecord::DatabaseConfigurations::UrlConfig)
+
+    def environment_value_for: (untyped spec_name) -> untyped
+
+    def method_missing: (untyped method, *untyped args) { () -> untyped } -> untyped
+
+    def throw_setter_deprecation: (untyped method) -> untyped
+
+    def throw_getter_deprecation: (untyped method) -> untyped
   end
 end
 
@@ -12357,7 +12441,7 @@ module ActiveRecord
 
     def detect_enum_conflict!: (untyped enum_name, untyped method_name, ?bool klass_method) -> untyped
 
-    def raise_conflict_error: (untyped enum_name, untyped method_name, ?source: ::String source, ?type: ::String `type`) -> untyped
+    def raise_conflict_error: (untyped enum_name, untyped method_name, ?type: ::String `type`, ?source: ::String source) -> untyped
 
     def detect_negative_condition!: (untyped method_name) -> untyped
   end
@@ -12456,7 +12540,7 @@ module ActiveRecord
   #
   # Wraps the underlying database error as +cause+.
   class StatementInvalid < ActiveRecordError
-    def initialize: (?untyped? message, ?binds: untyped? binds, ?sql: untyped? sql) -> untyped
+    def initialize: (?untyped? message, ?sql: untyped? sql, ?binds: untyped? binds) -> untyped
 
     attr_reader sql: untyped
 
@@ -12479,7 +12563,7 @@ module ActiveRecord
 
   # Raised when a foreign key constraint cannot be added because the column type does not match the referenced column type.
   class MismatchedForeignKey < StatementInvalid
-    def initialize: (?primary_key_column: untyped? primary_key_column, ?primary_key: untyped? primary_key, ?target_table: untyped? target_table, ?foreign_key: untyped? foreign_key, ?table: untyped? table, ?binds: untyped? binds, ?sql: untyped? sql, ?message: untyped? message) -> untyped
+    def initialize: (?message: untyped? message, ?sql: untyped? sql, ?binds: untyped? binds, ?table: untyped? table, ?foreign_key: untyped? foreign_key, ?target_table: untyped? target_table, ?primary_key: untyped? primary_key, ?primary_key_column: untyped? primary_key_column) -> untyped
   end
 
   # Raised when a record cannot be inserted or updated because it would violate a not null constraint.
@@ -12832,7 +12916,7 @@ module ActiveRecord
         def join_table: () -> untyped
       end
 
-      def initialize: (untyped fixture, now: untyped now, label: untyped label, table_rows: untyped table_rows) -> untyped
+      def initialize: (untyped fixture, table_rows: untyped table_rows, label: untyped label, now: untyped now) -> untyped
 
       def to_hash: () -> untyped
 
@@ -12863,7 +12947,7 @@ module ActiveRecord
   class FixtureSet
     class TableRows
       # :nodoc:
-      def initialize: (untyped table_name, config: untyped config, fixtures: untyped fixtures, model_class: untyped model_class) -> untyped
+      def initialize: (untyped table_name, model_class: untyped model_class, fixtures: untyped fixtures, config: untyped config) -> untyped
 
       attr_reader tables: untyped
 
@@ -13401,6 +13485,8 @@ module ActiveRecord
 
     def []: (untyped key) -> untyped
 
+    alias to_hash fixture
+
     def find: () -> untyped
   end
 end
@@ -13588,7 +13674,7 @@ module ActiveRecord
 
     attr_reader unique_by: untyped
 
-    def initialize: (untyped model, untyped inserts, on_duplicate: untyped on_duplicate, ?unique_by: untyped? unique_by, ?returning: untyped? returning) -> untyped
+    def initialize: (untyped model, untyped inserts, on_duplicate: untyped on_duplicate, ?returning: untyped? returning, ?unique_by: untyped? unique_by) -> untyped
 
     def execute: () -> untyped
 
@@ -13881,7 +13967,6 @@ module ActiveRecord
       end
     end
 
-    # Note: It inherits unnamed class, but omitted
     class LockingType
       # In de/serialize we change `nil` to 0, so that we can allow passing
       # `nil` values to `lock_version`, and not result in `ActiveRecord::StaleObjectError`
@@ -14000,52 +14085,33 @@ end
 
 module ActiveRecord
   module Middleware
-    # The DatabaseSelector Middleware provides a framework for automatically
-    # swapping from the primary to the replica database connection. Rails
-    # provides a basic framework to determine when to swap and allows for
-    # applications to write custom strategy classes to override the default
-    # behavior.
-    #
-    # The resolver class defines when the application should switch (i.e. read
-    # from the primary if a write occurred less than 2 seconds ago) and a
-    # resolver context class that sets a value that helps the resolver class
-    # decide when to switch.
-    #
-    # Rails default middleware uses the request's session to set a timestamp
-    # that informs the application when to read from a primary or read from a
-    # replica.
-    #
-    # To use the DatabaseSelector in your application with default settings add
-    # the following options to your environment config:
-    #
-    #   config.active_record.database_selector = { delay: 2.seconds }
-    #   config.active_record.database_resolver = ActiveRecord::Middleware::DatabaseSelector::Resolver
-    #   config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
-    #
-    # New applications will include these lines commented out in the production.rb.
-    #
-    # The default behavior can be changed by setting the config options to a
-    # custom class:
-    #
-    #   config.active_record.database_selector = { delay: 2.seconds }
-    #   config.active_record.database_resolver = MyResolver
-    #   config.active_record.database_resolver_context = MyResolver::MySession
     class DatabaseSelector
-      def initialize: (untyped app, ?untyped? resolver_klass, ?untyped? context_klass, ?::Hash[untyped, untyped] options) -> untyped
+      class Resolver
+        class Session
+          # The session class is used by the DatabaseSelector::Resolver to save
+          # timestamps of the last write in the session.
+          #
+          # The last_write is used to determine whether it's safe to read
+          # from the replica or the request needs to be sent to the primary.
+          # :nodoc:
+          def self.call: (untyped request) -> untyped
 
-      attr_reader resolver_klass: untyped
+          # Converts time to a timestamp that represents milliseconds since
+          # epoch.
+          def self.convert_time_to_timestamp: (untyped time) -> untyped
 
-      attr_reader context_klass: untyped
+          # Converts milliseconds since epoch timestamp into a time object.
+          def self.convert_timestamp_to_time: (untyped timestamp) -> untyped
 
-      attr_reader options: untyped
+          def initialize: (untyped session) -> untyped
 
-      # Middleware that determines which database connection to use in a multiple
-      # database application.
-      def call: (untyped env) -> untyped
+          attr_reader session: untyped
 
-      def select_database: (untyped request) { () -> untyped } -> untyped
+          def last_write_timestamp: () -> untyped
 
-      def reading_request?: (untyped request) -> untyped
+          def update_last_write_timestamp: () -> untyped
+        end
+      end
     end
   end
 end
@@ -14099,33 +14165,52 @@ end
 
 module ActiveRecord
   module Middleware
+    # The DatabaseSelector Middleware provides a framework for automatically
+    # swapping from the primary to the replica database connection. Rails
+    # provides a basic framework to determine when to swap and allows for
+    # applications to write custom strategy classes to override the default
+    # behavior.
+    #
+    # The resolver class defines when the application should switch (i.e. read
+    # from the primary if a write occurred less than 2 seconds ago) and a
+    # resolver context class that sets a value that helps the resolver class
+    # decide when to switch.
+    #
+    # Rails default middleware uses the request's session to set a timestamp
+    # that informs the application when to read from a primary or read from a
+    # replica.
+    #
+    # To use the DatabaseSelector in your application with default settings add
+    # the following options to your environment config:
+    #
+    #   config.active_record.database_selector = { delay: 2.seconds }
+    #   config.active_record.database_resolver = ActiveRecord::Middleware::DatabaseSelector::Resolver
+    #   config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
+    #
+    # New applications will include these lines commented out in the production.rb.
+    #
+    # The default behavior can be changed by setting the config options to a
+    # custom class:
+    #
+    #   config.active_record.database_selector = { delay: 2.seconds }
+    #   config.active_record.database_resolver = MyResolver
+    #   config.active_record.database_resolver_context = MyResolver::MySession
     class DatabaseSelector
-      class Resolver
-        class Session
-          # The session class is used by the DatabaseSelector::Resolver to save
-          # timestamps of the last write in the session.
-          #
-          # The last_write is used to determine whether it's safe to read
-          # from the replica or the request needs to be sent to the primary.
-          # :nodoc:
-          def self.call: (untyped request) -> untyped
+      def initialize: (untyped app, ?untyped? resolver_klass, ?untyped? context_klass, ?::Hash[untyped, untyped] options) -> untyped
 
-          # Converts time to a timestamp that represents milliseconds since
-          # epoch.
-          def self.convert_time_to_timestamp: (untyped time) -> untyped
+      attr_reader resolver_klass: untyped
 
-          # Converts milliseconds since epoch timestamp into a time object.
-          def self.convert_timestamp_to_time: (untyped timestamp) -> untyped
+      attr_reader context_klass: untyped
 
-          def initialize: (untyped session) -> untyped
+      attr_reader options: untyped
 
-          attr_reader session: untyped
+      # Middleware that determines which database connection to use in a multiple
+      # database application.
+      def call: (untyped env) -> untyped
 
-          def last_write_timestamp: () -> untyped
+      def select_database: (untyped request) { () -> untyped } -> untyped
 
-          def update_last_write_timestamp: () -> untyped
-        end
-      end
+      def reading_request?: (untyped request) -> untyped
     end
   end
 end
@@ -14198,6 +14283,10 @@ module ActiveRecord
       # invert the +command+.
       def inverse_of: (untyped command, untyped args) { () -> untyped } -> untyped
 
+      alias add_belongs_to add_reference
+
+      alias remove_belongs_to remove_reference
+
       def change_table: (untyped table_name, **untyped options) { (untyped) -> untyped } -> untyped
 
       def replay: (untyped migration) -> untyped
@@ -14223,6 +14312,10 @@ module ActiveRecord
 
       def invert_remove_index: (untyped args) -> untyped
 
+      alias invert_add_belongs_to invert_add_reference
+
+      alias invert_remove_belongs_to invert_remove_reference
+
       def invert_change_column_default: (untyped args) -> ::Array[:change_column_default | ::Array[untyped | { from: untyped, to: untyped }]]
 
       def invert_change_column_null: (untyped args) -> ::Array[:change_column_null | untyped]
@@ -14247,7 +14340,7 @@ module ActiveRecord
       # :nodoc: all
       def self.find: (untyped version) -> untyped
 
-      # workaround: V6_0 and Current are the same object, but RBS doesn't have a syntax for class alias?
+      # V6_0 and Current are the same object actually. hack for https://github.com/ruby/rbs/issues/345
       class V6_0 < Current
       end
 
@@ -14288,6 +14381,8 @@ module ActiveRecord
           def primary_key: (untyped name, ?::Symbol `type`, **untyped options) -> untyped
 
           def references: (*untyped args, **untyped options) -> untyped
+
+          alias belongs_to references
         end
 
         def create_table: (untyped table_name, **untyped options) -> untyped
@@ -14298,6 +14393,8 @@ module ActiveRecord
 
         def add_reference: (untyped table_name, untyped ref_name, **untyped options) -> untyped
 
+        alias add_belongs_to add_reference
+
         def compatible_table_definition: (untyped t) -> untyped
       end
 
@@ -14305,10 +14402,14 @@ module ActiveRecord
         module TableDefinition
           def references: (**untyped options) -> untyped
 
+          alias belongs_to references
+
           def timestamps: (**untyped options) -> untyped
         end
 
         def add_reference: (untyped table_name, untyped ref_name, **untyped options) -> untyped
+
+        alias add_belongs_to add_reference
 
         def add_timestamps: (untyped table_name, **untyped options) -> untyped
 
@@ -14463,7 +14564,7 @@ module ActiveRecord
   end
 
   class EnvironmentMismatchError < ActiveRecordError
-    def initialize: (?stored: untyped? stored, ?current: untyped? current) -> untyped
+    def initialize: (?current: untyped? current, ?stored: untyped? stored) -> untyped
   end
 
   # = Active Record Migrations
@@ -14893,7 +14994,7 @@ module ActiveRecord
 
     def reverting?: () -> untyped
 
-    class ReversibleBlockHelper < ::Struct[untyped]
+    class ReversibleBlockHelper[T] < ::Struct[T]
       attr_accessor reverting(): untyped
 
       # nodoc:
@@ -14999,7 +15100,7 @@ module ActiveRecord
 
   # MigrationProxy is used to defer loading of the actual migration classes
   # until they are needed
-  class MigrationProxy < ::Struct[untyped]
+  class MigrationProxy[T] < ::Struct[T]
     attr_accessor name(): untyped
 
     attr_accessor version(): untyped
@@ -15019,7 +15120,7 @@ module ActiveRecord
     def load_migration: () -> untyped
   end
 
-  class NullMigration < MigrationProxy
+  class NullMigration[T] < MigrationProxy[T]
     # nodoc:
     def initialize: () -> untyped
 
@@ -15087,6 +15188,8 @@ module ActiveRecord
     def current_version: () -> untyped
 
     def current_migration: () -> untyped
+
+    alias current current_migration
 
     def run: () -> untyped
 
@@ -15914,7 +16017,7 @@ module ActiveRecord
       # go through Active Record's type casting and serialization.
       #
       # See <tt>ActiveRecord::Persistence#insert_all</tt> for documentation.
-      def insert: (untyped attributes, ?unique_by: untyped? unique_by, ?returning: untyped? returning) -> untyped
+      def insert: (untyped attributes, ?returning: untyped? returning, ?unique_by: untyped? unique_by) -> untyped
 
       # Inserts multiple records into the database in a single SQL INSERT
       # statement. It does not instantiate any models nor does it trigger
@@ -15969,7 +16072,7 @@ module ActiveRecord
       #     { id: 1, title: "Rework", author: "David" },
       #     { id: 1, title: "Eloquent Ruby", author: "Russ" }
       #   ])
-      def insert_all: (untyped attributes, ?unique_by: untyped? unique_by, ?returning: untyped? returning) -> untyped
+      def insert_all: (untyped attributes, ?returning: untyped? returning, ?unique_by: untyped? unique_by) -> untyped
 
       # Inserts a single record into the database in a single SQL INSERT
       # statement. It does not instantiate any models nor does it trigger
@@ -16027,7 +16130,7 @@ module ActiveRecord
       # go through Active Record's type casting and serialization.
       #
       # See <tt>ActiveRecord::Persistence#upsert_all</tt> for documentation.
-      def upsert: (untyped attributes, ?unique_by: untyped? unique_by, ?returning: untyped? returning) -> untyped
+      def upsert: (untyped attributes, ?returning: untyped? returning, ?unique_by: untyped? unique_by) -> untyped
 
       # Updates or inserts (upserts) multiple records into the database in a
       # single SQL INSERT statement. It does not instantiate any models nor does
@@ -16080,7 +16183,7 @@ module ActiveRecord
       #   ], unique_by: :isbn)
       #
       #   Book.find_by(isbn: "1").title # => "Eloquent Ruby"
-      def upsert_all: (untyped attributes, ?unique_by: untyped? unique_by, ?returning: untyped? returning) -> untyped
+      def upsert_all: (untyped attributes, ?returning: untyped? returning, ?unique_by: untyped? unique_by) -> untyped
 
       # Given an attributes hash, +instantiate+ returns a new instance of
       # the appropriate class. Accepts only keys as strings.
@@ -16323,9 +16426,13 @@ module ActiveRecord
     # will fail and false will be returned.
     def update: (untyped attributes) -> untyped
 
+    alias update_attributes update
+
     # Updates its receiver just like #update but calls #save! instead
     # of +save+, so an exception is raised if the record is invalid and saving will fail.
     def update!: (untyped attributes) -> untyped
+
+    alias update_attributes! update!
 
     # Equivalent to <code>update_columns(name => value)</code>.
     def update_column: (untyped name, untyped value) -> untyped
@@ -16593,7 +16700,7 @@ module ActiveRecord
       # nodoc:
       def setup: (untyped context, untyped options, untyped as, untyped block) -> untyped
 
-      def relation_from_options: (?collection: untyped? collection, ?partial: untyped? partial, ?cached: untyped? cached, **untyped _) -> (nil | untyped)
+      def relation_from_options: (?cached: untyped? cached, ?partial: untyped? partial, ?collection: untyped? collection, **untyped _) -> (nil | untyped)
 
       def collection_without_template: () -> untyped
 
@@ -16621,43 +16728,6 @@ module ActiveRecord
       def append_info_to_payload: (untyped payload) -> untyped
     end
   end
-end
-
-module ActiveRecord
-  extend ActiveSupport::Autoload
-
-  module Coders
-  end
-
-  module AttributeMethods
-    extend ActiveSupport::Autoload
-  end
-
-  module Locking
-    extend ActiveSupport::Autoload
-  end
-
-  module ConnectionAdapters
-    extend ActiveSupport::Autoload
-  end
-
-  module Scoping
-    extend ::ActiveRecord::Scoping::Named::ClassMethods
-
-    extend ::ActiveRecord::Scoping::Default::ClassMethods
-
-    extend ActiveSupport::Autoload
-  end
-
-  module Middleware
-    extend ActiveSupport::Autoload
-  end
-
-  module Tasks
-    extend ActiveSupport::Autoload
-  end
-
-  def self.eager_load!: () -> untyped
 end
 
 module ActiveRecord
@@ -16769,7 +16839,7 @@ module ActiveRecord
       # <tt>has_many :clients</tt> returns <tt>'Client'</tt>
       def class_name: () -> untyped
 
-      class JoinKeys < ::Struct[untyped]
+      class JoinKeys[T] < ::Struct[T]
         attr_accessor key(): untyped
 
         attr_accessor foreign_key(): untyped
@@ -16807,6 +16877,8 @@ module ActiveRecord
       # Hence this method.
       def inverse_which_updates_counter_cache: () -> untyped
 
+      alias inverse_updates_counter_cache? inverse_which_updates_counter_cache
+
       def inverse_updates_counter_in_memory?: () -> untyped
 
       # Returns whether a counter cache should be used for this association.
@@ -16821,7 +16893,7 @@ module ActiveRecord
 
       def chain: () -> untyped
 
-      def get_join_keys: (untyped association_klass) -> JoinKeys
+      def get_join_keys: (untyped association_klass) -> JoinKeys[untyped]
 
       def build_scope: (untyped table, ?untyped predicate_builder) -> untyped
 
@@ -16928,6 +17000,8 @@ module ActiveRecord
       def check_validity!: () -> untyped
 
       def check_preloadable!: () -> (nil | untyped)
+
+      alias check_eager_loadable! check_preloadable!
 
       def join_id_for: (untyped owner) -> untyped
 
@@ -17214,7 +17288,7 @@ module ActiveRecord
     class BatchEnumerator
       include Enumerable[untyped, untyped]
 
-      def initialize: (relation: untyped relation, ?finish: untyped? finish, ?start: untyped? start, ?of: ::Integer of) -> untyped
+      def initialize: (relation: untyped relation, ?of: ::Integer of, ?start: untyped? start, ?finish: untyped? finish) -> untyped
 
       # Looping through a collection of records from the database (using the
       # +all+ method, for example) is very inefficient since it will try to
@@ -17311,7 +17385,7 @@ module ActiveRecord
     #
     # NOTE: By its nature, batch processing is subject to race conditions if
     # other processes are modifying the database.
-    def find_each: (?error_on_ignore: untyped? error_on_ignore, ?batch_size: ::Integer batch_size, ?finish: untyped? finish, ?start: untyped? start) { (untyped) -> untyped } -> untyped
+    def find_each: (?start: untyped? start, ?finish: untyped? finish, ?batch_size: ::Integer batch_size, ?error_on_ignore: untyped? error_on_ignore) { (untyped) -> untyped } -> untyped
 
     # Yields each batch of records that was found by the find options as
     # an array.
@@ -17359,7 +17433,7 @@ module ActiveRecord
     #
     # NOTE: By its nature, batch processing is subject to race conditions if
     # other processes are modifying the database.
-    def find_in_batches: (?error_on_ignore: untyped? error_on_ignore, ?batch_size: ::Integer batch_size, ?finish: untyped? finish, ?start: untyped? start) { (untyped) -> untyped } -> untyped
+    def find_in_batches: (?start: untyped? start, ?finish: untyped? finish, ?batch_size: ::Integer batch_size, ?error_on_ignore: untyped? error_on_ignore) { (untyped) -> untyped } -> untyped
 
     # Yields ActiveRecord::Relation objects to work with a batch of records.
     #
@@ -18126,7 +18200,7 @@ module ActiveRecord
   class PredicateBuilder
     class RangeHandler
       # :nodoc:
-      class RangeWithBinds < ::Struct[untyped]
+      class RangeWithBinds[T] < ::Struct[T]
         attr_accessor begin(): untyped
 
         attr_accessor end(): untyped
@@ -18139,6 +18213,15 @@ module ActiveRecord
       def call: (untyped attribute, untyped value) -> untyped
 
       attr_reader predicate_builder: untyped
+    end
+  end
+end
+
+module ActiveRecord
+  class PredicateBuilder
+    class RelationHandler
+      # :nodoc:
+      def call: (untyped attribute, untyped value) -> untyped
     end
   end
 end
@@ -18175,15 +18258,6 @@ module ActiveRecord
     def convert_dot_notation_to_hash: (untyped attributes) -> untyped
 
     def handler_for: (untyped object) -> untyped
-  end
-end
-
-module ActiveRecord
-  class PredicateBuilder
-    class RelationHandler
-      # :nodoc:
-      def call: (untyped attribute, untyped value) -> untyped
-    end
   end
 end
 
@@ -18249,6 +18323,8 @@ module ActiveRecord
     FROZEN_EMPTY_ARRAY: untyped
 
     FROZEN_EMPTY_HASH: untyped
+
+    alias extensions extending_values
 
     # Specify relationships to be included in the result set. For
     # example:
@@ -18532,6 +18608,8 @@ module ActiveRecord
     #   => SELECT "users".* FROM "users" LEFT OUTER JOIN "posts" ON "posts"."user_id" = "users"."id"
     #
     def left_outer_joins: (*untyped args) -> untyped
+
+    alias left_joins left_outer_joins
 
     def left_outer_joins!: (*untyped args) -> untyped
 
@@ -18958,7 +19036,146 @@ module ActiveRecord
 
     def where_clause_factory: () -> untyped
 
+    alias having_clause_factory where_clause_factory
+
     DEFAULT_VALUES: ::Hash[untyped, untyped]
+  end
+end
+
+module ActiveRecord
+  class Relation
+    module RecordFetchWarning
+      # When this module is prepended to ActiveRecord::Relation and
+      # +config.active_record.warn_on_records_fetched_greater_than+ is
+      # set to an integer, if the number of records a query returns is
+      # greater than the value of +warn_on_records_fetched_greater_than+,
+      # a warning is logged. This allows for the detection of queries that
+      # return a large number of records, which could cause memory bloat.
+      #
+      # In most cases, fetching large number of records can be performed
+      # efficiently using the ActiveRecord::Batches methods.
+      # See ActiveRecord::Batches for more information.
+      def exec_queries: () -> untyped
+
+      class QueryRegistry
+        # :nodoc:
+        extend ActiveSupport::PerThreadRegistry
+
+        attr_reader queries: untyped
+
+        def initialize: () -> untyped
+
+        def reset: () -> untyped
+      end
+    end
+  end
+end
+
+module ActiveRecord
+  module SpawnMethods
+    def spawn: () -> untyped
+
+    # Merges in the conditions from <tt>other</tt>, if <tt>other</tt> is an ActiveRecord::Relation.
+    # Returns an array representing the intersection of the resulting records with <tt>other</tt>, if <tt>other</tt> is an array.
+    #
+    #   Post.where(published: true).joins(:comments).merge( Comment.where(spam: false) )
+    #   # Performs a single join query with both where conditions.
+    #
+    #   recent_posts = Post.order('created_at DESC').first(5)
+    #   Post.where(published: true).merge(recent_posts)
+    #   # Returns the intersection of all published posts with the 5 most recently created posts.
+    #   # (This is just an example. You'd probably want to do this with a single query!)
+    #
+    # Procs will be evaluated by merge:
+    #
+    #   Post.where(published: true).merge(-> { joins(:comments) })
+    #   # => Post.where(published: true).joins(:comments)
+    #
+    # This is mainly intended for sharing common conditions between multiple associations.
+    def merge: (untyped other) -> untyped
+
+    def merge!: (untyped other) -> untyped
+
+    # Removes from the query the condition(s) specified in +skips+.
+    #
+    #   Post.order('id asc').except(:order)                  # discards the order condition
+    #   Post.where('id > 10').order('id asc').except(:where) # discards the where condition but keeps the order
+    def except: (*untyped skips) -> untyped
+
+    # Removes any condition from the query other than the one(s) specified in +onlies+.
+    #
+    #   Post.order('id asc').only(:where)         # discards the order condition
+    #   Post.order('id asc').only(:where, :order) # uses the specified order
+    def only: (*untyped onlies) -> untyped
+
+    def relation_with: (untyped values) -> untyped
+  end
+end
+
+module ActiveRecord
+  class Relation
+    class WhereClause
+      def initialize: (untyped predicates) -> untyped
+
+      def +: (untyped other) -> WhereClause
+
+      def -: (untyped other) -> WhereClause
+
+      def merge: (untyped other) -> WhereClause
+
+      def except: (*untyped columns) -> WhereClause
+
+      def or: (untyped other) -> untyped
+
+      def to_h: (?untyped? table_name) -> untyped
+
+      def ast: () -> Arel::Nodes::And
+
+      def ==: (untyped other) -> untyped
+
+      def invert: (?::Symbol as) -> WhereClause
+
+      def self.empty: () -> untyped
+
+      attr_reader predicates: untyped
+
+      def referenced_columns: () -> untyped
+
+      def equalities: (untyped predicates) -> untyped
+
+      def predicates_unreferenced_by: (untyped other) -> untyped
+
+      def equality_node?: (untyped node) -> untyped
+
+      def invert_predicate: (untyped node) -> untyped
+
+      def except_predicates: (untyped columns) -> untyped
+
+      def predicates_with_wrapped_sql_literals: () -> untyped
+
+      ARRAY_WITH_EMPTY_STRING: ::Array[untyped]
+
+      def non_empty_predicates: () -> untyped
+
+      def wrap_sql_literal: (untyped node) -> Arel::Nodes::Grouping
+
+      def extract_node_value: (untyped node) -> untyped
+    end
+  end
+end
+
+module ActiveRecord
+  class Relation
+    class WhereClauseFactory
+      # :nodoc:
+      def initialize: (untyped klass, untyped predicate_builder) -> untyped
+
+      def build: (untyped opts, untyped other) -> WhereClause
+
+      attr_reader klass: untyped
+
+      attr_reader predicate_builder: untyped
+    end
   end
 end
 
@@ -19001,7 +19218,13 @@ module ActiveRecord
 
     attr_accessor skip_preloading_value: untyped
 
-    def initialize: (untyped klass, ?values: ::Hash[untyped, untyped] values, ?predicate_builder: untyped predicate_builder, ?table: untyped table) -> untyped
+    alias model klass
+
+    alias loaded? loaded
+
+    alias locked? lock_value
+
+    def initialize: (untyped klass, ?table: untyped table, ?predicate_builder: untyped predicate_builder, ?values: ::Hash[untyped, untyped] values) -> untyped
 
     def initialize_copy: (untyped other) -> untyped
 
@@ -19022,6 +19245,8 @@ module ActiveRecord
     #   user = users.new { |user| user.name = 'Oscar' }
     #   user.name # => Oscar
     def new: (?untyped? attributes) { () -> untyped } -> untyped
+
+    alias build new
 
     # Tries to create a new record with the same scoped attributes
     # defined in the relation. Returns the initialized object if validation fails.
@@ -19156,6 +19381,8 @@ module ActiveRecord
 
     # Converts relation objects to Array.
     def to_ary: () -> untyped
+
+    alias to_a to_ary
 
     def records: () -> untyped
 
@@ -19435,143 +19662,6 @@ module ActiveRecord
 end
 
 module ActiveRecord
-  class Relation
-    module RecordFetchWarning
-      # When this module is prepended to ActiveRecord::Relation and
-      # +config.active_record.warn_on_records_fetched_greater_than+ is
-      # set to an integer, if the number of records a query returns is
-      # greater than the value of +warn_on_records_fetched_greater_than+,
-      # a warning is logged. This allows for the detection of queries that
-      # return a large number of records, which could cause memory bloat.
-      #
-      # In most cases, fetching large number of records can be performed
-      # efficiently using the ActiveRecord::Batches methods.
-      # See ActiveRecord::Batches for more information.
-      def exec_queries: () -> untyped
-
-      class QueryRegistry
-        # :nodoc:
-        extend ActiveSupport::PerThreadRegistry
-
-        attr_reader queries: untyped
-
-        def initialize: () -> untyped
-
-        def reset: () -> untyped
-      end
-    end
-  end
-end
-
-module ActiveRecord
-  module SpawnMethods
-    def spawn: () -> untyped
-
-    # Merges in the conditions from <tt>other</tt>, if <tt>other</tt> is an ActiveRecord::Relation.
-    # Returns an array representing the intersection of the resulting records with <tt>other</tt>, if <tt>other</tt> is an array.
-    #
-    #   Post.where(published: true).joins(:comments).merge( Comment.where(spam: false) )
-    #   # Performs a single join query with both where conditions.
-    #
-    #   recent_posts = Post.order('created_at DESC').first(5)
-    #   Post.where(published: true).merge(recent_posts)
-    #   # Returns the intersection of all published posts with the 5 most recently created posts.
-    #   # (This is just an example. You'd probably want to do this with a single query!)
-    #
-    # Procs will be evaluated by merge:
-    #
-    #   Post.where(published: true).merge(-> { joins(:comments) })
-    #   # => Post.where(published: true).joins(:comments)
-    #
-    # This is mainly intended for sharing common conditions between multiple associations.
-    def merge: (untyped other) -> untyped
-
-    def merge!: (untyped other) -> untyped
-
-    # Removes from the query the condition(s) specified in +skips+.
-    #
-    #   Post.order('id asc').except(:order)                  # discards the order condition
-    #   Post.where('id > 10').order('id asc').except(:where) # discards the where condition but keeps the order
-    def except: (*untyped skips) -> untyped
-
-    # Removes any condition from the query other than the one(s) specified in +onlies+.
-    #
-    #   Post.order('id asc').only(:where)         # discards the order condition
-    #   Post.order('id asc').only(:where, :order) # uses the specified order
-    def only: (*untyped onlies) -> untyped
-
-    def relation_with: (untyped values) -> untyped
-  end
-end
-
-module ActiveRecord
-  class Relation
-    class WhereClauseFactory
-      # :nodoc:
-      def initialize: (untyped klass, untyped predicate_builder) -> untyped
-
-      def build: (untyped opts, untyped other) -> WhereClause
-
-      attr_reader klass: untyped
-
-      attr_reader predicate_builder: untyped
-    end
-  end
-end
-
-module ActiveRecord
-  class Relation
-    class WhereClause
-      def initialize: (untyped predicates) -> untyped
-
-      def +: (untyped other) -> WhereClause
-
-      def -: (untyped other) -> WhereClause
-
-      def merge: (untyped other) -> WhereClause
-
-      def except: (*untyped columns) -> WhereClause
-
-      def or: (untyped other) -> untyped
-
-      def to_h: (?untyped? table_name) -> untyped
-
-      def ast: () -> Arel::Nodes::And
-
-      def ==: (untyped other) -> untyped
-
-      def invert: (?::Symbol as) -> WhereClause
-
-      def self.empty: () -> untyped
-
-      attr_reader predicates: untyped
-
-      def referenced_columns: () -> untyped
-
-      def equalities: (untyped predicates) -> untyped
-
-      def predicates_unreferenced_by: (untyped other) -> untyped
-
-      def equality_node?: (untyped node) -> untyped
-
-      def invert_predicate: (untyped node) -> untyped
-
-      def except_predicates: (untyped columns) -> untyped
-
-      def predicates_with_wrapped_sql_literals: () -> untyped
-
-      ARRAY_WITH_EMPTY_STRING: ::Array[untyped]
-
-      def non_empty_predicates: () -> untyped
-
-      def wrap_sql_literal: (untyped node) -> Arel::Nodes::Grouping
-
-      def extract_node_value: (untyped node) -> untyped
-    end
-  end
-end
-
-module ActiveRecord
   # #
   # This class encapsulates a result returned from calling
   # {#exec_query}[rdoc-ref:ConnectionAdapters::DatabaseStatements#exec_query]
@@ -19627,11 +19717,17 @@ module ActiveRecord
 
     def to_hash: () -> untyped
 
+    alias map! map
+
+    alias collect! map
+
     # Returns true if there are no records, otherwise false.
     def empty?: () -> untyped
 
     # Returns an array of hashes representing each row record.
     def to_ary: () -> untyped
+
+    alias to_a to_ary
 
     def []: (untyped idx) -> untyped
 
@@ -19692,6 +19788,8 @@ module ActiveRecord
       #   sanitize_sql_for_conditions("name='foo''bar' and group_id='4'")
       #   # => "name='foo''bar' and group_id='4'"
       def sanitize_sql_for_conditions: (untyped condition) -> (nil | untyped)
+
+      alias sanitize_sql sanitize_sql_for_conditions
 
       # Accepts an array, hash, or string of SQL conditions and sanitizes
       # them into a valid SQL fragment for a SET clause.
@@ -19770,6 +19868,54 @@ module ActiveRecord
 end
 
 module ActiveRecord
+  # = Active Record \Schema
+  #
+  # Allows programmers to programmatically define a schema in a portable
+  # DSL. This means you can define tables, indexes, etc. without using SQL
+  # directly, so your applications can more easily support multiple
+  # databases.
+  #
+  # Usage:
+  #
+  #   ActiveRecord::Schema.define do
+  #     create_table :authors do |t|
+  #       t.string :name, null: false
+  #     end
+  #
+  #     add_index :authors, :name, :unique
+  #
+  #     create_table :posts do |t|
+  #       t.integer :author_id, null: false
+  #       t.string :subject
+  #       t.text :body
+  #       t.boolean :private, default: false
+  #     end
+  #
+  #     add_index :posts, :author_id
+  #   end
+  #
+  # ActiveRecord::Schema is only supported by database adapters that also
+  # support migrations, the two features being very similar.
+  class Schema < Migration::Current
+    # Eval the given block. All methods available to the current connection
+    # adapter are available within the block, so you can easily use the
+    # database definition DSL to build up your schema (
+    # {create_table}[rdoc-ref:ConnectionAdapters::SchemaStatements#create_table],
+    # {add_index}[rdoc-ref:ConnectionAdapters::SchemaStatements#add_index], etc.).
+    #
+    # The +info+ hash is optional, and if given is used to define metadata
+    # about the current schema (currently, only the schema's version):
+    #
+    #   ActiveRecord::Schema.define(version: 2038_01_19_000001) do
+    #     ...
+    #   end
+    def self.define: (?::Hash[untyped, untyped] info) { () -> untyped } -> untyped
+
+    def define: (untyped info) { () -> untyped } -> untyped
+  end
+end
+
+module ActiveRecord
   class SchemaDumper
     def self.dump: (?untyped connection, ?untyped stream, ?untyped config) -> untyped
 
@@ -19843,55 +19989,9 @@ module ActiveRecord
 end
 
 module ActiveRecord
-  # = Active Record \Schema
-  #
-  # Allows programmers to programmatically define a schema in a portable
-  # DSL. This means you can define tables, indexes, etc. without using SQL
-  # directly, so your applications can more easily support multiple
-  # databases.
-  #
-  # Usage:
-  #
-  #   ActiveRecord::Schema.define do
-  #     create_table :authors do |t|
-  #       t.string :name, null: false
-  #     end
-  #
-  #     add_index :authors, :name, :unique
-  #
-  #     create_table :posts do |t|
-  #       t.integer :author_id, null: false
-  #       t.string :subject
-  #       t.text :body
-  #       t.boolean :private, default: false
-  #     end
-  #
-  #     add_index :posts, :author_id
-  #   end
-  #
-  # ActiveRecord::Schema is only supported by database adapters that also
-  # support migrations, the two features being very similar.
-  class Schema < Migration::Current
-    # Eval the given block. All methods available to the current connection
-    # adapter are available within the block, so you can easily use the
-    # database definition DSL to build up your schema (
-    # {create_table}[rdoc-ref:ConnectionAdapters::SchemaStatements#create_table],
-    # {add_index}[rdoc-ref:ConnectionAdapters::SchemaStatements#add_index], etc.).
-    #
-    # The +info+ hash is optional, and if given is used to define metadata
-    # about the current schema (currently, only the schema's version):
-    #
-    #   ActiveRecord::Schema.define(version: 2038_01_19_000001) do
-    #     ...
-    #   end
-    def self.define: (?::Hash[untyped, untyped] info) { () -> untyped } -> untyped
-
-    def define: (untyped info) { () -> untyped } -> untyped
-  end
-end
-
-module ActiveRecord
   module Scoping
+    extend ::ActiveRecord::Scoping::Named::ClassMethods
+
     module Default
       extend ActiveSupport::Concern
 
@@ -19934,6 +20034,8 @@ module ActiveRecord
         def evaluate_default_scope: () { () -> untyped } -> (nil | untyped)
       end
     end
+
+    extend ::ActiveRecord::Scoping::Default::ClassMethods
   end
 end
 
@@ -20345,7 +20447,7 @@ module ActiveRecord
     module ClassMethods
       def store: (untyped store_attribute, ?::Hash[untyped, untyped] options) -> untyped
 
-      def store_accessor: (untyped store_attribute, *untyped keys, ?suffix: untyped? suffix, ?prefix: untyped? prefix) -> (::FalseClass | nil | untyped)
+      def store_accessor: (untyped store_attribute, *untyped keys, ?prefix: untyped? prefix, ?suffix: untyped? suffix) -> (::FalseClass | nil | untyped)
 
       def _store_accessors_module: () -> untyped
 
@@ -21180,7 +21282,7 @@ module ActiveRecord
 
     def committed!: (?should_run_callbacks: bool should_run_callbacks) -> untyped
 
-    def rolledback!: (?should_run_callbacks: bool should_run_callbacks, ?force_restore_state: bool force_restore_state) -> untyped
+    def rolledback!: (?force_restore_state: bool force_restore_state, ?should_run_callbacks: bool should_run_callbacks) -> untyped
 
     # Executes +method+ within a transaction and captures its return value as a
     # status flag. If the status is true the transaction is committed, otherwise
@@ -21258,7 +21360,7 @@ module ActiveRecord
     end
 
     class Registration
-      def initialize: (untyped name, untyped block, ?override: untyped? override, ?adapter: untyped? adapter) -> untyped
+      def initialize: (untyped name, untyped block, ?adapter: untyped? adapter, ?override: untyped? override) -> untyped
 
       def call: (untyped _registry, *untyped args, ?adapter: untyped? adapter, **untyped kwargs) -> untyped
 
@@ -21305,39 +21407,6 @@ module ActiveRecord
   end
 
   class TypeConflictError < StandardError
-  end
-end
-
-module ActiveRecord
-  module TypeCaster
-    class Connection
-      # :nodoc:
-      def initialize: (untyped klass, untyped table_name) -> untyped
-
-      def type_cast_for_database: (untyped attr_name, untyped value) -> untyped
-
-      def type_for_attribute: (untyped attr_name) -> untyped
-
-      attr_reader table_name: untyped
-    end
-  end
-end
-
-module ActiveRecord
-  module TypeCaster
-    class Map
-      # :nodoc:
-      def initialize: (untyped types) -> untyped
-
-      def type_cast_for_database: (untyped attr_name, untyped value) -> untyped
-
-      attr_reader types: untyped
-    end
-  end
-end
-
-module ActiveRecord
-  module TypeCaster
   end
 end
 
@@ -21415,46 +21484,8 @@ end
 
 module ActiveRecord
   module Type
-    attr_accessor registry: untyped
-
-    # Add a new type to the registry, allowing it to be referenced as a
-    # symbol by {ActiveRecord::Base.attribute}[rdoc-ref:Attributes::ClassMethods#attribute].
-    # If your type is only meant to be used with a specific database adapter, you can
-    # do so by passing <tt>adapter: :postgresql</tt>. If your type has the same
-    # name as a native type for the current adapter, an exception will be
-    # raised unless you specify an +:override+ option. <tt>override: true</tt> will
-    # cause your type to be used instead of the native type. <tt>override:
-    # false</tt> will cause the native type to be used over yours if one exists.
-    def self.register: (untyped type_name, ?untyped? klass, **untyped options) { () -> untyped } -> untyped
-
-    def self.lookup: (*untyped args, ?adapter: untyped adapter, **untyped kwargs) -> untyped
-
-    def self.default_value: () -> untyped
-
-    def self.current_adapter_name: () -> untyped
-
-    BigInteger: untyped
-
-    Binary: untyped
-
-    Boolean: untyped
-
-    Decimal: untyped
-
-    Float: untyped
-
-    Integer: untyped
-
-    String: untyped
-
-    Value: untyped
-  end
-end
-
-module ActiveRecord
-  module Type
-    # Note: It inherits unnamed class, but omitted
     class Serialized
+      # Note: It inherits unnamed class, but omitted
       include ActiveModel::Type::Helpers::Mutable
 
       attr_reader subtype: untyped
@@ -21498,7 +21529,6 @@ module ActiveRecord
     class Time < ActiveModel::Type::Time
       include Internal::Timezone
 
-      # Note: It inherits unnamed class, but omitted
       class Value
       end
 
@@ -21535,6 +21565,77 @@ module ActiveRecord
 
       def min_value: () -> 0
     end
+  end
+end
+
+module ActiveRecord
+  module Type
+    attr_accessor registry: untyped
+
+    # Add a new type to the registry, allowing it to be referenced as a
+    # symbol by {ActiveRecord::Base.attribute}[rdoc-ref:Attributes::ClassMethods#attribute].
+    # If your type is only meant to be used with a specific database adapter, you can
+    # do so by passing <tt>adapter: :postgresql</tt>. If your type has the same
+    # name as a native type for the current adapter, an exception will be
+    # raised unless you specify an +:override+ option. <tt>override: true</tt> will
+    # cause your type to be used instead of the native type. <tt>override:
+    # false</tt> will cause the native type to be used over yours if one exists.
+    def self.register: (untyped type_name, ?untyped? klass, **untyped options) { () -> untyped } -> untyped
+
+    def self.lookup: (*untyped args, ?adapter: untyped adapter, **untyped kwargs) -> untyped
+
+    def self.default_value: () -> untyped
+
+    def self.current_adapter_name: () -> untyped
+
+    BigInteger: untyped
+
+    Binary: untyped
+
+    Boolean: untyped
+
+    Decimal: untyped
+
+    Float: untyped
+
+    Integer: untyped
+
+    String: untyped
+
+    Value: untyped
+  end
+end
+
+module ActiveRecord
+  module TypeCaster
+    class Connection
+      # :nodoc:
+      def initialize: (untyped klass, untyped table_name) -> untyped
+
+      def type_cast_for_database: (untyped attr_name, untyped value) -> untyped
+
+      def type_for_attribute: (untyped attr_name) -> untyped
+
+      attr_reader table_name: untyped
+    end
+  end
+end
+
+module ActiveRecord
+  module TypeCaster
+    class Map
+      # :nodoc:
+      def initialize: (untyped types) -> untyped
+
+      def type_cast_for_database: (untyped attr_name, untyped value) -> untyped
+
+      attr_reader types: untyped
+    end
+  end
+end
+
+module ActiveRecord
+  module TypeCaster
   end
 end
 
@@ -21621,6 +21722,8 @@ module ActiveRecord
       #
       # See ActiveModel::Validations::HelperMethods.validates_length_of for more information.
       def validates_length_of: (*untyped attr_names) -> untyped
+
+      alias validates_size_of validates_length_of
     end
   end
 end
@@ -21683,66 +21786,6 @@ module ActiveRecord
       #   See ActiveModel::Validations#validates! for more information.
       def validates_presence_of: (*untyped attr_names) -> untyped
     end
-  end
-end
-
-module ActiveRecord
-  # = Active Record \RecordInvalid
-  #
-  # Raised by {ActiveRecord::Base#save!}[rdoc-ref:Persistence#save!] and
-  # {ActiveRecord::Base#create!}[rdoc-ref:Persistence::ClassMethods#create!] when the record is invalid.
-  # Use the #record method to retrieve the record which did not validate.
-  #
-  #   begin
-  #     complex_operation_that_internally_calls_save!
-  #   rescue ActiveRecord::RecordInvalid => invalid
-  #     puts invalid.record.errors
-  #   end
-  class RecordInvalid < ActiveRecordError
-    attr_reader record: untyped
-
-    def initialize: (?untyped? record) -> untyped
-  end
-
-  # = Active Record \Validations
-  #
-  # Active Record includes the majority of its validations from ActiveModel::Validations
-  # all of which accept the <tt>:on</tt> argument to define the context where the
-  # validations are active. Active Record will always supply either the context of
-  # <tt>:create</tt> or <tt>:update</tt> dependent on whether the model is a
-  # {new_record?}[rdoc-ref:Persistence#new_record?].
-  module Validations
-    extend ActiveSupport::Concern
-
-    include ActiveModel::Validations
-
-    # The validation process on save can be skipped by passing <tt>validate: false</tt>.
-    # The validation context can be changed by passing <tt>context: context</tt>.
-    # The regular {ActiveRecord::Base#save}[rdoc-ref:Persistence#save] method is replaced
-    # with this when the validations module is mixed in, which it is by default.
-    def save: (**untyped options) -> untyped
-
-    # Attempts to save the record just like {ActiveRecord::Base#save}[rdoc-ref:Base#save] but
-    # will raise an ActiveRecord::RecordInvalid exception instead of returning +false+ if the record is not valid.
-    def save!: (**untyped options) -> untyped
-
-    # Runs all the validations within the specified context. Returns +true+ if
-    # no errors are found, +false+ otherwise.
-    #
-    # Aliased as #validate.
-    #
-    # If the argument is +false+ (default is +nil+), the context is set to <tt>:create</tt> if
-    # {new_record?}[rdoc-ref:Persistence#new_record?] is +true+, and to <tt>:update</tt> if it is not.
-    #
-    # \Validations with no <tt>:on</tt> option will run no matter the context. \Validations with
-    # some <tt>:on</tt> option will only run in the specified context.
-    def valid?: (?untyped? context) -> untyped
-
-    def default_validation_context: () -> untyped
-
-    def raise_validation_error: () -> untyped
-
-    def perform_validations: (?::Hash[untyped, untyped] options) -> untyped
   end
 end
 
@@ -21899,22 +21942,117 @@ module ActiveRecord
 end
 
 module ActiveRecord
+  # = Active Record \RecordInvalid
+  #
+  # Raised by {ActiveRecord::Base#save!}[rdoc-ref:Persistence#save!] and
+  # {ActiveRecord::Base#create!}[rdoc-ref:Persistence::ClassMethods#create!] when the record is invalid.
+  # Use the #record method to retrieve the record which did not validate.
+  #
+  #   begin
+  #     complex_operation_that_internally_calls_save!
+  #   rescue ActiveRecord::RecordInvalid => invalid
+  #     puts invalid.record.errors
+  #   end
+  class RecordInvalid < ActiveRecordError
+    attr_reader record: untyped
+
+    def initialize: (?untyped? record) -> untyped
+  end
+
+  # = Active Record \Validations
+  #
+  # Active Record includes the majority of its validations from ActiveModel::Validations
+  # all of which accept the <tt>:on</tt> argument to define the context where the
+  # validations are active. Active Record will always supply either the context of
+  # <tt>:create</tt> or <tt>:update</tt> dependent on whether the model is a
+  # {new_record?}[rdoc-ref:Persistence#new_record?].
+  module Validations
+    extend ActiveSupport::Concern
+
+    include ActiveModel::Validations
+
+    # The validation process on save can be skipped by passing <tt>validate: false</tt>.
+    # The validation context can be changed by passing <tt>context: context</tt>.
+    # The regular {ActiveRecord::Base#save}[rdoc-ref:Persistence#save] method is replaced
+    # with this when the validations module is mixed in, which it is by default.
+    def save: (**untyped options) -> untyped
+
+    # Attempts to save the record just like {ActiveRecord::Base#save}[rdoc-ref:Base#save] but
+    # will raise an ActiveRecord::RecordInvalid exception instead of returning +false+ if the record is not valid.
+    def save!: (**untyped options) -> untyped
+
+    # Runs all the validations within the specified context. Returns +true+ if
+    # no errors are found, +false+ otherwise.
+    #
+    # Aliased as #validate.
+    #
+    # If the argument is +false+ (default is +nil+), the context is set to <tt>:create</tt> if
+    # {new_record?}[rdoc-ref:Persistence#new_record?] is +true+, and to <tt>:update</tt> if it is not.
+    #
+    # \Validations with no <tt>:on</tt> option will run no matter the context. \Validations with
+    # some <tt>:on</tt> option will only run in the specified context.
+    def valid?: (?untyped? context) -> untyped
+
+    alias validate valid?
+
+    def default_validation_context: () -> untyped
+
+    def raise_validation_error: () -> untyped
+
+    def perform_validations: (?::Hash[untyped, untyped] options) -> untyped
+  end
+end
+
+module ActiveRecord
   # Returns the version of the currently loaded ActiveRecord as a <tt>Gem::Version</tt>
   def self.version: () -> untyped
+end
+
+module ActiveRecord
+  extend ActiveSupport::Autoload
+
+  module Coders
+  end
+
+  module AttributeMethods
+    extend ActiveSupport::Autoload
+  end
+
+  module Locking
+    extend ActiveSupport::Autoload
+  end
+
+  module ConnectionAdapters
+    extend ActiveSupport::Autoload
+  end
+
+  module Scoping
+    extend ActiveSupport::Autoload
+  end
+
+  module Middleware
+    extend ActiveSupport::Autoload
+  end
+
+  module Tasks
+    extend ActiveSupport::Autoload
+  end
+
+  def self.eager_load!: () -> untyped
 end
 
 module Arel
   # :nodoc: all
   module AliasPredication
-    def as: (untyped other) -> untyped
+    def as: (untyped other) -> Nodes::As
   end
 end
 
 module Arel
   # :nodoc: all
   module Attributes
-    # Note: It inherits unnamed class, but omitted
     class Attribute
+      # Note: It inherits unnamed class, but omitted
       include Arel::Expressions
 
       include Arel::Predications
@@ -22187,6 +22325,8 @@ module Arel
       def hash: () -> untyped
 
       def eql?: (untyped other) -> untyped
+
+      alias == eql?
     end
   end
 end
@@ -22221,6 +22361,8 @@ module Arel
       def hash: () -> untyped
 
       def eql?: (untyped other) -> untyped
+
+      alias == eql?
     end
   end
 end
@@ -22236,6 +22378,8 @@ module Arel
       def hash: () -> untyped
 
       def eql?: (untyped other) -> untyped
+
+      alias == eql?
 
       def nil?: () -> untyped
 
@@ -22269,6 +22413,8 @@ module Arel
       def hash: () -> untyped
 
       def eql?: (untyped other) -> untyped
+
+      alias == eql?
     end
 
     class When < Binary
@@ -22296,9 +22442,14 @@ module Arel
       def hash: () -> untyped
 
       def eql?: (untyped other) -> untyped
+
+      alias == eql?
     end
 
     class Quoted < Arel::Nodes::Unary
+      # :nodoc:
+      alias val value
+
       def nil?: () -> untyped
 
       def infinite?: () -> untyped
@@ -22321,6 +22472,8 @@ module Arel
       def hash: () -> untyped
 
       def eql?: (untyped other) -> untyped
+
+      alias == eql?
     end
   end
 end
@@ -22350,6 +22503,14 @@ module Arel
 
       attr_accessor key: untyped
 
+      alias relation left
+
+      alias relation= left=
+
+      alias wheres right
+
+      alias wheres= right=
+
       def initialize: (?untyped? relation, ?untyped wheres) -> untyped
 
       def initialize_copy: (untyped other) -> untyped
@@ -22357,6 +22518,8 @@ module Arel
       def hash: () -> untyped
 
       def eql?: (untyped other) -> untyped
+
+      alias == eql?
     end
   end
 end
@@ -22381,6 +22544,10 @@ module Arel
   module Nodes
     class Equality < Arel::Nodes::Binary
       def operator: () -> Symbol
+
+      alias operand1 left
+
+      alias operand2 right
     end
   end
 end
@@ -22396,6 +22563,8 @@ module Arel
       def hash: () -> untyped
 
       def eql?: (untyped other) -> untyped
+
+      alias == eql?
     end
   end
 end
@@ -22407,6 +22576,8 @@ module Arel
       def hash: () -> untyped
 
       def eql?: (untyped other) -> untyped
+
+      alias == eql?
     end
   end
 end
@@ -22438,6 +22609,8 @@ module Arel
       def hash: () -> untyped
 
       def eql?: (untyped other) -> untyped
+
+      alias == eql?
     end
   end
 end
@@ -22446,6 +22619,14 @@ module Arel
   # :nodoc: all
   module Nodes
     class Grouping < Unary
+    end
+  end
+end
+
+module Arel
+  # :nodoc: all
+  module Nodes
+    class In < Equality
     end
   end
 end
@@ -22522,14 +22703,6 @@ end
 module Arel
   # :nodoc: all
   module Nodes
-    class In < Equality
-    end
-  end
-end
-
-module Arel
-  # :nodoc: all
-  module Nodes
     class InsertStatement < Arel::Nodes::Node
       attr_accessor relation: untyped
 
@@ -22546,6 +22719,8 @@ module Arel
       def hash: () -> untyped
 
       def eql?: (untyped other) -> untyped
+
+      alias == eql?
     end
   end
 end
@@ -22588,23 +22763,8 @@ module Arel
       def hash: () -> untyped
 
       def eql?: (untyped other) -> untyped
-    end
-  end
-end
 
-module Arel
-  # :nodoc: all
-  module Nodes
-    class NodeExpression < Arel::Nodes::Node
-      include Arel::Expressions
-
-      include Arel::Predications
-
-      include Arel::AliasPredication
-
-      include Arel::OrderPredications
-
-      include Arel::Math
+      alias == eql?
     end
   end
 end
@@ -22642,6 +22802,23 @@ module Arel
 
       # Iterate through AST, nodes will be yielded depth-first
       def each: () { () -> untyped } -> untyped
+    end
+  end
+end
+
+module Arel
+  # :nodoc: all
+  module Nodes
+    class NodeExpression < Arel::Nodes::Node
+      include Arel::Expressions
+
+      include Arel::Predications
+
+      include Arel::AliasPredication
+
+      include Arel::OrderPredications
+
+      include Arel::Math
     end
   end
 end
@@ -22717,11 +22894,17 @@ module Arel
 
       def from=: (untyped value) -> untyped
 
+      alias froms= from=
+
+      alias froms from
+
       def initialize_copy: (untyped other) -> untyped
 
       def hash: () -> untyped
 
       def eql?: (untyped other) -> untyped
+
+      alias == eql?
     end
   end
 end
@@ -22749,6 +22932,8 @@ module Arel
       def hash: () -> untyped
 
       def eql?: (untyped other) -> untyped
+
+      alias == eql?
     end
   end
 end
@@ -22783,6 +22968,12 @@ module Arel
   # :nodoc: all
   module Nodes
     class TableAlias < Arel::Nodes::Binary
+      alias name right
+
+      alias relation left
+
+      alias table_alias name
+
       def []: (untyped name) -> ::Arel::Attributes::Attribute
 
       def table_name: () -> untyped
@@ -22801,6 +22992,8 @@ module Arel
       def hash: () -> untyped
 
       def eql?: (untyped other) -> untyped
+
+      alias == eql?
     end
   end
 end
@@ -22812,6 +23005,27 @@ module Arel
       def hash: () -> untyped
 
       def eql?: (untyped other) -> untyped
+
+      alias == eql?
+    end
+  end
+end
+
+module Arel
+  # :nodoc: all
+  module Nodes
+    class Unary < Arel::Nodes::NodeExpression
+      attr_accessor expr: untyped
+
+      alias value expr
+
+      def initialize: (untyped expr) -> untyped
+
+      def hash: () -> untyped
+
+      def eql?: (untyped other) -> untyped
+
+      alias == eql?
     end
   end
 end
@@ -22834,22 +23048,11 @@ end
 module Arel
   # :nodoc: all
   module Nodes
-    class Unary < Arel::Nodes::NodeExpression
-      attr_accessor expr: untyped
-
-      def initialize: (untyped expr) -> untyped
-
-      def hash: () -> untyped
-
-      def eql?: (untyped other) -> untyped
-    end
-  end
-end
-
-module Arel
-  # :nodoc: all
-  module Nodes
     class UnqualifiedColumn < Arel::Nodes::Unary
+      alias attribute expr
+
+      alias attribute= expr=
+
       def relation: () -> untyped
 
       def column: () -> untyped
@@ -22884,6 +23087,8 @@ module Arel
       def hash: () -> untyped
 
       def eql?: (untyped other) -> untyped
+
+      alias == eql?
     end
   end
 end
@@ -22892,6 +23097,7 @@ module Arel
   # :nodoc: all
   module Nodes
     class ValuesList < Unary
+      alias rows expr
     end
   end
 end
@@ -22923,6 +23129,8 @@ module Arel
       def hash: () -> untyped
 
       def eql?: (untyped other) -> untyped
+
+      alias == eql?
     end
 
     class NamedWindow < Window
@@ -22935,13 +23143,15 @@ module Arel
       def hash: () -> untyped
 
       def eql?: (untyped other) -> untyped
+
+      alias == eql?
     end
 
     class Rows < Unary
       def initialize: (?untyped? expr) -> untyped
     end
 
-    class Range[Elem] < Unary
+    class Range[out Elem] < Unary
       def initialize: (?untyped? expr) -> untyped
     end
 
@@ -22949,6 +23159,8 @@ module Arel
       def hash: () -> untyped
 
       def eql?: (untyped other) -> untyped
+
+      alias == eql?
     end
 
     class Preceding < Unary
@@ -22965,6 +23177,7 @@ module Arel
   # :nodoc: all
   module Nodes
     class With < Arel::Nodes::Unary
+      alias children expr
     end
 
     class WithRecursive < With
@@ -23077,27 +23290,6 @@ module Arel
 end
 
 module Arel
-  VERSION: ::String
-
-  # Wrap a known-safe SQL string for passing to query methods, e.g.
-  #
-  #   Post.order(Arel.sql("length(title)")).last
-  #
-  # Great caution should be taken to avoid SQL injection vulnerabilities.
-  # This method should not be used with unsafe values such as request
-  # parameters or model attributes.
-  def self.sql: (untyped raw_sql) -> Arel::Nodes::SqlLiteral
-
-  def self.star: () -> untyped
-
-  def self.arel_node?: (untyped value) -> untyped
-
-  def self.fetch_attribute: (untyped value) { (untyped) -> untyped } -> untyped
-
-  Node: untyped
-end
-
-module Arel
   # :nodoc: all
   class SelectManager < Arel::TreeManager
     include Arel::Crud
@@ -23110,11 +23302,15 @@ module Arel
 
     def limit: () -> untyped
 
+    alias taken limit
+
     def constraints: () -> untyped
 
     def offset: () -> untyped
 
     def skip: (untyped amount) -> untyped
+
+    alias offset= skip
 
     # #
     # Produces an Arel::Nodes::Exists node
@@ -23166,11 +23362,15 @@ module Arel
 
     def except: (untyped other) -> Nodes::Except
 
+    alias minus except
+
     def lateral: (?untyped? table_name) -> Nodes::Lateral
 
     def with: (*untyped subqueries) -> untyped
 
     def take: (untyped limit) -> untyped
+
+    alias limit= take
 
     def join_sources: () -> untyped
 
@@ -23195,7 +23395,10 @@ module Arel
 
     attr_accessor table_alias: untyped
 
-    def initialize: (untyped name, ?type_caster: untyped? type_caster, ?as: untyped? as) -> untyped
+    # TableAlias and Table both have a #table_name which is the name of the underlying table
+    alias table_name name
+
+    def initialize: (untyped name, ?as: untyped? as, ?type_caster: untyped? type_caster) -> untyped
 
     def `alias`: (?::String name) -> Nodes::TableAlias
 
@@ -23224,6 +23427,8 @@ module Arel
     def hash: () -> untyped
 
     def eql?: (untyped other) -> untyped
+
+    alias == eql?
 
     def type_cast_for_database: (untyped attribute_name, untyped value) -> untyped
 
@@ -23293,7 +23498,55 @@ module Arel
 
       def unary: (untyped o) -> untyped
 
+      alias visit_Arel_Nodes_Else unary
+
+      alias visit_Arel_Nodes_Group unary
+
+      alias visit_Arel_Nodes_Cube unary
+
+      alias visit_Arel_Nodes_RollUp unary
+
+      alias visit_Arel_Nodes_GroupingSet unary
+
+      alias visit_Arel_Nodes_GroupingElement unary
+
+      alias visit_Arel_Nodes_Grouping unary
+
+      alias visit_Arel_Nodes_Having unary
+
+      alias visit_Arel_Nodes_Lateral unary
+
+      alias visit_Arel_Nodes_Limit unary
+
+      alias visit_Arel_Nodes_Not unary
+
+      alias visit_Arel_Nodes_Offset unary
+
+      alias visit_Arel_Nodes_On unary
+
+      alias visit_Arel_Nodes_Ordering unary
+
+      alias visit_Arel_Nodes_Ascending unary
+
+      alias visit_Arel_Nodes_Descending unary
+
+      alias visit_Arel_Nodes_UnqualifiedColumn unary
+
+      alias visit_Arel_Nodes_OptimizerHints unary
+
+      alias visit_Arel_Nodes_ValuesList unary
+
       def function: (untyped o) -> untyped
+
+      alias visit_Arel_Nodes_Avg function
+
+      alias visit_Arel_Nodes_Exists function
+
+      alias visit_Arel_Nodes_Max function
+
+      alias visit_Arel_Nodes_Min function
+
+      alias visit_Arel_Nodes_Sum function
 
       def visit_Arel_Nodes_NamedFunction: (untyped o) -> untyped
 
@@ -23303,15 +23556,129 @@ module Arel
 
       def nary: (untyped o) -> untyped
 
+      alias visit_Arel_Nodes_And nary
+
       def binary: (untyped o) -> untyped
+
+      alias visit_Arel_Nodes_As binary
+
+      alias visit_Arel_Nodes_Assignment binary
+
+      alias visit_Arel_Nodes_Between binary
+
+      alias visit_Arel_Nodes_Concat binary
+
+      alias visit_Arel_Nodes_DeleteStatement binary
+
+      alias visit_Arel_Nodes_DoesNotMatch binary
+
+      alias visit_Arel_Nodes_Equality binary
+
+      alias visit_Arel_Nodes_FullOuterJoin binary
+
+      alias visit_Arel_Nodes_GreaterThan binary
+
+      alias visit_Arel_Nodes_GreaterThanOrEqual binary
+
+      alias visit_Arel_Nodes_In binary
+
+      alias visit_Arel_Nodes_InfixOperation binary
+
+      alias visit_Arel_Nodes_JoinSource binary
+
+      alias visit_Arel_Nodes_InnerJoin binary
+
+      alias visit_Arel_Nodes_LessThan binary
+
+      alias visit_Arel_Nodes_LessThanOrEqual binary
+
+      alias visit_Arel_Nodes_Matches binary
+
+      alias visit_Arel_Nodes_NotEqual binary
+
+      alias visit_Arel_Nodes_NotIn binary
+
+      alias visit_Arel_Nodes_NotRegexp binary
+
+      alias visit_Arel_Nodes_IsNotDistinctFrom binary
+
+      alias visit_Arel_Nodes_IsDistinctFrom binary
+
+      alias visit_Arel_Nodes_Or binary
+
+      alias visit_Arel_Nodes_OuterJoin binary
+
+      alias visit_Arel_Nodes_Regexp binary
+
+      alias visit_Arel_Nodes_RightOuterJoin binary
+
+      alias visit_Arel_Nodes_TableAlias binary
+
+      alias visit_Arel_Nodes_When binary
 
       def visit_Arel_Nodes_StringJoin: (untyped o) -> untyped
 
       def visit_Arel_Attribute: (untyped o) -> untyped
 
+      alias visit_Arel_Attributes_Integer visit_Arel_Attribute
+
+      alias visit_Arel_Attributes_Float visit_Arel_Attribute
+
+      alias visit_Arel_Attributes_String visit_Arel_Attribute
+
+      alias visit_Arel_Attributes_Time visit_Arel_Attribute
+
+      alias visit_Arel_Attributes_Boolean visit_Arel_Attribute
+
+      alias visit_Arel_Attributes_Attribute visit_Arel_Attribute
+
+      alias visit_Arel_Attributes_Decimal visit_Arel_Attribute
+
       def visit_Arel_Table: (untyped o) -> untyped
 
       def terminal: (untyped o) -> nil
+
+      alias visit_ActiveSupport_Multibyte_Chars terminal
+
+      alias visit_ActiveSupport_StringInquirer terminal
+
+      alias visit_Arel_Nodes_Lock terminal
+
+      alias visit_Arel_Nodes_Node terminal
+
+      alias visit_Arel_Nodes_SqlLiteral terminal
+
+      alias visit_Arel_Nodes_BindParam terminal
+
+      alias visit_Arel_Nodes_Window terminal
+
+      alias visit_Arel_Nodes_True terminal
+
+      alias visit_Arel_Nodes_False terminal
+
+      alias visit_BigDecimal terminal
+
+      alias visit_Class terminal
+
+      alias visit_Date terminal
+
+      alias visit_DateTime terminal
+
+      alias visit_FalseClass terminal
+
+      alias visit_Float terminal
+
+      alias visit_Integer terminal
+
+      alias visit_NilClass terminal
+
+      alias visit_String terminal
+
+      alias visit_Symbol terminal
+
+      alias visit_Time terminal
+
+      alias visit_TrueClass terminal
 
       def visit_Arel_Nodes_InsertStatement: (untyped o) -> untyped
 
@@ -23324,6 +23691,8 @@ module Arel
       def visit_Arel_Nodes_Comment: (untyped o) -> untyped
 
       def visit_Array: (untyped o) -> untyped
+
+      alias visit_Set visit_Array
 
       def visit_Hash: (untyped o) -> untyped
 
@@ -23351,7 +23720,6 @@ module Arel
         def initialize: (untyped name, untyped id, ?untyped fields) -> untyped
       end
 
-      # Note: It inherits unnamed class, but omitted
       class Edge
       end
 
@@ -23371,17 +23739,73 @@ module Arel
 
       def visit_Arel_Nodes_InnerJoin: (untyped o) -> untyped
 
+      alias visit_Arel_Nodes_FullOuterJoin visit_Arel_Nodes_InnerJoin
+
+      alias visit_Arel_Nodes_OuterJoin visit_Arel_Nodes_InnerJoin
+
+      alias visit_Arel_Nodes_RightOuterJoin visit_Arel_Nodes_InnerJoin
+
       def visit_Arel_Nodes_DeleteStatement: (untyped o) -> untyped
 
       def unary: (untyped o) -> untyped
 
+      alias visit_Arel_Nodes_Group unary
+
+      alias visit_Arel_Nodes_Cube unary
+
+      alias visit_Arel_Nodes_RollUp unary
+
+      alias visit_Arel_Nodes_GroupingSet unary
+
+      alias visit_Arel_Nodes_GroupingElement unary
+
+      alias visit_Arel_Nodes_Grouping unary
+
+      alias visit_Arel_Nodes_Having unary
+
+      alias visit_Arel_Nodes_Limit unary
+
+      alias visit_Arel_Nodes_Not unary
+
+      alias visit_Arel_Nodes_Offset unary
+
+      alias visit_Arel_Nodes_On unary
+
+      alias visit_Arel_Nodes_UnqualifiedColumn unary
+
+      alias visit_Arel_Nodes_OptimizerHints unary
+
+      alias visit_Arel_Nodes_Preceding unary
+
+      alias visit_Arel_Nodes_Following unary
+
+      alias visit_Arel_Nodes_Rows unary
+
+      alias visit_Arel_Nodes_Range unary
+
       def window: (untyped o) -> untyped
+
+      alias visit_Arel_Nodes_Window window
 
       def named_window: (untyped o) -> untyped
 
+      alias visit_Arel_Nodes_NamedWindow named_window
+
       def function: (untyped o) -> untyped
 
+      alias visit_Arel_Nodes_Exists function
+
+      alias visit_Arel_Nodes_Min function
+
+      alias visit_Arel_Nodes_Max function
+
+      alias visit_Arel_Nodes_Avg function
+
+      alias visit_Arel_Nodes_Sum function
+
       def extract: (untyped o) -> untyped
+
+      alias visit_Arel_Nodes_Extract extract
 
       def visit_Arel_Nodes_NamedFunction: (untyped o) -> untyped
 
@@ -23399,17 +23823,93 @@ module Arel
 
       def visit_Arel_Attribute: (untyped o) -> untyped
 
+      alias visit_Arel_Attributes_Integer visit_Arel_Attribute
+
+      alias visit_Arel_Attributes_Float visit_Arel_Attribute
+
+      alias visit_Arel_Attributes_String visit_Arel_Attribute
+
+      alias visit_Arel_Attributes_Time visit_Arel_Attribute
+
+      alias visit_Arel_Attributes_Boolean visit_Arel_Attribute
+
+      alias visit_Arel_Attributes_Attribute visit_Arel_Attribute
+
       def nary: (untyped o) -> untyped
+
+      alias visit_Arel_Nodes_And nary
 
       def binary: (untyped o) -> untyped
 
+      alias visit_Arel_Nodes_As binary
+
+      alias visit_Arel_Nodes_Assignment binary
+
+      alias visit_Arel_Nodes_Between binary
+
+      alias visit_Arel_Nodes_Concat binary
+
+      alias visit_Arel_Nodes_DoesNotMatch binary
+
+      alias visit_Arel_Nodes_Equality binary
+
+      alias visit_Arel_Nodes_GreaterThan binary
+
+      alias visit_Arel_Nodes_GreaterThanOrEqual binary
+
+      alias visit_Arel_Nodes_In binary
+
+      alias visit_Arel_Nodes_JoinSource binary
+
+      alias visit_Arel_Nodes_LessThan binary
+
+      alias visit_Arel_Nodes_LessThanOrEqual binary
+
+      alias visit_Arel_Nodes_IsNotDistinctFrom binary
+
+      alias visit_Arel_Nodes_IsDistinctFrom binary
+
+      alias visit_Arel_Nodes_Matches binary
+
+      alias visit_Arel_Nodes_NotEqual binary
+
+      alias visit_Arel_Nodes_NotIn binary
+
+      alias visit_Arel_Nodes_Or binary
+
+      alias visit_Arel_Nodes_Over binary
+
       def visit_String: (untyped o) -> untyped
+
+      alias visit_Time visit_String
+
+      alias visit_Date visit_String
+
+      alias visit_DateTime visit_String
+
+      alias visit_NilClass visit_String
+
+      alias visit_TrueClass visit_String
+
+      alias visit_FalseClass visit_String
+
+      alias visit_Integer visit_String
+
+      alias visit_BigDecimal visit_String
+
+      alias visit_Float visit_String
+
+      alias visit_Symbol visit_String
+
+      alias visit_Arel_Nodes_SqlLiteral visit_String
 
       def visit_Arel_Nodes_BindParam: (untyped o) -> nil
 
       def visit_Hash: (untyped o) -> untyped
 
       def visit_Array: (untyped o) -> untyped
+
+      alias visit_Set visit_Array
 
       def visit_Arel_Nodes_Comment: (untyped o) -> untyped
 
@@ -23466,7 +23966,7 @@ module Arel
   # :nodoc: all
   module Visitors
     class MSSQL < Arel::Visitors::ToSql
-      class RowNumber < ::Struct[untyped]
+      class RowNumber[T] < ::Struct[T]
         attr_accessor children(): untyped
       end
 
@@ -23492,7 +23992,7 @@ module Arel
 
       def determine_order_by: (untyped orders, untyped x) -> untyped
 
-      def row_num_literal: (untyped order_by) -> RowNumber
+      def row_num_literal: (untyped order_by) -> RowNumber[untyped]
 
       def select_count?: (untyped x) -> untyped
 
@@ -23530,32 +24030,11 @@ module Arel
       # these, we must use a subquery.
       def prepare_update_statement: (untyped o) -> untyped
 
+      alias prepare_delete_statement prepare_update_statement
+
       # MySQL is too stupid to create a temporary table for use subquery, so we have
       # to give it some prompting in the form of a subsubquery.
       def build_subselect: (untyped key, untyped o) -> untyped
-    end
-  end
-end
-
-module Arel
-  # :nodoc: all
-  module Visitors
-    class Oracle12 < Arel::Visitors::ToSql
-      def visit_Arel_Nodes_SelectStatement: (untyped o, untyped collector) -> untyped
-
-      def visit_Arel_Nodes_SelectOptions: (untyped o, untyped collector) -> untyped
-
-      def visit_Arel_Nodes_Limit: (untyped o, untyped collector) -> untyped
-
-      def visit_Arel_Nodes_Offset: (untyped o, untyped collector) -> untyped
-
-      def visit_Arel_Nodes_Except: (untyped o, untyped collector) -> untyped
-
-      def visit_Arel_Nodes_UpdateStatement: (untyped o, untyped collector) -> untyped
-
-      def visit_Arel_Nodes_BindParam: (untyped o, untyped collector) -> untyped
-
-      def is_distinct_from: (untyped o, untyped collector) -> untyped
     end
   end
 end
@@ -23581,6 +24060,29 @@ module Arel
       # Split string by commas but count opening and closing brackets
       # and ignore commas inside brackets.
       def split_order_string: (untyped string) -> untyped
+
+      def visit_Arel_Nodes_BindParam: (untyped o, untyped collector) -> untyped
+
+      def is_distinct_from: (untyped o, untyped collector) -> untyped
+    end
+  end
+end
+
+module Arel
+  # :nodoc: all
+  module Visitors
+    class Oracle12 < Arel::Visitors::ToSql
+      def visit_Arel_Nodes_SelectStatement: (untyped o, untyped collector) -> untyped
+
+      def visit_Arel_Nodes_SelectOptions: (untyped o, untyped collector) -> untyped
+
+      def visit_Arel_Nodes_Limit: (untyped o, untyped collector) -> untyped
+
+      def visit_Arel_Nodes_Offset: (untyped o, untyped collector) -> untyped
+
+      def visit_Arel_Nodes_Except: (untyped o, untyped collector) -> untyped
+
+      def visit_Arel_Nodes_UpdateStatement: (untyped o, untyped collector) -> untyped
 
       def visit_Arel_Nodes_BindParam: (untyped o, untyped collector) -> untyped
 
@@ -23626,12 +24128,6 @@ module Arel
       # handle grouping aggregation semantics
       def grouping_array_or_grouping_element: (untyped o, untyped collector) -> untyped
     end
-  end
-end
-
-module Arel
-  # :nodoc: all
-  module Visitors
   end
 end
 
@@ -23833,19 +24329,73 @@ module Arel
 
       def visit_Arel_Attributes_Attribute: (untyped o, untyped collector) -> untyped
 
+      alias visit_Arel_Attributes_Integer visit_Arel_Attributes_Attribute
+
+      alias visit_Arel_Attributes_Float visit_Arel_Attributes_Attribute
+
+      alias visit_Arel_Attributes_Decimal visit_Arel_Attributes_Attribute
+
+      alias visit_Arel_Attributes_String visit_Arel_Attributes_Attribute
+
+      alias visit_Arel_Attributes_Time visit_Arel_Attributes_Attribute
+
+      alias visit_Arel_Attributes_Boolean visit_Arel_Attributes_Attribute
+
       def literal: (untyped o, untyped collector) -> untyped
 
       def visit_Arel_Nodes_BindParam: (untyped o, untyped collector) -> untyped
+
+      alias visit_Arel_Nodes_SqlLiteral literal
+
+      alias visit_Integer literal
 
       def quoted: (untyped o, untyped a) -> untyped
 
       def unsupported: (untyped o, untyped collector) -> untyped
 
+      alias visit_ActiveSupport_Multibyte_Chars unsupported
+
+      alias visit_ActiveSupport_StringInquirer unsupported
+
+      alias visit_BigDecimal unsupported
+
+      alias visit_Class unsupported
+
+      alias visit_Date unsupported
+
+      alias visit_DateTime unsupported
+
+      alias visit_FalseClass unsupported
+
+      alias visit_Float unsupported
+
+      alias visit_Hash unsupported
+
+      alias visit_NilClass unsupported
+
+      alias visit_String unsupported
+
+      alias visit_Symbol unsupported
+
+      alias visit_Time unsupported
+
+      alias visit_TrueClass unsupported
+
       def visit_Arel_Nodes_InfixOperation: (untyped o, untyped collector) -> untyped
+
+      alias visit_Arel_Nodes_Addition visit_Arel_Nodes_InfixOperation
+
+      alias visit_Arel_Nodes_Subtraction visit_Arel_Nodes_InfixOperation
+
+      alias visit_Arel_Nodes_Multiplication visit_Arel_Nodes_InfixOperation
+
+      alias visit_Arel_Nodes_Division visit_Arel_Nodes_InfixOperation
 
       def visit_Arel_Nodes_UnaryOperation: (untyped o, untyped collector) -> untyped
 
       def visit_Array: (untyped o, untyped collector) -> untyped
+
+      alias visit_Set visit_Array
 
       def quote: (untyped value) -> untyped
 
@@ -23871,6 +24421,8 @@ module Arel
       # on MySQL (even when aliasing the tables), but MySQL allows using JOIN directly in
       # an UPDATE statement, so in the MySQL visitor we redefine this to do that.
       def prepare_update_statement: (untyped o) -> untyped
+
+      alias prepare_delete_statement prepare_update_statement
 
       # FIXME: we should probably have a 2-pass visitor for this
       def build_subselect: (untyped key, untyped o) -> untyped
@@ -23918,9 +24470,36 @@ end
 
 module Arel
   # :nodoc: all
+  module Visitors
+  end
+end
+
+module Arel
+  # :nodoc: all
   module WindowPredications
     def over: (?untyped? expr) -> Nodes::Over
   end
+end
+
+module Arel
+  VERSION: ::String
+
+  # Wrap a known-safe SQL string for passing to query methods, e.g.
+  #
+  #   Post.order(Arel.sql("length(title)")).last
+  #
+  # Great caution should be taken to avoid SQL injection vulnerabilities.
+  # This method should not be used with unsafe values such as request
+  # parameters or model attributes.
+  def self.sql: (untyped raw_sql) -> Arel::Nodes::SqlLiteral
+
+  def self.star: () -> untyped
+
+  def self.arel_node?: (untyped value) -> untyped
+
+  def self.fetch_attribute: (untyped value) { (untyped) -> untyped } -> untyped
+
+  Node: untyped
 end
 
 module ActiveRecord

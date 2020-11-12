@@ -100,6 +100,69 @@ def patch!(name, rbs)
       class TemplateError < Template::Error
       end
     RBS
+  when 'activerecord'
+    rbs.gsub!(':==', 'Symbol') # To avoid syntax error
+
+    rbs.gsub!(
+      '< Type::Value',
+      '< ActiveModel::Type::Value')
+    rbs.gsub!(
+      '< Type::Binary',
+      '< ActiveModel::Type::Binary')
+    rbs.gsub!(
+      '< Type::Decimal',
+      '< ActiveModel::Type::Decimal')
+    rbs.gsub!(
+      '< Type::String',
+      '< ActiveModel::Type::String')
+    rbs.gsub!(
+      '< Type::Integer',
+      '< ActiveModel::Type::Integer')
+
+    rbs.gsub!(
+      'class SchemaDumper < SchemaDumper',
+      'class SchemaDumper < ActiveRecord::SchemaDumper')
+    rbs.gsub!(
+      'def schema_creation: () -> SchemaCreation',
+      'def schema_creation: () -> untyped')
+    rbs.gsub!('V6_0: untyped', <<~RBS)
+      # V6_0 and Current are the same object actually. hack for https://github.com/ruby/rbs/issues/345
+      class V6_0 < Current
+      end
+    RBS
+    rbs.gsub!('alias numeric decimal', '')
+
+    # XXX: I guess add-type-params.rb resolves this
+    rbs.gsub!(
+      '-> ColumnDefinition',
+      '-> ColumnDefinition[untyped]')
+    # XXX: I guess add-type-params.rb resolves this
+    rbs.gsub!(
+      'def build_point: (untyped x, untyped y) -> ActiveRecord::Point',
+      'def build_point: (untyped x, untyped y) -> ActiveRecord::Point[untyped]')
+    # XXX: I guess add-type-params.rb resolves this
+    rbs.gsub!(
+      'class NullMigration < MigrationProxy',
+      'class NullMigration[T] < MigrationProxy[T]')
+    # XXX: I guess add-type-params.rb resolves this
+    rbs.gsub!(
+      '-> JoinKeys',
+      '-> JoinKeys[untyped]')
+    # XXX: I guess add-type-params.rb resolves this
+    rbs.gsub!(
+      'def row_num_literal: (untyped order_by) -> RowNumber',
+      'def row_num_literal: (untyped order_by) -> RowNumber[untyped]')
+
+    rbs.gsub!(
+      'def get_database_version: () -> Version',
+      'def get_database_version: () -> AbstractAdapter::Version')
+    rbs.gsub!(
+      'def get_database_version: () -> SQLite3Adapter::Version',
+      'def get_database_version: () -> AbstractAdapter::Version')
+    rbs.gsub!(
+      'def []: (untyped name) -> Attribute',
+      'def []: (untyped name) -> ::Arel::Attributes::Attribute')
+
   end
 end
 
@@ -121,8 +184,7 @@ end
 
 def main(rails_code_dir, name)
   if name == 'all'
-    # TODO: activerecord
-    %w[actionpack activejob railties activemodel activesupport actionview].each do |n|
+    %w[actionpack activejob railties activemodel activesupport actionview activerecord].each do |n|
       generate!(rails_code_dir, n)
     end
   else
