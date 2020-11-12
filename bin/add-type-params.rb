@@ -1,5 +1,12 @@
 #!ruby
 
+require 'bundler/inline'
+
+gemfile do
+  source 'https://rubygems.org'
+  gem 'rbs', '>= 0.16'
+end
+
 require 'rbs'
 
 def args(n)

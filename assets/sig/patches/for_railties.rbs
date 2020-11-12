@@ -1,0 +1,30 @@
+
+module Rails
+  class Application < Engine
+    # alias bug: https://github.com/ruby/rbs/issues/458
+    def app: () -> untyped
+  end
+
+  class Engine < Railtie
+    # bug: rbs prototype rb isn't aware of `class << self` for attr_*
+    def self.isolated: () -> untyped
+    def self.isolated=: (untyped) -> untyped
+
+    # alias bug: https://github.com/ruby/rbs/issues/458
+    def self.railtie_name: (?untyped? name) -> untyped
+  end
+
+  module Generators
+    class PluginGenerator < AppBase
+      # alias bug: https://github.com/ruby/rbs/issues/458
+      def app_path: () -> untyped
+    end
+  end
+
+  module Initializable
+    class Collection[T] < Array[T]
+      def each: () -> ::Enumerator[T, self]
+              | () { (T item) -> void } -> self
+    end
+  end
+end

@@ -23,6 +23,8 @@ module AbstractController
 
     attr_reader abstract: untyped
 
+    alias self.abstract? self.abstract
+
     # Define a controller as abstract. See internal_methods for more
     # details.
     def self.abstract!: () -> untyped
@@ -120,6 +122,13 @@ module AbstractController
     # Notice that the first argument is the method to be dispatched
     # which is *not* necessarily the same as the action name.
     def process_action: (untyped method_name, *untyped args) -> untyped
+
+    # Actually call the method associated with the action. Override
+    # this method if you wish to change how action methods are called,
+    # not to add additional behavior around it. For example, you would
+    # override #send_action if you want to inject arguments into the
+    # method.
+    alias send_action send
 
     # If the action name was not found, but a method called "action_missing"
     # was found, #method_for_action will return "_handle_action_missing".
@@ -508,12 +517,6 @@ module AbstractController
 end
 
 module AbstractController
-  extend ActiveSupport::Autoload
-
-  def self.eager_load!: () -> untyped
-end
-
-module AbstractController
   class DoubleRenderError < Error
     DEFAULT_MESSAGE: ::String
 
@@ -524,6 +527,8 @@ module AbstractController
     extend ActiveSupport::Concern
 
     include ActionView::ViewPaths
+
+    extend ::ActionView::ViewPaths::ClassMethods
 
     # Normalizes arguments, options and then delegates render_to_body and
     # sticks the result in <tt>self.response_body</tt>.
@@ -585,8 +590,12 @@ module AbstractController
     # simple framework for scoping them consistently.
     def translate: (untyped key, **untyped options) -> untyped
 
+    alias t translate
+
     # Delegates to <tt>I18n.localize</tt>. Also aliased as <tt>l</tt>.
     def localize: (untyped object, **untyped options) -> untyped
+
+    alias l localize
   end
 end
 
@@ -610,6 +619,12 @@ module AbstractController
       def action_methods: () -> untyped
     end
   end
+end
+
+module AbstractController
+  extend ActiveSupport::Autoload
+
+  def self.eager_load!: () -> untyped
 end
 
 module ActionController
@@ -2416,6 +2431,8 @@ module ActionController
 
       def `any`: (*untyped args) { () -> untyped } -> untyped
 
+      alias all any
+
       def custom: (untyped mime_type) { () -> untyped } -> untyped
 
       def response: () -> untyped
@@ -2427,6 +2444,8 @@ module ActionController
         def initialize: (?untyped? variant) -> untyped
 
         def `any`: (*untyped args) { () -> untyped } -> untyped
+
+        alias all any
 
         def method_missing: (untyped name, *untyped args) { () -> untyped } -> untyped
 
@@ -2547,7 +2566,6 @@ module ActionController
 
     EXCLUDE_PARAMETERS: ::Array[untyped]
 
-    # Note: It inherits unnamed class, but omitted^
     class Options
       # :nodoc:
       include Mutex_m
@@ -2629,148 +2647,6 @@ module ActionController
     def _wrapper_enabled?: () -> (::FalseClass | untyped)
 
     def _perform_parameter_wrapping: () -> untyped
-  end
-end
-
-module ActionController
-  class MiddlewareStack < ActionDispatch::MiddlewareStack
-    class Middleware < ActionDispatch::MiddlewareStack::Middleware
-      # Extend ActionDispatch middleware stack to make it aware of options
-      # allowing the following syntax in controllers:
-      #
-      #   class PostsController < ApplicationController
-      #     use AuthenticationMiddleware, except: [:index, :show]
-      #   end
-      #
-      # nodoc:
-      # nodoc:
-      def initialize: (untyped klass, untyped args, untyped actions, untyped strategy, untyped block) -> untyped
-
-      def valid?: (untyped action) -> untyped
-    end
-
-    def build: (untyped action, ?untyped? app) { () -> untyped } -> untyped
-
-    INCLUDE: untyped
-
-    EXCLUDE: untyped
-
-    NULL: untyped
-
-    def build_middleware: (untyped klass, untyped args, untyped block) -> Middleware
-  end
-
-  # <tt>ActionController::Metal</tt> is the simplest possible controller, providing a
-  # valid Rack interface without the additional niceties provided by
-  # <tt>ActionController::Base</tt>.
-  #
-  # A sample metal controller might look like this:
-  #
-  #   class HelloController < ActionController::Metal
-  #     def index
-  #       self.response_body = "Hello World!"
-  #     end
-  #   end
-  #
-  # And then to route requests to your metal controller, you would add
-  # something like this to <tt>config/routes.rb</tt>:
-  #
-  #   get 'hello', to: HelloController.action(:index)
-  #
-  # The +action+ method returns a valid Rack application for the \Rails
-  # router to dispatch to.
-  #
-  # == Rendering Helpers
-  #
-  # <tt>ActionController::Metal</tt> by default provides no utilities for rendering
-  # views, partials, or other responses aside from explicitly calling of
-  # <tt>response_body=</tt>, <tt>content_type=</tt>, and <tt>status=</tt>. To
-  # add the render helpers you're used to having in a normal controller, you
-  # can do the following:
-  #
-  #   class HelloController < ActionController::Metal
-  #     include AbstractController::Rendering
-  #     include ActionView::Layouts
-  #     append_view_path "#{Rails.root}/app/views"
-  #
-  #     def index
-  #       render "hello/index"
-  #     end
-  #   end
-  #
-  # == Redirection Helpers
-  #
-  # To add redirection helpers to your metal controller, do the following:
-  #
-  #   class HelloController < ActionController::Metal
-  #     include ActionController::Redirecting
-  #     include Rails.application.routes.url_helpers
-  #
-  #     def index
-  #       redirect_to root_url
-  #     end
-  #   end
-  #
-  # == Other Helpers
-  #
-  # You can refer to the modules included in <tt>ActionController::Base</tt> to see
-  # other features you can bring into your metal controller.
-  #
-  class Metal < AbstractController::Base
-    # Returns the last part of the controller's name, underscored, without the ending
-    # <tt>Controller</tt>. For instance, PostsController returns <tt>posts</tt>.
-    # Namespaces are left out, so Admin::PostsController returns <tt>posts</tt> as well.
-    #
-    # ==== Returns
-    # * <tt>string</tt>
-    def self.controller_name: () -> untyped
-
-    def self.make_response!: (untyped request) -> untyped
-
-    def self.binary_params_for?: (untyped action) -> ::FalseClass
-
-    # Delegates to the class' <tt>controller_name</tt>.
-    def controller_name: () -> untyped
-
-    def initialize: () -> untyped
-
-    def params: () -> untyped
-
-    def params=: (untyped val) -> untyped
-
-    # Basic url_for that can be overridden for more robust functionality.
-    def url_for: (untyped string) -> untyped
-
-    def response_body=: (untyped body) -> (nil | untyped)
-
-    # Tests if render or redirect has already happened.
-    def performed?: () -> untyped
-
-    def dispatch: (untyped name, untyped request, untyped response) -> untyped
-
-    def set_response!: (untyped response) -> untyped
-
-    def set_request!: (untyped request) -> untyped
-
-    def to_a: () -> untyped
-
-    def reset_session: () -> untyped
-
-    def self.inherited: (untyped base) -> untyped
-
-    # Pushes the given Rack middleware and its arguments to the bottom of the
-    # middleware stack.
-    def self.use: (*untyped args) { () -> untyped } -> untyped
-
-    # Alias for +middleware_stack+.
-    def self.middleware: () -> untyped
-
-    # Returns a Rack endpoint for the given action name.
-    def self.action: (untyped name) -> untyped
-
-    # Direct dispatch to the controller. Instantiates the controller, then
-    # executes the action named +name+.
-    def self.dispatch: (untyped name, untyped req, untyped res) -> untyped
   end
 end
 
@@ -2970,6 +2846,8 @@ module ActionController
       # You must specify a +use_renderer+, else the +controller.renderer+ and
       # +controller._renderers+ will be <tt>nil</tt>, and the action will fail.
       def use_renderers: (*untyped args) -> untyped
+
+      alias use_renderer use_renderers
     end
 
     # Called by +render+ in <tt>AbstractController::Rendering</tt>
@@ -3646,6 +3524,8 @@ module ActionController
     # This method is also aliased as +to_param+.
     def to_query: (*untyped args) -> untyped
 
+    alias to_param to_query
+
     # Returns an unsafe, unfiltered
     # <tt>ActiveSupport::HashWithIndifferentAccess</tt> representation of the
     # parameters.
@@ -3658,9 +3538,13 @@ module ActionController
     #   # => {"name"=>"Senjougahara Hitagi", "oddity" => "Heavy stone crab"}
     def to_unsafe_h: () -> untyped
 
+    alias to_unsafe_hash to_unsafe_h
+
     # Convert all hashes in values into parameters, then yield each pair in
     # the same way as <tt>Hash#each_pair</tt>.
     def each_pair: () { (untyped) -> untyped } -> untyped
+
+    alias each each_pair
 
     # Convert all hashes in values into parameters, then yield each value in
     # the same way as <tt>Hash#each_value</tt>.
@@ -3748,6 +3632,9 @@ module ActionController
     #
     # for example.
     def require: (untyped key) -> untyped
+
+    # Alias of #require.
+    alias required require
 
     # Returns a new <tt>ActionController::Parameters</tt> instance that
     # includes only the given +filters+ and sets the +permitted+ attribute
@@ -3928,12 +3815,16 @@ module ActionController
     # Equivalent to Hash#keep_if, but returns +nil+ if no changes were made.
     def select!: () { () -> untyped } -> untyped
 
+    alias keep_if select!
+
     # Returns a new instance of <tt>ActionController::Parameters</tt> with items
     # that the block evaluates to true removed.
     def reject: () { () -> untyped } -> untyped
 
     # Removes items that the block evaluates to true and returns self.
     def reject!: () { () -> untyped } -> untyped
+
+    alias delete_if reject!
 
     # Returns values that were assigned to the given +keys+. Note that all the
     # +Hash+ objects will be converted to <tt>ActionController::Parameters</tt>.
@@ -3951,9 +3842,13 @@ module ActionController
     # current hash merged into +other_hash+.
     def reverse_merge: (untyped other_hash) -> untyped
 
+    alias with_defaults reverse_merge
+
     # Returns current <tt>ActionController::Parameters</tt> instance with
     # current hash merged into +other_hash+.
     def reverse_merge!: (untyped other_hash) -> untyped
+
+    alias with_defaults! reverse_merge!
 
     def stringify_keys: () -> untyped
 
@@ -4152,6 +4047,150 @@ module ActionController
 end
 
 module ActionController
+  class MiddlewareStack < ActionDispatch::MiddlewareStack
+    class Middleware < ActionDispatch::MiddlewareStack::Middleware
+      # Extend ActionDispatch middleware stack to make it aware of options
+      # allowing the following syntax in controllers:
+      #
+      #   class PostsController < ApplicationController
+      #     use AuthenticationMiddleware, except: [:index, :show]
+      #   end
+      #
+      # nodoc:
+      # nodoc:
+      def initialize: (untyped klass, untyped args, untyped actions, untyped strategy, untyped block) -> untyped
+
+      def valid?: (untyped action) -> untyped
+    end
+
+    def build: (untyped action, ?untyped? app) { () -> untyped } -> untyped
+
+    INCLUDE: untyped
+
+    EXCLUDE: untyped
+
+    NULL: untyped
+
+    def build_middleware: (untyped klass, untyped args, untyped block) -> Middleware
+  end
+
+  # <tt>ActionController::Metal</tt> is the simplest possible controller, providing a
+  # valid Rack interface without the additional niceties provided by
+  # <tt>ActionController::Base</tt>.
+  #
+  # A sample metal controller might look like this:
+  #
+  #   class HelloController < ActionController::Metal
+  #     def index
+  #       self.response_body = "Hello World!"
+  #     end
+  #   end
+  #
+  # And then to route requests to your metal controller, you would add
+  # something like this to <tt>config/routes.rb</tt>:
+  #
+  #   get 'hello', to: HelloController.action(:index)
+  #
+  # The +action+ method returns a valid Rack application for the \Rails
+  # router to dispatch to.
+  #
+  # == Rendering Helpers
+  #
+  # <tt>ActionController::Metal</tt> by default provides no utilities for rendering
+  # views, partials, or other responses aside from explicitly calling of
+  # <tt>response_body=</tt>, <tt>content_type=</tt>, and <tt>status=</tt>. To
+  # add the render helpers you're used to having in a normal controller, you
+  # can do the following:
+  #
+  #   class HelloController < ActionController::Metal
+  #     include AbstractController::Rendering
+  #     include ActionView::Layouts
+  #     append_view_path "#{Rails.root}/app/views"
+  #
+  #     def index
+  #       render "hello/index"
+  #     end
+  #   end
+  #
+  # == Redirection Helpers
+  #
+  # To add redirection helpers to your metal controller, do the following:
+  #
+  #   class HelloController < ActionController::Metal
+  #     include ActionController::Redirecting
+  #     include Rails.application.routes.url_helpers
+  #
+  #     def index
+  #       redirect_to root_url
+  #     end
+  #   end
+  #
+  # == Other Helpers
+  #
+  # You can refer to the modules included in <tt>ActionController::Base</tt> to see
+  # other features you can bring into your metal controller.
+  #
+  class Metal < AbstractController::Base
+    # Returns the last part of the controller's name, underscored, without the ending
+    # <tt>Controller</tt>. For instance, PostsController returns <tt>posts</tt>.
+    # Namespaces are left out, so Admin::PostsController returns <tt>posts</tt> as well.
+    #
+    # ==== Returns
+    # * <tt>string</tt>
+    def self.controller_name: () -> untyped
+
+    def self.make_response!: (untyped request) -> untyped
+
+    def self.binary_params_for?: (untyped action) -> ::FalseClass
+
+    # Delegates to the class' <tt>controller_name</tt>.
+    def controller_name: () -> untyped
+
+    def initialize: () -> untyped
+
+    def params: () -> untyped
+
+    def params=: (untyped val) -> untyped
+
+    alias response_code status
+
+    # Basic url_for that can be overridden for more robust functionality.
+    def url_for: (untyped string) -> untyped
+
+    def response_body=: (untyped body) -> (nil | untyped)
+
+    # Tests if render or redirect has already happened.
+    def performed?: () -> untyped
+
+    def dispatch: (untyped name, untyped request, untyped response) -> untyped
+
+    def set_response!: (untyped response) -> untyped
+
+    def set_request!: (untyped request) -> untyped
+
+    def to_a: () -> untyped
+
+    def reset_session: () -> untyped
+
+    def self.inherited: (untyped base) -> untyped
+
+    # Pushes the given Rack middleware and its arguments to the bottom of the
+    # middleware stack.
+    def self.use: (*untyped args) { () -> untyped } -> untyped
+
+    # Alias for +middleware_stack+.
+    def self.middleware: () -> untyped
+
+    # Returns a Rack endpoint for the given action name.
+    def self.action: (untyped name) -> untyped
+
+    # Direct dispatch to the controller. Instantiates the controller, then
+    # executes the action named +name+.
+    def self.dispatch: (untyped name, untyped req, untyped res) -> untyped
+  end
+end
+
+module ActionController
   class Railtie < Rails::Railtie
     extend ::ActionController::Railties::Helpers
   end
@@ -4163,10 +4202,6 @@ module ActionController
       def inherited: (untyped klass) -> (nil | untyped)
     end
   end
-end
-
-module ActionController
-  extend ActiveSupport::Autoload
 end
 
 module ActionController
@@ -4267,6 +4302,10 @@ module ActionController
     include Testing::Functional
   end
 
+  module Live
+    def new_controller_thread: () { () -> untyped } -> untyped
+  end
+
   class TestRequest < ActionDispatch::TestRequest
     # ActionController::TestCase will be deprecated and moved to a gem in the future.
     # Please use ActionDispatch::IntegrationTest going forward.
@@ -4296,6 +4335,14 @@ module ActionController
   end
 
   class LiveTestResponse < Live::Response
+    # Was the response successful?
+    alias success? successful?
+
+    # Was the URL not found?
+    alias missing? not_found?
+
+    # Was there a server-side error?
+    alias error? server_error?
   end
 
   class TestSession < Rack::Session::Abstract::PersistedSecure::SecureSessionHash
@@ -4560,6 +4607,10 @@ module ActionController
 
     include Behavior
   end
+end
+
+module ActionController
+  extend ActiveSupport::Autoload
 end
 
 module ActionDispatch
@@ -4902,6 +4953,8 @@ module ActionDispatch
 
       def key?: (untyped key) -> untyped
 
+      alias include? key?
+
       DEFAULT: untyped
 
       # Returns the value for the given key mapped to @env.
@@ -5061,6 +5114,8 @@ module Mime
       # A simple helper class used in parsing the accept header.
       # nodoc:
       attr_accessor q: untyped
+
+      alias to_s name
 
       def initialize: (untyped index, untyped name, ?untyped? q) -> untyped
 
@@ -5226,6 +5281,8 @@ module ActionDispatch
       # Returns both GET and POST \parameters in a single hash.
       def parameters: () -> untyped
 
+      alias params parameters
+
       def path_parameters=: (untyped parameters) -> untyped
 
       # Returns a hash with the \parameters used to form the \path of the request.
@@ -5304,6 +5361,8 @@ module ActionDispatch
     def self.empty: () -> untyped
 
     def initialize: (untyped env) -> untyped
+
+    def commit_cookie_jar!: () -> nil
 
     PASS_NOT_FOUND: untyped
 
@@ -5438,6 +5497,8 @@ module ActionDispatch
     # choice of JavaScript libraries and frameworks.
     def xml_http_request?: () -> untyped
 
+    alias xhr? xml_http_request?
+
     # Returns the IP address of client as a +String+.
     def ip: () -> untyped
 
@@ -5458,6 +5519,8 @@ module ActionDispatch
     def request_id: () -> untyped
 
     def request_id=: (untyped id) -> untyped
+
+    alias uuid request_id
 
     # Returns the lowercase name of the HTTP server software.
     def server_software: () -> untyped
@@ -5493,8 +5556,12 @@ module ActionDispatch
     # Override Rack's GET method to support indifferent access.
     def GET: () -> untyped
 
+    alias query_parameters GET
+
     # Override Rack's POST method to support indifferent access.
     def POST: () -> untyped
+
+    alias request_parameters POST
 
     # Returns the authorization header regardless of whether it was specified directly or through one of the
     # proxy alternatives.
@@ -5546,7 +5613,6 @@ module ActionDispatch
   #    end
   #  end
   class Response
-    # Note: It inherits unnamed class, but omitted^
     class Header
       # :nodoc:
       def initialize: (untyped response, untyped header) -> untyped
@@ -5567,6 +5633,8 @@ module ActionDispatch
     # Get headers for this response.
     attr_reader header: untyped
 
+    alias headers header
+
     def each: () { () -> untyped } -> untyped
 
     CONTENT_TYPE: ::String
@@ -5578,6 +5646,11 @@ module ActionDispatch
     NO_CONTENT_CODES: ::Array[untyped]
 
     include Rack::Response::Helpers
+
+    # Aliasing these off because AD::Http::Cache::Response defines them.
+    alias _cache_control cache_control
+
+    alias _cache_control= cache_control=
 
     include ActionDispatch::Http::FilterRedirect
 
@@ -5685,6 +5758,8 @@ module ActionDispatch
     #
     def message: () -> untyped
 
+    alias status_message message
+
     # Returns the content of the response as a string. This contains the contents
     # of any calls to <tt>render</tt>.
     def body: () -> untyped
@@ -5716,6 +5791,9 @@ module ActionDispatch
 
     def body_parts: () -> untyped
 
+    # The location header we'll be responding with.
+    alias redirect_url location
+
     def close: () -> untyped
 
     def abort: () -> untyped
@@ -5725,6 +5803,8 @@ module ActionDispatch
     #
     #   status, headers, body = *response
     def to_a: () -> untyped
+
+    alias prepare! to_a
 
     # Returns the response cookies, converted to a Hash of (name => value) pairs
     #
@@ -6224,6 +6304,10 @@ module ActionDispatch
         def initialize: (untyped transition_table) -> untyped
 
         def simulate: (untyped string) -> (nil | MatchData)
+
+        alias =~ simulate
+
+        alias match simulate
       end
     end
   end
@@ -6321,6 +6405,9 @@ module ActionDispatch
       end
 
       class Terminal < Node
+        # :nodoc:
+        alias symbol left
+
         def terminal?: () -> ::TrueClass
       end
 
@@ -6351,6 +6438,8 @@ module ActionDispatch
       class Symbol < Terminal
         # :nodoc:
         attr_accessor regexp: untyped
+
+        alias symbol regexp
 
         attr_reader name: untyped
 
@@ -6415,23 +6504,6 @@ module ActionDispatch
 end
 
 module ActionDispatch
-  # :stopdoc:
-  module Journey
-    class Parser < Racc::Parser
-      include Journey::Nodes
-
-      def self.parse: (untyped string) -> untyped
-
-      def initialize: () -> untyped
-
-      def parse: (untyped string) -> untyped
-
-      def next_token: () -> untyped
-    end
-  end
-end
-
-module ActionDispatch
   module Journey
     class Parser < Racc::Parser
       Racc_arg: ::Array[untyped]
@@ -6461,6 +6533,23 @@ module ActionDispatch
       def _reduce_18: (untyped val, untyped _values) -> Nodes::Dot
 
       def _reduce_none: (untyped val, untyped _values) -> untyped
+    end
+  end
+end
+
+module ActionDispatch
+  # :stopdoc:
+  module Journey
+    class Parser < Racc::Parser
+      include Journey::Nodes
+
+      def self.parse: (untyped string) -> untyped
+
+      def initialize: () -> untyped
+
+      def parse: (untyped string) -> untyped
+
+      def next_token: () -> untyped
     end
   end
 end
@@ -6516,6 +6605,8 @@ module ActionDispatch
 
           def visit_LITERAL: (untyped node) -> untyped
 
+          alias visit_DOT visit_LITERAL
+
           def visit_SLASH: (untyped node) -> untyped
 
           def visit_STAR: (untyped node) -> ::String
@@ -6549,6 +6640,8 @@ module ActionDispatch
 
         def match: (untyped other) -> (nil | MatchData)
 
+        alias =~ match
+
         def source: () -> untyped
 
         def to_regexp: () -> untyped
@@ -6580,6 +6673,8 @@ module ActionDispatch
       attr_reader internal: untyped
 
       attr_reader scope_options: untyped
+
+      alias conditions constraints
 
       module VerbMatchers
         VERBS: ::Array[untyped]
@@ -6632,6 +6727,8 @@ module ActionDispatch
 
       def parts: () -> untyped
 
+      alias segment_keys parts
+
       def format: (untyped path_options) -> untyped
 
       def required_parts: () -> untyped
@@ -6655,42 +6752,6 @@ module ActionDispatch
       def verbs: () -> untyped
 
       def match_verb: (untyped request) -> untyped
-    end
-  end
-end
-
-module ActionDispatch
-  module Journey
-    class Router
-      # :nodoc:
-      # :nodoc:
-      attr_accessor routes: untyped
-
-      def initialize: (untyped routes) -> untyped
-
-      def eager_load!: () -> nil
-
-      def serve: (untyped req) -> (::Array[untyped] | ::Array[404 | ::Hash[::String, "pass"] | ::Array["Not Found"]])
-
-      def recognize: (untyped rails_req) { (untyped, untyped) -> untyped } -> untyped
-
-      def visualizer: () -> untyped
-
-      def partitioned_routes: () -> untyped
-
-      def ast: () -> untyped
-
-      def simulator: () -> untyped
-
-      def custom_routes: () -> untyped
-
-      def filter_routes: (untyped path) -> (::Array[untyped] | untyped)
-
-      def find_routes: (untyped req) -> untyped
-
-      def match_head_routes: (untyped routes, untyped req) -> untyped
-
-      def match_routes: (untyped routes, untyped req) -> untyped
     end
   end
 end
@@ -6777,6 +6838,42 @@ end
 
 module ActionDispatch
   module Journey
+    class Router
+      # :nodoc:
+      # :nodoc:
+      attr_accessor routes: untyped
+
+      def initialize: (untyped routes) -> untyped
+
+      def eager_load!: () -> nil
+
+      def serve: (untyped req) -> (::Array[untyped] | ::Array[404 | ::Hash[::String, "pass"] | ::Array["Not Found"]])
+
+      def recognize: (untyped rails_req) { (untyped, untyped) -> untyped } -> untyped
+
+      def visualizer: () -> untyped
+
+      def partitioned_routes: () -> untyped
+
+      def ast: () -> untyped
+
+      def simulator: () -> untyped
+
+      def custom_routes: () -> untyped
+
+      def filter_routes: (untyped path) -> (::Array[untyped] | untyped)
+
+      def find_routes: (untyped req) -> untyped
+
+      def match_head_routes: (untyped routes, untyped req) -> untyped
+
+      def match_routes: (untyped routes, untyped req) -> untyped
+    end
+  end
+end
+
+module ActionDispatch
+  module Journey
     class Routes
       # :nodoc:
       # The Routing table. Contains all routes for a system. Routes can be
@@ -6795,6 +6892,8 @@ module ActionDispatch
       def empty?: () -> untyped
 
       def length: () -> untyped
+
+      alias size length
 
       def last: () -> untyped
 
@@ -7277,6 +7376,11 @@ module ActionDispatch
 
       def key?: (untyped name) -> untyped
 
+      alias has_key? key?
+
+      # Returns the cookies as Hash.
+      alias to_hash to_h
+
       def update: (untyped other_hash) -> untyped
 
       def update_cookies_from_jar: () -> untyped
@@ -7640,6 +7744,8 @@ module ActionDispatch
       def clear: () -> untyped
 
       def each: () { () -> untyped } -> untyped
+
+      alias merge! update
 
       def replace: (untyped h) -> untyped
 
@@ -8024,8 +8130,8 @@ module ActionDispatch
     # Other useful options include <tt>:key</tt>, <tt>:secure</tt> and
     # <tt>:httponly</tt>.
     class CookieStore < AbstractSecureStore
-      # Note: It inherits unnamed class, but omitted^
       class SessionId
+        # Note: It inherits unnamed class, but omitted
         attr_reader cookie_value: untyped
 
         def initialize: (untyped session_id, ?::Hash[untyped, untyped] cookie_value) -> untyped
@@ -8224,6 +8330,8 @@ module ActionDispatch
 
     def insert: (untyped index, untyped klass, *untyped args) { () -> untyped } -> untyped
 
+    alias insert_before insert
+
     def insert_after: (untyped index, *untyped args) { () -> untyped } -> untyped
 
     def swap: (untyped target, *untyped args) { () -> untyped } -> untyped
@@ -8296,26 +8404,6 @@ module ActionDispatch
   end
 end
 
-module Rack
-end
-
-module ActionDispatch
-  extend ActiveSupport::Autoload
-
-  class IllegalStateError < StandardError
-  end
-
-  class MissingController[T] < NameError[T]
-  end
-
-  module Http
-    extend ActiveSupport::Autoload
-  end
-
-  module Session
-  end
-end
-
 module ActionDispatch
   class Request
     class Session
@@ -8371,6 +8459,10 @@ module ActionDispatch
       # Returns true if the session has the given key or false.
       def has_key?: (untyped key) -> untyped
 
+      alias key? has_key?
+
+      alias include? has_key?
+
       # Returns keys of the session as Array.
       def keys: () -> untyped
 
@@ -8385,6 +8477,8 @@ module ActionDispatch
 
       # Returns the session as Hash.
       def to_hash: () -> untyped
+
+      alias to_h to_hash
 
       # Updates the session with given Hash.
       #
@@ -8906,6 +9000,8 @@ module ActionDispatch
 
         def default_url_options=: (untyped options) -> untyped
 
+        alias default_url_options default_url_options=
+
         def with_default_scope: (untyped scope) { () -> untyped } -> untyped
 
         # Query if the following named route was already defined.
@@ -9257,13 +9353,19 @@ module ActionDispatch
 
           def singular: () -> untyped
 
+          alias member_name singular
+
           # Checks for uncountable plurals, and appends "_index" if the plural
           # and singular form are the same.
           def collection_name: () -> untyped
 
           def resource_scope: () -> untyped
 
+          alias collection_scope path
+
           def member_scope: () -> ::String
+
+          alias shallow_scope member_scope
 
           def new_scope: (untyped new_path) -> ::String
 
@@ -9285,6 +9387,14 @@ module ActionDispatch
           def plural: () -> untyped
 
           def singular: () -> untyped
+
+          alias member_name singular
+
+          alias collection_name singular
+
+          alias member_scope path
+
+          alias nested_scope path
 
           def singleton?: () -> ::TrueClass
         end
@@ -9985,6 +10095,614 @@ module ActionDispatch
 end
 
 module ActionDispatch
+  module Routing
+    class Redirect < Endpoint
+      # :nodoc:
+      attr_reader status: untyped
+
+      # :nodoc:
+      attr_reader block: untyped
+
+      def initialize: (untyped status, untyped block) -> untyped
+
+      def redirect?: () -> ::TrueClass
+
+      def call: (untyped env) -> untyped
+
+      def serve: (untyped req) -> ::Array[untyped | ::Array[untyped]]
+
+      def path: (untyped params, untyped request) -> untyped
+
+      def inspect: () -> ::String
+
+      def relative_path?: (untyped path) -> untyped
+
+      def escape: (untyped params) -> untyped
+
+      def escape_fragment: (untyped params) -> untyped
+
+      def escape_path: (untyped params) -> untyped
+    end
+
+    class PathRedirect < Redirect
+      URL_PARTS: untyped
+
+      def path: (untyped params, untyped request) -> untyped
+
+      def inspect: () -> ::String
+
+      def interpolation_required?: (untyped string, untyped params) -> untyped
+    end
+
+    class OptionRedirect < Redirect
+      # :nodoc:
+      alias options block
+
+      def path: (untyped params, untyped request) -> untyped
+
+      def inspect: () -> ::String
+    end
+
+    module Redirection
+      # Redirect any path to another path:
+      #
+      #   get "/stories" => redirect("/posts")
+      #
+      # This will redirect the user, while ignoring certain parts of the request, including query string, etc.
+      # <tt>/stories</tt>, <tt>/stories?foo=bar</tt>, etc all redirect to <tt>/posts</tt>.
+      #
+      # You can also use interpolation in the supplied redirect argument:
+      #
+      #   get 'docs/:article', to: redirect('/wiki/%{article}')
+      #
+      # Note that if you return a path without a leading slash then the URL is prefixed with the
+      # current SCRIPT_NAME environment variable. This is typically '/' but may be different in
+      # a mounted engine or where the application is deployed to a subdirectory of a website.
+      #
+      # Alternatively you can use one of the other syntaxes:
+      #
+      # The block version of redirect allows for the easy encapsulation of any logic associated with
+      # the redirect in question. Either the params and request are supplied as arguments, or just
+      # params, depending of how many arguments your block accepts. A string is required as a
+      # return value.
+      #
+      #   get 'jokes/:number', to: redirect { |params, request|
+      #     path = (params[:number].to_i.even? ? "wheres-the-beef" : "i-love-lamp")
+      #     "http://#{request.host_with_port}/#{path}"
+      #   }
+      #
+      # Note that the +do end+ syntax for the redirect block wouldn't work, as Ruby would pass
+      # the block to +get+ instead of +redirect+. Use <tt>{ ... }</tt> instead.
+      #
+      # The options version of redirect allows you to supply only the parts of the URL which need
+      # to change, it also supports interpolation of the path similar to the first example.
+      #
+      #   get 'stores/:name',       to: redirect(subdomain: 'stores', path: '/%{name}')
+      #   get 'stores/:name(*all)', to: redirect(subdomain: 'stores', path: '/%{name}%{all}')
+      #   get '/stories', to: redirect(path: '/posts')
+      #
+      # This will redirect the user, while changing only the specified parts of the request,
+      # for example the +path+ option in the last example.
+      # <tt>/stories</tt>, <tt>/stories?foo=bar</tt>, redirect to <tt>/posts</tt> and <tt>/posts?foo=bar</tt> respectively.
+      #
+      # Finally, an object which responds to call can be supplied to redirect, allowing you to reuse
+      # common redirect routes. The call method must accept two arguments, params and request, and return
+      # a string.
+      #
+      #   get 'accounts/:name' => redirect(SubdomainRedirector.new('api'))
+      #
+      def redirect: (*untyped args) { () -> untyped } -> (OptionRedirect | PathRedirect | Redirect)
+    end
+  end
+end
+
+module ActionDispatch
+  module Routing
+    # :stopdoc:
+    class RouteSet
+      # Since the router holds references to many parts of the system
+      # like engines, controllers and the application itself, inspecting
+      # the route set can actually be really slow, therefore we default
+      # alias inspect to to_s.
+      alias inspect to_s
+
+      class Dispatcher < Routing::Endpoint
+        def initialize: (untyped raise_on_name_error) -> untyped
+
+        def dispatcher?: () -> ::TrueClass
+
+        def serve: (untyped req) -> untyped
+
+        def controller: (untyped req) -> untyped
+
+        def dispatch: (untyped controller, untyped action, untyped req, untyped res) -> untyped
+      end
+
+      class StaticDispatcher < Dispatcher
+        def initialize: (untyped controller_class) -> untyped
+
+        def controller: (untyped _) -> untyped
+      end
+
+      # A NamedRouteCollection instance is a collection of named routes, and also
+      # maintains an anonymous module that can be used to install helpers for the
+      # named routes.
+      class NamedRouteCollection
+        include Enumerable[untyped, untyped]
+
+        attr_reader routes: untyped
+
+        attr_reader url_helpers_module: untyped
+
+        attr_reader path_helpers_module: untyped
+
+        def initialize: () -> untyped
+
+        def route_defined?: (untyped name) -> untyped
+
+        def helper_names: () -> untyped
+
+        def clear!: () -> untyped
+
+        def add: (untyped name, untyped route) -> untyped
+
+        def get: (untyped name) -> untyped
+
+        def key?: (untyped name) -> (nil | untyped)
+
+        alias []= add
+
+        alias [] get
+
+        alias clear clear!
+
+        def each: () { (untyped, untyped) -> untyped } -> untyped
+
+        def names: () -> untyped
+
+        def length: () -> untyped
+
+        # Given a +name+, defines name_path and name_url helpers.
+        # Used by 'direct', 'resolve', and 'polymorphic' route helpers.
+        def add_url_helper: (untyped name, untyped defaults) { () -> untyped } -> untyped
+
+        class UrlHelper
+          def self.create: (untyped route, untyped options, untyped route_name, untyped url_strategy) -> untyped
+
+          def self.optimize_helper?: (untyped route) -> untyped
+
+          attr_reader url_strategy: untyped
+
+          attr_reader route_name: untyped
+
+          class OptimizedUrlHelper < UrlHelper
+            attr_reader arg_size: untyped
+
+            def initialize: (untyped route, untyped options, untyped route_name, untyped url_strategy) -> untyped
+
+            def call: (untyped t, untyped args, untyped inner_options) -> untyped
+
+            def optimized_helper: (untyped args) -> untyped
+
+            def optimize_routes_generation?: (untyped t) -> untyped
+
+            def parameterize_args: (untyped args) { (untyped) -> untyped } -> untyped
+
+            def raise_generation_error: (untyped args) -> untyped
+          end
+
+          def initialize: (untyped route, untyped options, untyped route_name, untyped url_strategy) -> untyped
+
+          def call: (untyped t, untyped args, untyped inner_options) -> untyped
+
+          def handle_positional_args: (untyped controller_options, untyped inner_options, untyped args, untyped result, untyped path_params) -> untyped
+        end
+
+        # Create a URL helper allowing ordered parameters to be associated
+        # with corresponding dynamic segments, so you can do:
+        #
+        #   foo_url(bar, baz, bang)
+        #
+        # Instead of:
+        #
+        #   foo_url(bar: bar, baz: baz, bang: bang)
+        #
+        # Also allow options hash, so you can do:
+        #
+        #   foo_url(bar, baz, bang, sort_by: 'baz')
+        #
+        def define_url_helper: (untyped mod, untyped route, untyped name, untyped opts, untyped route_key, untyped url_strategy) -> untyped
+      end
+
+      # strategy for building URLs to send to the client
+      PATH: untyped
+
+      UNKNOWN: untyped
+
+      attr_accessor formatter: untyped
+
+      attr_accessor set: untyped
+
+      attr_accessor named_routes: untyped
+
+      attr_accessor default_scope: untyped
+
+      attr_accessor router: untyped
+
+      attr_accessor disable_clear_and_finalize: untyped
+
+      attr_accessor resources_path_names: untyped
+
+      attr_accessor default_url_options: untyped
+
+      attr_reader env_key: untyped
+
+      attr_reader polymorphic_mappings: untyped
+
+      alias routes set
+
+      def self.default_resources_path_names: () -> { new: "new", edit: "edit" }
+
+      def self.new_with_config: (untyped config) -> untyped
+
+      class Config[T] < ::Struct[T]
+        attr_accessor relative_url_root(): untyped
+
+        attr_accessor api_only(): untyped
+      end
+
+      DEFAULT_CONFIG: untyped
+
+      def initialize: (?untyped config) -> untyped
+
+      def eager_load!: () -> nil
+
+      def relative_url_root: () -> untyped
+
+      def api_only?: () -> untyped
+
+      def request_class: () -> untyped
+
+      def make_request: (untyped env) -> untyped
+
+      def draw: () { () -> untyped } -> nil
+
+      def append: () { () -> untyped } -> untyped
+
+      def `prepend`: () { () -> untyped } -> untyped
+
+      def eval_block: (untyped block) -> untyped
+
+      def finalize!: () -> (nil | untyped)
+
+      def clear!: () -> untyped
+
+      module MountedHelpers
+        extend ActiveSupport::Concern
+
+        include UrlFor
+      end
+
+      # Contains all the mounted helpers across different
+      # engines and the `main_app` helper for the application.
+      # You can include this in your classes if you want to
+      # access routes for other engines.
+      def mounted_helpers: () -> untyped
+
+      def define_mounted_helper: (untyped name, ?untyped? script_namer) -> (nil | untyped)
+
+      def url_helpers: (?bool supports_path) -> untyped
+
+      def empty?: () -> untyped
+
+      def add_route: (untyped mapping, untyped name) -> untyped
+
+      def add_polymorphic_mapping: (untyped klass, untyped options) { () -> untyped } -> untyped
+
+      def add_url_helper: (untyped name, untyped options) { () -> untyped } -> untyped
+
+      class CustomUrlHelper
+        attr_reader name: untyped
+
+        attr_reader defaults: untyped
+
+        attr_reader block: untyped
+
+        def initialize: (untyped name, untyped defaults) { () -> untyped } -> untyped
+
+        def call: (untyped t, untyped args, ?bool only_path) -> untyped
+
+        def eval_block: (untyped t, untyped args, untyped options) -> untyped
+
+        def merge_defaults: (untyped options) -> untyped
+      end
+
+      class Generator
+        PARAMETERIZE: untyped
+
+        attr_reader options: untyped
+
+        attr_reader recall: untyped
+
+        attr_reader set: untyped
+
+        attr_reader named_route: untyped
+
+        def initialize: (untyped named_route, untyped options, untyped recall, untyped set) -> untyped
+
+        def controller: () -> untyped
+
+        def current_controller: () -> untyped
+
+        def use_recall_for: (untyped key) -> untyped
+
+        def normalize_options!: () -> untyped
+
+        # This pulls :controller, :action, and :id out of the recall.
+        # The recall key is only used if there is no key in the options
+        # or if the key in the options is identical. If any of
+        # :controller, :action or :id is not found, don't pull any
+        # more keys from the recall.
+        def normalize_controller_action_id!: () -> (nil | untyped)
+
+        # if the current controller is "foo/bar/baz" and controller: "baz/bat"
+        # is specified, the controller becomes "foo/baz/bat"
+        def use_relative_controller!: () -> untyped
+
+        # Remove leading slashes from controllers
+        def normalize_controller!: () -> untyped
+
+        # Generates a path from routes, returns [path, params].
+        # If no route is generated the formatter will raise ActionController::UrlGenerationError
+        def generate: () -> untyped
+
+        def different_controller?: () -> (::FalseClass | untyped)
+
+        def named_route_exists?: () -> untyped
+
+        def segment_keys: () -> untyped
+      end
+
+      # Generate the path indicated by the arguments, and return an array of
+      # the keys that were not used to generate it.
+      def extra_keys: (untyped options, ?::Hash[untyped, untyped] recall) -> untyped
+
+      def generate_extras: (untyped options, ?::Hash[untyped, untyped] recall) -> untyped
+
+      def generate: (untyped route_key, untyped options, ?::Hash[untyped, untyped] recall) -> untyped
+
+      RESERVED_OPTIONS: ::Array[untyped]
+
+      def optimize_routes_generation?: () -> untyped
+
+      def find_script_name: (untyped options) -> untyped
+
+      def find_relative_url_root: (untyped options) -> untyped
+
+      def path_for: (untyped options, ?untyped? route_name) -> untyped
+
+      # The +options+ argument must be a hash whose keys are *symbols*.
+      def url_for: (untyped options, ?untyped? route_name, ?untyped url_strategy) -> untyped
+
+      def call: (untyped env) -> untyped
+
+      def recognize_path: (untyped path, ?::Hash[untyped, untyped] environment) -> untyped
+
+      def recognize_path_with_request: (untyped req, untyped path, untyped extras, ?raise_on_missing: bool raise_on_missing) -> untyped
+    end
+  end
+end
+
+module ActionDispatch
+  module Routing
+    class RoutesProxy
+      # nodoc:
+      include ActionDispatch::Routing::UrlFor
+
+      attr_accessor scope: untyped
+
+      attr_accessor routes: untyped
+
+      alias _routes routes
+
+      def initialize: (untyped routes, untyped scope, untyped helpers, ?untyped? script_namer) -> untyped
+
+      def url_options: () -> untyped
+
+      def respond_to_missing?: (untyped method, untyped _) -> untyped
+
+      def method_missing: (untyped method, *untyped args) -> untyped
+
+      # Keeps the part of the script name provided by the global
+      # context via ENV["SCRIPT_NAME"], which `mount` doesn't know
+      # about since it depends on the specific request, but use our
+      # script name resolver for the mount point dependent part.
+      def merge_script_names: (untyped previous_script_name, untyped new_script_name) -> untyped
+    end
+  end
+end
+
+module ActionDispatch
+  module Routing
+    # In <tt>config/routes.rb</tt> you define URL-to-controller mappings, but the reverse
+    # is also possible: a URL can be generated from one of your routing definitions.
+    # URL generation functionality is centralized in this module.
+    #
+    # See ActionDispatch::Routing for general information about routing and routes.rb.
+    #
+    # <b>Tip:</b> If you need to generate URLs from your models or some other place,
+    # then ActionController::UrlFor is what you're looking for. Read on for
+    # an introduction. In general, this module should not be included on its own,
+    # as it is usually included by url_helpers (as in Rails.application.routes.url_helpers).
+    #
+    # == URL generation from parameters
+    #
+    # As you may know, some functions, such as ActionController::Base#url_for
+    # and ActionView::Helpers::UrlHelper#link_to, can generate URLs given a set
+    # of parameters. For example, you've probably had the chance to write code
+    # like this in one of your views:
+    #
+    #   <%= link_to('Click here', controller: 'users',
+    #           action: 'new', message: 'Welcome!') %>
+    #   # => <a href="/users/new?message=Welcome%21">Click here</a>
+    #
+    # link_to, and all other functions that require URL generation functionality,
+    # actually use ActionController::UrlFor under the hood. And in particular,
+    # they use the ActionController::UrlFor#url_for method. One can generate
+    # the same path as the above example by using the following code:
+    #
+    #   include UrlFor
+    #   url_for(controller: 'users',
+    #           action: 'new',
+    #           message: 'Welcome!',
+    #           only_path: true)
+    #   # => "/users/new?message=Welcome%21"
+    #
+    # Notice the <tt>only_path: true</tt> part. This is because UrlFor has no
+    # information about the website hostname that your Rails app is serving. So if you
+    # want to include the hostname as well, then you must also pass the <tt>:host</tt>
+    # argument:
+    #
+    #   include UrlFor
+    #   url_for(controller: 'users',
+    #           action: 'new',
+    #           message: 'Welcome!',
+    #           host: 'www.example.com')
+    #   # => "http://www.example.com/users/new?message=Welcome%21"
+    #
+    # By default, all controllers and views have access to a special version of url_for,
+    # that already knows what the current hostname is. So if you use url_for in your
+    # controllers or your views, then you don't need to explicitly pass the <tt>:host</tt>
+    # argument.
+    #
+    # For convenience reasons, mailers provide a shortcut for ActionController::UrlFor#url_for.
+    # So within mailers, you only have to type +url_for+ instead of 'ActionController::UrlFor#url_for'
+    # in full. However, mailers don't have hostname information, and you still have to provide
+    # the +:host+ argument or set the default host that will be used in all mailers using the
+    # configuration option +config.action_mailer.default_url_options+. For more information on
+    # url_for in mailers read the ActionMailer#Base documentation.
+    #
+    #
+    # == URL generation for named routes
+    #
+    # UrlFor also allows one to access methods that have been auto-generated from
+    # named routes. For example, suppose that you have a 'users' resource in your
+    # <tt>config/routes.rb</tt>:
+    #
+    #   resources :users
+    #
+    # This generates, among other things, the method <tt>users_path</tt>. By default,
+    # this method is accessible from your controllers, views and mailers. If you need
+    # to access this auto-generated method from other places (such as a model), then
+    # you can do that by including Rails.application.routes.url_helpers in your class:
+    #
+    #   class User < ActiveRecord::Base
+    #     include Rails.application.routes.url_helpers
+    #
+    #     def base_uri
+    #       user_path(self)
+    #     end
+    #   end
+    #
+    #   User.find(1).base_uri # => "/users/1"
+    #
+    module UrlFor
+      extend ActiveSupport::Concern
+
+      include PolymorphicRoutes
+
+      def initialize: () -> untyped
+
+      # Hook overridden in controller to add request information
+      # with +default_url_options+. Application logic should not
+      # go into url_options.
+      def url_options: () -> untyped
+
+      # Generate a URL based on the options provided, default_url_options and the
+      # routes defined in routes.rb. The following options are supported:
+      #
+      # * <tt>:only_path</tt> - If true, the relative URL is returned. Defaults to +false+.
+      # * <tt>:protocol</tt> - The protocol to connect to. Defaults to 'http'.
+      # * <tt>:host</tt> - Specifies the host the link should be targeted at.
+      #   If <tt>:only_path</tt> is false, this option must be
+      #   provided either explicitly, or via +default_url_options+.
+      # * <tt>:subdomain</tt> - Specifies the subdomain of the link, using the +tld_length+
+      #   to split the subdomain from the host.
+      #   If false, removes all subdomains from the host part of the link.
+      # * <tt>:domain</tt> - Specifies the domain of the link, using the +tld_length+
+      #   to split the domain from the host.
+      # * <tt>:tld_length</tt> - Number of labels the TLD id composed of, only used if
+      #   <tt>:subdomain</tt> or <tt>:domain</tt> are supplied. Defaults to
+      #   <tt>ActionDispatch::Http::URL.tld_length</tt>, which in turn defaults to 1.
+      # * <tt>:port</tt> - Optionally specify the port to connect to.
+      # * <tt>:anchor</tt> - An anchor name to be appended to the path.
+      # * <tt>:params</tt> - The query parameters to be appended to the path.
+      # * <tt>:trailing_slash</tt> - If true, adds a trailing slash, as in "/archive/2009/"
+      # * <tt>:script_name</tt> - Specifies application path relative to domain root. If provided, prepends application path.
+      #
+      # Any other key (<tt>:controller</tt>, <tt>:action</tt>, etc.) given to
+      # +url_for+ is forwarded to the Routes module.
+      #
+      #    url_for controller: 'tasks', action: 'testing', host: 'somehost.org', port: '8080'
+      #    # => 'http://somehost.org:8080/tasks/testing'
+      #    url_for controller: 'tasks', action: 'testing', host: 'somehost.org', anchor: 'ok', only_path: true
+      #    # => '/tasks/testing#ok'
+      #    url_for controller: 'tasks', action: 'testing', trailing_slash: true
+      #    # => 'http://somehost.org/tasks/testing/'
+      #    url_for controller: 'tasks', action: 'testing', host: 'somehost.org', number: '33'
+      #    # => 'http://somehost.org/tasks/testing?number=33'
+      #    url_for controller: 'tasks', action: 'testing', host: 'somehost.org', script_name: "/myapp"
+      #    # => 'http://somehost.org/myapp/tasks/testing'
+      #    url_for controller: 'tasks', action: 'testing', host: 'somehost.org', script_name: "/myapp", only_path: true
+      #    # => '/myapp/tasks/testing'
+      #
+      # Missing routes keys may be filled in from the current request's parameters
+      # (e.g. +:controller+, +:action+, +:id+ and any other parameters that are
+      # placed in the path). Given that the current action has been reached
+      # through <tt>GET /users/1</tt>:
+      #
+      #   url_for(only_path: true)                        # => '/users/1'
+      #   url_for(only_path: true, action: 'edit')        # => '/users/1/edit'
+      #   url_for(only_path: true, action: 'edit', id: 2) # => '/users/2/edit'
+      #
+      # Notice that no +:id+ parameter was provided to the first +url_for+ call
+      # and the helper used the one from the route's path. Any path parameter
+      # implicitly used by +url_for+ can always be overwritten like shown on the
+      # last +url_for+ calls.
+      def url_for: (?untyped? options) -> untyped
+
+      def full_url_for: (?untyped? options) -> untyped
+
+      # Allows calling direct or regular named route.
+      #
+      #   resources :buckets
+      #
+      #   direct :recordable do |recording|
+      #     route_for(:bucket, recording.bucket)
+      #   end
+      #
+      #   direct :threadable do |threadable|
+      #     route_for(:recordable, threadable.parent)
+      #   end
+      #
+      # This maintains the context of the original caller on
+      # whether to return a path or full URL, e.g:
+      #
+      #   threadable_path(threadable)  # => "/buckets/1"
+      #   threadable_url(threadable)   # => "http://example.com/buckets/1"
+      #
+      def route_for: (untyped name, *untyped args) -> untyped
+
+      def optimize_routes_generation?: () -> untyped
+
+      def _with_routes: (untyped routes) { () -> untyped } -> untyped
+
+      def _routes_context: () -> untyped
+    end
+  end
+end
+
+module ActionDispatch
   # The routing module provides URL rewriting in native Ruby. It's a way to
   # redirect incoming requests to controllers and actions. This replaces
   # mod_rewrite rules. Best of all, Rails' \Routing works with any web server.
@@ -10234,595 +10952,6 @@ module ActionDispatch
     SEPARATORS: ::Array[untyped]
 
     HTTP_METHODS: ::Array[untyped]
-  end
-end
-
-module ActionDispatch
-  module Routing
-    class Redirect < Endpoint
-      # :nodoc:
-      attr_reader status: untyped
-
-      # :nodoc:
-      attr_reader block: untyped
-
-      def initialize: (untyped status, untyped block) -> untyped
-
-      def redirect?: () -> ::TrueClass
-
-      def call: (untyped env) -> untyped
-
-      def serve: (untyped req) -> ::Array[untyped | ::Array[untyped]]
-
-      def path: (untyped params, untyped request) -> untyped
-
-      def inspect: () -> ::String
-
-      def relative_path?: (untyped path) -> untyped
-
-      def escape: (untyped params) -> untyped
-
-      def escape_fragment: (untyped params) -> untyped
-
-      def escape_path: (untyped params) -> untyped
-    end
-
-    class PathRedirect < Redirect
-      URL_PARTS: untyped
-
-      def path: (untyped params, untyped request) -> untyped
-
-      def inspect: () -> ::String
-
-      def interpolation_required?: (untyped string, untyped params) -> untyped
-    end
-
-    class OptionRedirect < Redirect
-      def path: (untyped params, untyped request) -> untyped
-
-      def inspect: () -> ::String
-    end
-
-    module Redirection
-      # Redirect any path to another path:
-      #
-      #   get "/stories" => redirect("/posts")
-      #
-      # This will redirect the user, while ignoring certain parts of the request, including query string, etc.
-      # <tt>/stories</tt>, <tt>/stories?foo=bar</tt>, etc all redirect to <tt>/posts</tt>.
-      #
-      # You can also use interpolation in the supplied redirect argument:
-      #
-      #   get 'docs/:article', to: redirect('/wiki/%{article}')
-      #
-      # Note that if you return a path without a leading slash then the URL is prefixed with the
-      # current SCRIPT_NAME environment variable. This is typically '/' but may be different in
-      # a mounted engine or where the application is deployed to a subdirectory of a website.
-      #
-      # Alternatively you can use one of the other syntaxes:
-      #
-      # The block version of redirect allows for the easy encapsulation of any logic associated with
-      # the redirect in question. Either the params and request are supplied as arguments, or just
-      # params, depending of how many arguments your block accepts. A string is required as a
-      # return value.
-      #
-      #   get 'jokes/:number', to: redirect { |params, request|
-      #     path = (params[:number].to_i.even? ? "wheres-the-beef" : "i-love-lamp")
-      #     "http://#{request.host_with_port}/#{path}"
-      #   }
-      #
-      # Note that the +do end+ syntax for the redirect block wouldn't work, as Ruby would pass
-      # the block to +get+ instead of +redirect+. Use <tt>{ ... }</tt> instead.
-      #
-      # The options version of redirect allows you to supply only the parts of the URL which need
-      # to change, it also supports interpolation of the path similar to the first example.
-      #
-      #   get 'stores/:name',       to: redirect(subdomain: 'stores', path: '/%{name}')
-      #   get 'stores/:name(*all)', to: redirect(subdomain: 'stores', path: '/%{name}%{all}')
-      #   get '/stories', to: redirect(path: '/posts')
-      #
-      # This will redirect the user, while changing only the specified parts of the request,
-      # for example the +path+ option in the last example.
-      # <tt>/stories</tt>, <tt>/stories?foo=bar</tt>, redirect to <tt>/posts</tt> and <tt>/posts?foo=bar</tt> respectively.
-      #
-      # Finally, an object which responds to call can be supplied to redirect, allowing you to reuse
-      # common redirect routes. The call method must accept two arguments, params and request, and return
-      # a string.
-      #
-      #   get 'accounts/:name' => redirect(SubdomainRedirector.new('api'))
-      #
-      def redirect: (*untyped args) { () -> untyped } -> (OptionRedirect | PathRedirect | Redirect)
-    end
-  end
-end
-
-module ActionDispatch
-  module Routing
-    # :stopdoc:
-    class RouteSet
-      class Dispatcher < Routing::Endpoint
-        def initialize: (untyped raise_on_name_error) -> untyped
-
-        def dispatcher?: () -> ::TrueClass
-
-        def serve: (untyped req) -> untyped
-
-        def controller: (untyped req) -> untyped
-
-        def dispatch: (untyped controller, untyped action, untyped req, untyped res) -> untyped
-      end
-
-      class StaticDispatcher < Dispatcher
-        def initialize: (untyped controller_class) -> untyped
-
-        def controller: (untyped _) -> untyped
-      end
-
-      # A NamedRouteCollection instance is a collection of named routes, and also
-      # maintains an anonymous module that can be used to install helpers for the
-      # named routes.
-      class NamedRouteCollection
-        include Enumerable[untyped, untyped]
-
-        attr_reader routes: untyped
-
-        attr_reader url_helpers_module: untyped
-
-        attr_reader path_helpers_module: untyped
-
-        def initialize: () -> untyped
-
-        def route_defined?: (untyped name) -> untyped
-
-        def helper_names: () -> untyped
-
-        def clear!: () -> untyped
-
-        def add: (untyped name, untyped route) -> untyped
-
-        def get: (untyped name) -> untyped
-
-        def key?: (untyped name) -> (nil | untyped)
-
-        def each: () { (untyped, untyped) -> untyped } -> untyped
-
-        def names: () -> untyped
-
-        def length: () -> untyped
-
-        # Given a +name+, defines name_path and name_url helpers.
-        # Used by 'direct', 'resolve', and 'polymorphic' route helpers.
-        def add_url_helper: (untyped name, untyped defaults) { () -> untyped } -> untyped
-
-        class UrlHelper
-          def self.create: (untyped route, untyped options, untyped route_name, untyped url_strategy) -> untyped
-
-          def self.optimize_helper?: (untyped route) -> untyped
-
-          attr_reader url_strategy: untyped
-
-          attr_reader route_name: untyped
-
-          class OptimizedUrlHelper < UrlHelper
-            attr_reader arg_size: untyped
-
-            def initialize: (untyped route, untyped options, untyped route_name, untyped url_strategy) -> untyped
-
-            def call: (untyped t, untyped args, untyped inner_options) -> untyped
-
-            def optimized_helper: (untyped args) -> untyped
-
-            def optimize_routes_generation?: (untyped t) -> untyped
-
-            def parameterize_args: (untyped args) { (untyped) -> untyped } -> untyped
-
-            def raise_generation_error: (untyped args) -> untyped
-          end
-
-          def initialize: (untyped route, untyped options, untyped route_name, untyped url_strategy) -> untyped
-
-          def call: (untyped t, untyped args, untyped inner_options) -> untyped
-
-          def handle_positional_args: (untyped controller_options, untyped inner_options, untyped args, untyped result, untyped path_params) -> untyped
-        end
-
-        # Create a URL helper allowing ordered parameters to be associated
-        # with corresponding dynamic segments, so you can do:
-        #
-        #   foo_url(bar, baz, bang)
-        #
-        # Instead of:
-        #
-        #   foo_url(bar: bar, baz: baz, bang: bang)
-        #
-        # Also allow options hash, so you can do:
-        #
-        #   foo_url(bar, baz, bang, sort_by: 'baz')
-        #
-        def define_url_helper: (untyped mod, untyped route, untyped name, untyped opts, untyped route_key, untyped url_strategy) -> untyped
-      end
-
-      # strategy for building URLs to send to the client
-      PATH: untyped
-
-      UNKNOWN: untyped
-
-      attr_accessor formatter: untyped
-
-      attr_accessor set: untyped
-
-      attr_accessor named_routes: untyped
-
-      attr_accessor default_scope: untyped
-
-      attr_accessor router: untyped
-
-      attr_accessor disable_clear_and_finalize: untyped
-
-      attr_accessor resources_path_names: untyped
-
-      attr_accessor default_url_options: untyped
-
-      attr_reader env_key: untyped
-
-      attr_reader polymorphic_mappings: untyped
-
-      def self.default_resources_path_names: () -> { new: "new", edit: "edit" }
-
-      def self.new_with_config: (untyped config) -> untyped
-
-      class Config[T] < ::Struct[T]
-        attr_accessor relative_url_root(): untyped
-
-        attr_accessor api_only(): untyped
-      end
-
-      DEFAULT_CONFIG: untyped
-
-      def initialize: (?untyped config) -> untyped
-
-      def eager_load!: () -> nil
-
-      def relative_url_root: () -> untyped
-
-      def api_only?: () -> untyped
-
-      def request_class: () -> untyped
-
-      def make_request: (untyped env) -> untyped
-
-      def draw: () { () -> untyped } -> nil
-
-      def append: () { () -> untyped } -> untyped
-
-      def `prepend`: () { () -> untyped } -> untyped
-
-      def eval_block: (untyped block) -> untyped
-
-      def finalize!: () -> (nil | untyped)
-
-      def clear!: () -> untyped
-
-      module MountedHelpers
-        extend ActiveSupport::Concern
-
-        include UrlFor
-      end
-
-      # Contains all the mounted helpers across different
-      # engines and the `main_app` helper for the application.
-      # You can include this in your classes if you want to
-      # access routes for other engines.
-      def mounted_helpers: () -> untyped
-
-      def define_mounted_helper: (untyped name, ?untyped? script_namer) -> (nil | untyped)
-
-      def url_helpers: (?bool supports_path) -> untyped
-
-      def empty?: () -> untyped
-
-      def add_route: (untyped mapping, untyped name) -> untyped
-
-      def add_polymorphic_mapping: (untyped klass, untyped options) { () -> untyped } -> untyped
-
-      def add_url_helper: (untyped name, untyped options) { () -> untyped } -> untyped
-
-      class CustomUrlHelper
-        attr_reader name: untyped
-
-        attr_reader defaults: untyped
-
-        attr_reader block: untyped
-
-        def initialize: (untyped name, untyped defaults) { () -> untyped } -> untyped
-
-        def call: (untyped t, untyped args, ?bool only_path) -> untyped
-
-        def eval_block: (untyped t, untyped args, untyped options) -> untyped
-
-        def merge_defaults: (untyped options) -> untyped
-      end
-
-      class Generator
-        PARAMETERIZE: untyped
-
-        attr_reader options: untyped
-
-        attr_reader recall: untyped
-
-        attr_reader set: untyped
-
-        attr_reader named_route: untyped
-
-        def initialize: (untyped named_route, untyped options, untyped recall, untyped set) -> untyped
-
-        def controller: () -> untyped
-
-        def current_controller: () -> untyped
-
-        def use_recall_for: (untyped key) -> untyped
-
-        def normalize_options!: () -> untyped
-
-        # This pulls :controller, :action, and :id out of the recall.
-        # The recall key is only used if there is no key in the options
-        # or if the key in the options is identical. If any of
-        # :controller, :action or :id is not found, don't pull any
-        # more keys from the recall.
-        def normalize_controller_action_id!: () -> (nil | untyped)
-
-        # if the current controller is "foo/bar/baz" and controller: "baz/bat"
-        # is specified, the controller becomes "foo/baz/bat"
-        def use_relative_controller!: () -> untyped
-
-        # Remove leading slashes from controllers
-        def normalize_controller!: () -> untyped
-
-        # Generates a path from routes, returns [path, params].
-        # If no route is generated the formatter will raise ActionController::UrlGenerationError
-        def generate: () -> untyped
-
-        def different_controller?: () -> (::FalseClass | untyped)
-
-        def named_route_exists?: () -> untyped
-
-        def segment_keys: () -> untyped
-      end
-
-      # Generate the path indicated by the arguments, and return an array of
-      # the keys that were not used to generate it.
-      def extra_keys: (untyped options, ?::Hash[untyped, untyped] recall) -> untyped
-
-      def generate_extras: (untyped options, ?::Hash[untyped, untyped] recall) -> untyped
-
-      def generate: (untyped route_key, untyped options, ?::Hash[untyped, untyped] recall) -> untyped
-
-      RESERVED_OPTIONS: ::Array[untyped]
-
-      def optimize_routes_generation?: () -> untyped
-
-      def find_script_name: (untyped options) -> untyped
-
-      def find_relative_url_root: (untyped options) -> untyped
-
-      def path_for: (untyped options, ?untyped? route_name) -> untyped
-
-      # The +options+ argument must be a hash whose keys are *symbols*.
-      def url_for: (untyped options, ?untyped? route_name, ?untyped url_strategy) -> untyped
-
-      def call: (untyped env) -> untyped
-
-      def recognize_path: (untyped path, ?::Hash[untyped, untyped] environment) -> untyped
-
-      def recognize_path_with_request: (untyped req, untyped path, untyped extras, ?raise_on_missing: bool raise_on_missing) -> untyped
-    end
-  end
-end
-
-module ActionDispatch
-  module Routing
-    class RoutesProxy
-      # nodoc:
-      include ActionDispatch::Routing::UrlFor
-
-      attr_accessor scope: untyped
-
-      attr_accessor routes: untyped
-
-      def initialize: (untyped routes, untyped scope, untyped helpers, ?untyped? script_namer) -> untyped
-
-      def url_options: () -> untyped
-
-      def respond_to_missing?: (untyped method, untyped _) -> untyped
-
-      def method_missing: (untyped method, *untyped args) -> untyped
-
-      # Keeps the part of the script name provided by the global
-      # context via ENV["SCRIPT_NAME"], which `mount` doesn't know
-      # about since it depends on the specific request, but use our
-      # script name resolver for the mount point dependent part.
-      def merge_script_names: (untyped previous_script_name, untyped new_script_name) -> untyped
-    end
-  end
-end
-
-module ActionDispatch
-  module Routing
-    # In <tt>config/routes.rb</tt> you define URL-to-controller mappings, but the reverse
-    # is also possible: a URL can be generated from one of your routing definitions.
-    # URL generation functionality is centralized in this module.
-    #
-    # See ActionDispatch::Routing for general information about routing and routes.rb.
-    #
-    # <b>Tip:</b> If you need to generate URLs from your models or some other place,
-    # then ActionController::UrlFor is what you're looking for. Read on for
-    # an introduction. In general, this module should not be included on its own,
-    # as it is usually included by url_helpers (as in Rails.application.routes.url_helpers).
-    #
-    # == URL generation from parameters
-    #
-    # As you may know, some functions, such as ActionController::Base#url_for
-    # and ActionView::Helpers::UrlHelper#link_to, can generate URLs given a set
-    # of parameters. For example, you've probably had the chance to write code
-    # like this in one of your views:
-    #
-    #   <%= link_to('Click here', controller: 'users',
-    #           action: 'new', message: 'Welcome!') %>
-    #   # => <a href="/users/new?message=Welcome%21">Click here</a>
-    #
-    # link_to, and all other functions that require URL generation functionality,
-    # actually use ActionController::UrlFor under the hood. And in particular,
-    # they use the ActionController::UrlFor#url_for method. One can generate
-    # the same path as the above example by using the following code:
-    #
-    #   include UrlFor
-    #   url_for(controller: 'users',
-    #           action: 'new',
-    #           message: 'Welcome!',
-    #           only_path: true)
-    #   # => "/users/new?message=Welcome%21"
-    #
-    # Notice the <tt>only_path: true</tt> part. This is because UrlFor has no
-    # information about the website hostname that your Rails app is serving. So if you
-    # want to include the hostname as well, then you must also pass the <tt>:host</tt>
-    # argument:
-    #
-    #   include UrlFor
-    #   url_for(controller: 'users',
-    #           action: 'new',
-    #           message: 'Welcome!',
-    #           host: 'www.example.com')
-    #   # => "http://www.example.com/users/new?message=Welcome%21"
-    #
-    # By default, all controllers and views have access to a special version of url_for,
-    # that already knows what the current hostname is. So if you use url_for in your
-    # controllers or your views, then you don't need to explicitly pass the <tt>:host</tt>
-    # argument.
-    #
-    # For convenience reasons, mailers provide a shortcut for ActionController::UrlFor#url_for.
-    # So within mailers, you only have to type +url_for+ instead of 'ActionController::UrlFor#url_for'
-    # in full. However, mailers don't have hostname information, and you still have to provide
-    # the +:host+ argument or set the default host that will be used in all mailers using the
-    # configuration option +config.action_mailer.default_url_options+. For more information on
-    # url_for in mailers read the ActionMailer#Base documentation.
-    #
-    #
-    # == URL generation for named routes
-    #
-    # UrlFor also allows one to access methods that have been auto-generated from
-    # named routes. For example, suppose that you have a 'users' resource in your
-    # <tt>config/routes.rb</tt>:
-    #
-    #   resources :users
-    #
-    # This generates, among other things, the method <tt>users_path</tt>. By default,
-    # this method is accessible from your controllers, views and mailers. If you need
-    # to access this auto-generated method from other places (such as a model), then
-    # you can do that by including Rails.application.routes.url_helpers in your class:
-    #
-    #   class User < ActiveRecord::Base
-    #     include Rails.application.routes.url_helpers
-    #
-    #     def base_uri
-    #       user_path(self)
-    #     end
-    #   end
-    #
-    #   User.find(1).base_uri # => "/users/1"
-    #
-    module UrlFor
-      extend ActiveSupport::Concern
-
-      include PolymorphicRoutes
-
-      def initialize: () -> untyped
-
-      # Hook overridden in controller to add request information
-      # with +default_url_options+. Application logic should not
-      # go into url_options.
-      def url_options: () -> untyped
-
-      # Generate a URL based on the options provided, default_url_options and the
-      # routes defined in routes.rb. The following options are supported:
-      #
-      # * <tt>:only_path</tt> - If true, the relative URL is returned. Defaults to +false+.
-      # * <tt>:protocol</tt> - The protocol to connect to. Defaults to 'http'.
-      # * <tt>:host</tt> - Specifies the host the link should be targeted at.
-      #   If <tt>:only_path</tt> is false, this option must be
-      #   provided either explicitly, or via +default_url_options+.
-      # * <tt>:subdomain</tt> - Specifies the subdomain of the link, using the +tld_length+
-      #   to split the subdomain from the host.
-      #   If false, removes all subdomains from the host part of the link.
-      # * <tt>:domain</tt> - Specifies the domain of the link, using the +tld_length+
-      #   to split the domain from the host.
-      # * <tt>:tld_length</tt> - Number of labels the TLD id composed of, only used if
-      #   <tt>:subdomain</tt> or <tt>:domain</tt> are supplied. Defaults to
-      #   <tt>ActionDispatch::Http::URL.tld_length</tt>, which in turn defaults to 1.
-      # * <tt>:port</tt> - Optionally specify the port to connect to.
-      # * <tt>:anchor</tt> - An anchor name to be appended to the path.
-      # * <tt>:params</tt> - The query parameters to be appended to the path.
-      # * <tt>:trailing_slash</tt> - If true, adds a trailing slash, as in "/archive/2009/"
-      # * <tt>:script_name</tt> - Specifies application path relative to domain root. If provided, prepends application path.
-      #
-      # Any other key (<tt>:controller</tt>, <tt>:action</tt>, etc.) given to
-      # +url_for+ is forwarded to the Routes module.
-      #
-      #    url_for controller: 'tasks', action: 'testing', host: 'somehost.org', port: '8080'
-      #    # => 'http://somehost.org:8080/tasks/testing'
-      #    url_for controller: 'tasks', action: 'testing', host: 'somehost.org', anchor: 'ok', only_path: true
-      #    # => '/tasks/testing#ok'
-      #    url_for controller: 'tasks', action: 'testing', trailing_slash: true
-      #    # => 'http://somehost.org/tasks/testing/'
-      #    url_for controller: 'tasks', action: 'testing', host: 'somehost.org', number: '33'
-      #    # => 'http://somehost.org/tasks/testing?number=33'
-      #    url_for controller: 'tasks', action: 'testing', host: 'somehost.org', script_name: "/myapp"
-      #    # => 'http://somehost.org/myapp/tasks/testing'
-      #    url_for controller: 'tasks', action: 'testing', host: 'somehost.org', script_name: "/myapp", only_path: true
-      #    # => '/myapp/tasks/testing'
-      #
-      # Missing routes keys may be filled in from the current request's parameters
-      # (e.g. +:controller+, +:action+, +:id+ and any other parameters that are
-      # placed in the path). Given that the current action has been reached
-      # through <tt>GET /users/1</tt>:
-      #
-      #   url_for(only_path: true)                        # => '/users/1'
-      #   url_for(only_path: true, action: 'edit')        # => '/users/1/edit'
-      #   url_for(only_path: true, action: 'edit', id: 2) # => '/users/2/edit'
-      #
-      # Notice that no +:id+ parameter was provided to the first +url_for+ call
-      # and the helper used the one from the route's path. Any path parameter
-      # implicitly used by +url_for+ can always be overwritten like shown on the
-      # last +url_for+ calls.
-      def url_for: (?untyped? options) -> untyped
-
-      def full_url_for: (?untyped? options) -> untyped
-
-      # Allows calling direct or regular named route.
-      #
-      #   resources :buckets
-      #
-      #   direct :recordable do |recording|
-      #     route_for(:bucket, recording.bucket)
-      #   end
-      #
-      #   direct :threadable do |threadable|
-      #     route_for(:recordable, threadable.parent)
-      #   end
-      #
-      # This maintains the context of the original caller on
-      # whether to return a path or full URL, e.g:
-      #
-      #   threadable_path(threadable)  # => "/buckets/1"
-      #   threadable_url(threadable)   # => "http://example.com/buckets/1"
-      #
-      def route_for: (untyped name, *untyped args) -> untyped
-
-      def optimize_routes_generation?: () -> untyped
-
-      def _with_routes: (untyped routes) { () -> untyped } -> untyped
-
-      def _routes_context: () -> untyped
-    end
   end
 end
 
@@ -11130,20 +11259,6 @@ end
 
 module ActionDispatch
   module Assertions
-    extend ActiveSupport::Concern
-
-    include ResponseAssertions
-
-    include RoutingAssertions
-
-    include Rails::Dom::Testing::Assertions
-
-    def html_document: () -> untyped
-  end
-end
-
-module ActionDispatch
-  module Assertions
     # A small suite of assertions that test responses from \Rails applications.
     module ResponseAssertions
       RESPONSE_PREDICATES: ::Hash[untyped, untyped]
@@ -11306,6 +11421,20 @@ module ActionDispatch
 end
 
 module ActionDispatch
+  module Assertions
+    extend ActiveSupport::Concern
+
+    include ResponseAssertions
+
+    include RoutingAssertions
+
+    include Rails::Dom::Testing::Assertions
+
+    def html_document: () -> untyped
+  end
+end
+
+module ActionDispatch
   module Integration
     # nodoc:
     module RequestHelpers
@@ -11447,6 +11576,11 @@ module ActionDispatch
       # Example:
       #   process :get, '/author', params: { since: 201501011400 }
       def process: (untyped method, untyped path, ?params: untyped? params, ?headers: untyped? headers, ?env: untyped? env, ?xhr: bool xhr, ?as: untyped? as) -> untyped
+
+      # Set the host name to use in the next request.
+      #
+      #   session.host! "www.example.com"
+      alias host! host=
 
       def _mock_session: () -> untyped
 
@@ -11651,6 +11785,26 @@ module ActionDispatch
     def parsed_body: () -> untyped
 
     def response_parser: () -> untyped
+  end
+end
+
+module Rack
+end
+
+module ActionDispatch
+  extend ActiveSupport::Autoload
+
+  class IllegalStateError < StandardError
+  end
+
+  class MissingController[T] < NameError[T]
+  end
+
+  module Http
+    extend ActiveSupport::Autoload
+  end
+
+  module Session
   end
 end
 

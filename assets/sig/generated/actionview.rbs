@@ -193,7 +193,11 @@ module ActionView
 
     def <<: (untyped value) -> untyped
 
+    alias append= <<
+
     def safe_expr_append=: (untyped val) -> untyped
+
+    alias safe_append= safe_concat
   end
 
   class StreamingBuffer
@@ -202,7 +206,13 @@ module ActionView
 
     def <<: (untyped value) -> untyped
 
+    alias concat <<
+
+    alias append= <<
+
     def safe_concat: (untyped value) -> untyped
+
+    alias safe_append= safe_concat
 
     def html_safe?: () -> ::TrueClass
 
@@ -401,6 +411,8 @@ module ActionView
 
     # Called by content_for
     def append: (untyped key, untyped value) -> untyped
+
+    alias append! append
   end
 
   class StreamingFlow < OutputFlow
@@ -980,6 +992,8 @@ module ActionView
       #     asset_path("foo.css", skip_pipeline: true, extname: ".js") # => "/foo.css.js"
       def asset_path: (untyped source, ?::Hash[untyped, untyped] options) -> (::String | untyped)
 
+      alias path_to_asset asset_path
+
       # Computes the full URL to an asset in the public directory. This
       # will use +asset_path+ internally, so most of their behaviors
       # will be the same. If :host options is set, it overwrites global
@@ -991,6 +1005,8 @@ module ActionView
       #   asset_url "application.js", host: "http://cdn.example.com" # => http://cdn.example.com/assets/application.js
       #
       def asset_url: (untyped source, ?::Hash[untyped, untyped] options) -> untyped
+
+      alias url_to_asset asset_url
 
       ASSET_EXTENSIONS: ::Hash[untyped, untyped]
 
@@ -1005,6 +1021,8 @@ module ActionView
       # extensions can override this method to point to custom assets
       # or generate digested paths or query strings.
       def compute_asset_path: (untyped source, ?::Hash[untyped, untyped] options) -> untyped
+
+      alias public_compute_asset_path compute_asset_path
 
       # Pick an asset host for this source. Returns +nil+ if no host is set,
       # the host if no wildcard is set, the host interpolated with the
@@ -1025,6 +1043,8 @@ module ActionView
       #   javascript_path "http://www.example.com/js/xmlhr.js" # => http://www.example.com/js/xmlhr.js
       def javascript_path: (untyped source, ?::Hash[untyped, untyped] options) -> untyped
 
+      alias path_to_javascript javascript_path
+
       # Computes the full URL to a JavaScript asset in the public javascripts directory.
       # This will use +javascript_path+ internally, so most of their behaviors will be the same.
       # Since +javascript_url+ is based on +asset_url+ method you can set :host options. If :host
@@ -1033,6 +1053,8 @@ module ActionView
       #   javascript_url "js/xmlhr.js", host: "http://stage.example.com" # => http://stage.example.com/assets/js/xmlhr.js
       #
       def javascript_url: (untyped source, ?::Hash[untyped, untyped] options) -> untyped
+
+      alias url_to_javascript javascript_url
 
       # Computes the path to a stylesheet asset in the public stylesheets directory.
       # If the +source+ filename has no extension, .css will be appended (except for explicit URIs).
@@ -1046,6 +1068,8 @@ module ActionView
       #   stylesheet_path "http://www.example.com/css/style.css"   # => http://www.example.com/css/style.css
       def stylesheet_path: (untyped source, ?::Hash[untyped, untyped] options) -> untyped
 
+      alias path_to_stylesheet stylesheet_path
+
       # Computes the full URL to a stylesheet asset in the public stylesheets directory.
       # This will use +stylesheet_path+ internally, so most of their behaviors will be the same.
       # Since +stylesheet_url+ is based on +asset_url+ method you can set :host options. If :host
@@ -1054,6 +1078,8 @@ module ActionView
       #   stylesheet_url "css/style.css", host: "http://stage.example.com" # => http://stage.example.com/assets/css/style.css
       #
       def stylesheet_url: (untyped source, ?::Hash[untyped, untyped] options) -> untyped
+
+      alias url_to_stylesheet stylesheet_url
 
       # Computes the path to an image asset.
       # Full paths from the document root will be passed through.
@@ -1070,6 +1096,8 @@ module ActionView
       # plugin authors are encouraged to do so.
       def image_path: (untyped source, ?::Hash[untyped, untyped] options) -> untyped
 
+      alias path_to_image image_path
+
       # Computes the full URL to an image asset.
       # This will use +image_path+ internally, so most of their behaviors will be the same.
       # Since +image_url+ is based on +asset_url+ method you can set :host options. If :host
@@ -1078,6 +1106,8 @@ module ActionView
       #   image_url "edit.png", host: "http://stage.example.com" # => http://stage.example.com/assets/edit.png
       #
       def image_url: (untyped source, ?::Hash[untyped, untyped] options) -> untyped
+
+      alias url_to_image image_url
 
       # Computes the path to a video asset in the public videos directory.
       # Full paths from the document root will be passed through.
@@ -1090,6 +1120,8 @@ module ActionView
       #   video_path("http://www.example.com/vid/hd.avi")             # => http://www.example.com/vid/hd.avi
       def video_path: (untyped source, ?::Hash[untyped, untyped] options) -> untyped
 
+      alias path_to_video video_path
+
       # Computes the full URL to a video asset in the public videos directory.
       # This will use +video_path+ internally, so most of their behaviors will be the same.
       # Since +video_url+ is based on +asset_url+ method you can set :host options. If :host
@@ -1098,6 +1130,8 @@ module ActionView
       #   video_url "hd.avi", host: "http://stage.example.com" # => http://stage.example.com/videos/hd.avi
       #
       def video_url: (untyped source, ?::Hash[untyped, untyped] options) -> untyped
+
+      alias url_to_video video_url
 
       # Computes the path to an audio asset in the public audios directory.
       # Full paths from the document root will be passed through.
@@ -1110,6 +1144,8 @@ module ActionView
       #   audio_path("http://www.example.com/sounds/horse.wav")          # => http://www.example.com/sounds/horse.wav
       def audio_path: (untyped source, ?::Hash[untyped, untyped] options) -> untyped
 
+      alias path_to_audio audio_path
+
       # Computes the full URL to an audio asset in the public audios directory.
       # This will use +audio_path+ internally, so most of their behaviors will be the same.
       # Since +audio_url+ is based on +asset_url+ method you can set :host options. If :host
@@ -1118,6 +1154,8 @@ module ActionView
       #   audio_url "horse.wav", host: "http://stage.example.com" # => http://stage.example.com/audios/horse.wav
       #
       def audio_url: (untyped source, ?::Hash[untyped, untyped] options) -> untyped
+
+      alias url_to_audio audio_url
 
       # Computes the path to a font asset.
       # Full paths from the document root will be passed through.
@@ -1129,6 +1167,8 @@ module ActionView
       #   font_path("http://www.example.com/dir/font.ttf")            # => http://www.example.com/dir/font.ttf
       def font_path: (untyped source, ?::Hash[untyped, untyped] options) -> untyped
 
+      alias path_to_font font_path
+
       # Computes the full URL to a font asset.
       # This will use +font_path+ internally, so most of their behaviors will be the same.
       # Since +font_url+ is based on +asset_url+ method you can set :host options. If :host
@@ -1137,6 +1177,8 @@ module ActionView
       #   font_url "font.ttf", host: "http://stage.example.com" # => http://stage.example.com/fonts/font.ttf
       #
       def font_url: (untyped source, ?::Hash[untyped, untyped] options) -> untyped
+
+      alias url_to_font font_url
     end
   end
 end
@@ -1711,6 +1753,9 @@ module ActionView
       # "X-CSRF-Token" HTTP header. If you are using rails-ujs this happens automatically.
       #
       def csrf_meta_tags: () -> untyped
+
+      # For backwards compatibility.
+      alias csrf_meta_tag csrf_meta_tags
     end
   end
 end
@@ -1821,6 +1866,8 @@ module ActionView
       # Note that you cannot pass a <tt>Numeric</tt> value to <tt>time_ago_in_words</tt>.
       #
       def time_ago_in_words: (untyped from_time, ?::Hash[untyped, untyped] options) -> untyped
+
+      alias distance_of_time_in_words_to_now time_ago_in_words
 
       # Returns a set of select tags (one for year, month, and day) pre-selected for accessing a specified date-based
       # attribute (identified by +method+) on an object assigned to the template (identified by +object+).
@@ -3771,6 +3818,9 @@ module ActionView
       #
       def telephone_field: (untyped object_name, untyped method, ?::Hash[untyped, untyped] options) -> untyped
 
+      # aliases telephone_field
+      alias phone_field telephone_field
+
       # Returns a text_field of type "date".
       #
       #   date_field("user", "born_on")
@@ -3852,6 +3902,8 @@ module ActionView
       #   # => <input id="user_born_on" name="user[born_on]" type="datetime-local" min="2014-05-20T00:00:00.000" />
       #
       def datetime_field: (untyped object_name, untyped method, ?::Hash[untyped, untyped] options) -> untyped
+
+      alias datetime_local_field datetime_field
 
       # Returns a text_field of type "month".
       #
@@ -3976,6 +4028,8 @@ module ActionView
       attr_reader multipart: untyped
 
       attr_reader index: untyped
+
+      alias multipart? multipart
 
       def multipart=: (untyped multipart) -> untyped
 
@@ -5789,6 +5843,8 @@ module ActionView
       #   # => <input disabled="disabled" class="special_input" id="tel" name="tel" type="tel" value="0123456789" />
       def telephone_field_tag: (untyped name, ?untyped? value, ?::Hash[untyped, untyped] options) -> untyped
 
+      alias phone_field_tag telephone_field_tag
+
       # Creates a text field of type "date".
       #
       # ==== Options
@@ -5825,6 +5881,8 @@ module ActionView
       # * <tt>:step</tt> - The acceptable value granularity.
       # * Otherwise accepts the same options as text_field_tag.
       def datetime_field_tag: (untyped name, ?untyped? value, ?::Hash[untyped, untyped] options) -> untyped
+
+      alias datetime_local_field_tag datetime_field_tag
 
       # Creates a text field of type "month".
       #
@@ -5966,6 +6024,8 @@ module ActionView
       #
       #   $('some_element').replaceWith('<%= j render 'some/element_template' %>');
       def escape_javascript: (untyped javascript) -> untyped
+
+      alias j escape_javascript
 
       # Returns a JavaScript tag with the +content+ inside. Example:
       #   javascript_tag "alert('All is good')"
@@ -6442,66 +6502,6 @@ module ActionView
       #
       def to_sentence: (untyped array, ?::Hash[untyped, untyped] options) -> untyped
     end
-  end
-end
-
-module ActionView
-  module Helpers
-    # nodoc:
-    # nodoc:
-    extend ActiveSupport::Autoload
-
-    def self.eager_load!: () -> untyped
-
-    extend ActiveSupport::Concern
-
-    include ActiveSupport::Benchmarkable
-
-    include ActiveModelHelper
-
-    include AssetTagHelper
-
-    include AssetUrlHelper
-
-    include AtomFeedHelper
-
-    include CacheHelper
-
-    include CaptureHelper
-
-    include ControllerHelper
-
-    include CspHelper
-
-    include CsrfHelper
-
-    include DateHelper
-
-    include DebugHelper
-
-    include FormHelper
-
-    include FormOptionsHelper
-
-    include FormTagHelper
-
-    include JavaScriptHelper
-
-    include NumberHelper
-
-    include OutputSafetyHelper
-
-    include RenderingHelper
-
-    include SanitizeHelper
-
-    include TagHelper
-
-    include TextHelper
-
-    include TranslationHelper
-
-    include UrlHelper
   end
 end
 
@@ -7034,18 +7034,6 @@ end
 module ActionView
   module Helpers
     module Tags
-      module Checkable
-        # :nodoc:
-        # :nodoc:
-        def input_checked?: (untyped options) -> untyped
-      end
-    end
-  end
-end
-
-module ActionView
-  module Helpers
-    module Tags
       class CheckBox < Base
         # :nodoc:
         # nodoc:
@@ -7058,6 +7046,18 @@ module ActionView
         def checked?: (untyped value) -> untyped
 
         def hidden_field_for_checkbox: (untyped options) -> untyped
+      end
+    end
+  end
+end
+
+module ActionView
+  module Helpers
+    module Tags
+      module Checkable
+        # :nodoc:
+        # :nodoc:
+        def input_checked?: (untyped options) -> untyped
       end
     end
   end
@@ -7393,16 +7393,6 @@ end
 module ActionView
   module Helpers
     module Tags
-      # nodoc:
-      # nodoc:
-      extend ActiveSupport::Autoload
-    end
-  end
-end
-
-module ActionView
-  module Helpers
-    module Tags
       class SearchField < TextField
         # :nodoc:
         # :nodoc:
@@ -7547,6 +7537,16 @@ module ActionView
       class WeekField < DatetimeField
         def format_date: (untyped value) -> untyped
       end
+    end
+  end
+end
+
+module ActionView
+  module Helpers
+    module Tags
+      # nodoc:
+      # nodoc:
+      extend ActiveSupport::Autoload
     end
   end
 end
@@ -7939,11 +7939,15 @@ module ActionView
       # they can provide HTML values for.
       def translate: (untyped key, **untyped options) -> untyped
 
+      alias t translate
+
       # Delegates to <tt>I18n.localize</tt> with no additional functionality.
       #
       # See https://www.rubydoc.info/github/svenfuchs/i18n/master/I18n/Backend/Base:localize
       # for more information.
       def localize: (untyped object, **untyped options) -> untyped
+
+      alias l localize
 
       def scope_key_by_partial: (untyped key) -> untyped
 
@@ -8420,6 +8424,66 @@ module ActionView
 end
 
 module ActionView
+  module Helpers
+    # nodoc:
+    # nodoc:
+    extend ActiveSupport::Autoload
+
+    def self.eager_load!: () -> untyped
+
+    extend ActiveSupport::Concern
+
+    include ActiveSupport::Benchmarkable
+
+    include ActiveModelHelper
+
+    include AssetTagHelper
+
+    include AssetUrlHelper
+
+    include AtomFeedHelper
+
+    include CacheHelper
+
+    include CaptureHelper
+
+    include ControllerHelper
+
+    include CspHelper
+
+    include CsrfHelper
+
+    include DateHelper
+
+    include DebugHelper
+
+    include FormHelper
+
+    include FormOptionsHelper
+
+    include FormTagHelper
+
+    include JavaScriptHelper
+
+    include NumberHelper
+
+    include OutputSafetyHelper
+
+    include RenderingHelper
+
+    include SanitizeHelper
+
+    include TagHelper
+
+    include TextHelper
+
+    include TranslationHelper
+
+    include UrlHelper
+  end
+end
+
+module ActionView
   # Layouts reverse the common pattern of including shared headers and footers in many templates to isolate changes in
   # repeated setups. The inclusion pattern has pages that look like this:
   #
@@ -8771,6 +8835,9 @@ module ActionView
     end
 
     class DetailsKey
+      # nodoc:
+      alias eql? equal?
+
       def self.digest_cache: (untyped details) -> untyped
 
       def self.details_cache_key: (untyped details) -> untyped
@@ -8802,11 +8869,19 @@ module ActionView
 
       def find: (untyped name, ?untyped prefixes, ?bool partial, ?untyped keys, ?::Hash[untyped, untyped] options) -> untyped
 
+      alias find_template find
+
+      alias find_file find
+
       def find_all: (untyped name, ?untyped prefixes, ?bool partial, ?untyped keys, ?::Hash[untyped, untyped] options) -> untyped
 
       def exists?: (untyped name, ?untyped prefixes, ?bool partial, ?untyped keys, **untyped options) -> untyped
 
+      alias template_exists? exists?
+
       def any?: (untyped name, ?untyped prefixes, ?bool partial) -> untyped
+
+      alias any_templates? any?
 
       # Adds fallbacks to the view paths. Useful in cases when you are rendering
       # a :file.
@@ -8895,6 +8970,8 @@ module ActionView
 
     def find: (*untyped args) -> untyped
 
+    alias find_file find
+
     def find_all: (untyped path, ?untyped prefixes, *untyped args) -> untyped
 
     def exists?: (untyped path, untyped prefixes, *untyped args) -> untyped
@@ -8913,14 +8990,6 @@ module ActionView
     # :nodoc:
     NULL_OPTION: untyped
   end
-end
-
-module ActionView
-  extend ActiveSupport::Autoload
-
-  ENCODING_FLAG: ::String
-
-  def self.eager_load!: () -> untyped
 end
 
 module ActionView
@@ -9862,6 +9931,8 @@ module ActionView
 
       def identifier: () -> "html template"
 
+      alias inspect identifier
+
       def to_str: () -> untyped
 
       def render: (*untyped args) -> untyped
@@ -9905,6 +9976,241 @@ module ActionView
       def render: (*untyped args) -> untyped
 
       def formats: () -> untyped
+    end
+  end
+end
+
+module ActionView
+  # = Action View Resolver
+  class Resolver
+    # Keeps all information about view path and builds virtual path.
+    class Path
+      attr_reader name: untyped
+
+      attr_reader prefix: untyped
+
+      attr_reader partial: untyped
+
+      attr_reader virtual: untyped
+
+      alias partial? partial
+
+      def self.build: (untyped name, untyped prefix, untyped partial) -> untyped
+
+      def initialize: (untyped name, untyped prefix, untyped partial, untyped virtual) -> untyped
+
+      def to_str: () -> untyped
+
+      alias to_s to_str
+    end
+
+    class Cache
+      # Threadsafe template cache
+      # nodoc:
+      class SmallCache < Concurrent::Map
+        def initialize: (?::Hash[untyped, untyped] options) -> untyped
+      end
+
+      # preallocate all the default blocks for performance/memory consumption reasons
+      PARTIAL_BLOCK: untyped
+
+      PREFIX_BLOCK: untyped
+
+      NAME_BLOCK: untyped
+
+      KEY_BLOCK: untyped
+
+      # usually a majority of template look ups return nothing, use this canonical preallocated array to save memory
+      NO_TEMPLATES: untyped
+
+      def initialize: () -> untyped
+
+      def inspect: () -> ::String
+
+      # Cache the templates returned by the block
+      def cache: (untyped key, untyped name, untyped prefix, untyped partial, untyped locals) { () -> untyped } -> untyped
+
+      def cache_query: (untyped query) { () -> untyped } -> untyped
+
+      def clear: () -> untyped
+
+      def size: () -> untyped
+
+      def canonical_no_templates: (untyped templates) -> untyped
+    end
+
+    alias self.caching? self.caching
+
+    def initialize: () -> untyped
+
+    def clear_cache: () -> untyped
+
+    # Normalizes the arguments and passes it on to find_templates.
+    def find_all: (untyped name, ?untyped? prefix, ?bool partial, ?::Hash[untyped, untyped] details, ?untyped? key, ?untyped locals) -> untyped
+
+    alias find_all_anywhere find_all
+
+    def find_all_with_query: (untyped query) -> untyped
+
+    def _find_all: (untyped name, untyped prefix, untyped partial, untyped details, untyped key, untyped locals) -> untyped
+
+    # This is what child classes implement. No defaults are needed
+    # because Resolver guarantees that the arguments are present and
+    # normalized.
+    def find_templates: (untyped name, untyped prefix, untyped partial, untyped details, ?untyped locals) -> untyped
+
+    # Handles templates caching. If a key is given and caching is on
+    # always check the cache before hitting the resolver. Otherwise,
+    # it always hits the resolver but if the key is present, check if the
+    # resolver is fresher before returning it.
+    def cached: (untyped key, untyped path_info, untyped details, untyped locals) { () -> untyped } -> untyped
+  end
+
+  class PathResolver < Resolver
+    # An abstract class that implements a Resolver with path semantics.
+    # nodoc:
+    EXTENSIONS: ::Hash[untyped, untyped]
+
+    DEFAULT_PATTERN: ::String
+
+    def initialize: (?untyped? pattern) -> untyped
+
+    def clear_cache: () -> untyped
+
+    def _find_all: (untyped name, untyped prefix, untyped partial, untyped details, untyped key, untyped locals) -> untyped
+
+    def query: (untyped path, untyped details, untyped formats, untyped locals, cache: untyped cache) -> untyped
+
+    def build_unbound_template: (untyped template, untyped virtual_path) -> UnboundTemplate
+
+    def reject_files_external_to_app: (untyped files) -> untyped
+
+    def find_template_paths_from_details: (untyped path, untyped details) -> untyped
+
+    def find_template_paths: (untyped query) -> untyped
+
+    def inside_path?: (untyped path, untyped filename) -> untyped
+
+    # Helper for building query glob string based on resolver's pattern.
+    def build_query: (untyped path, untyped details) -> untyped
+
+    def escape_entry: (untyped entry) -> untyped
+
+    # Extract handler, formats and variant from path. If a format cannot be found neither
+    # from the path, or the handler, we should return the array of formats given
+    # to the resolver.
+    def extract_handler_and_format_and_variant: (untyped path) -> ::Array[untyped]
+  end
+
+  # A resolver that loads files from the filesystem.
+  class FileSystemResolver < PathResolver
+    attr_reader path: untyped
+
+    def initialize: (untyped path, ?untyped? pattern) -> untyped
+
+    def to_s: () -> untyped
+
+    alias to_path to_s
+
+    def eql?: (untyped resolver) -> untyped
+
+    alias == eql?
+  end
+
+  class OptimizedFileSystemResolver < FileSystemResolver
+    # An Optimized resolver for Rails' most common case.
+    # nodoc:
+    def initialize: (untyped path) -> untyped
+
+    def find_template_paths_from_details: (untyped path, untyped details) -> untyped
+
+    def build_regex: (untyped path, untyped details) -> ::Regexp
+  end
+
+  class FallbackFileSystemResolver < FileSystemResolver
+    def self.instances: () -> ::Array[untyped]
+
+    def build_unbound_template: (untyped template, untyped _) -> untyped
+
+    def reject_files_external_to_app: (untyped files) -> untyped
+  end
+end
+
+module ActionView
+  class Template
+    module Sources
+      class File
+        def initialize: (untyped filename) -> untyped
+
+        def to_s: () -> untyped
+      end
+    end
+  end
+end
+
+module ActionView
+  class Template
+    module Sources
+      extend ActiveSupport::Autoload
+    end
+  end
+end
+
+module ActionView
+  class Template
+    class Text
+      # nodoc:
+      # = Action View Text Template
+      # nodoc:
+      # nodoc:
+      attr_accessor type: untyped
+
+      def initialize: (untyped string) -> untyped
+
+      def identifier: () -> "text template"
+
+      alias inspect identifier
+
+      def to_str: () -> untyped
+
+      def render: (*untyped args) -> untyped
+
+      def format: () -> :text
+
+      def formats: () -> untyped
+    end
+  end
+end
+
+module ActionView
+  class Template
+    # nodoc:
+    class Types
+      class Type
+        SET: untyped
+
+        def self.[]: (untyped `type`) -> untyped
+
+        attr_reader symbol: untyped
+
+        def initialize: (untyped symbol) -> untyped
+
+        def to_s: () -> untyped
+
+        alias to_str to_s
+
+        def ref: () -> untyped
+
+        alias to_sym ref
+
+        def ==: (untyped `type`) -> untyped
+      end
+
+      def self.delegate_to: (untyped klass) -> untyped
+
+      def self.[]: (untyped `type`) -> untyped
+
+      def self.symbols: () -> untyped
     end
   end
 end
@@ -9994,7 +10300,6 @@ module ActionView
     # just once and removes the source after it is compiled.
     def compile!: (untyped view) -> (nil | untyped)
 
-    # Note: It inherits unnamed class, but omitted
     class LegacyTemplate
       # :nodoc:
       attr_reader source: untyped
@@ -10033,223 +10338,6 @@ module ActionView
 end
 
 module ActionView
-  # = Action View Resolver
-  class Resolver
-    # Keeps all information about view path and builds virtual path.
-    class Path
-      attr_reader name: untyped
-
-      attr_reader prefix: untyped
-
-      attr_reader partial: untyped
-
-      attr_reader virtual: untyped
-
-      def self.build: (untyped name, untyped prefix, untyped partial) -> untyped
-
-      def initialize: (untyped name, untyped prefix, untyped partial, untyped virtual) -> untyped
-
-      def to_str: () -> untyped
-    end
-
-    class Cache
-      # Threadsafe template cache
-      # nodoc:
-      class SmallCache < Concurrent::Map
-        def initialize: (?::Hash[untyped, untyped] options) -> untyped
-      end
-
-      # preallocate all the default blocks for performance/memory consumption reasons
-      PARTIAL_BLOCK: untyped
-
-      PREFIX_BLOCK: untyped
-
-      NAME_BLOCK: untyped
-
-      KEY_BLOCK: untyped
-
-      # usually a majority of template look ups return nothing, use this canonical preallocated array to save memory
-      NO_TEMPLATES: untyped
-
-      def initialize: () -> untyped
-
-      def inspect: () -> ::String
-
-      # Cache the templates returned by the block
-      def cache: (untyped key, untyped name, untyped prefix, untyped partial, untyped locals) { () -> untyped } -> untyped
-
-      def cache_query: (untyped query) { () -> untyped } -> untyped
-
-      def clear: () -> untyped
-
-      def size: () -> untyped
-
-      def canonical_no_templates: (untyped templates) -> untyped
-    end
-
-    def initialize: () -> untyped
-
-    def clear_cache: () -> untyped
-
-    # Normalizes the arguments and passes it on to find_templates.
-    def find_all: (untyped name, ?untyped? prefix, ?bool partial, ?::Hash[untyped, untyped] details, ?untyped? key, ?untyped locals) -> untyped
-
-    def find_all_with_query: (untyped query) -> untyped
-
-    def _find_all: (untyped name, untyped prefix, untyped partial, untyped details, untyped key, untyped locals) -> untyped
-
-    # This is what child classes implement. No defaults are needed
-    # because Resolver guarantees that the arguments are present and
-    # normalized.
-    def find_templates: (untyped name, untyped prefix, untyped partial, untyped details, ?untyped locals) -> untyped
-
-    # Handles templates caching. If a key is given and caching is on
-    # always check the cache before hitting the resolver. Otherwise,
-    # it always hits the resolver but if the key is present, check if the
-    # resolver is fresher before returning it.
-    def cached: (untyped key, untyped path_info, untyped details, untyped locals) { () -> untyped } -> untyped
-  end
-
-  class PathResolver < Resolver
-    # An abstract class that implements a Resolver with path semantics.
-    # nodoc:
-    EXTENSIONS: ::Hash[untyped, untyped]
-
-    DEFAULT_PATTERN: ::String
-
-    def initialize: (?untyped? pattern) -> untyped
-
-    def clear_cache: () -> untyped
-
-    def _find_all: (untyped name, untyped prefix, untyped partial, untyped details, untyped key, untyped locals) -> untyped
-
-    def query: (untyped path, untyped details, untyped formats, untyped locals, cache: untyped cache) -> untyped
-
-    def build_unbound_template: (untyped template, untyped virtual_path) -> UnboundTemplate
-
-    def reject_files_external_to_app: (untyped files) -> untyped
-
-    def find_template_paths_from_details: (untyped path, untyped details) -> untyped
-
-    def find_template_paths: (untyped query) -> untyped
-
-    def inside_path?: (untyped path, untyped filename) -> untyped
-
-    # Helper for building query glob string based on resolver's pattern.
-    def build_query: (untyped path, untyped details) -> untyped
-
-    def escape_entry: (untyped entry) -> untyped
-
-    # Extract handler, formats and variant from path. If a format cannot be found neither
-    # from the path, or the handler, we should return the array of formats given
-    # to the resolver.
-    def extract_handler_and_format_and_variant: (untyped path) -> ::Array[untyped]
-  end
-
-  # A resolver that loads files from the filesystem.
-  class FileSystemResolver < PathResolver
-    attr_reader path: untyped
-
-    def initialize: (untyped path, ?untyped? pattern) -> untyped
-
-    def to_s: () -> untyped
-
-    def eql?: (untyped resolver) -> untyped
-  end
-
-  class OptimizedFileSystemResolver < FileSystemResolver
-    # An Optimized resolver for Rails' most common case.
-    # nodoc:
-    def initialize: (untyped path) -> untyped
-
-    def find_template_paths_from_details: (untyped path, untyped details) -> untyped
-
-    def build_regex: (untyped path, untyped details) -> ::Regexp
-  end
-
-  class FallbackFileSystemResolver < FileSystemResolver
-    def self.instances: () -> ::Array[untyped]
-
-    def build_unbound_template: (untyped template, untyped _) -> untyped
-
-    def reject_files_external_to_app: (untyped files) -> untyped
-  end
-end
-
-module ActionView
-  class Template
-    module Sources
-      class File
-        def initialize: (untyped filename) -> untyped
-
-        def to_s: () -> untyped
-      end
-    end
-  end
-end
-
-module ActionView
-  class Template
-    module Sources
-      extend ActiveSupport::Autoload
-    end
-  end
-end
-
-module ActionView
-  class Template
-    class Text
-      # nodoc:
-      # = Action View Text Template
-      # nodoc:
-      # nodoc:
-      attr_accessor type: untyped
-
-      def initialize: (untyped string) -> untyped
-
-      def identifier: () -> "text template"
-
-      def to_str: () -> untyped
-
-      def render: (*untyped args) -> untyped
-
-      def format: () -> :text
-
-      def formats: () -> untyped
-    end
-  end
-end
-
-module ActionView
-  class Template
-    # nodoc:
-    class Types
-      class Type
-        SET: untyped
-
-        def self.[]: (untyped `type`) -> untyped
-
-        attr_reader symbol: untyped
-
-        def initialize: (untyped symbol) -> untyped
-
-        def to_s: () -> untyped
-
-        def ref: () -> untyped
-
-        def ==: (untyped `type`) -> untyped
-      end
-
-      def self.delegate_to: (untyped klass) -> untyped
-
-      def self.[]: (untyped `type`) -> untyped
-
-      def self.symbols: () -> untyped
-    end
-  end
-end
-
-module ActionView
   # = Action View Test Case
   class TestCase < ActiveSupport::TestCase
     class TestController < ActionController::Base
@@ -10284,6 +10372,8 @@ module ActionView
       include ActionDispatch::Routing::PolymorphicRoutes
 
       include AbstractController::Helpers
+
+      extend ::AbstractController::Helpers::ClassMethods
 
       include ActionView::Helpers
 
@@ -10355,6 +10445,8 @@ module ActionView
 
       # The instance of ActionView::Base that is used by +render+.
       def view: () -> untyped
+
+      alias _view view
 
       INTERNAL_IVARS: ::Array[untyped]
 
@@ -10488,4 +10580,12 @@ module ActionView
       def view_paths=: (untyped paths) -> untyped
     end
   end
+end
+
+module ActionView
+  extend ActiveSupport::Autoload
+
+  ENCODING_FLAG: ::String
+
+  def self.eager_load!: () -> untyped
 end

@@ -86,6 +86,7 @@ target :app do
   library 'pathname'
   library 'logger'
   library 'mutex_m'
+  library 'date'
 end
 ```
 

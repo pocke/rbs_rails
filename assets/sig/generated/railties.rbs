@@ -59,6 +59,30 @@ module Rails
 end
 
 module Rails
+  module AppLoader
+    RUBY: untyped
+
+    EXECUTABLES: ::Array[untyped]
+
+    BUNDLER_WARNING: ::String
+
+    def exec_app: () -> (nil | untyped)
+
+    def find_executable: () -> untyped
+  end
+end
+
+module Rails
+  class AppUpdater
+    def self.invoke_from_app_generator: (untyped method) -> untyped
+
+    def self.app_generator: () -> untyped
+
+    def self.generator_options: () -> untyped
+  end
+end
+
+module Rails
   class Application
     module Bootstrap
       include Initializable
@@ -208,14 +232,6 @@ module Rails
   end
 end
 
-class Rails::ApplicationController < ActionController::Base
-  def require_local!: () -> untyped
-
-  def local_request?: () -> untyped
-
-  def disable_content_security_policy_nonce!: () -> untyped
-end
-
 module Rails
   class Application
     class DefaultMiddlewareStack
@@ -267,6 +283,32 @@ module Rails
 
         def self.complete: (untyped _state) -> untyped
       end
+    end
+  end
+end
+
+module Rails
+  class Application
+    class RoutesReloader
+      attr_reader route_sets: untyped
+
+      attr_reader paths: untyped
+
+      attr_accessor eager_load: untyped
+
+      def initialize: () -> untyped
+
+      def reload!: () -> untyped
+
+      def updater: () -> untyped
+
+      def clear!: () -> untyped
+
+      def load_paths: () -> untyped
+
+      def finalize!: () -> untyped
+
+      def revert: () -> untyped
     end
   end
 end
@@ -352,6 +394,8 @@ module Rails
     attr_accessor assets: untyped
 
     attr_accessor sandbox: untyped
+
+    alias sandbox? sandbox
 
     attr_reader reloaders: untyped
 
@@ -532,6 +576,8 @@ module Rails
     # Eager loads the application code.
     def eager_load!: () -> untyped
 
+    alias build_middleware_stack app
+
     def run_tasks_blocks: (untyped app) -> untyped
 
     def run_generators_blocks: (untyped app) -> untyped
@@ -567,54 +613,12 @@ module Rails
   end
 end
 
-module Rails
-  class Application
-    class RoutesReloader
-      attr_reader route_sets: untyped
+class Rails::ApplicationController < ActionController::Base
+  def require_local!: () -> untyped
 
-      attr_reader paths: untyped
+  def local_request?: () -> untyped
 
-      attr_accessor eager_load: untyped
-
-      def initialize: () -> untyped
-
-      def reload!: () -> untyped
-
-      def updater: () -> untyped
-
-      def clear!: () -> untyped
-
-      def load_paths: () -> untyped
-
-      def finalize!: () -> untyped
-
-      def revert: () -> untyped
-    end
-  end
-end
-
-module Rails
-  module AppLoader
-    RUBY: untyped
-
-    EXECUTABLES: ::Array[untyped]
-
-    BUNDLER_WARNING: ::String
-
-    def exec_app: () -> (nil | untyped)
-
-    def find_executable: () -> untyped
-  end
-end
-
-module Rails
-  class AppUpdater
-    def self.invoke_from_app_generator: (untyped method) -> untyped
-
-    def self.app_generator: () -> untyped
-
-    def self.generator_options: () -> untyped
-  end
+  def disable_content_security_policy_nonce!: () -> untyped
 end
 
 module Rails
@@ -651,32 +655,6 @@ module Rails
   end
 end
 
-class CodeStatisticsCalculator
-  # nodoc:
-  attr_reader lines: untyped
-
-  # nodoc:
-  attr_reader code_lines: untyped
-
-  # nodoc:
-  attr_reader classes: untyped
-
-  # nodoc:
-  attr_reader methods: untyped
-
-  PATTERNS: ::Hash[untyped, untyped]
-
-  def initialize: (?::Integer lines, ?::Integer code_lines, ?::Integer classes, ?::Integer methods) -> untyped
-
-  def add: (untyped code_statistics_calculator) -> untyped
-
-  def add_by_file_path: (untyped file_path) -> untyped
-
-  def add_by_io: (untyped io, untyped file_type) -> untyped
-
-  def file_type: (untyped file_path) -> untyped
-end
-
 class CodeStatistics
   # nodoc:
   TEST_TYPES: ::Array[untyped]
@@ -706,6 +684,32 @@ class CodeStatistics
   def print_line: (untyped name, untyped statistics) -> untyped
 
   def print_code_test_stats: () -> untyped
+end
+
+class CodeStatisticsCalculator
+  # nodoc:
+  attr_reader lines: untyped
+
+  # nodoc:
+  attr_reader code_lines: untyped
+
+  # nodoc:
+  attr_reader classes: untyped
+
+  # nodoc:
+  attr_reader methods: untyped
+
+  PATTERNS: ::Hash[untyped, untyped]
+
+  def initialize: (?::Integer lines, ?::Integer code_lines, ?::Integer classes, ?::Integer methods) -> untyped
+
+  def add: (untyped code_statistics_calculator) -> untyped
+
+  def add_by_file_path: (untyped file_path) -> untyped
+
+  def add_by_io: (untyped io, untyped file_type) -> untyped
+
+  def file_type: (untyped file_path) -> untyped
 end
 
 module Rails
@@ -863,6 +867,16 @@ end
 
 module Rails
   module Command
+    module Spellchecker
+      def self.suggest: (untyped word, from: untyped from) -> untyped
+
+      def self.levenshtein_distance: (untyped str1, untyped str2) -> untyped
+    end
+  end
+end
+
+module Rails
+  module Command
     extend ActiveSupport::Autoload
 
     include Behavior
@@ -936,6 +950,8 @@ module Rails
 
     def environment: () -> untyped
 
+    alias environment? environment
+
     def set_environment!: () -> untyped
 
     def start: () -> untyped
@@ -991,6 +1007,18 @@ module Rails
 end
 
 module Rails
+  module Command
+    module Db
+      module System
+        class ChangeCommand < Base
+          def perform: () -> untyped
+        end
+      end
+    end
+  end
+end
+
+module Rails
   class DBConsole
     def self.start: (*untyped args) -> untyped
 
@@ -1015,18 +1043,6 @@ module Rails
       include EnvironmentArgument
 
       def perform: () -> untyped
-    end
-  end
-end
-
-module Rails
-  module Command
-    module Db
-      module System
-        class ChangeCommand < Base
-          def perform: () -> untyped
-        end
-      end
     end
   end
 end
@@ -1129,16 +1145,6 @@ module Rails
       def deprecation_warning: () -> (nil | untyped)
 
       def source_annotation_directories: () -> untyped
-    end
-  end
-end
-
-module Rails
-  module Command
-    module Spellchecker
-      def self.suggest: (untyped word, from: untyped from) -> untyped
-
-      def self.levenshtein_distance: (untyped str1, untyped str2) -> untyped
     end
   end
 end
@@ -1353,6 +1359,8 @@ module Rails
 
       def insert_before: (*untyped args) { () -> untyped } -> untyped
 
+      alias insert insert_before
+
       def insert_after: (*untyped args) { () -> untyped } -> untyped
 
       def swap: (*untyped args) { () -> untyped } -> untyped
@@ -1505,6 +1513,16 @@ module Rails
       def each: (*untyped args) { () -> untyped } -> untyped
 
       def -: (untyped others) -> untyped
+    end
+  end
+end
+
+module Rails
+  class Engine
+    class Updater
+      def self.generator: () -> untyped
+
+      def self.run: (untyped action) -> untyped
     end
   end
 end
@@ -1852,6 +1870,10 @@ module Rails
 
     attr_accessor isolated: untyped
 
+    alias self.isolated? self.isolated
+
+    alias self.engine_name self.railtie_name
+
     def self.inherited: (untyped base) -> untyped
 
     def self.find_root: (untyped from) -> untyped
@@ -1944,16 +1966,6 @@ module Rails
 end
 
 module Rails
-  class Engine
-    class Updater
-      def self.generator: () -> untyped
-
-      def self.run: (untyped action) -> untyped
-    end
-  end
-end
-
-module Rails
   # Returns the version of the currently loaded Rails as a <tt>Gem::Version</tt>
   def self.gem_version: () -> Gem::Version
 
@@ -1986,6 +1998,8 @@ module Rails
         def relative_existing_migration: () -> untyped
 
         def existing_migration: () -> untyped
+
+        alias exists? existing_migration
 
         def on_conflict_behavior: () { () -> untyped } -> untyped
 
@@ -2041,6 +2055,8 @@ module Rails
       #     "config.action_controller.asset_host = 'localhost:3000'"
       #   end
       def environment: (?untyped? data, ?::Hash[untyped, untyped] options) { () -> untyped } -> untyped
+
+      alias application environment
 
       # Run a command in git.
       #
@@ -2261,8 +2277,8 @@ module Rails
 
       def skip_action_text?: () -> untyped
 
-      # Note: It inherits unnamed class, but omitted
       class GemfileEntry
+        # Note: It inherits unnamed class, but omitted
         def initialize: (untyped name, untyped version, untyped comment, ?::Hash[untyped, untyped] options, ?bool commented_out) -> untyped
 
         def self.github: (untyped name, untyped github, ?untyped? branch, ?untyped? comment) -> untyped
@@ -2337,7 +2353,11 @@ module Rails
 
       def defined_app_const_base: () -> untyped
 
+      alias defined_app_const_base? defined_app_const_base
+
       def app_const_base: () -> untyped
+
+      alias camelized app_const_base
 
       def app_const: () -> untyped
 
@@ -2608,20 +2628,6 @@ end
 
 module Erb
   module Generators
-    class Base < Rails::Generators::NamedBase
-      def formats: () -> ::Array[untyped]
-
-      def format: () -> :html
-
-      def handler: () -> :erb
-
-      def filename_with_extensions: (untyped name, ?untyped file_format) -> untyped
-    end
-  end
-end
-
-module Erb
-  module Generators
     class ScaffoldGenerator < Base
       # :nodoc:
       # :nodoc:
@@ -2633,6 +2639,20 @@ module Erb
       def copy_view_files: () -> untyped
 
       def available_views: () -> ::Array["index" | "edit" | "show" | "new" | "_form"]
+    end
+  end
+end
+
+module Erb
+  module Generators
+    class Base < Rails::Generators::NamedBase
+      def formats: () -> ::Array[untyped]
+
+      def format: () -> :html
+
+      def handler: () -> :erb
+
+      def filename_with_extensions: (untyped name, ?untyped file_format) -> untyped
     end
   end
 end
@@ -3280,6 +3300,8 @@ module Rails
 
   module Generators
     class PluginGenerator < AppBase
+      alias plugin_path app_path
+
       def initialize: (*untyped args) -> untyped
 
       def create_root_files: () -> untyped
@@ -3346,6 +3368,8 @@ module Rails
 
       def application_definition: () -> untyped
 
+      alias store_application_definition! application_definition
+
       def get_builder_class: () -> untyped
 
       def rakefile_test_tasks: () -> ::String
@@ -3394,6 +3418,14 @@ end
 
 module Rails
   module Generators
+    class ScaffoldGenerator < ResourceGenerator
+      def handle_skip: () -> untyped
+    end
+  end
+end
+
+module Rails
+  module Generators
     class ScaffoldControllerGenerator < NamedBase
       # :nodoc:
       include ResourceHelpers
@@ -3403,14 +3435,6 @@ module Rails
       def permitted_params: () -> untyped
 
       def attachments?: (untyped name) -> untyped
-    end
-  end
-end
-
-module Rails
-  module Generators
-    class ScaffoldGenerator < ResourceGenerator
-      def handle_skip: () -> untyped
     end
   end
 end
@@ -3427,83 +3451,6 @@ module Rails
     class TaskGenerator < NamedBase
       def create_task_files: () -> untyped
     end
-  end
-end
-
-module Rails
-  module Generators
-    include Rails::Command::Behavior
-
-    DEFAULT_ALIASES: ::Hash[untyped, untyped]
-
-    DEFAULT_OPTIONS: ::Hash[untyped, untyped]
-
-    def self.configure!: (untyped config) -> untyped
-
-    def self.templates_path: () -> untyped
-
-    def self.aliases: () -> untyped
-
-    def self.options: () -> untyped
-
-    # Hold configured generators fallbacks. If a plugin developer wants a
-    # generator group to fallback to another group in case of missing generators,
-    # they can add a fallback.
-    #
-    # For example, shoulda is considered a test_framework and is an extension
-    # of test_unit. However, most part of shoulda generators are similar to
-    # test_unit ones.
-    #
-    # Shoulda then can tell generators to search for test_unit generators when
-    # some of them are not available by adding a fallback:
-    #
-    #   Rails::Generators.fallbacks[:shoulda] = :test_unit
-    def self.fallbacks: () -> untyped
-
-    # Configure generators for API only applications. It basically hides
-    # everything that is usually browser related, such as assets and session
-    # migration generators, and completely disable helpers and assets
-    # so generators such as scaffold won't create them.
-    def self.api_only!: () -> untyped
-
-    # Remove the color from output.
-    def self.no_color!: () -> untyped
-
-    # Returns an array of generator namespaces that are hidden.
-    # Generator namespaces may be hidden for a variety of reasons.
-    # Some are aliased such as "rails:migration" and can be
-    # invoked with the shorter "migration", others are private to other generators
-    # such as "css:scaffold".
-    def self.hidden_namespaces: () -> untyped
-
-    def self.hide_namespaces: (*untyped namespaces) -> untyped
-
-    # Show help message with available generators.
-    def self.help: (?::String command) -> untyped
-
-    def self.public_namespaces: () -> untyped
-
-    def self.print_generators: () -> untyped
-
-    def self.sorted_groups: () -> untyped
-
-    def self.find_by_namespace: (untyped name, ?untyped? base, ?untyped? context) -> untyped
-
-    # Receives a namespace, arguments and the behavior to invoke the generator.
-    # It's used as the default entry point for generate, destroy and update
-    # commands.
-    def self.invoke: (untyped namespace, ?untyped args, ?::Hash[untyped, untyped] config) -> untyped
-
-    def self.print_list: (untyped base, untyped namespaces) -> untyped
-
-    # Try fallbacks for the given base.
-    def self.invoke_fallbacks_for: (untyped name, untyped base) -> (nil | untyped)
-
-    def self.command_type: () -> untyped
-
-    def self.lookup_paths: () -> untyped
-
-    def self.file_lookup_paths: () -> untyped
   end
 end
 
@@ -3571,6 +3518,130 @@ module Rails
   end
 end
 
+module TestUnit
+  module Generators
+    class ControllerGenerator < Base
+      def create_test_files: () -> untyped
+    end
+  end
+end
+
+module TestUnit
+  module Generators
+    class GeneratorGenerator < Base
+      def create_generator_files: () -> untyped
+
+      def generator_path: () -> untyped
+    end
+  end
+end
+
+module TestUnit
+  module Generators
+    class HelperGenerator < Base
+    end
+  end
+end
+
+module TestUnit
+  module Generators
+    class IntegrationGenerator < Base
+      def create_test_files: () -> untyped
+
+      def file_name: () -> untyped
+    end
+  end
+end
+
+module TestUnit
+  module Generators
+    class JobGenerator < Base
+      def create_test_file: () -> untyped
+
+      def file_name: () -> untyped
+    end
+  end
+end
+
+module TestUnit
+  module Generators
+    class MailerGenerator < Base
+      def check_class_collision: () -> untyped
+
+      def create_test_files: () -> untyped
+
+      def create_preview_files: () -> untyped
+
+      def file_name: () -> untyped
+    end
+  end
+end
+
+module TestUnit
+  module Generators
+    class ModelGenerator < Base
+      # :nodoc:
+      # :nodoc:
+      # :nodoc:
+      RESERVED_YAML_KEYWORDS: ::Array[untyped]
+
+      def create_test_file: () -> untyped
+
+      def create_fixture_file: () -> untyped
+
+      def yaml_key_value: (untyped key, untyped value) -> untyped
+    end
+  end
+end
+
+module TestUnit
+  module Generators
+    class PluginGenerator < Base
+      def create_test_files: () -> untyped
+    end
+  end
+end
+
+module TestUnit
+  module Generators
+    class ScaffoldGenerator < Base
+      # :nodoc:
+      # :nodoc:
+      # :nodoc:
+      include Rails::Generators::ResourceHelpers
+
+      def create_test_files: () -> untyped
+
+      def fixture_name: () -> untyped
+
+      def attributes_string: () -> untyped
+
+      def attributes_hash: () -> (::Hash[untyped, untyped] | untyped)
+
+      def boolean?: (untyped name) -> untyped
+
+      def virtual?: (untyped name) -> untyped
+    end
+  end
+end
+
+module TestUnit
+  module Generators
+    class SystemGenerator < Base
+      def create_test_files: () -> untyped
+
+      def file_name: () -> untyped
+    end
+  end
+end
+
+module TestUnit
+  module Generators
+    class Base < Rails::Generators::NamedBase
+    end
+  end
+end
+
 module Rails
   module Generators
     module Testing
@@ -3595,11 +3666,15 @@ module Rails
         #   end
         def assert_file: (untyped relative, *untyped contents) { (untyped) -> untyped } -> untyped
 
+        alias assert_directory assert_file
+
         # Asserts a given file does not exist. You need to supply an absolute path or a
         # path relative to the configured destination:
         #
         #   assert_no_file "config/random.rb"
         def assert_no_file: (untyped relative) -> untyped
+
+        alias assert_no_directory assert_no_file
 
         # Asserts a given migration exists. You need to supply an absolute path or a
         # path relative to the configured destination:
@@ -3640,6 +3715,8 @@ module Rails
         #     end
         #   end
         def assert_instance_method: (untyped method, untyped content) { (untyped) -> untyped } -> untyped
+
+        alias assert_method assert_instance_method
 
         # Asserts the given attribute type gets translated to a field type
         # properly:
@@ -3733,140 +3810,83 @@ module Rails
   end
 end
 
-module TestUnit
+module Rails
   module Generators
-    class ControllerGenerator < Base
-      def create_test_files: () -> untyped
-    end
+    include Rails::Command::Behavior
+
+    DEFAULT_ALIASES: ::Hash[untyped, untyped]
+
+    DEFAULT_OPTIONS: ::Hash[untyped, untyped]
+
+    def self.configure!: (untyped config) -> untyped
+
+    def self.templates_path: () -> untyped
+
+    def self.aliases: () -> untyped
+
+    def self.options: () -> untyped
+
+    # Hold configured generators fallbacks. If a plugin developer wants a
+    # generator group to fallback to another group in case of missing generators,
+    # they can add a fallback.
+    #
+    # For example, shoulda is considered a test_framework and is an extension
+    # of test_unit. However, most part of shoulda generators are similar to
+    # test_unit ones.
+    #
+    # Shoulda then can tell generators to search for test_unit generators when
+    # some of them are not available by adding a fallback:
+    #
+    #   Rails::Generators.fallbacks[:shoulda] = :test_unit
+    def self.fallbacks: () -> untyped
+
+    # Configure generators for API only applications. It basically hides
+    # everything that is usually browser related, such as assets and session
+    # migration generators, and completely disable helpers and assets
+    # so generators such as scaffold won't create them.
+    def self.api_only!: () -> untyped
+
+    # Remove the color from output.
+    def self.no_color!: () -> untyped
+
+    # Returns an array of generator namespaces that are hidden.
+    # Generator namespaces may be hidden for a variety of reasons.
+    # Some are aliased such as "rails:migration" and can be
+    # invoked with the shorter "migration", others are private to other generators
+    # such as "css:scaffold".
+    def self.hidden_namespaces: () -> untyped
+
+    def self.hide_namespaces: (*untyped namespaces) -> untyped
+
+    alias self.hide_namespace self.hide_namespaces
+
+    # Show help message with available generators.
+    def self.help: (?::String command) -> untyped
+
+    def self.public_namespaces: () -> untyped
+
+    def self.print_generators: () -> untyped
+
+    def self.sorted_groups: () -> untyped
+
+    def self.find_by_namespace: (untyped name, ?untyped? base, ?untyped? context) -> untyped
+
+    # Receives a namespace, arguments and the behavior to invoke the generator.
+    # It's used as the default entry point for generate, destroy and update
+    # commands.
+    def self.invoke: (untyped namespace, ?untyped args, ?::Hash[untyped, untyped] config) -> untyped
+
+    def self.print_list: (untyped base, untyped namespaces) -> untyped
+
+    # Try fallbacks for the given base.
+    def self.invoke_fallbacks_for: (untyped name, untyped base) -> (nil | untyped)
+
+    def self.command_type: () -> untyped
+
+    def self.lookup_paths: () -> untyped
+
+    def self.file_lookup_paths: () -> untyped
   end
-end
-
-module TestUnit
-  module Generators
-    class GeneratorGenerator < Base
-      def create_generator_files: () -> untyped
-
-      def generator_path: () -> untyped
-    end
-  end
-end
-
-module TestUnit
-  module Generators
-    class HelperGenerator < Base
-    end
-  end
-end
-
-module TestUnit
-  module Generators
-    class IntegrationGenerator < Base
-      def create_test_files: () -> untyped
-
-      def file_name: () -> untyped
-    end
-  end
-end
-
-module TestUnit
-  module Generators
-    class JobGenerator < Base
-      def create_test_file: () -> untyped
-
-      def file_name: () -> untyped
-    end
-  end
-end
-
-module TestUnit
-  module Generators
-    class MailerGenerator < Base
-      def check_class_collision: () -> untyped
-
-      def create_test_files: () -> untyped
-
-      def create_preview_files: () -> untyped
-
-      def file_name: () -> untyped
-    end
-  end
-end
-
-module TestUnit
-  module Generators
-    class ModelGenerator < Base
-      # :nodoc:
-      # :nodoc:
-      # :nodoc:
-      RESERVED_YAML_KEYWORDS: ::Array[untyped]
-
-      def create_test_file: () -> untyped
-
-      def create_fixture_file: () -> untyped
-
-      def yaml_key_value: (untyped key, untyped value) -> untyped
-    end
-  end
-end
-
-module TestUnit
-  module Generators
-    class PluginGenerator < Base
-      def create_test_files: () -> untyped
-    end
-  end
-end
-
-module TestUnit
-  module Generators
-    class Base < Rails::Generators::NamedBase
-    end
-  end
-end
-
-module TestUnit
-  module Generators
-    class ScaffoldGenerator < Base
-      # :nodoc:
-      # :nodoc:
-      # :nodoc:
-      include Rails::Generators::ResourceHelpers
-
-      def create_test_files: () -> untyped
-
-      def fixture_name: () -> untyped
-
-      def attributes_string: () -> untyped
-
-      def attributes_hash: () -> (::Hash[untyped, untyped] | untyped)
-
-      def boolean?: (untyped name) -> untyped
-
-      def virtual?: (untyped name) -> untyped
-    end
-  end
-end
-
-module TestUnit
-  module Generators
-    class SystemGenerator < Base
-      def create_test_files: () -> untyped
-
-      def file_name: () -> untyped
-    end
-  end
-end
-
-class Rails::InfoController < Rails::ApplicationController
-  def index: () -> untyped
-
-  def properties: () -> untyped
-
-  def routes: () -> untyped
-
-  def match_route: () { (untyped) -> untyped } -> untyped
-
-  def with_leading_slash: (untyped path) -> untyped
 end
 
 module Rails
@@ -3883,8 +3903,22 @@ module Rails
 
     def self.to_s: () -> untyped
 
+    alias self.inspect self.to_s
+
     def self.to_html: () -> untyped
   end
+end
+
+class Rails::InfoController < Rails::ApplicationController
+  def index: () -> untyped
+
+  def properties: () -> untyped
+
+  def routes: () -> untyped
+
+  def match_route: () { (untyped) -> untyped } -> untyped
+
+  def with_leading_slash: (untyped path) -> untyped
 end
 
 module Rails
@@ -3913,6 +3947,8 @@ module Rails
 
     class Collection[T] < Array[T]
       include TSort
+
+      alias tsort_each_node each
 
       def tsort_each_child: (untyped initializer) { () -> untyped } -> untyped
 
@@ -4047,6 +4083,8 @@ module Rails
 
       def <<: (untyped path) -> untyped
 
+      alias push <<
+
       def concat: (untyped paths) -> untyped
 
       def unshift: (*untyped paths) -> untyped
@@ -4062,6 +4100,8 @@ module Rails
       def existent: () -> untyped
 
       def existent_directories: () -> untyped
+
+      alias to_a expanded
 
       def files_in: (untyped path) -> untyped
     end
@@ -4354,66 +4394,6 @@ module Rails
 end
 
 module Rails
-  extend ActiveSupport::Autoload
-
-  attr_writer application: untyped
-
-  attr_accessor app_class: untyped
-
-  attr_accessor cache: untyped
-
-  attr_accessor logger: untyped
-
-  def self.application: () -> untyped
-
-  # The Configuration instance used to configure the Rails environment
-  def self.configuration: () -> untyped
-
-  def self.backtrace_cleaner: () -> untyped
-
-  # Returns a Pathname object of the current Rails project,
-  # otherwise it returns +nil+ if there is no project:
-  #
-  #   Rails.root
-  #     # => #<Pathname:/Users/someuser/some/path/project>
-  def self.root: () -> untyped
-
-  # Returns the current Rails environment.
-  #
-  #   Rails.env # => "development"
-  #   Rails.env.development? # => true
-  #   Rails.env.production? # => false
-  def self.env: () -> untyped
-
-  # Sets the Rails environment.
-  #
-  #   Rails.env = "staging" # => "staging"
-  def self.env=: (untyped environment) -> untyped
-
-  # Returns all Rails groups for loading based on:
-  #
-  # * The Rails environment;
-  # * The environment variable RAILS_GROUPS;
-  # * The optional envs given as argument and the hash with group dependencies;
-  #
-  #   groups assets: [:development, :test]
-  #
-  #   # Returns
-  #   # => [:default, "development", :assets] for Rails.env == "development"
-  #   # => [:default, "production"]           for Rails.env == "production"
-  def self.groups: (*untyped groups) -> untyped
-
-  # Returns a Pathname object of the public folder of the current
-  # Rails project, otherwise it returns +nil+ if there is no project:
-  #
-  #   Rails.public_path
-  #     # => #<Pathname:/Users/someuser/some/path/project/public>
-  def self.public_path: () -> untyped
-
-  def self.autoloaders: () -> untyped
-end
-
-module Rails
   class Secrets
     # Greatly inspired by Ara T. Howard's magnificent sekrets gem. (trim non-ascii characters)
     # :nodoc:
@@ -4464,8 +4444,8 @@ module Rails
   # start with the tag optionally followed by a colon. Everything up to the end
   # of the line (or closing ERB comment tag) is considered to be their text.
   class SourceAnnotationExtractor
-    # Note: It inherits unnamed class, but omitted
     class Annotation
+      # Note: It inherits unnamed class, but omitted
       def self.directories: () -> untyped
 
       # Registers additional directories to be included
@@ -4634,6 +4614,66 @@ end
 
 class Rails::WelcomeController < Rails::ApplicationController
   def index: () -> nil
+end
+
+module Rails
+  extend ActiveSupport::Autoload
+
+  attr_writer application: untyped
+
+  attr_accessor app_class: untyped
+
+  attr_accessor cache: untyped
+
+  attr_accessor logger: untyped
+
+  def self.application: () -> untyped
+
+  # The Configuration instance used to configure the Rails environment
+  def self.configuration: () -> untyped
+
+  def self.backtrace_cleaner: () -> untyped
+
+  # Returns a Pathname object of the current Rails project,
+  # otherwise it returns +nil+ if there is no project:
+  #
+  #   Rails.root
+  #     # => #<Pathname:/Users/someuser/some/path/project>
+  def self.root: () -> untyped
+
+  # Returns the current Rails environment.
+  #
+  #   Rails.env # => "development"
+  #   Rails.env.development? # => true
+  #   Rails.env.production? # => false
+  def self.env: () -> untyped
+
+  # Sets the Rails environment.
+  #
+  #   Rails.env = "staging" # => "staging"
+  def self.env=: (untyped environment) -> untyped
+
+  # Returns all Rails groups for loading based on:
+  #
+  # * The Rails environment;
+  # * The environment variable RAILS_GROUPS;
+  # * The optional envs given as argument and the hash with group dependencies;
+  #
+  #   groups assets: [:development, :test]
+  #
+  #   # Returns
+  #   # => [:default, "development", :assets] for Rails.env == "development"
+  #   # => [:default, "production"]           for Rails.env == "production"
+  def self.groups: (*untyped groups) -> untyped
+
+  # Returns a Pathname object of the public folder of the current
+  # Rails project, otherwise it returns +nil+ if there is no project:
+  #
+  #   Rails.public_path
+  #     # => #<Pathname:/Users/someuser/some/path/project/public>
+  def self.public_path: () -> untyped
+
+  def self.autoloaders: () -> untyped
 end
 
 class Object

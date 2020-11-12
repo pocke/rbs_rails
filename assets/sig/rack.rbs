@@ -4,6 +4,7 @@ module Rack
 
   class Response
     module Helpers
+      def location: () -> untyped
     end
   end
 

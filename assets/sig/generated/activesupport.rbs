@@ -94,6 +94,8 @@ module ActiveSupport
     # against it. Filters run first, then silencers.
     def clean: (untyped backtrace, ?::Symbol kind) -> untyped
 
+    alias filter clean
+
     # Adds a filter from the block provided. Each line in the backtrace will be
     # mapped against this filter.
     #
@@ -415,6 +417,299 @@ module ActiveSupport
 end
 
 module ActiveSupport
+  module Cache
+    module ConnectionPoolLike
+      def with: () { (untyped) -> untyped } -> untyped
+    end
+
+    # Redis cache store.
+    #
+    # Deployment note: Take care to use a *dedicated Redis cache* rather
+    # than pointing this at your existing Redis server. It won't cope well
+    # with mixed usage patterns and it won't expire cache entries by default.
+    #
+    # Redis cache server setup guide: https://redis.io/topics/lru-cache
+    #
+    # * Supports vanilla Redis, hiredis, and Redis::Distributed.
+    # * Supports Memcached-like sharding across Redises with Redis::Distributed.
+    # * Fault tolerant. If the Redis server is unavailable, no exceptions are
+    #   raised. Cache fetches are all misses and writes are dropped.
+    # * Local cache. Hot in-memory primary cache within block/middleware scope.
+    # * +read_multi+ and +write_multi+ support for Redis mget/mset. Use Redis::Distributed
+    #   4.0.1+ for distributed mget support.
+    # * +delete_matched+ support for Redis KEYS globs.
+    class RedisCacheStore < Store
+      # Keys are truncated with their own SHA2 digest if they exceed 1kB
+      MAX_KEY_BYTESIZE: ::Integer
+
+      DEFAULT_REDIS_OPTIONS: ::Hash[untyped, untyped]
+
+      DEFAULT_ERROR_HANDLER: untyped
+
+      # The maximum number of entries to receive per SCAN call.
+      SCAN_BATCH_SIZE: ::Integer
+
+      # Advertise cache versioning support.
+      def self.supports_cache_versioning?: () -> ::TrueClass
+
+      module LocalCacheWithRaw
+        def write_entry: (untyped key, untyped entry, **untyped options) -> untyped
+
+        def write_multi_entries: (untyped entries, **untyped options) -> untyped
+      end
+
+      def self.build_redis: (?redis: untyped? redis, ?url: untyped? url, **untyped redis_options) -> untyped
+
+      def self.build_redis_distributed_client: (urls: untyped urls, **untyped redis_options) -> untyped
+
+      def self.build_redis_client: (url: untyped url, **untyped redis_options) -> untyped
+
+      attr_reader redis_options: untyped
+
+      attr_reader max_key_bytesize: untyped
+
+      # Creates a new Redis cache store.
+      #
+      # Handles four options: :redis block, :redis instance, single :url
+      # string, and multiple :url strings.
+      #
+      #   Option  Class       Result
+      #   :redis  Proc    ->  options[:redis].call
+      #   :redis  Object  ->  options[:redis]
+      #   :url    String  ->  Redis.new(url: (trim non-ascii characters))
+      #   :url    Array   ->  Redis::Distributed.new([{ url: (trim non-ascii characters) }, { url: (trim non-ascii characters) }, (trim non-ascii characters)])
+      #
+      # No namespace is set by default. Provide one if the Redis cache
+      # server is shared with other apps: <tt>namespace: 'myapp-cache'</tt>.
+      #
+      # Compression is enabled by default with a 1kB threshold, so cached
+      # values larger than 1kB are automatically compressed. Disable by
+      # passing <tt>compress: false</tt> or change the threshold by passing
+      # <tt>compress_threshold: 4.kilobytes</tt>.
+      #
+      # No expiry is set on cache entries by default. Redis is expected to
+      # be configured with an eviction policy that automatically deletes
+      # least-recently or -frequently used keys when it reaches max memory.
+      # See https://redis.io/topics/lru-cache for cache server setup.
+      #
+      # Race condition TTL is not set by default. This can be used to avoid
+      # "thundering herd" cache writes when hot cache entries are expired.
+      # See <tt>ActiveSupport::Cache::Store#fetch</tt> for more.
+      def initialize: (?namespace: untyped? namespace, ?compress: bool compress, ?compress_threshold: untyped compress_threshold, ?expires_in: untyped? expires_in, ?race_condition_ttl: untyped? race_condition_ttl, ?error_handler: untyped error_handler, **untyped redis_options) -> untyped
+
+      def redis: () -> untyped
+
+      def inspect: () -> ::String
+
+      # Cache Store API implementation.
+      #
+      # Read multiple values at once. Returns a hash of requested keys ->
+      # fetched values.
+      def read_multi: (*untyped names) -> untyped
+
+      # Cache Store API implementation.
+      #
+      # Supports Redis KEYS glob patterns:
+      #
+      #   h?llo matches hello, hallo and hxllo
+      #   h*llo matches hllo and heeeello
+      #   h[ae]llo matches hello and hallo, but not hillo
+      #   h[^e]llo matches hallo, hbllo, ... but not hello
+      #   h[a-b]llo matches hallo and hbllo
+      #
+      # Use \ to escape special characters if you want to match them verbatim.
+      #
+      # See https://redis.io/commands/KEYS for more.
+      #
+      # Failsafe: Raises errors.
+      def delete_matched: (untyped matcher, ?untyped? options) -> untyped
+
+      # Cache Store API implementation.
+      #
+      # Increment a cached value. This method uses the Redis incr atomic
+      # operator and can only be used on values written with the :raw option.
+      # Calling it on a value not stored with :raw will initialize that value
+      # to zero.
+      #
+      # Failsafe: Raises errors.
+      def increment: (untyped name, ?::Integer amount, ?untyped? options) -> untyped
+
+      # Cache Store API implementation.
+      #
+      # Decrement a cached value. This method uses the Redis decr atomic
+      # operator and can only be used on values written with the :raw option.
+      # Calling it on a value not stored with :raw will initialize that value
+      # to zero.
+      #
+      # Failsafe: Raises errors.
+      def decrement: (untyped name, ?::Integer amount, ?untyped? options) -> untyped
+
+      # Cache Store API implementation.
+      #
+      # Removes expired entries. Handled natively by Redis least-recently-/
+      # least-frequently-used expiry, so manual cleanup is not supported.
+      def cleanup: (?untyped? options) -> untyped
+
+      # Clear the entire cache on all Redis servers. Safe to use on
+      # shared servers if the cache is namespaced.
+      #
+      # Failsafe: Raises errors.
+      def clear: (?untyped? options) -> untyped
+
+      def mget_capable?: () -> untyped
+
+      def mset_capable?: () -> untyped
+
+      def set_redis_capabilities: () -> untyped
+
+      # Store provider interface:
+      # Read an entry from the cache.
+      def read_entry: (untyped key, **untyped options) -> untyped
+
+      def read_multi_entries: (untyped names, **untyped options) -> untyped
+
+      def read_multi_mget: (*untyped names) -> (::Hash[untyped, untyped] | untyped)
+
+      # Write an entry to the cache.
+      #
+      # Requires Redis 2.6.12+ for extended SET options.
+      def write_entry: (untyped key, untyped entry, ?unless_exist: bool unless_exist, ?raw: bool raw, ?expires_in: untyped? expires_in, ?race_condition_ttl: untyped? race_condition_ttl, **untyped options) -> untyped
+
+      def write_key_expiry: (untyped client, untyped key, untyped options) -> untyped
+
+      # Delete an entry from the cache.
+      def delete_entry: (untyped key, untyped options) -> untyped
+
+      # Nonstandard store provider API to write multiple values at once.
+      def write_multi_entries: (untyped entries, ?expires_in: untyped? expires_in, **untyped options) -> untyped
+
+      # Truncate keys that exceed 1kB.
+      def normalize_key: (untyped key, untyped options) -> untyped
+
+      def truncate_key: (untyped key) -> untyped
+
+      def deserialize_entry: (untyped serialized_entry, raw: untyped raw) -> untyped
+
+      def serialize_entry: (untyped entry, ?raw: bool raw) -> untyped
+
+      def serialize_entries: (untyped entries, ?raw: bool raw) -> untyped
+
+      def failsafe: (untyped method, ?returning: untyped? returning) { () -> untyped } -> untyped
+
+      def handle_exception: (exception: untyped exception, method: untyped method, returning: untyped returning) -> untyped
+    end
+  end
+end
+
+module ActiveSupport
+  module Cache
+    module Strategy
+      # Caches that implement LocalCache will be backed by an in-memory cache for the
+      # duration of a block. Repeated calls to the cache for the same key will hit the
+      # in-memory cache for faster access.
+      module LocalCache
+        class LocalCacheRegistry
+          # Class for storing and registering the local caches.
+          # :nodoc:
+          extend ActiveSupport::PerThreadRegistry
+
+          def initialize: () -> untyped
+
+          def cache_for: (untyped local_cache_key) -> untyped
+
+          def set_cache_for: (untyped local_cache_key, untyped value) -> untyped
+
+          def self.set_cache_for: (untyped l, untyped v) -> untyped
+
+          def self.cache_for: (untyped l) -> untyped
+        end
+
+        # Simple memory backed cache. This cache is not thread safe and is intended only
+        # for serving as a temporary memory cache for a single thread.
+        class LocalStore < Store
+          def initialize: () -> untyped
+
+          def synchronize: () { () -> untyped } -> untyped
+
+          def clear: (?untyped? options) -> untyped
+
+          def read_entry: (untyped key, **untyped options) -> untyped
+
+          def read_multi_entries: (untyped keys, **untyped options) -> untyped
+
+          def write_entry: (untyped key, untyped value, **untyped options) -> ::TrueClass
+
+          def delete_entry: (untyped key, **untyped options) -> untyped
+
+          def fetch_entry: (untyped key, ?untyped? options) { () -> untyped } -> untyped
+        end
+
+        # Use a local cache for the duration of block.
+        def with_local_cache: () { () -> untyped } -> untyped
+
+        # Middleware class can be inserted as a Rack handler to be local cache for the
+        # duration of request.
+        def middleware: () -> untyped
+
+        def clear: (**untyped options) -> untyped
+
+        def cleanup: (**untyped options) -> untyped
+
+        def increment: (untyped name, ?::Integer amount, **untyped options) -> untyped
+
+        def decrement: (untyped name, ?::Integer amount, **untyped options) -> untyped
+
+        def read_entry: (untyped key, **untyped options) -> untyped
+
+        def read_multi_entries: (untyped keys, **untyped options) -> untyped
+
+        def write_entry: (untyped key, untyped entry, **untyped options) -> untyped
+
+        def delete_entry: (untyped key, **untyped options) -> untyped
+
+        def write_cache_value: (untyped name, untyped value, **untyped options) -> untyped
+
+        def local_cache_key: () -> untyped
+
+        def local_cache: () -> untyped
+
+        def bypass_local_cache: () { () -> untyped } -> untyped
+
+        def use_temporary_local_cache: (untyped temporary_cache) { () -> untyped } -> untyped
+      end
+    end
+  end
+end
+
+module ActiveSupport
+  module Cache
+    module Strategy
+      module LocalCache
+        class Middleware
+          # -
+          # This class wraps up local storage for middlewares. Only the middleware method should
+          # construct them.
+          # :nodoc:
+          attr_reader name: untyped
+
+          # -
+          # This class wraps up local storage for middlewares. Only the middleware method should
+          # construct them.
+          # :nodoc:
+          attr_reader local_cache_key: untyped
+
+          def initialize: (untyped name, untyped local_cache_key) -> untyped
+
+          def new: (untyped app) -> untyped
+
+          def call: (untyped env) -> untyped
+        end
+      end
+    end
+  end
+end
+
+module ActiveSupport
   # See ActiveSupport::Cache::Store for documentation.
   module Cache
     # These options mean something to all cache implementations. Individual cache
@@ -517,6 +812,8 @@ module ActiveSupport
       attr_reader silence: untyped
 
       attr_reader options: untyped
+
+      alias silence? silence
 
       def self.retrieve_pool_options: (untyped options) -> untyped
 
@@ -826,7 +1123,7 @@ module ActiveSupport
 
       # Creates a new cache entry for the specified value. Options supported are
       # +:compress+, +:compress_threshold+, +:version+ and +:expires_in+.
-      def initialize: (untyped value, ?expires_in: untyped? expires_in, ?version: untyped? version, ?compress_threshold: untyped compress_threshold, ?compress: bool compress) -> untyped
+      def initialize: (untyped value, ?compress: bool compress, ?compress_threshold: untyped compress_threshold, ?version: untyped? version, ?expires_in: untyped? expires_in) -> untyped
 
       def value: () -> untyped
 
@@ -853,299 +1150,6 @@ module ActiveSupport
       def compressed?: () -> untyped
 
       def uncompress: (untyped value) -> untyped
-    end
-  end
-end
-
-module ActiveSupport
-  module Cache
-    module ConnectionPoolLike
-      def with: () { (untyped) -> untyped } -> untyped
-    end
-
-    # Redis cache store.
-    #
-    # Deployment note: Take care to use a *dedicated Redis cache* rather
-    # than pointing this at your existing Redis server. It won't cope well
-    # with mixed usage patterns and it won't expire cache entries by default.
-    #
-    # Redis cache server setup guide: https://redis.io/topics/lru-cache
-    #
-    # * Supports vanilla Redis, hiredis, and Redis::Distributed.
-    # * Supports Memcached-like sharding across Redises with Redis::Distributed.
-    # * Fault tolerant. If the Redis server is unavailable, no exceptions are
-    #   raised. Cache fetches are all misses and writes are dropped.
-    # * Local cache. Hot in-memory primary cache within block/middleware scope.
-    # * +read_multi+ and +write_multi+ support for Redis mget/mset. Use Redis::Distributed
-    #   4.0.1+ for distributed mget support.
-    # * +delete_matched+ support for Redis KEYS globs.
-    class RedisCacheStore < Store
-      # Keys are truncated with their own SHA2 digest if they exceed 1kB
-      MAX_KEY_BYTESIZE: ::Integer
-
-      DEFAULT_REDIS_OPTIONS: ::Hash[untyped, untyped]
-
-      DEFAULT_ERROR_HANDLER: untyped
-
-      # The maximum number of entries to receive per SCAN call.
-      SCAN_BATCH_SIZE: ::Integer
-
-      # Advertise cache versioning support.
-      def self.supports_cache_versioning?: () -> ::TrueClass
-
-      module LocalCacheWithRaw
-        def write_entry: (untyped key, untyped entry, **untyped options) -> untyped
-
-        def write_multi_entries: (untyped entries, **untyped options) -> untyped
-      end
-
-      def self.build_redis: (?url: untyped? url, ?redis: untyped? redis, **untyped redis_options) -> untyped
-
-      def self.build_redis_distributed_client: (urls: untyped urls, **untyped redis_options) -> untyped
-
-      def self.build_redis_client: (url: untyped url, **untyped redis_options) -> untyped
-
-      attr_reader redis_options: untyped
-
-      attr_reader max_key_bytesize: untyped
-
-      # Creates a new Redis cache store.
-      #
-      # Handles four options: :redis block, :redis instance, single :url
-      # string, and multiple :url strings.
-      #
-      #   Option  Class       Result
-      #   :redis  Proc    ->  options[:redis].call
-      #   :redis  Object  ->  options[:redis]
-      #   :url    String  ->  Redis.new(url: (trim non-ascii characters))
-      #   :url    Array   ->  Redis::Distributed.new([{ url: (trim non-ascii characters) }, { url: (trim non-ascii characters) }, (trim non-ascii characters)])
-      #
-      # No namespace is set by default. Provide one if the Redis cache
-      # server is shared with other apps: <tt>namespace: 'myapp-cache'</tt>.
-      #
-      # Compression is enabled by default with a 1kB threshold, so cached
-      # values larger than 1kB are automatically compressed. Disable by
-      # passing <tt>compress: false</tt> or change the threshold by passing
-      # <tt>compress_threshold: 4.kilobytes</tt>.
-      #
-      # No expiry is set on cache entries by default. Redis is expected to
-      # be configured with an eviction policy that automatically deletes
-      # least-recently or -frequently used keys when it reaches max memory.
-      # See https://redis.io/topics/lru-cache for cache server setup.
-      #
-      # Race condition TTL is not set by default. This can be used to avoid
-      # "thundering herd" cache writes when hot cache entries are expired.
-      # See <tt>ActiveSupport::Cache::Store#fetch</tt> for more.
-      def initialize: (?error_handler: untyped error_handler, ?race_condition_ttl: untyped? race_condition_ttl, ?expires_in: untyped? expires_in, ?compress_threshold: untyped compress_threshold, ?compress: bool compress, ?namespace: untyped? namespace, **untyped redis_options) -> untyped
-
-      def redis: () -> untyped
-
-      def inspect: () -> ::String
-
-      # Cache Store API implementation.
-      #
-      # Read multiple values at once. Returns a hash of requested keys ->
-      # fetched values.
-      def read_multi: (*untyped names) -> untyped
-
-      # Cache Store API implementation.
-      #
-      # Supports Redis KEYS glob patterns:
-      #
-      #   h?llo matches hello, hallo and hxllo
-      #   h*llo matches hllo and heeeello
-      #   h[ae]llo matches hello and hallo, but not hillo
-      #   h[^e]llo matches hallo, hbllo, ... but not hello
-      #   h[a-b]llo matches hallo and hbllo
-      #
-      # Use \ to escape special characters if you want to match them verbatim.
-      #
-      # See https://redis.io/commands/KEYS for more.
-      #
-      # Failsafe: Raises errors.
-      def delete_matched: (untyped matcher, ?untyped? options) -> untyped
-
-      # Cache Store API implementation.
-      #
-      # Increment a cached value. This method uses the Redis incr atomic
-      # operator and can only be used on values written with the :raw option.
-      # Calling it on a value not stored with :raw will initialize that value
-      # to zero.
-      #
-      # Failsafe: Raises errors.
-      def increment: (untyped name, ?::Integer amount, ?untyped? options) -> untyped
-
-      # Cache Store API implementation.
-      #
-      # Decrement a cached value. This method uses the Redis decr atomic
-      # operator and can only be used on values written with the :raw option.
-      # Calling it on a value not stored with :raw will initialize that value
-      # to zero.
-      #
-      # Failsafe: Raises errors.
-      def decrement: (untyped name, ?::Integer amount, ?untyped? options) -> untyped
-
-      # Cache Store API implementation.
-      #
-      # Removes expired entries. Handled natively by Redis least-recently-/
-      # least-frequently-used expiry, so manual cleanup is not supported.
-      def cleanup: (?untyped? options) -> untyped
-
-      # Clear the entire cache on all Redis servers. Safe to use on
-      # shared servers if the cache is namespaced.
-      #
-      # Failsafe: Raises errors.
-      def clear: (?untyped? options) -> untyped
-
-      def mget_capable?: () -> untyped
-
-      def mset_capable?: () -> untyped
-
-      def set_redis_capabilities: () -> untyped
-
-      # Store provider interface:
-      # Read an entry from the cache.
-      def read_entry: (untyped key, **untyped options) -> untyped
-
-      def read_multi_entries: (untyped names, **untyped options) -> untyped
-
-      def read_multi_mget: (*untyped names) -> (::Hash[untyped, untyped] | untyped)
-
-      # Write an entry to the cache.
-      #
-      # Requires Redis 2.6.12+ for extended SET options.
-      def write_entry: (untyped key, untyped entry, ?race_condition_ttl: untyped? race_condition_ttl, ?expires_in: untyped? expires_in, ?raw: bool raw, ?unless_exist: bool unless_exist, **untyped options) -> untyped
-
-      def write_key_expiry: (untyped client, untyped key, untyped options) -> untyped
-
-      # Delete an entry from the cache.
-      def delete_entry: (untyped key, untyped options) -> untyped
-
-      # Nonstandard store provider API to write multiple values at once.
-      def write_multi_entries: (untyped entries, ?expires_in: untyped? expires_in, **untyped options) -> untyped
-
-      # Truncate keys that exceed 1kB.
-      def normalize_key: (untyped key, untyped options) -> untyped
-
-      def truncate_key: (untyped key) -> untyped
-
-      def deserialize_entry: (untyped serialized_entry, raw: untyped raw) -> untyped
-
-      def serialize_entry: (untyped entry, ?raw: bool raw) -> untyped
-
-      def serialize_entries: (untyped entries, ?raw: bool raw) -> untyped
-
-      def failsafe: (untyped method, ?returning: untyped? returning) { () -> untyped } -> untyped
-
-      def handle_exception: (returning: untyped returning, method: untyped method, exception: untyped exception) -> untyped
-    end
-  end
-end
-
-module ActiveSupport
-  module Cache
-    module Strategy
-      module LocalCache
-        class Middleware
-          # -
-          # This class wraps up local storage for middlewares. Only the middleware method should
-          # construct them.
-          # :nodoc:
-          attr_reader name: untyped
-
-          # -
-          # This class wraps up local storage for middlewares. Only the middleware method should
-          # construct them.
-          # :nodoc:
-          attr_reader local_cache_key: untyped
-
-          def initialize: (untyped name, untyped local_cache_key) -> untyped
-
-          def new: (untyped app) -> untyped
-
-          def call: (untyped env) -> untyped
-        end
-      end
-    end
-  end
-end
-
-module ActiveSupport
-  module Cache
-    module Strategy
-      # Caches that implement LocalCache will be backed by an in-memory cache for the
-      # duration of a block. Repeated calls to the cache for the same key will hit the
-      # in-memory cache for faster access.
-      module LocalCache
-        class LocalCacheRegistry
-          # Class for storing and registering the local caches.
-          # :nodoc:
-          extend ActiveSupport::PerThreadRegistry
-
-          def initialize: () -> untyped
-
-          def cache_for: (untyped local_cache_key) -> untyped
-
-          def set_cache_for: (untyped local_cache_key, untyped value) -> untyped
-
-          def self.set_cache_for: (untyped l, untyped v) -> untyped
-
-          def self.cache_for: (untyped l) -> untyped
-        end
-
-        # Simple memory backed cache. This cache is not thread safe and is intended only
-        # for serving as a temporary memory cache for a single thread.
-        class LocalStore < Store
-          def initialize: () -> untyped
-
-          def synchronize: () { () -> untyped } -> untyped
-
-          def clear: (?untyped? options) -> untyped
-
-          def read_entry: (untyped key, **untyped options) -> untyped
-
-          def read_multi_entries: (untyped keys, **untyped options) -> untyped
-
-          def write_entry: (untyped key, untyped value, **untyped options) -> ::TrueClass
-
-          def delete_entry: (untyped key, **untyped options) -> untyped
-
-          def fetch_entry: (untyped key, ?untyped? options) { () -> untyped } -> untyped
-        end
-
-        # Use a local cache for the duration of block.
-        def with_local_cache: () { () -> untyped } -> untyped
-
-        # Middleware class can be inserted as a Rack handler to be local cache for the
-        # duration of request.
-        def middleware: () -> untyped
-
-        def clear: (**untyped options) -> untyped
-
-        def cleanup: (**untyped options) -> untyped
-
-        def increment: (untyped name, ?::Integer amount, **untyped options) -> untyped
-
-        def decrement: (untyped name, ?::Integer amount, **untyped options) -> untyped
-
-        def read_entry: (untyped key, **untyped options) -> untyped
-
-        def read_multi_entries: (untyped keys, **untyped options) -> untyped
-
-        def write_entry: (untyped key, untyped entry, **untyped options) -> untyped
-
-        def delete_entry: (untyped key, **untyped options) -> untyped
-
-        def write_cache_value: (untyped name, untyped value, **untyped options) -> untyped
-
-        def local_cache_key: () -> untyped
-
-        def local_cache: () -> untyped
-
-        def bypass_local_cache: () { () -> untyped } -> untyped
-
-        def use_temporary_local_cache: (untyped temporary_cache) { () -> untyped } -> untyped
-      end
     end
   end
 end
@@ -1248,7 +1252,7 @@ module ActiveSupport
     end
 
     module Filters
-      class Environment < ::Struct[untyped]
+      class Environment[T] < ::Struct[T]
         attr_accessor target(): untyped
 
         attr_accessor halted(): untyped
@@ -1293,7 +1297,7 @@ module ActiveSupport
 
       def raw_filter: () -> untyped
 
-      def merge_conditional_options: (untyped chain, unless_option: untyped unless_option, if_option: untyped if_option) -> untyped
+      def merge_conditional_options: (untyped chain, if_option: untyped if_option, unless_option: untyped unless_option) -> untyped
 
       def matches?: (untyped _kind, untyped _filter) -> untyped
 
@@ -1752,7 +1756,7 @@ module ActiveSupport
       # is awaiting a lock, it is not running any other code. With
       # +purpose+ matching, it is possible to yield only to other
       # threads whose activity will not interfere.
-      def start_exclusive: (?no_wait: bool no_wait, ?compatible: untyped compatible, ?purpose: untyped? purpose) -> untyped
+      def start_exclusive: (?purpose: untyped? purpose, ?compatible: untyped compatible, ?no_wait: bool no_wait) -> untyped
 
       # Relinquish the exclusive lock. Must only be called by the thread
       # that called start_exclusive (and currently holds the lock).
@@ -1768,7 +1772,7 @@ module ActiveSupport
       # the block.
       #
       # See +start_exclusive+ for other options.
-      def exclusive: (?no_wait: bool no_wait, ?after_compatible: untyped after_compatible, ?compatible: untyped compatible, ?purpose: untyped? purpose) { () -> untyped } -> untyped
+      def exclusive: (?purpose: untyped? purpose, ?compatible: untyped compatible, ?after_compatible: untyped after_compatible, ?no_wait: bool no_wait) { () -> untyped } -> untyped
 
       # Execute the supplied block while holding the Share lock.
       def sharing: () { () -> untyped } -> untyped
@@ -1776,7 +1780,7 @@ module ActiveSupport
       # Temporarily give up all held Share locks while executing the
       # supplied block, allowing any +compatible+ exclusive lock request
       # to proceed.
-      def yield_shares: (?block_share: bool block_share, ?compatible: untyped compatible, ?purpose: untyped? purpose) { () -> untyped } -> untyped
+      def yield_shares: (?purpose: untyped? purpose, ?compatible: untyped compatible, ?block_share: bool block_share) { () -> untyped } -> untyped
 
       # Must be called within synchronize
       def busy_for_exclusive?: (untyped purpose) -> untyped
@@ -1808,7 +1812,7 @@ module ActiveSupport
 
       def configure: () { (untyped) -> untyped } -> untyped
 
-      def config_accessor: (*untyped names, ?instance_accessor: bool instance_accessor, ?instance_writer: bool instance_writer, ?instance_reader: bool instance_reader) { () -> untyped } -> untyped
+      def config_accessor: (*untyped names, ?instance_reader: bool instance_reader, ?instance_writer: bool instance_writer, ?instance_accessor: bool instance_accessor) { () -> untyped } -> untyped
     end
 
     # Reads and writes attributes from a configuration <tt>OrderedHash</tt>.
@@ -1967,6 +1971,8 @@ class Array[unchecked out Elem]
   #   [1,2].to_formatted_s          # => "[1, 2]"
   def to_formatted_s: (?::Symbol format) -> untyped
 
+  alias to_default_s to_s
+
   # Returns a string that represents the array in XML by invoking +to_xml+
   # on each element. Active Record collections delegate their representation
   # in XML to this method.
@@ -2045,6 +2051,16 @@ class Array[unchecked out Elem]
   def to_xml: (?::Hash[untyped, untyped] options) { (untyped) -> untyped } -> untyped
 end
 
+class Array[unchecked out Elem]
+  # Removes and returns the elements for which the block returns a true value.
+  # If no block is given, an Enumerator is returned instead.
+  #
+  #   numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  #   odd_numbers = numbers.extract! { |number| number.odd? } # => [1, 3, 5, 7, 9]
+  #   numbers # => [0, 2, 4, 6, 8]
+  def extract!: () { (untyped) -> untyped } -> untyped
+end
+
 class Hash[unchecked out K, unchecked out V]
   # By default, only instances of Hash itself are extractable.
   # Subclasses of Hash may implement this method and return
@@ -2065,16 +2081,6 @@ class Array[unchecked out Elem]
   #   options(1, 2)        # => {}
   #   options(1, 2, a: :b) # => {:a=>:b}
   def extract_options!: () -> untyped
-end
-
-class Array[unchecked out Elem]
-  # Removes and returns the elements for which the block returns a true value.
-  # If no block is given, an Enumerator is returned instead.
-  #
-  #   numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-  #   odd_numbers = numbers.extract! { |number| number.odd? } # => [1, 3, 5, 7, 9]
-  #   numbers # => [0, 2, 4, 6, 8]
-  def extract!: () { (untyped) -> untyped } -> untyped
 end
 
 class Array[unchecked out Elem]
@@ -2136,7 +2142,7 @@ class Array[unchecked out Elem]
   #
   #   pets.any?(:cat, :ferret)  # => true
   #   pets.any?(:ferret, :alligator)  # => false
-  def inquiry: () -> untyped
+  def inquiry: () -> ActiveSupport::ArrayInquirer[Elem]
 end
 
 class Array[unchecked out Elem]
@@ -2265,7 +2271,7 @@ class Class
   # To set a default value for the attribute, pass <tt>default:</tt>, like so:
   #
   #   class_attribute :settings, default: {}
-  def class_attribute: (*untyped attrs, ?default: untyped? default, ?instance_predicate: bool instance_predicate, ?instance_writer: untyped instance_writer, ?instance_reader: untyped instance_reader, ?instance_accessor: bool instance_accessor) -> untyped
+  def class_attribute: (*untyped attrs, ?instance_accessor: bool instance_accessor, ?instance_reader: untyped instance_reader, ?instance_writer: untyped instance_writer, ?instance_predicate: bool instance_predicate, ?default: untyped? default) -> untyped
 end
 
 class Class
@@ -2297,6 +2303,166 @@ end
 class Date
   # Duck-types as a Date-like class. See Object#acts_like?.
   def acts_like_date?: () -> ::TrueClass
+end
+
+class Date
+  # nodoc:
+  # No Date is blank:
+  #
+  #   Date.today.blank? # => false
+  #
+  # @return [false]
+  def blank?: () -> ::FalseClass
+end
+
+class Date
+  include DateAndTime::Calculations
+
+  attr_accessor beginning_of_week_default: untyped
+
+  # Returns the week start (e.g. :monday) for the current request, if this has been set (via Date.beginning_of_week=).
+  # If <tt>Date.beginning_of_week</tt> has not been set for the current request, returns the week start specified in <tt>config.beginning_of_week</tt>.
+  # If no config.beginning_of_week was specified, returns :monday.
+  def self.beginning_of_week: () -> untyped
+
+  # Sets <tt>Date.beginning_of_week</tt> to a week start (e.g. :monday) for current request/thread.
+  #
+  # This method accepts any of the following day symbols:
+  # :monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday
+  def self.beginning_of_week=: (untyped week_start) -> untyped
+
+  # Returns week start day symbol (e.g. :monday), or raises an +ArgumentError+ for invalid day symbol.
+  def self.find_beginning_of_week!: (untyped week_start) -> untyped
+
+  # Returns a new Date representing the date 1 day ago (i.e. yesterday's date).
+  def self.yesterday: () -> untyped
+
+  # Returns a new Date representing the date 1 day after today (i.e. tomorrow's date).
+  def self.tomorrow: () -> untyped
+
+  # Returns Time.zone.today when <tt>Time.zone</tt> or <tt>config.time_zone</tt> are set, otherwise just returns Date.today.
+  def self.current: () -> untyped
+
+  # Converts Date to a Time (or DateTime if necessary) with the time portion set to the beginning of the day (0:00)
+  # and then subtracts the specified number of seconds.
+  def ago: (untyped seconds) -> untyped
+
+  # Converts Date to a Time (or DateTime if necessary) with the time portion set to the beginning of the day (0:00)
+  # and then adds the specified number of seconds
+  def since: (untyped seconds) -> untyped
+
+  alias in since
+
+  # Converts Date to a Time (or DateTime if necessary) with the time portion set to the beginning of the day (0:00)
+  def beginning_of_day: () -> untyped
+
+  alias midnight beginning_of_day
+
+  alias at_midnight beginning_of_day
+
+  alias at_beginning_of_day beginning_of_day
+
+  # Converts Date to a Time (or DateTime if necessary) with the time portion set to the middle of the day (12:00)
+  def middle_of_day: () -> untyped
+
+  alias midday middle_of_day
+
+  alias noon middle_of_day
+
+  alias at_midday middle_of_day
+
+  alias at_noon middle_of_day
+
+  alias at_middle_of_day middle_of_day
+
+  # Converts Date to a Time (or DateTime if necessary) with the time portion set to the end of the day (23:59:59)
+  def end_of_day: () -> untyped
+
+  alias at_end_of_day end_of_day
+
+  def plus_with_duration: (untyped other) -> untyped
+
+  alias plus_without_duration +
+
+  def minus_with_duration: (untyped other) -> untyped
+
+  alias minus_without_duration -
+
+  # Provides precise Date calculations for years, months, and days. The +options+ parameter takes a hash with
+  # any of these keys: <tt>:years</tt>, <tt>:months</tt>, <tt>:weeks</tt>, <tt>:days</tt>.
+  def advance: (untyped options) -> untyped
+
+  # Returns a new Date where one or more of the elements have been changed according to the +options+ parameter.
+  # The +options+ parameter is a hash with a combination of these keys: <tt>:year</tt>, <tt>:month</tt>, <tt>:day</tt>.
+  #
+  #   Date.new(2007, 5, 12).change(day: 1)               # => Date.new(2007, 5, 1)
+  #   Date.new(2007, 5, 12).change(year: 2005, month: 1) # => Date.new(2005, 1, 12)
+  def change: (untyped options) -> untyped
+
+  # Allow Date to be compared with Time by converting to DateTime and relying on the <=> from there.
+  def compare_with_coercion: (untyped other) -> untyped
+
+  alias compare_without_coercion <=>
+end
+
+class Date
+  DATE_FORMATS: ::Hash[untyped, untyped]
+
+  # Convert to a formatted string. See DATE_FORMATS for predefined formats.
+  #
+  # This method is aliased to <tt>to_s</tt>.
+  #
+  #   date = Date.new(2007, 11, 10)       # => Sat, 10 Nov 2007
+  #
+  #   date.to_formatted_s(:db)            # => "2007-11-10"
+  #   date.to_s(:db)                      # => "2007-11-10"
+  #
+  #   date.to_formatted_s(:short)         # => "10 Nov"
+  #   date.to_formatted_s(:number)        # => "20071110"
+  #   date.to_formatted_s(:long)          # => "November 10, 2007"
+  #   date.to_formatted_s(:long_ordinal)  # => "November 10th, 2007"
+  #   date.to_formatted_s(:rfc822)        # => "10 Nov 2007"
+  #   date.to_formatted_s(:iso8601)       # => "2007-11-10"
+  #
+  # == Adding your own date formats to to_formatted_s
+  # You can add your own formats to the Date::DATE_FORMATS hash.
+  # Use the format name as the hash key and either a strftime string
+  # or Proc instance that takes a date argument as the value.
+  #
+  #   # config/initializers/date_formats.rb
+  #   Date::DATE_FORMATS[:month_and_year] = '%B %Y'
+  #   Date::DATE_FORMATS[:short_ordinal] = ->(date) { date.strftime("%B #{date.day.ordinalize}") }
+  def to_formatted_s: (?::Symbol format) -> untyped
+
+  alias to_default_s to_s
+
+  # Overrides the default inspect method with a human readable one, e.g., "Mon, 21 Feb 2005"
+  def readable_inspect: () -> untyped
+
+  # Converts a Date instance to a Time, where the time is set to the beginning of the day.
+  # The timezone can be either :local or :utc (default :local).
+  #
+  #   date = Date.new(2007, 11, 10)  # => Sat, 10 Nov 2007
+  #
+  #   date.to_time                   # => 2007-11-10 00:00:00 0800
+  #   date.to_time(:local)           # => 2007-11-10 00:00:00 0800
+  #
+  #   date.to_time(:utc)             # => 2007-11-10 00:00:00 UTC
+  #
+  # NOTE: The :local timezone is Ruby's *process* timezone, i.e. ENV['TZ'].
+  #       If the *application's* timezone is needed, then use +in_time_zone+ instead.
+  def to_time: (?::Symbol form) -> untyped
+
+  # Returns a string which represents the time in used time zone as DateTime
+  # defined by XML Schema:
+  #
+  #   date = Date.new(2015, 05, 23)  # => Sat, 23 May 2015
+  #   date.xmlschema                 # => "2015-05-23T00:00:00+04:00"
+  def xmlschema: () -> untyped
+end
+
+class Date
+  include DateAndTime::Zones
 end
 
 module DateAndTime
@@ -2367,6 +2533,8 @@ module DateAndTime
     #   now.beginning_of_month # => Mon, 01 Jun 2015 00:00:00 +0000
     def beginning_of_month: () -> untyped
 
+    alias at_beginning_of_month beginning_of_month
+
     # Returns a new date/time at the start of the quarter.
     #
     #   today = Date.today # => Fri, 10 Jul 2015
@@ -2377,6 +2545,8 @@ module DateAndTime
     #   now = DateTime.current # => Fri, 10 Jul 2015 18:41:29 +0000
     #   now.beginning_of_quarter # => Wed, 01 Jul 2015 00:00:00 +0000
     def beginning_of_quarter: () -> untyped
+
+    alias at_beginning_of_quarter beginning_of_quarter
 
     # Returns a new date/time at the end of the quarter.
     #
@@ -2389,6 +2559,8 @@ module DateAndTime
     #   now.end_of_quarter # => Wed, 30 Sep 2015 23:59:59 +0000
     def end_of_quarter: () -> untyped
 
+    alias at_end_of_quarter end_of_quarter
+
     # Returns a new date/time at the beginning of the year.
     #
     #   today = Date.today # => Fri, 10 Jul 2015
@@ -2399,6 +2571,8 @@ module DateAndTime
     #   now = DateTime.current # => Fri, 10 Jul 2015 18:41:29 +0000
     #   now.beginning_of_year # => Thu, 01 Jan 2015 00:00:00 +0000
     def beginning_of_year: () -> untyped
+
+    alias at_beginning_of_year beginning_of_year
 
     # Returns a new date/time representing the given day in the next week.
     #
@@ -2430,14 +2604,20 @@ module DateAndTime
     # DateTime objects have their time set to 0:00 unless +same_time+ is true.
     def prev_week: (?untyped start_day, ?same_time: bool same_time) -> untyped
 
+    alias last_week prev_week
+
     # Returns a new date/time representing the previous weekday.
     def prev_weekday: () -> untyped
+
+    alias last_weekday prev_weekday
 
     # Short-hand for months_ago(1).
     def last_month: () -> untyped
 
     # Short-hand for months_ago(3).
     def prev_quarter: () -> untyped
+
+    alias last_quarter prev_quarter
 
     # Short-hand for years_ago(1).
     def last_year: () -> untyped
@@ -2453,6 +2633,8 @@ module DateAndTime
     # +DateTime+ objects have their time set to 0:00.
     def beginning_of_week: (?untyped start_day) -> untyped
 
+    alias at_beginning_of_week beginning_of_week
+
     # Returns Monday of this week assuming that week starts on Monday.
     # +DateTime+ objects have their time set to 0:00.
     def monday: () -> untyped
@@ -2463,6 +2645,8 @@ module DateAndTime
     # DateTime objects have their time set to 23:59:59.
     def end_of_week: (?untyped start_day) -> untyped
 
+    alias at_end_of_week end_of_week
+
     # Returns Sunday of this week assuming that week starts on Monday.
     # +DateTime+ objects have their time set to 23:59:59.
     def sunday: () -> untyped
@@ -2471,9 +2655,13 @@ module DateAndTime
     # DateTime objects will have a time set to 23:59:59.
     def end_of_month: () -> untyped
 
+    alias at_end_of_month end_of_month
+
     # Returns a new date/time representing the end of the year.
     # DateTime objects will have a time set to 23:59:59.
     def end_of_year: () -> untyped
+
+    alias at_end_of_year end_of_year
 
     # Returns a Range representing the whole day of the current date/time.
     def all_day: () -> ::Range[untyped]
@@ -2541,134 +2729,6 @@ module DateAndTime
 
     def time_with_zone: (untyped time, untyped zone) -> untyped
   end
-end
-
-class Date
-  # nodoc:
-  # No Date is blank:
-  #
-  #   Date.today.blank? # => false
-  #
-  # @return [false]
-  def blank?: () -> ::FalseClass
-end
-
-class Date
-  include DateAndTime::Calculations
-
-  attr_accessor beginning_of_week_default: untyped
-
-  # Returns the week start (e.g. :monday) for the current request, if this has been set (via Date.beginning_of_week=).
-  # If <tt>Date.beginning_of_week</tt> has not been set for the current request, returns the week start specified in <tt>config.beginning_of_week</tt>.
-  # If no config.beginning_of_week was specified, returns :monday.
-  def self.beginning_of_week: () -> untyped
-
-  # Sets <tt>Date.beginning_of_week</tt> to a week start (e.g. :monday) for current request/thread.
-  #
-  # This method accepts any of the following day symbols:
-  # :monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday
-  def self.beginning_of_week=: (untyped week_start) -> untyped
-
-  # Returns week start day symbol (e.g. :monday), or raises an +ArgumentError+ for invalid day symbol.
-  def self.find_beginning_of_week!: (untyped week_start) -> untyped
-
-  # Returns a new Date representing the date 1 day ago (i.e. yesterday's date).
-  def self.yesterday: () -> untyped
-
-  # Returns a new Date representing the date 1 day after today (i.e. tomorrow's date).
-  def self.tomorrow: () -> untyped
-
-  # Returns Time.zone.today when <tt>Time.zone</tt> or <tt>config.time_zone</tt> are set, otherwise just returns Date.today.
-  def self.current: () -> untyped
-
-  # Converts Date to a Time (or DateTime if necessary) with the time portion set to the beginning of the day (0:00)
-  # and then subtracts the specified number of seconds.
-  def ago: (untyped seconds) -> untyped
-
-  # Converts Date to a Time (or DateTime if necessary) with the time portion set to the beginning of the day (0:00)
-  # and then adds the specified number of seconds
-  def since: (untyped seconds) -> untyped
-
-  # Converts Date to a Time (or DateTime if necessary) with the time portion set to the beginning of the day (0:00)
-  def beginning_of_day: () -> untyped
-
-  # Converts Date to a Time (or DateTime if necessary) with the time portion set to the middle of the day (12:00)
-  def middle_of_day: () -> untyped
-
-  # Converts Date to a Time (or DateTime if necessary) with the time portion set to the end of the day (23:59:59)
-  def end_of_day: () -> untyped
-
-  def plus_with_duration: (untyped other) -> untyped
-
-  def minus_with_duration: (untyped other) -> untyped
-
-  # Provides precise Date calculations for years, months, and days. The +options+ parameter takes a hash with
-  # any of these keys: <tt>:years</tt>, <tt>:months</tt>, <tt>:weeks</tt>, <tt>:days</tt>.
-  def advance: (untyped options) -> untyped
-
-  # Returns a new Date where one or more of the elements have been changed according to the +options+ parameter.
-  # The +options+ parameter is a hash with a combination of these keys: <tt>:year</tt>, <tt>:month</tt>, <tt>:day</tt>.
-  #
-  #   Date.new(2007, 5, 12).change(day: 1)               # => Date.new(2007, 5, 1)
-  #   Date.new(2007, 5, 12).change(year: 2005, month: 1) # => Date.new(2005, 1, 12)
-  def change: (untyped options) -> untyped
-
-  # Allow Date to be compared with Time by converting to DateTime and relying on the <=> from there.
-  def compare_with_coercion: (untyped other) -> untyped
-end
-
-class Date
-  DATE_FORMATS: ::Hash[untyped, untyped]
-
-  # Convert to a formatted string. See DATE_FORMATS for predefined formats.
-  #
-  # This method is aliased to <tt>to_s</tt>.
-  #
-  #   date = Date.new(2007, 11, 10)       # => Sat, 10 Nov 2007
-  #
-  #   date.to_formatted_s(:db)            # => "2007-11-10"
-  #   date.to_s(:db)                      # => "2007-11-10"
-  #
-  #   date.to_formatted_s(:short)         # => "10 Nov"
-  #   date.to_formatted_s(:number)        # => "20071110"
-  #   date.to_formatted_s(:long)          # => "November 10, 2007"
-  #   date.to_formatted_s(:long_ordinal)  # => "November 10th, 2007"
-  #   date.to_formatted_s(:rfc822)        # => "10 Nov 2007"
-  #   date.to_formatted_s(:iso8601)       # => "2007-11-10"
-  #
-  # == Adding your own date formats to to_formatted_s
-  # You can add your own formats to the Date::DATE_FORMATS hash.
-  # Use the format name as the hash key and either a strftime string
-  # or Proc instance that takes a date argument as the value.
-  #
-  #   # config/initializers/date_formats.rb
-  #   Date::DATE_FORMATS[:month_and_year] = '%B %Y'
-  #   Date::DATE_FORMATS[:short_ordinal] = ->(date) { date.strftime("%B #{date.day.ordinalize}") }
-  def to_formatted_s: (?::Symbol format) -> untyped
-
-  # Overrides the default inspect method with a human readable one, e.g., "Mon, 21 Feb 2005"
-  def readable_inspect: () -> untyped
-
-  # Converts a Date instance to a Time, where the time is set to the beginning of the day.
-  # The timezone can be either :local or :utc (default :local).
-  #
-  #   date = Date.new(2007, 11, 10)  # => Sat, 10 Nov 2007
-  #
-  #   date.to_time                   # => 2007-11-10 00:00:00 0800
-  #   date.to_time(:local)           # => 2007-11-10 00:00:00 0800
-  #
-  #   date.to_time(:utc)             # => 2007-11-10 00:00:00 UTC
-  #
-  # NOTE: The :local timezone is Ruby's *process* timezone, i.e. ENV['TZ'].
-  #       If the *application's* timezone is needed, then use +in_time_zone+ instead.
-  def to_time: (?::Symbol form) -> untyped
-
-  # Returns a string which represents the time in used time zone as DateTime
-  # defined by XML Schema:
-  #
-  #   date = Date.new(2015, 05, 23)  # => Sat, 23 May 2015
-  #   date.xmlschema                 # => "2015-05-23T00:00:00+04:00"
-  def xmlschema: () -> untyped
 end
 
 class DateTime
@@ -2742,35 +2802,71 @@ class DateTime
   # months_since instead!
   def since: (untyped seconds) -> untyped
 
+  alias in since
+
   # Returns a new DateTime representing the start of the day (0:00).
   def beginning_of_day: () -> untyped
+
+  alias midnight beginning_of_day
+
+  alias at_midnight beginning_of_day
+
+  alias at_beginning_of_day beginning_of_day
 
   # Returns a new DateTime representing the middle of the day (12:00)
   def middle_of_day: () -> untyped
 
+  alias midday middle_of_day
+
+  alias noon middle_of_day
+
+  alias at_midday middle_of_day
+
+  alias at_noon middle_of_day
+
+  alias at_middle_of_day middle_of_day
+
   # Returns a new DateTime representing the end of the day (23:59:59).
   def end_of_day: () -> untyped
+
+  alias at_end_of_day end_of_day
 
   # Returns a new DateTime representing the start of the hour (hh:00:00).
   def beginning_of_hour: () -> untyped
 
+  alias at_beginning_of_hour beginning_of_hour
+
   # Returns a new DateTime representing the end of the hour (hh:59:59).
   def end_of_hour: () -> untyped
+
+  alias at_end_of_hour end_of_hour
 
   # Returns a new DateTime representing the start of the minute (hh:mm:00).
   def beginning_of_minute: () -> untyped
 
+  alias at_beginning_of_minute beginning_of_minute
+
   # Returns a new DateTime representing the end of the minute (hh:mm:59).
   def end_of_minute: () -> untyped
 
+  alias at_end_of_minute end_of_minute
+
   # Returns a <tt>Time</tt> instance of the simultaneous time in the system timezone.
   def localtime: (?untyped? utc_offset) -> untyped
+
+  alias getlocal localtime
 
   # Returns a <tt>Time</tt> instance of the simultaneous time in the UTC timezone.
   #
   #   DateTime.civil(2005, 2, 21, 10, 11, 12, Rational(-6, 24))     # => Mon, 21 Feb 2005 10:11:12 -0600
   #   DateTime.civil(2005, 2, 21, 10, 11, 12, Rational(-6, 24)).utc # => Mon, 21 Feb 2005 16:11:12 UTC
   def utc: () -> untyped
+
+  alias getgm utc
+
+  alias getutc utc
+
+  alias gmtime utc
 
   # Returns +true+ if <tt>offset == 0</tt>.
   def utc?: () -> untyped
@@ -2821,6 +2917,8 @@ class DateTime
   #   Time::DATE_FORMATS[:short_ordinal] = lambda { |time| time.strftime("%B #{time.day.ordinalize}") }
   def to_formatted_s: (?::Symbol format) -> untyped
 
+  alias to_default_s to_s
+
   # Returns a formatted string of the offset from UTC, or an alternative
   # string if the time zone is already UTC.
   #
@@ -2858,10 +2956,6 @@ class DateTime
   def seconds_since_unix_epoch: () -> untyped
 end
 
-class Date
-  include DateAndTime::Zones
-end
-
 module Digest
   module UUID
     DNS_NAMESPACE: ::String
@@ -2893,6 +2987,30 @@ end
 
 module Enumerable[unchecked out Elem, out Return]
   INDEX_WITH_DEFAULT: untyped
+
+  # We can't use Refinements here because Refinements with Module which will be prepended
+  # doesn't work well https://bugs.ruby-lang.org/issues/13446
+  alias _original_sum_with_required_identity sum
+
+  # Calculates a sum from the elements.
+  #
+  #  payments.sum { |p| p.price * p.tax_rate }
+  #  payments.sum(&:price)
+  #
+  # The latter is a shortcut for:
+  #
+  #  payments.inject(0) { |sum, p| sum + p.price }
+  #
+  # It can also calculate the sum without the use of a block.
+  #
+  #  [5, 15, 10].sum # => 30
+  #  ['foo', 'bar'].sum # => "foobar"
+  #  [[1, 2], [3, 1, 5]].sum # => [1, 2, 3, 1, 5]
+  #
+  # The default sum of an empty list is zero. You can override this default:
+  #
+  #  [].sum(Payment.new(0)) { |i| i.amount } # => Payment.new(0)
+  def sum: (?untyped? identity) { () -> untyped } -> untyped
 
   # Convert an enumerable to a hash keying it by the block return value.
   #
@@ -2953,6 +3071,19 @@ module Enumerable[unchecked out Elem, out Return]
   #   [{ id: 1, name: "David" }, { id: 2, name: "Rafael" }].pluck(:id, :name)
   #   # => [[1, "David"], [2, "Rafael"]]
   def pluck: (*untyped keys) -> untyped
+end
+
+class Range[out Elem]
+  # nodoc:
+  # Optimize range sum to use arithmetic progression if a block is not given and
+  # we have a range of numeric values.
+  def sum: (?untyped? identity) -> untyped
+end
+
+class Array[unchecked out Elem]
+  # nodoc:
+  # Array#sum was added in Ruby 2.4 but it only works with Numeric elements.
+  def sum: (?untyped? init) { () -> untyped } -> untyped
 end
 
 class File
@@ -3186,6 +3317,18 @@ class Hash[unchecked out K, unchecked out V]
   #
   #   { a: 1 }.with_indifferent_access['a'] # => 1
   def with_indifferent_access: () -> ActiveSupport::HashWithIndifferentAccess[K, V]
+
+  # Called when object is nested under an object that receives
+  # #with_indifferent_access. This method will be called on the current object
+  # by the enclosing object and is aliased to #with_indifferent_access by
+  # default. Subclasses of Hash may overwrite this method to return +self+ if
+  # converting to an <tt>ActiveSupport::HashWithIndifferentAccess</tt> would not be
+  # desirable.
+  #
+  #   b = { b: 1 }
+  #   { a: b }.with_indifferent_access['a'] # calls b.nested_under_indifferent_access
+  #   # => {"b"=>1}
+  alias nested_under_indifferent_access with_indifferent_access
 end
 
 class Hash[unchecked out K, unchecked out V]
@@ -3210,9 +3353,13 @@ class Hash[unchecked out K, unchecked out V]
   #   # => {:name=>"Rob", :age=>"28"}
   def symbolize_keys: () -> untyped
 
+  alias to_options symbolize_keys
+
   # Destructively converts all keys to symbols, as long as they respond
   # to +to_sym+. Same as +symbolize_keys+, but modifies +self+.
   def symbolize_keys!: () -> untyped
+
+  alias to_options! symbolize_keys!
 
   # Validates all keys in a hash match <tt>*valid_keys</tt>, raising
   # +ArgumentError+ on a mismatch.
@@ -3289,8 +3436,14 @@ class Hash[unchecked out K, unchecked out V]
   # with default values.
   def reverse_merge: (untyped other_hash) -> untyped
 
+  alias with_defaults reverse_merge
+
   # Destructive +reverse_merge+.
   def reverse_merge!: (untyped other_hash) -> untyped
+
+  alias reverse_update reverse_merge!
+
+  alias with_defaults! reverse_merge!
 end
 
 class Hash[unchecked out K, unchecked out V]
@@ -3348,10 +3501,14 @@ class Integer
   #   2.months # => 2 months
   def months: () -> untyped
 
+  alias month months
+
   # Returns a Duration instance matching the number of years provided.
   #
   #   2.years # => 2 years
   def years: () -> untyped
+
+  alias year years
 end
 
 module Kernel
@@ -3457,57 +3614,24 @@ class Module
   def anonymous?: () -> untyped
 end
 
-# Extends the module object with class/module and instance accessors for
-# class/module attributes, just like the native attr* accessors for instance
-# attributes, but does so on a per-thread basis.
-#
-# So the values are scoped within the Thread.current space under the class name
-# of the module.
 class Module
-  def thread_mattr_reader: (*untyped syms, ?instance_accessor: bool instance_accessor, ?instance_reader: bool instance_reader) -> untyped
+  # Declares an attribute reader backed by an internally-named instance variable.
+  def attr_internal_reader: (*untyped attrs) -> untyped
 
-  def thread_mattr_writer: (*untyped syms, ?instance_accessor: bool instance_accessor, ?instance_writer: bool instance_writer) -> untyped
+  # Declares an attribute writer backed by an internally-named instance variable.
+  def attr_internal_writer: (*untyped attrs) -> untyped
 
-  # Defines both class and instance accessors for class attributes.
-  #
-  #   class Account
-  #     thread_mattr_accessor :user
-  #   end
-  #
-  #   Account.user = "DHH"
-  #   Account.user     # => "DHH"
-  #   Account.new.user # => "DHH"
-  #
-  # If a subclass changes the value, the parent class' value is not changed.
-  # Similarly, if the parent class changes the value, the value of subclasses
-  # is not changed.
-  #
-  #   class Customer < Account
-  #   end
-  #
-  #   Customer.user = "Rafael"
-  #   Customer.user # => "Rafael"
-  #   Account.user  # => "DHH"
-  #
-  # To omit the instance writer method, pass <tt>instance_writer: false</tt>.
-  # To omit the instance reader method, pass <tt>instance_reader: false</tt>.
-  #
-  #   class Current
-  #     thread_mattr_accessor :user, instance_writer: false, instance_reader: false
-  #   end
-  #
-  #   Current.new.user = "DHH"  # => NoMethodError
-  #   Current.new.user          # => NoMethodError
-  #
-  # Or pass <tt>instance_accessor: false</tt>, to omit both instance methods.
-  #
-  #   class Current
-  #     thread_mattr_accessor :user, instance_accessor: false
-  #   end
-  #
-  #   Current.new.user = "DHH"  # => NoMethodError
-  #   Current.new.user          # => NoMethodError
-  def thread_mattr_accessor: (*untyped syms, ?instance_accessor: bool instance_accessor, ?instance_writer: bool instance_writer, ?instance_reader: bool instance_reader) -> untyped
+  # Declares an attribute reader and writer backed by an internally-named instance
+  # variable.
+  def attr_internal_accessor: (*untyped attrs) -> untyped
+
+  alias attr_internal attr_internal_accessor
+
+  attr_accessor attr_internal_naming_format: untyped
+
+  def attr_internal_ivar_name: (untyped attr) -> untyped
+
+  def attr_internal_define: (untyped attr_name, untyped `type`) -> untyped
 end
 
 # Extends the module object with class/module and instance accessors for
@@ -3558,7 +3682,9 @@ class Module
   #   end
   #
   #   Person.new.hair_colors # => [:brown, :black, :blonde, :red]
-  def mattr_reader: (*untyped syms, ?default: untyped? default, ?instance_accessor: bool instance_accessor, ?instance_reader: bool instance_reader) { () -> untyped } -> untyped
+  def mattr_reader: (*untyped syms, ?instance_reader: bool instance_reader, ?instance_accessor: bool instance_accessor, ?default: untyped? default) { () -> untyped } -> untyped
+
+  alias cattr_reader mattr_reader
 
   # Defines a class attribute and creates a class and instance writer methods to
   # allow assignment to the attribute. All class and instance methods created
@@ -3602,7 +3728,9 @@ class Module
   #   end
   #
   #   Person.class_variable_get("@@hair_colors") # => [:brown, :black, :blonde, :red]
-  def mattr_writer: (*untyped syms, ?default: untyped? default, ?instance_accessor: bool instance_accessor, ?instance_writer: bool instance_writer) { () -> untyped } -> untyped
+  def mattr_writer: (*untyped syms, ?instance_writer: bool instance_writer, ?instance_accessor: bool instance_accessor, ?default: untyped? default) { () -> untyped } -> untyped
+
+  alias cattr_writer mattr_writer
 
   # Defines both class and instance accessors for class attributes.
   # All class and instance methods created will be public, even if
@@ -3668,25 +3796,68 @@ class Module
   #   end
   #
   #   Person.class_variable_get("@@hair_colors") # => [:brown, :black, :blonde, :red]
-  def mattr_accessor: (*untyped syms, ?default: untyped? default, ?instance_accessor: bool instance_accessor, ?instance_writer: bool instance_writer, ?instance_reader: bool instance_reader) { () -> untyped } -> untyped
+  def mattr_accessor: (*untyped syms, ?instance_reader: bool instance_reader, ?instance_writer: bool instance_writer, ?instance_accessor: bool instance_accessor, ?default: untyped? default) { () -> untyped } -> untyped
+
+  alias cattr_accessor mattr_accessor
 end
 
+# Extends the module object with class/module and instance accessors for
+# class/module attributes, just like the native attr* accessors for instance
+# attributes, but does so on a per-thread basis.
+#
+# So the values are scoped within the Thread.current space under the class name
+# of the module.
 class Module
-  # Declares an attribute reader backed by an internally-named instance variable.
-  def attr_internal_reader: (*untyped attrs) -> untyped
+  def thread_mattr_reader: (*untyped syms, ?instance_reader: bool instance_reader, ?instance_accessor: bool instance_accessor) -> untyped
 
-  # Declares an attribute writer backed by an internally-named instance variable.
-  def attr_internal_writer: (*untyped attrs) -> untyped
+  alias thread_cattr_reader thread_mattr_reader
 
-  # Declares an attribute reader and writer backed by an internally-named instance
-  # variable.
-  def attr_internal_accessor: (*untyped attrs) -> untyped
+  def thread_mattr_writer: (*untyped syms, ?instance_writer: bool instance_writer, ?instance_accessor: bool instance_accessor) -> untyped
 
-  attr_accessor attr_internal_naming_format: untyped
+  alias thread_cattr_writer thread_mattr_writer
 
-  def attr_internal_ivar_name: (untyped attr) -> untyped
+  # Defines both class and instance accessors for class attributes.
+  #
+  #   class Account
+  #     thread_mattr_accessor :user
+  #   end
+  #
+  #   Account.user = "DHH"
+  #   Account.user     # => "DHH"
+  #   Account.new.user # => "DHH"
+  #
+  # If a subclass changes the value, the parent class' value is not changed.
+  # Similarly, if the parent class changes the value, the value of subclasses
+  # is not changed.
+  #
+  #   class Customer < Account
+  #   end
+  #
+  #   Customer.user = "Rafael"
+  #   Customer.user # => "Rafael"
+  #   Account.user  # => "DHH"
+  #
+  # To omit the instance writer method, pass <tt>instance_writer: false</tt>.
+  # To omit the instance reader method, pass <tt>instance_reader: false</tt>.
+  #
+  #   class Current
+  #     thread_mattr_accessor :user, instance_writer: false, instance_reader: false
+  #   end
+  #
+  #   Current.new.user = "DHH"  # => NoMethodError
+  #   Current.new.user          # => NoMethodError
+  #
+  # Or pass <tt>instance_accessor: false</tt>, to omit both instance methods.
+  #
+  #   class Current
+  #     thread_mattr_accessor :user, instance_accessor: false
+  #   end
+  #
+  #   Current.new.user = "DHH"  # => NoMethodError
+  #   Current.new.user          # => NoMethodError
+  def thread_mattr_accessor: (*untyped syms, ?instance_reader: bool instance_reader, ?instance_writer: bool instance_writer, ?instance_accessor: bool instance_accessor) -> untyped
 
-  def attr_internal_define: (untyped attr_name, untyped `type`) -> untyped
+  alias thread_cattr_accessor thread_mattr_accessor
 end
 
 class Module
@@ -3979,7 +4150,7 @@ class Module
   #   Foo.new("Bar").name # raises NoMethodError: undefined method `name'
   #
   # The target method must be public, otherwise it will raise +NoMethodError+.
-  def delegate: (*untyped methods, ?private: untyped? `private`, ?allow_nil: untyped? allow_nil, ?prefix: untyped? prefix, ?to: untyped? to) -> untyped
+  def delegate: (*untyped methods, ?to: untyped? to, ?prefix: untyped? prefix, ?allow_nil: untyped? allow_nil, ?private: untyped? `private`) -> untyped
 
   # When building decorators, a common pattern may emerge:
   #
@@ -4160,35 +4331,49 @@ class Numeric
   #   2.bytes # => 2
   def bytes: () -> untyped
 
+  alias byte bytes
+
   # Returns the number of bytes equivalent to the kilobytes provided.
   #
   #   2.kilobytes # => 2048
   def kilobytes: () -> untyped
+
+  alias kilobyte kilobytes
 
   # Returns the number of bytes equivalent to the megabytes provided.
   #
   #   2.megabytes # => 2_097_152
   def megabytes: () -> untyped
 
+  alias megabyte megabytes
+
   # Returns the number of bytes equivalent to the gigabytes provided.
   #
   #   2.gigabytes # => 2_147_483_648
   def gigabytes: () -> untyped
+
+  alias gigabyte gigabytes
 
   # Returns the number of bytes equivalent to the terabytes provided.
   #
   #   2.terabytes # => 2_199_023_255_552
   def terabytes: () -> untyped
 
+  alias terabyte terabytes
+
   # Returns the number of bytes equivalent to the petabytes provided.
   #
   #   2.petabytes # => 2_251_799_813_685_248
   def petabytes: () -> untyped
 
+  alias petabyte petabytes
+
   # Returns the number of bytes equivalent to the exabytes provided.
   #
   #   2.exabytes # => 2_305_843_009_213_693_952
   def exabytes: () -> untyped
+
+  alias exabyte exabytes
 end
 
 module ActiveSupport
@@ -4299,30 +4484,42 @@ class Numeric
   #   2.seconds # => 2 seconds
   def seconds: () -> untyped
 
+  alias second seconds
+
   # Returns a Duration instance matching the number of minutes provided.
   #
   #   2.minutes # => 2 minutes
   def minutes: () -> untyped
+
+  alias minute minutes
 
   # Returns a Duration instance matching the number of hours provided.
   #
   #   2.hours # => 2 hours
   def hours: () -> untyped
 
+  alias hour hours
+
   # Returns a Duration instance matching the number of days provided.
   #
   #   2.days # => 2 days
   def days: () -> untyped
+
+  alias day days
 
   # Returns a Duration instance matching the number of weeks provided.
   #
   #   2.weeks # => 2 weeks
   def weeks: () -> untyped
 
+  alias week weeks
+
   # Returns a Duration instance matching the number of fortnights provided.
   #
   #   2.fortnights # => 4 weeks
   def fortnights: () -> untyped
+
+  alias fortnight fortnights
 
   # Returns the number of milliseconds equivalent to the seconds provided.
   # Used with the standard time durations.
@@ -4408,9 +4605,23 @@ class TrueClass
 end
 
 class Array[unchecked out Elem]
+  # An array is blank if it's empty:
+  #
+  #   [].blank?      # => true
+  #   [1,2,3].blank? # => false
+  #
+  # @return [true, false]
+  alias blank? empty?
 end
 
 class Hash[unchecked out K, unchecked out V]
+  # A hash is blank if it's empty:
+  #
+  #   {}.blank?                # => true
+  #   { key: 'value' }.blank?  # => false
+  #
+  # @return [true, false]
+  alias blank? empty?
 end
 
 class String
@@ -4736,6 +4947,8 @@ class Hash[unchecked out K, unchecked out V]
   #
   # This method is also aliased as +to_param+.
   def to_query: (?untyped? namespace) -> untyped
+
+  alias to_param to_query
 end
 
 module ActiveSupport
@@ -4911,6 +5124,10 @@ module ActiveSupport
     #   # config/initializers/range_formats.rb
     #   Range::RANGE_FORMATS[:short] = ->(start, stop) { "Between #{start.to_s(:db)} and #{stop.to_s(:db)}" }
     def to_s: (?::Symbol format) -> untyped
+
+    alias to_default_s to_s
+
+    alias to_formatted_s to_s
   end
 end
 
@@ -5307,6 +5524,8 @@ class String
   #   'active_record/errors'.camelize(:lower) # => "activeRecord::Errors"
   def camelize: (?::Symbol first_letter) -> untyped
 
+  alias camelcase camelize
+
   # Capitalizes all the words and replaces some characters in the string to create
   # a nicer looking title. +titleize+ is meant for creating pretty output. It is not
   # used in the Rails internals.
@@ -5321,6 +5540,8 @@ class String
   #   'x-men: the last stand'.titleize                        # => "X Men: The Last Stand"
   #   'string_ending_with_id'.titleize(keep_id_suffix: true)  # => "String Ending With Id"
   def titleize: (?keep_id_suffix: bool keep_id_suffix) -> untyped
+
+  alias titlecase titleize
 
   # The reverse of +camelize+. Makes an underscored, lowercase form from the expression in the string.
   #
@@ -5388,7 +5609,7 @@ class String
   #
   #   <%= link_to(@person.name, person_path) %>
   #   # => <a href="/person/1-Donald-E-Knuth">Donald E. Knuth</a>
-  def parameterize: (?locale: untyped? locale, ?preserve_case: bool preserve_case, ?separator: ::String separator) -> untyped
+  def parameterize: (?separator: ::String separator, ?preserve_case: bool preserve_case, ?locale: untyped? locale) -> untyped
 
   # Creates the name of a table like Rails does for models to table names. This method
   # uses the +pluralize+ method on the last word in the string.
@@ -5423,7 +5644,7 @@ class String
   #   'author_id'.humanize(capitalize: false)       # => "author"
   #   '_id'.humanize                                # => "Id"
   #   'author_id'.humanize(keep_id_suffix: true)    # => "Author Id"
-  def humanize: (?keep_id_suffix: bool keep_id_suffix, ?capitalize: bool capitalize) -> untyped
+  def humanize: (?capitalize: bool capitalize, ?keep_id_suffix: bool keep_id_suffix) -> untyped
 
   # Converts just the first character to uppercase.
   #
@@ -5513,6 +5734,8 @@ class ERB
     #   # => is a &gt; 0 &amp; a &lt; 10?
     def html_escape: (untyped s) -> untyped
 
+    alias h html_escape
+
     def unwrapped_html_escape: (untyped s) -> untyped
 
     # A utility method for escaping HTML without affecting existing escaped entities.
@@ -5598,6 +5821,8 @@ module ActiveSupport
 
     UNSAFE_STRING_METHODS_WITH_BACKREF: ::Array[untyped]
 
+    alias original_concat concat
+
     # Raised when <tt>ActiveSupport::SafeBuffer#safe_concat</tt> is called on unsafe buffers.
     class SafeConcatError < StandardError
       def initialize: () -> untyped
@@ -5614,6 +5839,8 @@ module ActiveSupport
     def clone_empty: () -> untyped
 
     def concat: (untyped value) -> untyped
+
+    alias << concat
 
     def insert: (untyped index, untyped value) -> untyped
 
@@ -5653,6 +5880,9 @@ class String
 end
 
 class String
+  alias starts_with? start_with?
+
+  alias ends_with? end_with?
 end
 
 class String
@@ -5710,6 +5940,8 @@ class Time
   # Layers additional behavior on Time.at so that ActiveSupport::TimeWithZone and DateTime
   # instances can be used when called with a single argument
   def self.at_with_coercion: (*untyped args) -> untyped
+
+  alias self.at_without_coercion self.at
 
   # Creates a +Time+ instance from an RFC 3339 string.
   #
@@ -5772,43 +6004,81 @@ class Time
   # Returns a new Time representing the time a number of seconds since the instance time
   def since: (untyped seconds) -> untyped
 
+  alias in since
+
   # Returns a new Time representing the start of the day (0:00)
   def beginning_of_day: () -> untyped
+
+  alias midnight beginning_of_day
+
+  alias at_midnight beginning_of_day
+
+  alias at_beginning_of_day beginning_of_day
 
   # Returns a new Time representing the middle of the day (12:00)
   def middle_of_day: () -> untyped
 
+  alias midday middle_of_day
+
+  alias noon middle_of_day
+
+  alias at_midday middle_of_day
+
+  alias at_noon middle_of_day
+
+  alias at_middle_of_day middle_of_day
+
   # Returns a new Time representing the end of the day, 23:59:59.999999
   def end_of_day: () -> untyped
+
+  alias at_end_of_day end_of_day
 
   # Returns a new Time representing the start of the hour (x:00)
   def beginning_of_hour: () -> untyped
 
+  alias at_beginning_of_hour beginning_of_hour
+
   # Returns a new Time representing the end of the hour, x:59:59.999999
   def end_of_hour: () -> untyped
+
+  alias at_end_of_hour end_of_hour
 
   # Returns a new Time representing the start of the minute (x:xx:00)
   def beginning_of_minute: () -> untyped
 
+  alias at_beginning_of_minute beginning_of_minute
+
   # Returns a new Time representing the end of the minute, x:xx:59.999999
   def end_of_minute: () -> untyped
 
+  alias at_end_of_minute end_of_minute
+
   def plus_with_duration: (untyped other) -> untyped
 
+  alias plus_without_duration +
+
   def minus_with_duration: (untyped other) -> untyped
+
+  alias minus_without_duration -
 
   # Time#- can also be used to determine the number of seconds between two Time instances.
   # We're layering on additional behavior so that ActiveSupport::TimeWithZone instances
   # are coerced into values that Time#- will recognize
   def minus_with_coercion: (untyped other) -> untyped
 
+  alias minus_without_coercion -
+
   # Layers additional behavior on Time#<=> so that DateTime and ActiveSupport::TimeWithZone instances
   # can be chronologically compared with a Time
   def compare_with_coercion: (untyped other) -> untyped
 
+  alias compare_without_coercion <=>
+
   # Layers additional behavior on Time#eql? so that ActiveSupport::TimeWithZone instances
   # can be eql? to an equivalent Time
   def eql_with_coercion: (untyped other) -> untyped
+
+  alias eql_without_coercion eql?
 
   # Returns a new time the specified number of days ago.
   def prev_day: (?::Integer days) -> untyped
@@ -5867,12 +6137,17 @@ class Time
   #   Time::DATE_FORMATS[:short_ordinal]  = ->(time) { time.strftime("%B #{time.day.ordinalize}") }
   def to_formatted_s: (?::Symbol format) -> untyped
 
+  alias to_default_s to_s
+
   # Returns a formatted string of the offset from UTC, or an alternative
   # string if the time zone is already UTC.
   #
   #   Time.local(2000).formatted_offset        # => "-06:00"
   #   Time.local(2000).formatted_offset(false) # => "-0600"
   def formatted_offset: (?bool colon, ?untyped? alternate_utc_string) -> untyped
+
+  # Aliased to +xmlschema+ for compatibility with +DateTime+
+  alias rfc3339 xmlschema
 end
 
 class Time
@@ -6052,6 +6327,8 @@ module ActiveSupport
     # Calls this block after #reset is called on the instance. Used for resetting external collaborators, like Time.zone.
     def self.resets: () { () -> untyped } -> untyped
 
+    alias self.after_reset self.resets
+
     def self.reset_all: () -> untyped
 
     def self.clear_all: () -> untyped
@@ -6150,6 +6427,51 @@ module ActiveSupport
       def permit_concurrent_loads: () { () -> untyped } -> untyped
 
       def raw_state: () { () -> untyped } -> untyped
+    end
+  end
+end
+
+module ActiveSupport
+  module Dependencies
+    module ZeitwerkIntegration
+      # :nodoc: all
+      module Decorations
+        def clear: () -> untyped
+
+        def constantize: (untyped cpath) -> untyped
+
+        def safe_constantize: (untyped cpath) -> untyped
+
+        def autoloaded_constants: () -> untyped
+
+        def autoloaded?: (untyped object) -> untyped
+
+        def verbose=: (untyped verbose) -> untyped
+
+        def unhook!: () -> :no_op
+      end
+
+      module RequireDependency
+        def require_dependency: (untyped filename) -> untyped
+      end
+
+      module Inflector
+        def self.camelize: (untyped basename, untyped _abspath) -> untyped
+
+        def self.inflect: (untyped overrides) -> untyped
+      end
+
+      def self.take_over: (enable_reloading: untyped enable_reloading) -> untyped
+
+      def self.setup_autoloaders: (untyped enable_reloading) -> untyped
+
+      def self.autoload_once?: (untyped autoload_path) -> untyped
+
+      def self.eager_load?: (untyped autoload_path) -> untyped
+
+      def self.freeze_paths: () -> untyped
+
+      def self.decorate_dependencies: () -> untyped
     end
   end
 end
@@ -6352,6 +6674,8 @@ module ActiveSupport
 
       def get: (untyped key) -> untyped
 
+      alias [] get
+
       def safe_get: (untyped key) -> untyped
 
       def store: (untyped klass) -> untyped
@@ -6401,51 +6725,6 @@ module ActiveSupport
     # Returns the original name of a class or module even if `name` has been
     # overridden.
     def real_mod_name: (untyped mod) -> untyped
-  end
-end
-
-module ActiveSupport
-  module Dependencies
-    module ZeitwerkIntegration
-      # :nodoc: all
-      module Decorations
-        def clear: () -> untyped
-
-        def constantize: (untyped cpath) -> untyped
-
-        def safe_constantize: (untyped cpath) -> untyped
-
-        def autoloaded_constants: () -> untyped
-
-        def autoloaded?: (untyped object) -> untyped
-
-        def verbose=: (untyped verbose) -> untyped
-
-        def unhook!: () -> :no_op
-      end
-
-      module RequireDependency
-        def require_dependency: (untyped filename) -> untyped
-      end
-
-      module Inflector
-        def self.camelize: (untyped basename, untyped _abspath) -> untyped
-
-        def self.inflect: (untyped overrides) -> untyped
-      end
-
-      def self.take_over: (enable_reloading: untyped enable_reloading) -> untyped
-
-      def self.setup_autoloaders: (untyped enable_reloading) -> untyped
-
-      def self.autoload_once?: (untyped autoload_path) -> untyped
-
-      def self.eager_load?: (untyped autoload_path) -> untyped
-
-      def self.freeze_paths: () -> untyped
-
-      def self.decorate_dependencies: () -> untyped
-    end
   end
 end
 
@@ -6726,31 +7005,6 @@ module ActiveSupport
 end
 
 module ActiveSupport
-  # \Deprecation specifies the API used by Rails to deprecate methods, instance
-  # variables, objects and constants.
-  class Deprecation
-    include Singleton
-
-    include InstanceDelegator
-
-    include Behavior
-
-    include Reporting
-
-    include MethodWrapper
-
-    # The version number in which the deprecated behavior will be removed, by default.
-    attr_accessor deprecation_horizon: untyped
-
-    # It accepts two parameters on initialization. The first is a version of library
-    # and the second is a library name.
-    #
-    #   ActiveSupport::Deprecation.new('2.0', 'MyLibrary')
-    def initialize: (?::String deprecation_horizon, ?::String gem_name) -> untyped
-  end
-end
-
-module ActiveSupport
   class Deprecation
     module Reporting
       # Whether to print a message (silent mode)
@@ -6801,6 +7055,31 @@ module ActiveSupport
 
       def ignored_callstack: (untyped path) -> untyped
     end
+  end
+end
+
+module ActiveSupport
+  # \Deprecation specifies the API used by Rails to deprecate methods, instance
+  # variables, objects and constants.
+  class Deprecation
+    include Singleton
+
+    include InstanceDelegator
+
+    include Behavior
+
+    include Reporting
+
+    include MethodWrapper
+
+    # The version number in which the deprecated behavior will be removed, by default.
+    attr_accessor deprecation_horizon: untyped
+
+    # It accepts two parameters on initialization. The first is a version of library
+    # and the second is a library name.
+    #
+    #   ActiveSupport::Deprecation.new('2.0', 'MyLibrary')
+    def initialize: (?::String deprecation_horizon, ?::String gem_name) -> untyped
   end
 end
 
@@ -7056,6 +7335,8 @@ module ActiveSupport
 
     def is_a?: (untyped klass) -> untyped
 
+    alias kind_of? is_a?
+
     def instance_of?: (untyped klass) -> untyped
 
     # Returns +true+ if +other+ is also a Duration instance with the
@@ -7100,9 +7381,17 @@ module ActiveSupport
     # as this Duration represents.
     def since: (?untyped time) -> untyped
 
+    alias from_now since
+
+    alias after since
+
     # Calculates a new Time or Date that is as far in the past
     # as this Duration represents.
     def ago: (?untyped time) -> untyped
+
+    alias until ago
+
+    alias before ago
 
     def inspect: () -> (::String | untyped)
 
@@ -7128,7 +7417,7 @@ end
 
 module ActiveSupport
   class EncryptedConfiguration < EncryptedFile
-    def initialize: (raise_if_missing_key: untyped raise_if_missing_key, env_key: untyped env_key, key_path: untyped key_path, config_path: untyped config_path) -> untyped
+    def initialize: (config_path: untyped config_path, key_path: untyped key_path, env_key: untyped env_key, raise_if_missing_key: untyped raise_if_missing_key) -> untyped
 
     # Allow a config to be started without a file present
     def read: () -> untyped
@@ -7150,7 +7439,7 @@ module ActiveSupport
     end
 
     class MissingKeyError < RuntimeError
-      def initialize: (env_key: untyped env_key, key_path: untyped key_path) -> untyped
+      def initialize: (key_path: untyped key_path, env_key: untyped env_key) -> untyped
     end
 
     CIPHER: ::String
@@ -7165,7 +7454,7 @@ module ActiveSupport
 
     attr_reader raise_if_missing_key: untyped
 
-    def initialize: (raise_if_missing_key: untyped raise_if_missing_key, env_key: untyped env_key, key_path: untyped key_path, content_path: untyped content_path) -> untyped
+    def initialize: (content_path: untyped content_path, key_path: untyped key_path, env_key: untyped env_key, raise_if_missing_key: untyped raise_if_missing_key) -> untyped
 
     def key: () -> untyped
 
@@ -7275,18 +7564,20 @@ module ActiveSupport
 
     def self.to_complete: (*untyped args) { () -> untyped } -> untyped
 
-    class RunHook < ::Struct[untyped]
+    class RunHook[T] < ::Struct[T]
       attr_accessor hook(): untyped
 
       # :nodoc:
       def before: (untyped target) -> untyped
     end
 
-    class CompleteHook < ::Struct[untyped]
+    class CompleteHook[T] < ::Struct[T]
       attr_accessor hook(): untyped
 
       # :nodoc:
       def before: (untyped target) -> untyped
+
+      alias after before
     end
 
     # Register an object to be invoked during both the +run+ and
@@ -7505,6 +7796,10 @@ module ActiveSupport
 
     def self.[]: (*untyped args) -> untyped
 
+    alias regular_writer []=
+
+    alias regular_update update
+
     # Assigns a new value to the hash:
     #
     #   hash = ActiveSupport::HashWithIndifferentAccess.new
@@ -7512,6 +7807,8 @@ module ActiveSupport
     #
     # This value can be later fetched using either +:key+ or <tt>'key'</tt>.
     def []=: (untyped key, untyped value) -> untyped
+
+    alias store []=
 
     # Updates the receiver in-place, merging in the hash passed as argument:
     #
@@ -7540,6 +7837,8 @@ module ActiveSupport
     #   hash_1.update(hash_2) { |key, old, new| old + new } # => {"key"=>22}
     def update: (untyped other_hash) { (untyped, untyped, untyped) -> untyped } -> untyped
 
+    alias merge! update
+
     # Checks the hash for a key matching the argument passed in:
     #
     #   hash = ActiveSupport::HashWithIndifferentAccess.new
@@ -7547,6 +7846,12 @@ module ActiveSupport
     #   hash.key?(:key)  # => true
     #   hash.key?('key') # => true
     def key?: (untyped key) -> untyped
+
+    alias include? key?
+
+    alias has_key? key?
+
+    alias member? key?
 
     # Same as <tt>Hash#[]</tt> where the key passed as argument can be
     # either a string or a symbol:
@@ -7647,8 +7952,12 @@ module ActiveSupport
     #   hash.reverse_merge(a: 0, b: 1) # => {"a"=>nil, "b"=>1}
     def reverse_merge: (untyped other_hash) -> untyped
 
+    alias with_defaults reverse_merge
+
     # Same semantics as +reverse_merge+ but modifies the receiver in-place.
     def reverse_merge!: (untyped other_hash) -> untyped
+
+    alias with_defaults! reverse_merge!
 
     # Replaces the contents of this hash with other_hash.
     #
@@ -7661,6 +7970,8 @@ module ActiveSupport
 
     def except: (*untyped keys) -> untyped
 
+    alias without except
+
     def stringify_keys!: () -> untyped
 
     def deep_stringify_keys!: () -> untyped
@@ -7670,6 +7981,8 @@ module ActiveSupport
     def deep_stringify_keys: () -> untyped
 
     def symbolize_keys: () -> untyped
+
+    alias to_options symbolize_keys
 
     def deep_symbolize_keys: () -> untyped
 
@@ -7702,7 +8015,7 @@ module ActiveSupport
   end
 end
 
-# NOTE: HashWithIndifferentAccess and ActiveSupport::HashWithIndifferentAccess are the same object,
+# NOTE: HashWithIndifferentAccess and ActiveSupport::HashWithIndifferentAccess are the same object
 #       but RBS doesn't have class alias syntax
 class HashWithIndifferentAccess[T, U] < ActiveSupport::HashWithIndifferentAccess[T, U]
 end
@@ -7997,7 +8310,7 @@ module ActiveSupport
     #
     #   humanize('ssl_error') # => "SSL error"
     #
-    def humanize: (untyped lower_case_and_underscored_word, ?keep_id_suffix: bool keep_id_suffix, ?capitalize: bool capitalize) -> untyped
+    def humanize: (untyped lower_case_and_underscored_word, ?capitalize: bool capitalize, ?keep_id_suffix: bool keep_id_suffix) -> untyped
 
     # Converts just the first character to uppercase.
     #
@@ -8246,7 +8559,7 @@ module ActiveSupport
     # the word will be parameterized as a word of that language.
     # By default, this parameter is set to <tt>nil</tt> and it will use
     # the configured <tt>I18n.locale<tt>.
-    def parameterize: (untyped string, ?locale: untyped? locale, ?preserve_case: bool preserve_case, ?separator: ::String separator) -> untyped
+    def parameterize: (untyped string, ?separator: ::String separator, ?preserve_case: bool preserve_case, ?locale: untyped? locale) -> untyped
   end
 end
 
@@ -8425,61 +8738,66 @@ module ActiveSupport
 end
 
 module ActiveSupport
-  class Logger < ::Logger
-    include LoggerSilence
-
-    # Returns true if the logger destination matches one of the sources
+  class LogSubscriber
+    # Provides some helpers to deal with testing log subscribers by setting up
+    # notifications. Take for instance Active Record subscriber tests:
     #
-    #   logger = Logger.new(STDOUT)
-    #   ActiveSupport::Logger.logger_outputs_to?(logger, STDOUT)
-    #   # => true
-    def self.logger_outputs_to?: (untyped logger, *untyped sources) -> untyped
+    #   class SyncLogSubscriberTest < ActiveSupport::TestCase
+    #     include ActiveSupport::LogSubscriber::TestHelper
+    #
+    #     setup do
+    #       ActiveRecord::LogSubscriber.attach_to(:active_record)
+    #     end
+    #
+    #     def test_basic_query_logging
+    #       Developer.all.to_a
+    #       wait
+    #       assert_equal 1, @logger.logged(:debug).size
+    #       assert_match(/Developer Load/, @logger.logged(:debug).last)
+    #       assert_match(/SELECT \* FROM "developers"/, @logger.logged(:debug).last)
+    #     end
+    #   end
+    #
+    # All you need to do is to ensure that your log subscriber is added to
+    # Rails::Subscriber, as in the second line of the code above. The test
+    # helpers are responsible for setting up the queue, subscriptions and
+    # turning colors in logs off.
+    #
+    # The messages are available in the @logger instance, which is a logger with
+    # limited powers (it actually does not send anything to your output), and
+    # you can collect them doing @logger.logged(level), where level is the level
+    # used in logging, like info, debug, warn and so on.
+    module TestHelper
+      def setup: () -> untyped
 
-    def self.broadcast: (untyped logger) -> untyped
+      def teardown: () -> untyped
 
-    def initialize: (*untyped args, **untyped kwargs) -> untyped
+      class MockLogger
+        include ::Logger::Severity
 
-    # Simple formatter which only displays the message.
-    class SimpleFormatter < ::Logger::Formatter
-      # This method is invoked when a log event occurs
-      def call: (untyped severity, untyped timestamp, untyped progname, untyped msg) -> ::String
+        attr_reader flush_count: untyped
+
+        attr_accessor level: untyped
+
+        def initialize: (?untyped level) -> untyped
+
+        def method_missing: (untyped level, ?untyped? message) { () -> untyped } -> untyped
+
+        def logged: (untyped level) -> untyped
+
+        def flush: () -> untyped
+      end
+
+      # Wait notifications to be published.
+      def wait: () -> untyped
+
+      # Overwrite if you use another logger in your log subscriber.
+      #
+      #   def logger
+      #     ActiveRecord::Base.logger = @logger
+      #   end
+      def set_logger: (untyped logger) -> untyped
     end
-  end
-end
-
-module LoggerSilence
-  extend ActiveSupport::Concern
-
-  include ActiveSupport::LoggerSilence
-end
-
-module ActiveSupport
-  module LoggerSilence
-    extend ActiveSupport::Concern
-
-    include ActiveSupport::LoggerThreadSafeLevel
-
-    # Silences the logger for the duration of the block.
-    def silence: (?untyped temporary_level) { (untyped) -> untyped } -> untyped
-  end
-end
-
-module ActiveSupport
-  module LoggerThreadSafeLevel
-    # :nodoc:
-    extend ActiveSupport::Concern
-
-    def after_initialize: () -> untyped
-
-    def local_log_id: () -> untyped
-
-    def local_level: () -> untyped
-
-    def local_level=: (untyped level) -> untyped
-
-    def level: () -> untyped
-
-    def add: (untyped severity, ?untyped? message, ?untyped? progname) { () -> untyped } -> (::TrueClass | untyped)
   end
 end
 
@@ -8581,66 +8899,61 @@ module ActiveSupport
 end
 
 module ActiveSupport
-  class LogSubscriber
-    # Provides some helpers to deal with testing log subscribers by setting up
-    # notifications. Take for instance Active Record subscriber tests:
+  class Logger < ::Logger
+    include LoggerSilence
+
+    # Returns true if the logger destination matches one of the sources
     #
-    #   class SyncLogSubscriberTest < ActiveSupport::TestCase
-    #     include ActiveSupport::LogSubscriber::TestHelper
-    #
-    #     setup do
-    #       ActiveRecord::LogSubscriber.attach_to(:active_record)
-    #     end
-    #
-    #     def test_basic_query_logging
-    #       Developer.all.to_a
-    #       wait
-    #       assert_equal 1, @logger.logged(:debug).size
-    #       assert_match(/Developer Load/, @logger.logged(:debug).last)
-    #       assert_match(/SELECT \* FROM "developers"/, @logger.logged(:debug).last)
-    #     end
-    #   end
-    #
-    # All you need to do is to ensure that your log subscriber is added to
-    # Rails::Subscriber, as in the second line of the code above. The test
-    # helpers are responsible for setting up the queue, subscriptions and
-    # turning colors in logs off.
-    #
-    # The messages are available in the @logger instance, which is a logger with
-    # limited powers (it actually does not send anything to your output), and
-    # you can collect them doing @logger.logged(level), where level is the level
-    # used in logging, like info, debug, warn and so on.
-    module TestHelper
-      def setup: () -> untyped
+    #   logger = Logger.new(STDOUT)
+    #   ActiveSupport::Logger.logger_outputs_to?(logger, STDOUT)
+    #   # => true
+    def self.logger_outputs_to?: (untyped logger, *untyped sources) -> untyped
 
-      def teardown: () -> untyped
+    def self.broadcast: (untyped logger) -> untyped
 
-      class MockLogger
-        include ::Logger::Severity
+    def initialize: (*untyped args, **untyped kwargs) -> untyped
 
-        attr_reader flush_count: untyped
-
-        attr_accessor level: untyped
-
-        def initialize: (?untyped level) -> untyped
-
-        def method_missing: (untyped level, ?untyped? message) { () -> untyped } -> untyped
-
-        def logged: (untyped level) -> untyped
-
-        def flush: () -> untyped
-      end
-
-      # Wait notifications to be published.
-      def wait: () -> untyped
-
-      # Overwrite if you use another logger in your log subscriber.
-      #
-      #   def logger
-      #     ActiveRecord::Base.logger = @logger
-      #   end
-      def set_logger: (untyped logger) -> untyped
+    # Simple formatter which only displays the message.
+    class SimpleFormatter < ::Logger::Formatter
+      # This method is invoked when a log event occurs
+      def call: (untyped severity, untyped timestamp, untyped progname, untyped msg) -> ::String
     end
+  end
+end
+
+module LoggerSilence
+  extend ActiveSupport::Concern
+
+  include ActiveSupport::LoggerSilence
+end
+
+module ActiveSupport
+  module LoggerSilence
+    extend ActiveSupport::Concern
+
+    include ActiveSupport::LoggerThreadSafeLevel
+
+    # Silences the logger for the duration of the block.
+    def silence: (?untyped temporary_level) { (untyped) -> untyped } -> untyped
+  end
+end
+
+module ActiveSupport
+  module LoggerThreadSafeLevel
+    # :nodoc:
+    extend ActiveSupport::Concern
+
+    def after_initialize: () -> untyped
+
+    def local_log_id: () -> untyped
+
+    def local_level: () -> untyped
+
+    def local_level=: (untyped level) -> untyped
+
+    def level: () -> untyped
+
+    def add: (untyped severity, ?untyped? message, ?untyped? progname) { () -> untyped } -> (::TrueClass | untyped)
   end
 end
 
@@ -8759,7 +9072,7 @@ module ActiveSupport
 
     # Encrypt and sign a message. We need to sign the message in order to avoid
     # padding attacks. Reference: https://www.limited-entropy.com/padding-oracle-attacks/.
-    def encrypt_and_sign: (untyped value, ?purpose: untyped? purpose, ?expires_in: untyped? expires_in, ?expires_at: untyped? expires_at) -> untyped
+    def encrypt_and_sign: (untyped value, ?expires_at: untyped? expires_at, ?expires_in: untyped? expires_in, ?purpose: untyped? purpose) -> untyped
 
     # Decrypt and verify a message. We need to verify the message in order to
     # avoid padding attacks. Reference: https://www.limited-entropy.com/padding-oracle-attacks/.
@@ -8779,81 +9092,6 @@ module ActiveSupport
     def aead_mode?: () -> untyped
 
     def resolve_verifier: () -> untyped
-  end
-end
-
-module ActiveSupport
-  module Messages
-    class Metadata
-      # nodoc:
-      # nodoc:
-      def initialize: (untyped message, ?untyped? expires_at, ?untyped? purpose) -> untyped
-
-      def as_json: (?::Hash[untyped, untyped] options) -> { _rails: { message: untyped, exp: untyped, pur: untyped } }
-
-      def self.wrap: (untyped message, ?purpose: untyped? purpose, ?expires_in: untyped? expires_in, ?expires_at: untyped? expires_at) -> untyped
-
-      def self.verify: (untyped message, untyped purpose) -> untyped
-
-      def self.pick_expiry: (untyped expires_at, untyped expires_in) -> untyped
-
-      def self.extract_metadata: (untyped message) -> untyped
-
-      def self.encode: (untyped message) -> untyped
-
-      def self.decode: (untyped message) -> untyped
-
-      def verify: (untyped purpose) -> untyped
-
-      def match?: (untyped purpose) -> untyped
-
-      def fresh?: () -> untyped
-    end
-  end
-end
-
-module ActiveSupport
-  module Messages
-    class RotationConfiguration
-      # :nodoc:
-      attr_reader signed: untyped
-
-      # :nodoc:
-      attr_reader encrypted: untyped
-
-      def initialize: () -> untyped
-
-      def rotate: (untyped kind, *untyped args) -> untyped
-    end
-  end
-end
-
-module ActiveSupport
-  module Messages
-    module Rotator
-      # :nodoc:
-      def initialize: (**untyped options) -> untyped
-
-      def rotate: (*untyped secrets, **untyped options) -> untyped
-
-      module Encryptor
-        include Rotator
-
-        def decrypt_and_verify: (*untyped args, ?on_rotation: untyped? on_rotation, **untyped options) -> untyped
-
-        def build_rotation: (?untyped secret, ?untyped sign_secret, untyped options) -> untyped
-      end
-
-      module Verifier
-        include Rotator
-
-        def verified: (*untyped args, ?on_rotation: untyped? on_rotation, **untyped options) -> untyped
-
-        def build_rotation: (?untyped secret, untyped options) -> untyped
-      end
-
-      def run_rotations: (untyped on_rotation) { (untyped) -> untyped } -> untyped
-    end
   end
 end
 
@@ -9010,13 +9248,88 @@ module ActiveSupport
     #
     #   verifier = ActiveSupport::MessageVerifier.new 's3Krit'
     #   verifier.generate 'a private message' # => "BAhJIhRwcml2YXRlLW1lc3NhZ2UGOgZFVA==--e2d724331ebdee96a10fb99b089508d1c72bd772"
-    def generate: (untyped value, ?purpose: untyped? purpose, ?expires_in: untyped? expires_in, ?expires_at: untyped? expires_at) -> ::String
+    def generate: (untyped value, ?expires_at: untyped? expires_at, ?expires_in: untyped? expires_in, ?purpose: untyped? purpose) -> ::String
 
     def encode: (untyped data) -> untyped
 
     def decode: (untyped data) -> untyped
 
     def generate_digest: (untyped data) -> untyped
+  end
+end
+
+module ActiveSupport
+  module Messages
+    class Metadata
+      # nodoc:
+      # nodoc:
+      def initialize: (untyped message, ?untyped? expires_at, ?untyped? purpose) -> untyped
+
+      def as_json: (?::Hash[untyped, untyped] options) -> { _rails: { message: untyped, exp: untyped, pur: untyped } }
+
+      def self.wrap: (untyped message, ?expires_at: untyped? expires_at, ?expires_in: untyped? expires_in, ?purpose: untyped? purpose) -> untyped
+
+      def self.verify: (untyped message, untyped purpose) -> untyped
+
+      def self.pick_expiry: (untyped expires_at, untyped expires_in) -> untyped
+
+      def self.extract_metadata: (untyped message) -> untyped
+
+      def self.encode: (untyped message) -> untyped
+
+      def self.decode: (untyped message) -> untyped
+
+      def verify: (untyped purpose) -> untyped
+
+      def match?: (untyped purpose) -> untyped
+
+      def fresh?: () -> untyped
+    end
+  end
+end
+
+module ActiveSupport
+  module Messages
+    class RotationConfiguration
+      # :nodoc:
+      attr_reader signed: untyped
+
+      # :nodoc:
+      attr_reader encrypted: untyped
+
+      def initialize: () -> untyped
+
+      def rotate: (untyped kind, *untyped args) -> untyped
+    end
+  end
+end
+
+module ActiveSupport
+  module Messages
+    module Rotator
+      # :nodoc:
+      def initialize: (**untyped options) -> untyped
+
+      def rotate: (*untyped secrets, **untyped options) -> untyped
+
+      module Encryptor
+        include Rotator
+
+        def decrypt_and_verify: (*untyped args, ?on_rotation: untyped? on_rotation, **untyped options) -> untyped
+
+        def build_rotation: (?untyped secret, ?untyped sign_secret, untyped options) -> untyped
+      end
+
+      module Verifier
+        include Rotator
+
+        def verified: (*untyped args, ?on_rotation: untyped? on_rotation, **untyped options) -> untyped
+
+        def build_rotation: (?untyped secret, untyped options) -> untyped
+      end
+
+      def run_rotations: (untyped on_rotation) { (untyped) -> untyped } -> untyped
+    end
   end
 end
 
@@ -9063,6 +9376,10 @@ module ActiveSupport
       include Comparable
 
       attr_reader wrapped_string: untyped
+
+      alias to_s wrapped_string
+
+      alias to_str wrapped_string
 
       # Creates a new Chars instance by wrapping _string_.
       def initialize: (untyped string) -> untyped
@@ -9115,6 +9432,8 @@ module ActiveSupport
       #   "(trim non-ascii characters)".mb_chars.titleize.to_s               # => "(trim non-ascii characters)"
       def titleize: () -> untyped
 
+      alias titlecase titleize
+
       # Returns the KC normalization of the string by default. NFKC is
       # considered the best normalization form for passing strings to databases
       # and validations.
@@ -9153,22 +9472,6 @@ module ActiveSupport
 
       def chars: (untyped string) -> untyped
     end
-  end
-end
-
-module ActiveSupport
-  # nodoc:
-  module Multibyte
-    # The proxy class returned when calling mb_chars. You can use this accessor
-    # to configure your own proxy class so you can support other encodings. See
-    # the ActiveSupport::Multibyte::Chars implementation for an example how to
-    # do this.
-    #
-    #   ActiveSupport::Multibyte.proxy_class = CharsForUTF32
-    def self.proxy_class=: (untyped klass) -> untyped
-
-    # Returns the current proxy class.
-    def self.proxy_class: () -> untyped
   end
 end
 
@@ -9229,6 +9532,22 @@ module ActiveSupport
 
       def recode_windows1252_chars: (untyped string) -> untyped
     end
+  end
+end
+
+module ActiveSupport
+  # nodoc:
+  module Multibyte
+    # The proxy class returned when calling mb_chars. You can use this accessor
+    # to configure your own proxy class so you can support other encodings. See
+    # the ActiveSupport::Multibyte::Chars implementation for an example how to
+    # do this.
+    #
+    #   ActiveSupport::Multibyte.proxy_class = CharsForUTF32
+    def self.proxy_class=: (untyped klass) -> untyped
+
+    # Returns the current proxy class.
+    def self.proxy_class: () -> untyped
   end
 end
 
@@ -9333,6 +9652,8 @@ module ActiveSupport
           def subscribed_to?: (untyped name) -> ::TrueClass
 
           def unsubscribe!: () -> ::FalseClass
+
+          alias matches? ===
         end
       end
     end
@@ -9421,9 +9742,13 @@ module ActiveSupport
 
       def now: () -> untyped
 
-      def now_cpu: () -> (untyped | 0)
+      def now_cpu: () -> untyped
 
-      def now_allocations: () -> (untyped | 0)
+      def now_cpu: () -> 0
+
+      def now_allocations: () -> 0
+
+      def now_allocations: () -> untyped
     end
   end
 end
@@ -9801,6 +10126,33 @@ end
 
 module ActiveSupport
   module NumberHelper
+    class RoundingHelper
+      # :nodoc:
+      attr_reader options: untyped
+
+      def initialize: (untyped options) -> untyped
+
+      def round: (untyped number) -> untyped
+
+      def digit_count: (untyped number) -> (1 | untyped)
+
+      def round_without_significant: (untyped number) -> untyped
+
+      def round_significant: (untyped number) -> (0 | untyped)
+
+      def convert_to_decimal: (untyped number) -> untyped
+
+      def precision: () -> untyped
+
+      def significant: () -> untyped
+
+      def absolute_number: (untyped number) -> untyped
+    end
+  end
+end
+
+module ActiveSupport
+  module NumberHelper
     extend ActiveSupport::Autoload
 
     # Formats a +number+ into a phone number (US by default e.g., (555)
@@ -10151,33 +10503,6 @@ module ActiveSupport
 end
 
 module ActiveSupport
-  module NumberHelper
-    class RoundingHelper
-      # :nodoc:
-      attr_reader options: untyped
-
-      def initialize: (untyped options) -> untyped
-
-      def round: (untyped number) -> untyped
-
-      def digit_count: (untyped number) -> (1 | untyped)
-
-      def round_without_significant: (untyped number) -> untyped
-
-      def round_significant: (untyped number) -> (0 | untyped)
-
-      def convert_to_decimal: (untyped number) -> untyped
-
-      def precision: () -> untyped
-
-      def significant: () -> untyped
-
-      def absolute_number: (untyped number) -> untyped
-    end
-  end
-end
-
-module ActiveSupport
   class OptionMerger
     def initialize: (untyped context, untyped options) -> untyped
 
@@ -10243,6 +10568,8 @@ module ActiveSupport
   #   h.dog! # => raises KeyError: :dog is blank
   #
   class OrderedOptions[T, U] < Hash[T, U]
+    alias _get []
+
     def []=: (untyped key, untyped value) -> untyped
 
     def []: (untyped key) -> untyped
@@ -10390,16 +10717,6 @@ module ActiveSupport
 end
 
 module ActiveSupport
-  extend ActiveSupport::Autoload
-
-  def self.eager_load!: () -> untyped
-
-  def self.to_time_preserves_timezone: () -> untyped
-
-  def self.to_time_preserves_timezone=: (untyped value) -> untyped
-end
-
-module ActiveSupport
   # -
   # This class defines several callbacks:
   #
@@ -10517,7 +10834,7 @@ module ActiveSupport
       #     end
       #
       # Returns the exception if it was handled and +nil+ if it was not.
-      def rescue_with_handler: (untyped exception, ?visited_exceptions: untyped visited_exceptions, ?object: untyped object) -> untyped
+      def rescue_with_handler: (untyped exception, ?object: untyped object, ?visited_exceptions: untyped visited_exceptions) -> untyped
 
       def handler_for_rescue: (untyped exception, ?object: untyped object) -> untyped
 
@@ -10743,7 +11060,7 @@ module ActiveSupport
     #
     # The threaded parallelization uses minitest's parallel executor directly.
     # The processes parallelization uses a Ruby DRb server.
-    def self.parallelize: (?with: ::Symbol with, ?workers: ::Symbol workers) -> (nil | untyped)
+    def self.parallelize: (?workers: ::Symbol workers, ?with: ::Symbol with) -> (nil | untyped)
 
     # Set up hook for parallel testing. This can be used if you have multiple
     # databases or any behavior that needs to be run after the process is forked
@@ -10775,6 +11092,8 @@ module ActiveSupport
     #   end
     def self.parallelize_teardown: () { (untyped) -> untyped } -> untyped
 
+    alias method_name name
+
     include ActiveSupport::Testing::TaggedLogging
 
     include ActiveSupport::Testing::Assertions
@@ -10786,6 +11105,35 @@ module ActiveSupport
     include ActiveSupport::Testing::FileFixtures
 
     extend ActiveSupport::Testing::Declarative
+
+    # test/unit backwards compatibility methods
+    alias assert_raise assert_raises
+
+    alias assert_not_empty refute_empty
+
+    alias assert_not_equal refute_equal
+
+    alias assert_not_in_delta refute_in_delta
+
+    alias assert_not_in_epsilon refute_in_epsilon
+
+    alias assert_not_includes refute_includes
+
+    alias assert_not_instance_of refute_instance_of
+
+    alias assert_not_kind_of refute_kind_of
+
+    alias assert_no_match refute_match
+
+    alias assert_not_nil refute_nil
+
+    alias assert_not_operator refute_operator
+
+    alias assert_not_predicate refute_predicate
+
+    alias assert_not_respond_to refute_respond_to
+
+    alias assert_not_same refute_same
   end
 end
 
@@ -10925,7 +11273,7 @@ module ActiveSupport
       #   assert_changes -> { Status.all_good? }, 'Expected the status to be bad' do
       #     post :create, params: { status: { incident: true } }
       #   end
-      def assert_changes: (untyped expression, ?untyped? message, ?to: untyped to, ?from: untyped from) { () -> untyped } -> untyped
+      def assert_changes: (untyped expression, ?untyped? message, ?from: untyped from, ?to: untyped to) { () -> untyped } -> untyped
 
       # Assertion that the result of evaluating an expression is not changed before
       # and after invoking the passed in block.
@@ -11057,13 +11405,13 @@ end
 module ActiveSupport
   module Testing
     module MethodCallAssertions
-      def assert_called: (untyped object, untyped method_name, ?untyped? message, ?returns: untyped? returns, ?times: ::Integer times) { () -> untyped } -> untyped
+      def assert_called: (untyped object, untyped method_name, ?untyped? message, ?times: ::Integer times, ?returns: untyped? returns) { () -> untyped } -> untyped
 
       def assert_called_with: (untyped object, untyped method_name, untyped args, ?returns: untyped? returns) { () -> untyped } -> untyped
 
       def assert_not_called: (untyped object, untyped method_name, ?untyped? message) { () -> untyped } -> untyped
 
-      def assert_called_on_instance_of: (untyped klass, untyped method_name, ?untyped? message, ?returns: untyped? returns, ?times: ::Integer times) { () -> untyped } -> untyped
+      def assert_called_on_instance_of: (untyped klass, untyped method_name, ?untyped? message, ?times: ::Integer times, ?returns: untyped? returns) { () -> untyped } -> untyped
 
       def assert_not_called_on_instance_of: (untyped klass, untyped method_name, ?untyped? message) { () -> untyped } -> untyped
 
@@ -11175,7 +11523,7 @@ module ActiveSupport
   module Testing
     class SimpleStubs
       # :nodoc:
-      class Stub < ::Struct[untyped]
+      class Stub[T] < ::Struct[T]
         attr_accessor object(): untyped
 
         attr_accessor method_name(): untyped
@@ -11261,6 +11609,8 @@ module ActiveSupport
       #   Time.current # => Sat, 09 Nov 2013 15:34:49 EST -05:00
       def travel_back: () -> untyped
 
+      alias unfreeze_time travel_back
+
       # Calls +travel_to+ with +Time.now+.
       #
       #   Time.current # => Sun, 09 Jul 2017 15:34:49 EST -05:00
@@ -11339,6 +11689,14 @@ module ActiveSupport
     # Returns a <tt>Time</tt> instance of the simultaneous time in the UTC timezone.
     def utc: () -> untyped
 
+    alias comparable_time utc
+
+    alias getgm utc
+
+    alias getutc utc
+
+    alias gmtime utc
+
     # Returns the underlying TZInfo::TimezonePeriod.
     def period: () -> untyped
 
@@ -11348,6 +11706,8 @@ module ActiveSupport
     # Returns a <tt>Time</tt> instance of the simultaneous time in the system timezone.
     def localtime: (?untyped? utc_offset) -> untyped
 
+    alias getlocal localtime
+
     # Returns true if the current time is within Daylight Savings Time for the
     # specified time zone.
     #
@@ -11355,6 +11715,8 @@ module ActiveSupport
     #   Time.zone.parse("2012-5-30").dst?           # => true
     #   Time.zone.parse("2012-11-30").dst?          # => false
     def dst?: () -> untyped
+
+    alias isdst dst?
 
     # Returns true if the current time zone is set to UTC.
     #
@@ -11364,8 +11726,14 @@ module ActiveSupport
     #   Time.zone.now.utc?                          # => false
     def utc?: () -> untyped
 
+    alias gmt? utc?
+
     # Returns the offset from current time to UTC time in seconds.
     def utc_offset: () -> untyped
+
+    alias gmt_offset utc_offset
+
+    alias gmtoff utc_offset
 
     # Returns a formatted string of the offset from UTC, or an alternative
     # string if the time zone is already UTC.
@@ -11393,6 +11761,10 @@ module ActiveSupport
     #
     #   Time.zone.now.xmlschema  # => "2014-12-04T11:02:37-05:00"
     def xmlschema: (?::Integer fraction_digits) -> ::String
+
+    alias iso8601 xmlschema
+
+    alias rfc3339 xmlschema
 
     # Coerces time to a string for JSON encoding. The default format is ISO 8601.
     # You can get %Y/%m/%d %H:%M:%S +offset style by setting
@@ -11424,6 +11796,8 @@ module ActiveSupport
     #   Time.zone.now.rfc2822  # => "Tue, 01 Jan 2013 04:51:39 +0000"
     def rfc2822: () -> untyped
 
+    alias rfc822 rfc2822
+
     # Returns a string of the object's date and time.
     # Accepts an optional <tt>format</tt>:
     # * <tt>:default</tt> - default value, mimics Ruby Time#to_s format.
@@ -11431,12 +11805,18 @@ module ActiveSupport
     # * Any key in <tt>Time::DATE_FORMATS</tt> can be used. See active_support/core_ext/time/conversions.rb.
     def to_s: (?::Symbol format) -> untyped
 
+    alias to_formatted_s to_s
+
     # Replaces <tt>%Z</tt> directive with +zone before passing to Time#strftime,
     # so that zone information is correct.
     def strftime: (untyped format) -> untyped
 
     # Use the time in UTC for comparisons.
     def <=>: (untyped other) -> untyped
+
+    alias before? <
+
+    alias after? >
 
     # Returns true if the current object's time is within the specified
     # +min+ and +max+ time.
@@ -11474,6 +11854,10 @@ module ActiveSupport
     #   now + 24.hours      # => Mon, 03 Nov 2014 00:26:28 EST -05:00
     #   now + 1.day         # => Mon, 03 Nov 2014 01:26:28 EST -05:00
     def +: (untyped other) -> untyped
+
+    alias since +
+
+    alias in +
 
     # Subtracts an interval of time and returns a new TimeWithZone object unless
     # the other value `acts_like?` time. Then it will return a Float of the difference
@@ -11581,6 +11965,8 @@ module ActiveSupport
     #   Time.zone.now.to_i # => 1417709320
     def to_i: () -> untyped
 
+    alias tv_sec to_i
+
     # Returns the object's date and time as a rational number of seconds
     # since the Epoch (January 1, 1970 00:00 UTC).
     #
@@ -11603,6 +11989,8 @@ module ActiveSupport
 
     # Say we're a Time to thwart type checking.
     def is_a?: (untyped klass) -> untyped
+
+    alias kind_of? is_a?
 
     # An instance of ActiveSupport::TimeWithZone is never blank
     def blank?: () -> ::FalseClass
@@ -11673,6 +12061,8 @@ module ActiveSupport
     def self.seconds_to_utc_offset: (untyped seconds, ?bool colon) -> untyped
 
     def self.find_tzinfo: (untyped name) -> TZInfo::Timezone
+
+    alias self.create self.new
 
     # Returns a TimeZone instance with the given name, or +nil+ if no
     # such TimeZone instance exists. (This exists to support the use of
@@ -12004,6 +12394,8 @@ module ActiveSupport
       def on_end_element: (untyped name) -> untyped
 
       def on_characters: (untyped string) -> untyped
+
+      alias on_cdata_block on_characters
     end
 
     attr_accessor document_class: untyped
@@ -12064,69 +12456,13 @@ module ActiveSupport
       def end_element: (untyped name) -> untyped
 
       def characters: (untyped string) -> untyped
+
+      alias cdata_block characters
     end
 
     attr_accessor document_class: untyped
 
     def parse: (untyped data) -> untyped
-  end
-end
-
-module ActiveSupport
-  # = XmlMini
-  #
-  # To use the much faster libxml parser:
-  #   gem 'libxml-ruby', '=0.9.7'
-  #   XmlMini.backend = 'LibXML'
-  module XmlMini
-    module FileLike
-      # This module decorates files deserialized using Hash.from_xml with
-      # the <tt>original_filename</tt> and <tt>content_type</tt> methods.
-      # nodoc:
-      attr_writer original_filename: untyped
-
-      # This module decorates files deserialized using Hash.from_xml with
-      # the <tt>original_filename</tt> and <tt>content_type</tt> methods.
-      # nodoc:
-      attr_writer content_type: untyped
-
-      def original_filename: () -> untyped
-
-      def content_type: () -> untyped
-    end
-
-    DEFAULT_ENCODINGS: ::Hash[untyped, untyped]
-
-    TYPE_NAMES: ::Hash[untyped, untyped]
-
-    FORMATTING: ::Hash[untyped, untyped]
-
-    PARSING: ::Hash[untyped, untyped]
-
-    attr_accessor depth: untyped
-
-    def backend: () -> untyped
-
-    def backend=: (untyped name) -> untyped
-
-    def with_backend: (untyped name) { () -> untyped } -> untyped
-
-    def to_tag: (untyped key, untyped value, untyped options) -> untyped
-
-    def rename_key: (untyped key, ?::Hash[untyped, untyped] options) -> untyped
-
-    def _dasherize: (untyped key) -> ::String
-
-    # TODO: Add support for other encodings
-    def _parse_binary: (untyped bin, untyped entity) -> untyped
-
-    def _parse_file: (untyped file, untyped entity) -> untyped
-
-    def current_thread_backend: () -> untyped
-
-    def current_thread_backend=: (untyped name) -> untyped
-
-    def cast_backend_name_to_module: (untyped name) -> untyped
   end
 end
 
@@ -12193,6 +12529,74 @@ module ActiveSupport
   end
 end
 
+module ActiveSupport
+  # = XmlMini
+  #
+  # To use the much faster libxml parser:
+  #   gem 'libxml-ruby', '=0.9.7'
+  #   XmlMini.backend = 'LibXML'
+  module XmlMini
+    module FileLike
+      # This module decorates files deserialized using Hash.from_xml with
+      # the <tt>original_filename</tt> and <tt>content_type</tt> methods.
+      # nodoc:
+      attr_writer original_filename: untyped
+
+      # This module decorates files deserialized using Hash.from_xml with
+      # the <tt>original_filename</tt> and <tt>content_type</tt> methods.
+      # nodoc:
+      attr_writer content_type: untyped
+
+      def original_filename: () -> untyped
+
+      def content_type: () -> untyped
+    end
+
+    DEFAULT_ENCODINGS: ::Hash[untyped, untyped]
+
+    TYPE_NAMES: ::Hash[untyped, untyped]
+
+    FORMATTING: ::Hash[untyped, untyped]
+
+    PARSING: ::Hash[untyped, untyped]
+
+    attr_accessor depth: untyped
+
+    def backend: () -> untyped
+
+    def backend=: (untyped name) -> untyped
+
+    def with_backend: (untyped name) { () -> untyped } -> untyped
+
+    def to_tag: (untyped key, untyped value, untyped options) -> untyped
+
+    def rename_key: (untyped key, ?::Hash[untyped, untyped] options) -> untyped
+
+    def _dasherize: (untyped key) -> ::String
+
+    # TODO: Add support for other encodings
+    def _parse_binary: (untyped bin, untyped entity) -> untyped
+
+    def _parse_file: (untyped file, untyped entity) -> untyped
+
+    def current_thread_backend: () -> untyped
+
+    def current_thread_backend=: (untyped name) -> untyped
+
+    def cast_backend_name_to_module: (untyped name) -> untyped
+  end
+end
+
+module ActiveSupport
+  extend ActiveSupport::Autoload
+
+  def self.eager_load!: () -> untyped
+
+  def self.to_time_preserves_timezone: () -> untyped
+
+  def self.to_time_preserves_timezone=: (untyped value) -> untyped
+end
+
 class Object
   # Benchmark realtime in milliseconds.
   #
@@ -12202,6 +12606,8 @@ class Object
   #   Benchmark.ms { User.all }
   #   # => 0.074
   def self.ms: () { () -> untyped } -> untyped
+
+  alias orig_sum sum
 
   def unescape: (untyped str, ?untyped escaped) -> untyped
 end

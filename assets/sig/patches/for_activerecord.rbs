@@ -1,0 +1,84 @@
+module ActiveRecord
+  class Relation
+    # alias bug: https://github.com/ruby/rbs/issues/458
+    def lock_value: () -> untyped
+  end
+
+  module QueryMethods
+    # It is defined with meta programming
+    def extending_values: () -> untyped
+  end
+
+  module ConnectionAdapters
+    module PostgreSQL
+      module OID
+        class Uuid < ActiveModel::Type::Value
+          # alias bug: https://github.com/ruby/rbs/issues/458
+          def deserialize: (*untyped) -> untyped
+        end
+      end
+    end
+  end
+
+  module ConnectionAdapters
+    class PostgreSQLAdapter < AbstractAdapter
+      def database_version: (*untyped) -> untyped
+    end
+  end
+
+  class Migration
+    class CommandRecorder
+      # They are defined with meta programming
+      def add_reference: (*untyped) -> untyped
+      def remove_reference: (*untyped) -> untyped
+      def invert_add_reference: (*untyped) -> untyped
+      def invert_remove_reference: (*untyped) -> untyped
+    end
+  end
+
+  class Result
+    # alias bug: https://github.com/ruby/rbs/issues/458
+    def map: [U] () { (untyped arg0) -> U } -> ::Array[U]
+           | () -> ::Enumerator[untyped, ::Array[untyped]]
+  end
+end
+
+module Arel
+  module Nodes
+    class Quoted < Arel::Nodes::Unary
+      # alias bug: https://github.com/ruby/rbs/issues/458
+      def value: () -> untyped
+    end
+
+    class Equality < Arel::Nodes::Binary
+      # alias bug: https://github.com/ruby/rbs/issues/458
+      def left: () -> untyped
+      # alias bug: https://github.com/ruby/rbs/issues/458
+      def right: () -> untyped
+    end
+
+    class TableAlias < Arel::Nodes::Binary
+      # alias bug: https://github.com/ruby/rbs/issues/458
+      def left: () -> untyped
+      # alias bug: https://github.com/ruby/rbs/issues/458
+      def right: () -> untyped
+    end
+
+    class UnqualifiedColumn < Arel::Nodes::Unary
+      # alias bug: https://github.com/ruby/rbs/issues/458
+      def expr: () -> untyped
+      # alias bug: https://github.com/ruby/rbs/issues/458
+      def expr=: (untyped) -> untyped
+    end
+
+    class ValuesList < Unary
+      # alias bug: https://github.com/ruby/rbs/issues/458
+      def expr: () -> untyped
+    end
+
+    class With < Arel::Nodes::Unary
+      # alias bug: https://github.com/ruby/rbs/issues/458
+      def expr: () -> untyped
+    end
+  end
+end

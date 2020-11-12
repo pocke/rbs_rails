@@ -5,4 +5,5 @@ target :app do
   library "logger"
   library "mutex_m"
   library "pathname"
+  library "date"
 end
