@@ -88,6 +88,18 @@ def patch!(name, rbs)
       class HashWithIndifferentAccess[T, U] < ActiveSupport::HashWithIndifferentAccess[T, U]
       end
     RBS
+  when 'actionview'
+    rbs.gsub!(
+      'class CheckBoxBuilder < Builder',
+      'class CheckBoxBuilder < CollectionHelpers::Builder')
+    rbs.gsub!(
+      'class RadioButtonBuilder < Builder',
+      'class RadioButtonBuilder < CollectionHelpers::Builder')
+    rbs.gsub!('TemplateError: untyped', <<~RBS)
+      # It is actual TemplateError = Template::Error, but we can't write it in RBS
+      class TemplateError < Template::Error
+      end
+    RBS
   end
 end
 
@@ -109,8 +121,8 @@ end
 
 def main(rails_code_dir, name)
   if name == 'all'
-    # TODO: actionview, activerecord
-    %w[actionpack activejob railties activemodel activesupport].each do |n|
+    # TODO: activerecord
+    %w[actionpack activejob railties activemodel activesupport actionview].each do |n|
       generate!(rails_code_dir, n)
     end
   else
