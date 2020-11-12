@@ -7,5 +7,6 @@ target :lib do
   library "pathname"
   library "logger"
   library "mutex_m"
+  library "date"
   # library "strong_json"           # Gems
 end
