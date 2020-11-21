@@ -35,7 +35,7 @@ module RbsRails
         <<~RBS
           class #{relation_class_name} < ActiveRecord::Relation
             include _ActiveRecord_Relation[#{klass.name}]
-            include Enumerable[#{klass.name}, self]
+            include Enumerable[#{klass.name}]
           #{enum_scope_methods(singleton: false).indent(2)}
           #{scopes(singleton: false).indent(2)}
           end
