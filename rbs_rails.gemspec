@@ -26,4 +26,5 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_runtime_dependency 'parser'
+  spec.add_runtime_dependency 'rbs', '>= 0.17'
 end
