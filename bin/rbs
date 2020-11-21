@@ -1,3 +1,27 @@
-#!/bin/bash
+#!ruby
 
-rbs -rlogger -rpathname -rmutex_m -rdate -Isig -Iassets/sig $@
+# You need to specify --repo option
+
+require 'pathname'
+root = Pathname(__dir__) / '../'
+
+def v(require)
+  if v = ENV['RAILS_VERSION']
+    "#{require}:#{v}"
+  else
+    require
+  end
+end
+
+exec(
+  'rbs',
+  # Require stdlibs
+  '-rlogger', '-rpathname', '-rmutex_m', '-rdate',
+  # Require Rails libraries
+  v('-ractivesupport'), v('-ractionpack'), v('-ractivejob'), v('-ractivemodel'), v('-ractionview'), v('-ractiverecord'), v('-rrailties'),
+  # Load signatures that are bundled in rbs_rails
+  '-I' + root.join('sig').to_s, '-I' + root.join('assets/sig').to_s,
+  # Expand arguments
+  *ARGV,
+)
+
