@@ -1305,7 +1305,7 @@ module ActiveModel
   #   person.errors.full_messages # => ["name cannot be nil"]
   #   # etc..
   class Errors
-    include Enumerable[untyped, untyped]
+    include Enumerable[untyped]
 
     CALLBACKS_OPTIONS: ::Array[untyped]
 

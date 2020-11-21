@@ -1879,7 +1879,7 @@ module ActiveRecord
         # operations (for example a has_and_belongs_to_many JoinAssociation would result in
         # two; one for the join table and one for the target table).
         # :nodoc:
-        include Enumerable[untyped, untyped]
+        include Enumerable[untyped]
 
         # The Active Record class which this join part is associated 'about'; for a JoinBase
         # this is the actual base model, for a JoinAssociation this is the target model of the
@@ -11613,7 +11613,7 @@ module ActiveRecord
   module ConnectionAdapters
     class StatementPool
       # :nodoc:
-      include Enumerable[untyped, untyped]
+      include Enumerable[untyped]
 
       DEFAULT_STATEMENT_LIMIT: ::Integer
 
@@ -12836,7 +12836,7 @@ module ActiveRecord
   class FixtureSet
     class File
       # :nodoc:
-      include Enumerable[untyped, untyped]
+      include Enumerable[untyped]
 
       #
       # Open a fixture file named +file+.  When called with a block, the block
@@ -13465,7 +13465,7 @@ module ActiveRecord
 
   class Fixture
     # nodoc:
-    include Enumerable[untyped, untyped]
+    include Enumerable[untyped]
 
     class FixtureError < StandardError
     end
@@ -17286,7 +17286,7 @@ end
 module ActiveRecord
   module Batches
     class BatchEnumerator
-      include Enumerable[untyped, untyped]
+      include Enumerable[untyped]
 
       def initialize: (relation: untyped relation, ?of: ::Integer of, ?start: untyped? start, ?finish: untyped? finish) -> untyped
 
@@ -19192,7 +19192,7 @@ module ActiveRecord
 
     VALUE_METHODS: untyped
 
-    include Enumerable[untyped, untyped]
+    include Enumerable[untyped]
 
     include FinderMethods
 
@@ -19693,7 +19693,7 @@ module ActiveRecord
   #     puts row['title'] + " " + row['body']
   #   end
   class Result
-    include Enumerable[untyped, untyped]
+    include Enumerable[untyped]
 
     attr_reader columns: untyped
 
@@ -22777,7 +22777,7 @@ module Arel
     class Node
       include Arel::FactoryMethods
 
-      include Enumerable[untyped, untyped]
+      include Enumerable[untyped]
 
       # #
       # Factory method to create a Nodes::Not node that has the recipient of

@@ -166,7 +166,7 @@ def patch!(name, rbs)
   end
 end
 
-def generate!(rails_code_dir, name)
+def generate1!(rails_code_dir, name)
   files = Pathname(rails_code_dir).join(name, 'lib').glob('**/*.rb').map(&:to_s)
   generated_rbs_path = SIG_DIR.join("#{name}.rbs")
 
@@ -176,6 +176,11 @@ def generate!(rails_code_dir, name)
   patch! name, rbs
   generated_rbs_path.write(rbs)
 
+end
+
+def generate2!(rails_code_dir, name)
+  generated_rbs_path = SIG_DIR.join("#{name}.rbs")
+
   rbs = sh! 'ruby', bin('add-type-params.rb'), generated_rbs_path.to_s
   generated_rbs_path.write(rbs)
 
@@ -184,11 +189,12 @@ end
 
 def main(rails_code_dir, name)
   if name == 'all'
-    %w[actionpack activejob railties activemodel activesupport actionview activerecord].each do |n|
-      generate!(rails_code_dir, n)
-    end
+    gems = %w[activesupport actionpack activejob activemodel actionview activerecord railties]
+    gems.each { |n| generate1!(rails_code_dir, n) }
+    gems.each { |n| generate2!(rails_code_dir, n) }
   else
-    generate!(rails_code_dir, name)
+    generate1!(rails_code_dir, name)
+    generate2!(rails_code_dir, name)
   end
 end
 
