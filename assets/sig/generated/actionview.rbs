@@ -8954,7 +8954,7 @@ module ActionView
     #
     # A +LookupContext+ will use a +PathSet+ to store the paths in its context.
     # nodoc:
-    include Enumerable[untyped, untyped]
+    include Enumerable[untyped]
 
     attr_reader paths: untyped
 

@@ -1383,7 +1383,7 @@ module ActiveSupport
 
     class CallbackChain
       # nodoc:#
-      include Enumerable[untyped, untyped]
+      include Enumerable[untyped]
 
       attr_reader name: untyped
 
@@ -2985,7 +2985,7 @@ module Digest
   end
 end
 
-module Enumerable[unchecked out Elem, out Return]
+module Enumerable[unchecked out Elem]
   INDEX_WITH_DEFAULT: untyped
 
   # We can't use Refinements here because Refinements with Module which will be prepended
@@ -4843,7 +4843,7 @@ class Regexp
   def as_json: (?untyped? options) -> untyped
 end
 
-module Enumerable[unchecked out Elem, out Return]
+module Enumerable[unchecked out Elem]
   def as_json: (?untyped? options) -> untyped
 end
 
@@ -6505,7 +6505,7 @@ module ActiveSupport
     # This is handled by walking back up the watch stack and adding the constants
     # found by child.rb to the list of original constants in parent.rb.
     class WatchStack
-      include Enumerable[untyped, untyped]
+      include Enumerable[untyped]
 
       attr_reader watching: untyped
 
@@ -7108,7 +7108,7 @@ module ActiveSupport
     class DescendantsArray
       # DescendantsArray is an array that contains weak references to classes.
       # :nodoc:
-      include Enumerable[untyped, untyped]
+      include Enumerable[untyped]
 
       def initialize: () -> untyped
 
