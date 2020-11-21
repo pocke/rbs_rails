@@ -1,7 +1,5 @@
 #!ruby
 
-# You need to specify --repo option
-
 require 'pathname'
 root = Pathname(__dir__) / '../'
 
@@ -13,10 +11,15 @@ def v(require)
   end
 end
 
+def repo
+  ENV['RBS_REPO_DIR'] || Pathname(__dir__).join('../gem_rbs').to_s
+end
+
 exec(
   'rbs',
   # Require stdlibs
   '-rlogger', '-rpathname', '-rmutex_m', '-rdate',
+  "--repo=#{repo}",
   # Require Rails libraries
   v('-ractivesupport'), v('-ractionpack'), v('-ractivejob'), v('-ractivemodel'), v('-ractionview'), v('-ractiverecord'), v('-rrailties'),
   # Load signatures that are bundled in rbs_rails

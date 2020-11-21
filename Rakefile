@@ -10,7 +10,7 @@ end
 
 task :rbs_validate do
   rbs = Pathname(__dir__).join('bin/rbs').to_s
-  sh "ruby #{rbs} --repo=#{ENV['RBS_REPO_DIR']} validate --silent"
+  sh "ruby #{rbs} validate --silent"
 end
 
 Rake::TestTask.new do |test|
