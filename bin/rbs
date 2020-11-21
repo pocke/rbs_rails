@@ -12,7 +12,7 @@ def v(require)
 end
 
 def repo
-  ENV['RBS_REPO_DIR'] || Pathname(__dir__).join('../gem_rbs').to_s
+  ENV['RBS_REPO_DIR'] || Pathname(__dir__).join('../gem_rbs/gems').to_s
 end
 
 exec(
