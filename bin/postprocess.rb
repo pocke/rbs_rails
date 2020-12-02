@@ -6,7 +6,7 @@ require 'bundler/inline'
 
 gemfile do
   source 'https://rubygems.org'
-  gem 'rbs', '>= 0.17'
+  gem 'rbs', '>= 0.19.0'
 end
 
 require 'rbs'

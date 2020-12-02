@@ -17,7 +17,7 @@ using Module.new {
       end
     end
 
-    def process_class_methods(node, decls:, comments:, singleton:)
+    def process_class_methods(node, decls:, comments:, context:)
       return false unless node.type == :ITER
 
       fcall = node.children[0]
@@ -37,13 +37,13 @@ using Module.new {
       decls.push mod
 
       each_node [node.children[1]] do |child|
-        process child, decls: mod.members, comments: comments, singleton: false
+        process child, decls: mod.members, comments: comments, context: RBS::Prototype::RB::Context.initial
       end
 
       true
     end
 
-    def process_struct_new(node, decls:, comments:, singleton:)
+    def process_struct_new(node, decls:, comments:, context:)
       return unless node.type == :CDECL
 
       name, *_, rhs = node.children
@@ -78,7 +78,7 @@ using Module.new {
 
       if body
         each_node [body] do |child|
-          process child, decls: kls.members, comments: comments, singleton: false
+          process child, decls: kls.members, comments: comments, context: RBS::Prototype::RB::Context.initial
         end
       end
 
