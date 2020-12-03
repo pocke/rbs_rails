@@ -85,6 +85,55 @@ using Module.new {
       true
     end
 
+    def process_attr_internal(node, decls:, comments:, context:)
+      case node.type
+      when :FCALL, :VCALL
+        args = node.children[1]&.children || []
+
+        case node.children[0]
+        when :attr_internal_reader
+          args.each do |arg|
+            if arg && (name = literal_to_symbol(arg))
+              decls << RBS::AST::Members::AttrReader.new(
+                name: name,
+                ivar_name: :"@_#{name}",
+                type: RBS::Types::Bases::Any.new(location: nil),
+                location: nil,
+                comment: comments[node.first_lineno - 1],
+                annotations: []
+              )
+            end
+          end
+        when :attr_internal_writer
+          args.each do |arg|
+            if arg && (name = literal_to_symbol(arg))
+              decls << RBS::AST::Members::AttrWriter.new(
+                name: name,
+                ivar_name: :"@_#{name}",
+                type: RBS::Types::Bases::Any.new(location: nil),
+                location: nil,
+                comment: comments[node.first_lineno - 1],
+                annotations: []
+              )
+            end
+          end
+        when :attr_internal_accessor, :attr_internal
+          args.each do |arg|
+            if arg && (name = literal_to_symbol(arg))
+              decls << RBS::AST::Members::AttrAccessor.new(
+                name: name,
+                ivar_name: :"@_#{name}",
+                type: RBS::Types::Bases::Any.new(location: nil),
+                location: nil,
+                comment: comments[node.first_lineno - 1],
+                annotations: []
+              )
+            end
+          end
+        end
+      end
+    end
+
     def class_new_method_to_type(node)
       case node.type
       when :CALL
@@ -129,7 +178,7 @@ using Module.new {
 
 module PrototypeExt
   def process(...)
-    process_class_methods(...) || process_struct_new(...) || super
+    process_class_methods(...) || process_struct_new(...) || process_attr_internal(...) || super
   end
 
   def literal_to_type(node)
