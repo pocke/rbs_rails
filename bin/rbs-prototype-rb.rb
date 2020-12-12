@@ -17,7 +17,7 @@ using Module.new {
       end
     end
 
-    def process_class_methods(node, decls:, comments:, singleton:)
+    def process_class_methods(node, decls:, comments:, context:)
       return false unless node.type == :ITER
 
       fcall = node.children[0]
@@ -37,13 +37,13 @@ using Module.new {
       decls.push mod
 
       each_node [node.children[1]] do |child|
-        process child, decls: mod.members, comments: comments, singleton: false
+        process child, decls: mod.members, comments: comments, context: RBS::Prototype::RB::Context.initial
       end
 
       true
     end
 
-    def process_struct_new(node, decls:, comments:, singleton:)
+    def process_struct_new(node, decls:, comments:, context:)
       return unless node.type == :CDECL
 
       name, *_, rhs = node.children
@@ -78,11 +78,60 @@ using Module.new {
 
       if body
         each_node [body] do |child|
-          process child, decls: kls.members, comments: comments, singleton: false
+          process child, decls: kls.members, comments: comments, context: RBS::Prototype::RB::Context.initial
         end
       end
 
       true
+    end
+
+    def process_attr_internal(node, decls:, comments:, context:)
+      case node.type
+      when :FCALL, :VCALL
+        args = node.children[1]&.children || []
+
+        case node.children[0]
+        when :attr_internal_reader
+          args.each do |arg|
+            if arg && (name = literal_to_symbol(arg))
+              decls << RBS::AST::Members::AttrReader.new(
+                name: name,
+                ivar_name: :"@_#{name}",
+                type: RBS::Types::Bases::Any.new(location: nil),
+                location: nil,
+                comment: comments[node.first_lineno - 1],
+                annotations: []
+              )
+            end
+          end
+        when :attr_internal_writer
+          args.each do |arg|
+            if arg && (name = literal_to_symbol(arg))
+              decls << RBS::AST::Members::AttrWriter.new(
+                name: name,
+                ivar_name: :"@_#{name}",
+                type: RBS::Types::Bases::Any.new(location: nil),
+                location: nil,
+                comment: comments[node.first_lineno - 1],
+                annotations: []
+              )
+            end
+          end
+        when :attr_internal_accessor, :attr_internal
+          args.each do |arg|
+            if arg && (name = literal_to_symbol(arg))
+              decls << RBS::AST::Members::AttrAccessor.new(
+                name: name,
+                ivar_name: :"@_#{name}",
+                type: RBS::Types::Bases::Any.new(location: nil),
+                location: nil,
+                comment: comments[node.first_lineno - 1],
+                annotations: []
+              )
+            end
+          end
+        end
+      end
     end
 
     def class_new_method_to_type(node)
@@ -129,7 +178,7 @@ using Module.new {
 
 module PrototypeExt
   def process(...)
-    process_class_methods(...) || process_struct_new(...) || super
+    process_class_methods(...) || process_struct_new(...) || process_attr_internal(...) || super
   end
 
   def literal_to_type(node)

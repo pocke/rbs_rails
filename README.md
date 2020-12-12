@@ -83,12 +83,24 @@ target :app do
 
   check 'app'
 
+  repo_path "path/to/rbs_repo"
+
   library 'pathname'
   library 'logger'
   library 'mutex_m'
   library 'date'
+
+  library 'activesupport'
+  library 'actionpack'
+  library 'activejob'
+  library 'activemodel'
+  library 'actionview'
+  library 'activerecord'
+  library 'railties'
 end
 ```
+
+You need to put RBS repo to `path/to/rbs_repo`. See https://github.com/ruby/gem_rbs
 
 ## Development
 

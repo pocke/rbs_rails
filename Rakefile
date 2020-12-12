@@ -9,7 +9,8 @@ task :steep do
 end
 
 task :rbs_validate do
-  sh 'bin/rbs validate --silent'
+  rbs = Pathname(__dir__).join('bin/rbs').to_s
+  sh "ruby #{rbs} validate --silent"
 end
 
 Rake::TestTask.new do |test|

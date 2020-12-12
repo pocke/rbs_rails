@@ -1,0 +1,3 @@
+[submodule "gem_rbs"]
+	path = gem_rbs
+	url = https://github.com/ruby/gem_rbs.git

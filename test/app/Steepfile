@@ -2,8 +2,18 @@ target :app do
   signature 'sig', "../sig"
   check "app/models"
 
+  repo_path ENV['RBS_REPO_DIR'] || '../../gem_rbs/gems'
+
   library "logger"
   library "mutex_m"
   library "pathname"
   library "date"
+
+  library 'activesupport'
+  library 'actionpack'
+  library 'activejob'
+  library 'activemodel'
+  library 'actionview'
+  library 'activerecord'
+  library 'railties'
 end
