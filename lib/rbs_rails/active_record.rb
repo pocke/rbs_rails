@@ -154,6 +154,7 @@ module RbsRails
         return [] unless ast
 
         traverse(ast).map do |node|
+          # @type block: nil | Hash[untyped, untyped]
           next unless node.type == :send
           next unless node.children[0].nil?
           next unless node.children[1] == :enum
@@ -192,6 +193,7 @@ module RbsRails
         return '' unless ast
 
         traverse(ast).map do |node|
+          # @type block: nil | String
           next unless node.type == :send
           next unless node.children[0].nil?
           next unless node.children[1] == :scope
