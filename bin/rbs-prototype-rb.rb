@@ -68,6 +68,7 @@ using Module.new {
           kls.members << RBS::AST::Members::AttrAccessor.new(
             name: f.children.first,
             type: untyped,
+            kind: :instance,
             ivar_name: false,
             annotations: [],
             location: nil,
@@ -98,6 +99,7 @@ using Module.new {
                 name: name,
                 ivar_name: :"@_#{name}",
                 type: RBS::Types::Bases::Any.new(location: nil),
+                kind: context.attribute_kind,
                 location: nil,
                 comment: comments[node.first_lineno - 1],
                 annotations: []
@@ -111,6 +113,7 @@ using Module.new {
                 name: name,
                 ivar_name: :"@_#{name}",
                 type: RBS::Types::Bases::Any.new(location: nil),
+                kind: context.attribute_kind,
                 location: nil,
                 comment: comments[node.first_lineno - 1],
                 annotations: []
@@ -124,6 +127,7 @@ using Module.new {
                 name: name,
                 ivar_name: :"@_#{name}",
                 type: RBS::Types::Bases::Any.new(location: nil),
+                kind: context.attribute_kind,
                 location: nil,
                 comment: comments[node.first_lineno - 1],
                 annotations: []
@@ -171,7 +175,7 @@ using Module.new {
 
     def struct_as_superclass
       name = RBS::TypeName.new(name: 'Struct', namespace: RBS::Namespace.root)
-      RBS::AST::Declarations::Class::Super.new(name: name, args: ['untyped'])
+      RBS::AST::Declarations::Class::Super.new(name: name, args: ['untyped'], location: nil)
     end
   end
 }
