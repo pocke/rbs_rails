@@ -144,6 +144,7 @@ GEM
 
 PLATFORMS
   ruby
+  x86_64-linux
 
 DEPENDENCIES
   bootsnap
@@ -153,4 +154,4 @@ DEPENDENCIES
   sqlite3
 
 BUNDLED WITH
-   2.2.0.rc.2
+   2.2.2
