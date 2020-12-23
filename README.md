@@ -7,7 +7,7 @@ RBS files generator for Ruby on Rails.
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'rbs_rails'
+gem 'rbs_rails', require: false
 ```
 
 And then execute:
@@ -20,56 +20,23 @@ Or install it yourself as:
 
 ## Usage
 
-### For Active Record models
-
-It has two tasks.
-
-* `copy_signature_files`: Copy type definition files for Rails from rbs_rails.
-* `generate_rbs_for_model`: Generate RBS files from model classes.
+Put the following code to `lib/tasks/rbs.rake`.
 
 ```ruby
-# Rakefile
+require 'rbs_rails/rake_task'
 
-task copy_signature_files: :environment do
-  require 'rbs_rails'
-
-  to = Rails.root.join('sig/rbs_rails/')
-  to.mkpath unless to.exist?
-  RbsRails.copy_signatures(to: to)
-end
-
-task generate_rbs_for_model: :environment do
-  require 'rbs_rails'
-
-  out_dir = Rails.root / 'sig'
-  out_dir.mkdir unless out_dir.exist?
-
-  Rails.application.eager_load!
-
-  ActiveRecord::Base.descendants.each do |klass|
-    next if klass.abstract_class?
-
-    path = out_dir / "app/models/#{klass.name.underscore}.rbs"
-    FileUtils.mkdir_p(path.dirname)
-
-    sig = RbsRails::ActiveRecord.class_to_rbs(klass)
-    path.write sig
-  end
-end
+RbsRails::RakeTask.new
 ```
 
-### For path helpers
+Then, the following four tasks are available.
 
-```ruby
-# Rakefile
+* `rbs_rails:copy_signature_files`: Copy RBS files for rbs_rails
+* `rbs_rails:generate_rbs_for_models`: Generate RBS files for Active Record models
+* `rbs_rails:generate_rbs_for_path_helpers`: Generate RBS files for path helpers
+* `rbs_rails:all`: Execute all tasks of RBS Rails
 
-task generate_rbs_for_path_helpers: :environment do
-  require 'rbs_rails'
-  out_path = Rails.root.join 'sig/path_helpers.rbs'
-  rbs = RbsRails::PathHelpers.generate
-  out_path.write rbs
-end
-```
+
+
 
 ### Steep integration
 
