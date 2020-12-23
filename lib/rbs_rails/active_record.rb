@@ -303,23 +303,20 @@ module RbsRails
         when :string, :text, :citext, :uuid, :binary
           'String'
         when :datetime
-          # TODO
-          # ActiveSupport::TimeWithZone.name
-          'Time'
+          'ActiveSupport::TimeWithZone'
         when :boolean
-          "TrueClass | FalseClass"
+          "bool"
         when :jsonb, :json
           "untyped"
         when :date
-          # TODO
-          # Date.name
-          'untyped'
+          'Date'
         when :time
           'Time'
         when :inet
           "IPAddr"
         else
-          raise "unexpected: #{t.inspect}"
+          # Unknown column type, give up
+          'untyped'
         end
       end
 
