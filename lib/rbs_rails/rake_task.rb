@@ -46,9 +46,11 @@ module RbsRails
 
         Rails.application.eager_load!
 
-        ::ActiveRecord::Base.descendants.each do |klass|
+        
+        # HACK: for steep
+        (_ = ::ActiveRecord::Base).descendants.each do |klass|
           next if klass.abstract_class?
-          next if ignore_model_if && ignore_model_if.call(klass)
+          next if ignore_model_if&.call(klass)
 
           path = out_dir / "app/models/#{klass.name.underscore}.rbs"
           FileUtils.mkdir_p(path.dirname)

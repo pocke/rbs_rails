@@ -1,3 +1,4 @@
 module FileUtils
   def self.cp_r: (Pathname, Pathname) -> untyped
+  def self.mkdir_p: (String | Array[String], ?untyped) -> Array[String]
 end
