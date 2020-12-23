@@ -1,5 +1,5 @@
 target :app do
-  signature 'sig', "../sig"
+  signature 'sig'
   check "app/models"
 
   repo_path ENV['RBS_REPO_DIR'] || '../../gem_rbs/gems'
