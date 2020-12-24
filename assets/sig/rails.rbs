@@ -1,5 +1,5 @@
 module Rails
-  overload def self.env: () -> ActiveSupport::StringInquirer
+  def self.env: () -> ActiveSupport::StringInquirer | ...
 
   module Dom
     module Testing
@@ -7,8 +7,4 @@ module Rails
       end
     end
   end
-end
-
-class Rails::Application
-  def routes: () -> untyped
 end
