@@ -1,4 +1,6 @@
 require 'parser/current'
+require 'rbs'
+require 'stringio'
 
 require_relative "rbs_rails/version"
 require_relative 'rbs_rails/active_record'
