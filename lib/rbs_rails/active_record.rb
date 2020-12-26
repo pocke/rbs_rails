@@ -27,11 +27,11 @@ module RbsRails
           #{header}
             extend _ActiveRecord_Relation_ClassMethods[#{klass.name}, #{relation_class_name}]
 
-          #{columns.indent(2)}
-          #{associations.indent(2)}
-          #{enum_instance_methods.indent(2)}
-          #{enum_scope_methods(singleton: true).indent(2)}
-          #{scopes(singleton: true).indent(2)}
+          #{columns}
+          #{associations}
+          #{enum_instance_methods}
+          #{enum_scope_methods(singleton: true)}
+          #{scopes(singleton: true)}
           end
         RBS
       end
@@ -41,8 +41,8 @@ module RbsRails
           class #{relation_class_name} < ActiveRecord::Relation
             include _ActiveRecord_Relation[#{klass.name}]
             include Enumerable[#{klass.name}]
-          #{enum_scope_methods(singleton: false).indent(2)}
-          #{scopes(singleton: false).indent(2)}
+          #{enum_scope_methods(singleton: false)}
+          #{scopes(singleton: false)}
           end
         RBS
       end
