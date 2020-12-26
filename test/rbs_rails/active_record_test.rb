@@ -19,7 +19,7 @@ class ActiveRecordTest < Minitest::Test
 
     assert_equal <<~RBS, rbs_path.read
       class User < ApplicationRecord
-        extend _ActiveRecord_Relation_ClassMethods[User, User::ActiveRecord_Relation]
+        extend _ActiveRecord_Relation_ClassMethods[User, ActiveRecord_Relation]
 
         attr_accessor id(): Integer
         def id_changed?: () -> bool
@@ -75,14 +75,14 @@ class ActiveRecordTest < Minitest::Test
         def updated_at_previously_was: () -> ActiveSupport::TimeWithZone?
         def restore_updated_at!: () -> void
         def clear_updated_at_change: () -> void
-      end
 
-      class User::ActiveRecord_Relation < ActiveRecord::Relation
-        include _ActiveRecord_Relation[User]
-        include Enumerable[User]
-      end
+        class ActiveRecord_Relation < ActiveRecord::Relation
+          include _ActiveRecord_Relation[User]
+          include Enumerable[User]
+        end
 
-      class User::ActiveRecord_Associations_CollectionProxy < ActiveRecord::Associations::CollectionProxy
+        class ActiveRecord_Associations_CollectionProxy < ActiveRecord::Associations::CollectionProxy
+        end
       end
     RBS
   end

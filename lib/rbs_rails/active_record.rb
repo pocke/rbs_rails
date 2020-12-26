@@ -10,12 +10,7 @@ module RbsRails
       end
 
       def generate
-        code = [
-          klass_decl,
-          relation_decl,
-          collection_proxy_decl,
-        ].join("\n")
-        decls = RBS::Parser.parse_signature(code)
+        decls = RBS::Parser.parse_signature(klass_decl)
 
         StringIO.new.tap do |io|
           RBS::Writer.new(out: io).write(decls)
@@ -27,11 +22,15 @@ module RbsRails
           #{header}
             extend _ActiveRecord_Relation_ClassMethods[#{klass.name}, #{relation_class_name}]
 
-          #{columns.indent(2)}
-          #{associations.indent(2)}
-          #{enum_instance_methods.indent(2)}
-          #{enum_scope_methods(singleton: true).indent(2)}
-          #{scopes(singleton: true).indent(2)}
+          #{columns}
+          #{associations}
+          #{enum_instance_methods}
+          #{enum_scope_methods(singleton: true)}
+          #{scopes(singleton: true)}
+
+          #{relation_decl}
+
+          #{collection_proxy_decl}
           end
         RBS
       end
@@ -41,15 +40,15 @@ module RbsRails
           class #{relation_class_name} < ActiveRecord::Relation
             include _ActiveRecord_Relation[#{klass.name}]
             include Enumerable[#{klass.name}]
-          #{enum_scope_methods(singleton: false).indent(2)}
-          #{scopes(singleton: false).indent(2)}
+          #{enum_scope_methods(singleton: false)}
+          #{scopes(singleton: false)}
           end
         RBS
       end
 
       private def collection_proxy_decl
         <<~RBS
-          class #{klass.name}::ActiveRecord_Associations_CollectionProxy < ActiveRecord::Associations::CollectionProxy
+          class ActiveRecord_Associations_CollectionProxy < ActiveRecord::Associations::CollectionProxy
           end
         RBS
       end
@@ -264,7 +263,7 @@ module RbsRails
       end
 
       private def relation_class_name
-        "#{klass.name}::ActiveRecord_Relation"
+        "ActiveRecord_Relation"
       end
 
       private def columns
