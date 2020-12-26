@@ -10,11 +10,16 @@ module RbsRails
       end
 
       def generate
-        [
+        code = [
           klass_decl,
           relation_decl,
           collection_proxy_decl,
         ].join("\n")
+        decls = RBS::Parser.parse_signature(code)
+
+        StringIO.new.tap do |io|
+          RBS::Writer.new(out: io).write(decls)
+        end.string
       end
 
       private def klass_decl
