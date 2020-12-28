@@ -7,6 +7,8 @@ module RbsRails
 
     attr_accessor name: Symbol
 
+    attr_accessor signature_root_dir: Pathname
+
     def initialize: (?::Symbol name) { (self) -> void } -> void
 
     def def_all: () -> void
@@ -16,5 +18,9 @@ module RbsRails
     def def_generate_rbs_for_models: () -> void
 
     def def_generate_rbs_for_path_helpers: () -> void
+
+    private
+
+    def setup_signature_root_dir!: () -> void
   end
 end
