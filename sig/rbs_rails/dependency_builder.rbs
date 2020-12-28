@@ -1,0 +1,9 @@
+module RbsRails
+  class DependencyBuilder
+    attr_reader deps: Array[String]
+
+    def initialize: () -> void
+
+    def build: () -> (String | nil)
+  end
+end

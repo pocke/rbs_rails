@@ -42,6 +42,8 @@ module RbsRails
         require 'rbs_rails'
 
         Rails.application.eager_load!
+
+        dep_builder = DependencyBuilder.new
         
         # HACK: for steep
         (_ = ::ActiveRecord::Base).descendants.each do |klass|
@@ -51,8 +53,12 @@ module RbsRails
           path = signature_root_dir / "app/models/#{klass.name.underscore}.rbs"
           path.dirname.mkpath
 
-          sig = RbsRails::ActiveRecord.class_to_rbs(klass)
+          sig = RbsRails::ActiveRecord.class_to_rbs(klass, dependencies: dep_builder.deps)
           path.write sig
+        end
+
+        if dep_rbs = dep_builder.build
+          signature_root_dir.join('model_dependencies.rbs').write(dep_rbs)
         end
       end
     end
