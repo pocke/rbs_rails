@@ -1,0 +1,24 @@
+module ActionController
+  class Metal
+    # It is necessary to satisfy alias target.
+    # TODO: Define this method to correct place.
+    def status: -> untyped
+  end
+
+  class LiveTestResponse < Live::Response
+    # It is necessary to satisfy alias target.
+    # TODO: Define this method to correct place.
+    def successful?: -> untyped
+    def not_found?: -> untyped
+    def server_error?: -> untyped
+  end
+end
+
+module ActionDispatch
+  class Response
+    # It is necessary to satisfy alias target.
+    # TODO: Define this method to correct place.
+    attr_accessor cache_control: untyped
+  end
+end
+

@@ -1,0 +1,6 @@
+module ActionView
+  class Resolver
+    # Defined with meta-programming
+    def self.caching: () -> untyped
+  end
+end
