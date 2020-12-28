@@ -15,7 +15,7 @@ class ActiveRecordTest < Minitest::Test
 
     setup!
 
-    rbs_path = Pathname(app_dir).join('sig/app/models/user.rbs')
+    rbs_path = Pathname(app_dir).join('sig/rbs_rails/app/models/user.rbs')
 
     assert_equal <<~RBS, rbs_path.read
       class User < ApplicationRecord
