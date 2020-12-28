@@ -1,26 +1,28 @@
 module RbsRails
   module ActiveRecord
-    def self.class_to_rbs(klass)
-      Generator.new(klass).generate
+
+    def self.class_to_rbs(klass, dependencies: [])
+      Generator.new(klass, dependencies: dependencies).generate
     end
 
     class Generator
-      def initialize(klass)
+      def initialize(klass, dependencies:)
         @klass = klass
+        @dependencies = dependencies
+        @klass_name = Util.module_name(klass)
+
+        namespaces = klass_name.split('::').tap{ |names| names.pop }
+        @dependencies << namespaces.join('::') unless namespaces.empty?
       end
 
       def generate
-        decls = RBS::Parser.parse_signature(klass_decl)
-
-        StringIO.new.tap do |io|
-          RBS::Writer.new(out: io).write(decls)
-        end.string
+        Util.format_rbs klass_decl
       end
 
       private def klass_decl
         <<~RBS
           #{header}
-            extend _ActiveRecord_Relation_ClassMethods[#{klass.name}, #{relation_class_name}]
+            extend _ActiveRecord_Relation_ClassMethods[#{klass_name}, #{relation_class_name}]
 
           #{columns}
           #{associations}
@@ -31,15 +33,16 @@ module RbsRails
           #{relation_decl}
 
           #{collection_proxy_decl}
-          end
+
+          #{footer}
         RBS
       end
 
       private def relation_decl
         <<~RBS
           class #{relation_class_name} < ActiveRecord::Relation
-            include _ActiveRecord_Relation[#{klass.name}]
-            include Enumerable[#{klass.name}]
+            include _ActiveRecord_Relation[#{klass_name}]
+            include Enumerable[#{klass_name}]
           #{enum_scope_methods(singleton: false)}
           #{scopes(singleton: false)}
           end
@@ -53,11 +56,29 @@ module RbsRails
         RBS
       end
 
-
       private def header
-        # @type var superclass: Class
-        superclass = _ = klass.superclass
-        "class #{klass.name} < #{superclass.name}"
+        namespace = +''
+        klass_name.split('::').map do |mod_name|
+          namespace += "::#{mod_name}"
+          mod_object = Object.const_get(namespace)
+          case mod_object
+          when Class
+            # @type var superclass: Class
+            superclass = _ = mod_object.superclass
+            superclass_name = Util.module_name(superclass)
+            @dependencies << superclass_name
+
+            "class #{mod_name} < #{superclass_name}"
+          when Module
+            "module #{mod_name}"
+          else
+            raise 'unreachable'
+          end
+        end.join("\n")
+      end
+
+      private def footer
+        "end\n" * klass_name.split('::').size
       end
 
       private def associations
@@ -71,7 +92,7 @@ module RbsRails
       private def has_many
         klass.reflect_on_all_associations(:has_many).map do |a|
           singular_name = a.name.to_s.singularize
-          type = a.klass.name
+          type = Util.module_name(a.klass)
           collection_type = "#{type}::ActiveRecord_Associations_CollectionProxy"
           <<~RUBY.chomp
             def #{a.name}: () -> #{collection_type}
@@ -84,7 +105,7 @@ module RbsRails
 
       private def has_one
         klass.reflect_on_all_associations(:has_one).map do |a|
-          type = a.polymorphic? ? 'untyped' : a.klass.name
+          type = a.polymorphic? ? 'untyped' : Util.module_name(a.klass)
           type_optional = optional(type)
           <<~RUBY.chomp
             def #{a.name}: () -> #{type}
@@ -99,7 +120,7 @@ module RbsRails
 
       private def belongs_to
         klass.reflect_on_all_associations(:belongs_to).map do |a|
-          type = a.polymorphic? ? 'untyped' : a.klass.name
+          type = a.polymorphic? ? 'untyped' : Util.module_name(a.klass)
           type_optional = optional(type)
           <<~RUBY.chomp
             def #{a.name}: () -> #{type}
@@ -239,10 +260,7 @@ module RbsRails
       private def parse_model_file
         return @parse_model_file if defined?(@parse_model_file)
 
-
-        # @type var class_name: String
-        class_name = _ = klass.name
-        path = Rails.root.join('app/models/', class_name.underscore + '.rb')
+        path = Rails.root.join('app/models/', klass_name.underscore + '.rb')
         return @parse_model_file = nil unless path.exist?
         return [] unless path.exist?
 
@@ -325,8 +343,7 @@ module RbsRails
       end
 
       private
-      # @dynamic klass
-      attr_reader :klass
+      attr_reader :klass, :klass_name
     end
   end
 end
