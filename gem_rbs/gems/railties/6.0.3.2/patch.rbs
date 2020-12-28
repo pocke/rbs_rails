@@ -1,0 +1,9 @@
+module Rails
+  module Generators
+    class PluginGenerator < AppBase
+      # It is necessary to satisfy alias target.
+      # TODO: Define this method to correct place.
+      def app_path: () -> untyped
+    end
+  end
+end
