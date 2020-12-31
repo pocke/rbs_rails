@@ -31,3 +31,65 @@ module ActiveSupport
     def refute_same: (*untyped) -> untyped
   end
 end
+
+# Remove the fake type of Minitest
+# if the real types are available.
+module Minitest
+  class Test
+  end
+end
+
+# Remove the fake type of LibXML
+# if the real types are available.
+module LibXML
+  module XML
+    module SaxParser
+      module Callbacks
+      end
+    end
+  end
+end
+
+# Remove the fake type of Nokogiri
+# if the real types are available.
+module Nokogiri
+  module XML
+    module SAX
+      class Document
+      end
+    end
+  end
+end
+
+# Remove the fake type of TZInfo
+# if the real types are available.
+module TZInfo
+  class Timezone
+  end
+end
+
+# Remove the fake type of DRb
+# if the real types are available.
+module DRb
+  module DRbUndumped
+  end
+end
+
+# Remove the fake types for Gem::Version
+# if the real types are available.
+module Gem
+  class Version
+  end
+end
+
+# Remove the fake types for OpenSSL::Cipher
+# if the real types are available.
+module OpenSSL
+  class Cipher
+  end
+end
+
+module Rails
+  class Railtie
+  end
+end

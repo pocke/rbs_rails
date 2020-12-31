@@ -4,3 +4,53 @@ module ActionView
     def self.caching: () -> untyped
   end
 end
+
+# Remove the fake type for Concurrent::Map
+# if the real types are available.
+module Concurrent
+  class Map
+  end
+end
+
+# Remove the fake type for I18n::Config
+# if the real types are available.
+module I18n
+  class Config
+  end
+end
+
+# Remove the fake type for Erubi::Engine
+# if the real types are available.
+module Erubi
+  class Engine
+  end
+end
+
+# Remove the fake rails-dom-testing type
+# if the real types are available.
+module Rails
+  module Dom
+    module Testing
+      module Assertions
+      end
+    end
+  end
+end
+
+# Remove the fake rails-dom-testing type
+# if the real types are available.
+module Rails
+  module Dom
+    module Testing
+      module Assertions
+      end
+    end
+  end
+end
+
+# Remove the fake types for Gem::Version
+# if the real types are available.
+module Gem
+  class Version
+  end
+end
