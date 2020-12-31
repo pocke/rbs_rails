@@ -4,9 +4,6 @@ end
 module DRb::DRbUndumped
 end
 
-module TSort
-end
-
 class SimpleDelegator
 end
 

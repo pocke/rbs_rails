@@ -56,6 +56,9 @@ target :app do
   library 'logger'
   library 'mutex_m'
   library 'date'
+  library 'monitor'
+  library 'singleton'
+  library 'tsort'
 
   library 'activesupport'
   library 'actionpack'
