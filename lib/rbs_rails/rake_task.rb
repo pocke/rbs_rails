@@ -14,7 +14,6 @@ module RbsRails
 
       setup_signature_root_dir!
 
-      def_copy_signature_files
       def_generate_rbs_for_models
       def_generate_rbs_for_path_helpers
       def_all
@@ -23,17 +22,8 @@ module RbsRails
     def def_all
       desc 'Run all tasks of rbs_rails'
 
-      deps = [:"#{name}:copy_signature_files", :"#{name}:generate_rbs_for_models", :"#{name}:generate_rbs_for_path_helpers"]
+      deps = [:"#{name}:generate_rbs_for_models", :"#{name}:generate_rbs_for_path_helpers"]
       task("#{name}:all": deps)
-    end
-
-    def def_copy_signature_files
-      desc 'Copy RBS files for rbs_rails'
-      task("#{name}:copy_signature_files": :environment) do
-        require 'rbs_rails'
-
-        RbsRails.copy_signatures(to: signature_root_dir)
-      end
     end
 
     def def_generate_rbs_for_models

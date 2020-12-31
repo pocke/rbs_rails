@@ -28,9 +28,8 @@ require 'rbs_rails/rake_task'
 RbsRails::RakeTask.new
 ```
 
-Then, the following four tasks are available.
+Then, the following three tasks are available.
 
-* `rbs_rails:copy_signature_files`: Copy RBS files for rbs_rails
 * `rbs_rails:generate_rbs_for_models`: Generate RBS files for Active Record models
 * `rbs_rails:generate_rbs_for_path_helpers`: Generate RBS files for path helpers
 * `rbs_rails:all`: Execute all tasks of RBS Rails
