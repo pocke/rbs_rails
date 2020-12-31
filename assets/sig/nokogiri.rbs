@@ -1,8 +1,0 @@
-module Nokogiri
-end
-module Nokogiri::XML
-end
-module Nokogiri::XML::SAX
-end
-class Nokogiri::XML::SAX::Document
-end

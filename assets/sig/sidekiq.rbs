@@ -1,4 +1,0 @@
-module Sidekiq
-  module Worker
-  end
-end

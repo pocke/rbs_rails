@@ -1,5 +1,0 @@
-module PG
-  class Connection
-    def async_exec: (*untyped) -> untyped
-  end
-end
