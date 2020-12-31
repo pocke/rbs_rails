@@ -76,9 +76,15 @@ class ActiveRecordTest < Minitest::Test
         def restore_updated_at!: () -> void
         def clear_updated_at_change: () -> void
 
+        def self.all_kind_args: (untyped a, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped kwrest) { (*untyped) -> untyped } -> ActiveRecord_Relation
+        def self.no_arg: () -> ActiveRecord_Relation
+
         class ActiveRecord_Relation < ActiveRecord::Relation
           include _ActiveRecord_Relation[User]
           include Enumerable[User]
+
+          def all_kind_args: (untyped a, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped kwrest) { (*untyped) -> untyped } -> ActiveRecord_Relation
+          def no_arg: () -> ActiveRecord_Relation
         end
 
         class ActiveRecord_Associations_CollectionProxy < ActiveRecord::Associations::CollectionProxy

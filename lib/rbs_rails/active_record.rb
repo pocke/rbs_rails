@@ -233,28 +233,36 @@ module RbsRails
           next unless body_node.type == :block
 
           args = args_to_type(body_node.children[1])
-          "def #{singleton ? 'self.' : ''}#{name}: (#{args}) -> #{relation_class_name}"
+          "def #{singleton ? 'self.' : ''}#{name}: #{args} -> #{relation_class_name}"
         end.compact.join("\n")
       end
 
       private def args_to_type(args_node)
         # @type var res: Array[String]
         res = []
+        # @type var block: String?
+        block = nil
         args_node.children.each do |node|
           case node.type
           when :arg
-            res << "untyped"
+            res << "untyped #{node.children[0]}"
           when :optarg
-            res << "?untyped"
+            res << "?untyped #{node.children[0]}"
           when :kwarg
             res << "#{node.children[0]}: untyped"
           when :kwoptarg
             res << "?#{node.children[0]}: untyped"
+          when :restarg
+            res << "*untyped #{node.children[0]}"
+          when :kwrestarg
+            res << "**untyped #{node.children[0]}"
+          when :blockarg
+            block = " { (*untyped) -> untyped }"
           else
             raise "unexpected: #{node}"
           end
         end
-        res.join(", ")
+        "(#{res.join(", ")})#{block}"
       end
 
       private def parse_model_file
