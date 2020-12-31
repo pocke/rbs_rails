@@ -11,3 +11,10 @@ module ActiveModel
     def `send`: (String name, *untyped args) ?{ (*untyped) -> untyped } -> untyped
   end
 end
+
+# Remove the fake types for Gem::Version
+# if the real types are available.
+module Gem
+  class Version
+  end
+end

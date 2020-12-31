@@ -4099,7 +4099,7 @@ module Rails
     end
 
     class Collection[T] < Array[T]
-      include TSort
+      include TSort[untyped]
 
       alias tsort_each_node each
 

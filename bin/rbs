@@ -18,7 +18,7 @@ end
 exec(
   'rbs',
   # Require stdlibs
-  '-rlogger', '-rpathname', '-rmutex_m', '-rdate',
+  '-rlogger', '-rpathname', '-rmutex_m', '-rdate', '-rmonitor', '-rsingleton', '-rtsort',
   "--repo=#{repo}",
   # Require Rails libraries
   v('-ractivesupport'), v('-ractionpack'), v('-ractivejob'), v('-ractivemodel'), v('-ractionview'), v('-ractiverecord'), v('-rrailties'),

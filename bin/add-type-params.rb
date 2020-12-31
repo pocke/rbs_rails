@@ -16,6 +16,7 @@ end
 def env
   @env ||= begin
     loader = RBS::EnvironmentLoader.new()
+    loader.add(library: 'tsort')
     RBS::Environment.from_loader(loader).resolve_type_names
   end
 end

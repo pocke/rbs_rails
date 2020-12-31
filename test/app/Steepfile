@@ -8,6 +8,9 @@ target :app do
   library "mutex_m"
   library "pathname"
   library "date"
+  library 'monitor'
+  library 'singleton'
+  library 'tsort'
 
   library 'activesupport'
   library 'actionpack'

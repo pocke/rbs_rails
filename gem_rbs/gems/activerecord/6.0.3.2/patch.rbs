@@ -20,3 +20,22 @@ module ActiveRecord
     end
   end
 end
+
+# Remove the fake PG type if the real type is available
+module PG
+  class Connection
+    def async_exec: (*untyped) -> untyped
+  end
+end
+
+# Remove the fake SimpleDelegator type
+# if the real types are available.
+class SimpleDelegator
+end
+
+# Remove the fake types for Gem::Version
+# if the real types are available.
+module Gem
+  class Version
+  end
+end

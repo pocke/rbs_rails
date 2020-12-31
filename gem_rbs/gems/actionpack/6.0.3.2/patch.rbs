@@ -22,3 +22,92 @@ module ActionDispatch
   end
 end
 
+# Remove the fake types for Capybara
+# if the real types are available.
+module Capybara
+  module DSL
+  end
+
+  module Minitest
+    module Assertions
+    end
+  end
+
+  module Poltergeist
+    class Driver
+    end
+  end
+end
+
+# Remove the fake types for Minitest
+# if the real types are available.
+module Minitest
+  module Assertions
+  end
+end
+
+# Remove the fake types for Racc
+# if the real types are available.
+module Racc
+  class Parser
+  end
+end
+
+# Remove the fake types for Rack
+# if the real types are available.
+module Rack
+  class Response
+    module Helpers
+      def location: () -> untyped
+    end
+  end
+
+  class Request
+    module Helpers
+    end
+
+    module Env
+    end
+  end
+
+  module Session
+    module Abstract
+      class SessionHash
+      end
+
+      class PersistedSecure
+        class SecureSessionHash
+        end
+      end
+
+      class Persisted
+      end
+    end
+
+    class SessionId
+    end
+
+    class Dalli
+    end
+  end
+
+  module Cache
+    class MetaStore
+    end
+
+    class EntityStore
+    end
+  end
+
+  module Test
+    class UploadedFile
+    end
+  end
+end
+
+# Remove the fake types for Gem::Version
+# if the real types are available.
+module Gem
+  class Version
+  end
+end

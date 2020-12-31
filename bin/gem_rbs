@@ -45,7 +45,7 @@ class QueryBuilder
   end
 
   def query
-    # TODO: variable type
+    # TODO: Allow non-String type for variables
     "query(#{variables.keys.map { |v| "$#{v}: String!" }.join(',')}) { #{@queries.join("\n")} }"
   end
 end
