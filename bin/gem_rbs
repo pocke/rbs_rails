@@ -1,11 +1,11 @@
-#!ruby
+#!/usr/bin/env ruby
 
 require 'net/http'
 require 'json'
 require 'securerandom'
 require 'pathname'
 
-TOKEN = ENV.fetch('GITHUB_ACCESS_TOKEN')
+TOKEN = ENV.fetch('GITHUB_TOKEN')
 VERSION = "6.0.3.2"
 
 def req(query)
