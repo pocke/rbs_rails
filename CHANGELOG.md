@@ -2,6 +2,10 @@
 
 ## master (unreleased)
 
+## 0.8.1 (2021-01-09)
+
+* Skip generation RBS fro class that doesn't have table in DB. [#95](https://github.com/pocke/rbs_rails/pull/95)
+
 ## 0.8.0 (2020-12-31)
 
 * **[BREAKING]** Move RBS files that are copied by `rbs_rails:copy_signature_files` task to [ruby/gem_rbs](https://github.com/ruby/gem_rbs) repository [#90](https://github.com/pocke/rbs_rails/pull/90)
