@@ -35,8 +35,7 @@ module RbsRails
 
         dep_builder = DependencyBuilder.new
         
-        # HACK: for steep
-        (_ = ::ActiveRecord::Base).descendants.each do |klass|
+        ::ActiveRecord::Base.descendants.each do |klass|
           next if klass.abstract_class?
           next if ignore_model_if&.call(klass)
 
