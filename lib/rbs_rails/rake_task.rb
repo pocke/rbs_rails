@@ -36,7 +36,7 @@ module RbsRails
         dep_builder = DependencyBuilder.new
         
         ::ActiveRecord::Base.descendants.each do |klass|
-          next if klass.abstract_class?
+          next unless RbsRails::ActiveRecord.generatable?(klass)
           next if ignore_model_if&.call(klass)
 
           path = signature_root_dir / "app/models/#{klass.name.underscore}.rbs"

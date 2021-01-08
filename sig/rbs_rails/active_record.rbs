@@ -1,5 +1,6 @@
 module RbsRails::ActiveRecord
   def self.class_to_rbs: (untyped klass, ?dependencies: Array[String]) -> untyped
+  def self.generatable?: (untyped klass) -> boolish
 end
 
 class RbsRails::ActiveRecord::Generator

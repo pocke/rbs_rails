@@ -1,6 +1,12 @@
 module RbsRails
   module ActiveRecord
 
+    def self.generatable?(klass)
+      return false if klass.abstract_class?
+
+      klass.connection.table_exists?(klass.table_name)
+    end
+
     def self.class_to_rbs(klass, dependencies: [])
       Generator.new(klass, dependencies: dependencies).generate
     end
