@@ -29,7 +29,7 @@ GEM
     parser (3.0.0.0)
       ast (~> 2.4.1)
     rainbow (3.0.0)
-    rake (12.3.3)
+    rake (13.0.3)
     rb-fsevent (0.10.4)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
@@ -47,11 +47,12 @@ GEM
     zeitwerk (2.4.2)
 
 PLATFORMS
+  ruby
   x86_64-linux
 
 DEPENDENCIES
   minitest
-  rake (~> 12.0)
+  rake (~> 13.0)
   rbs (>= 1.0.0)
   rbs_rails!
   steep (>= 0.34.0)
