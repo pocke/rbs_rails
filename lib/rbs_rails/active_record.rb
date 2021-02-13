@@ -316,6 +316,12 @@ module RbsRails
             def #{col.name}_previously_changed?: () -> bool
             def #{col.name}_previous_change: () -> Array[#{class_name_opt}]?
             def #{col.name}_previously_was: () -> #{class_name_opt}
+            def #{col.name}_before_last_save: () -> #{class_name_opt}
+            def #{col.name}_change_to_be_saved: () -> Array[#{class_name_opt}]?
+            def #{col.name}_in_database: () -> #{class_name_opt}
+            def saved_change_to_#{col.name}: () -> Array[#{class_name_opt}]?
+            def saved_change_to_#{col.name}?: () -> bool
+            def will_save_change_to_#{col.name}?: () -> bool
             def restore_#{col.name}!: () -> void
             def clear_#{col.name}_change: () -> void
           EOS
