@@ -6,7 +6,6 @@
 /pkg/
 /spec/reports/
 /tmp/
-/Gemfile.lock
 /test/app/sig/rbs_rails
 /test/app/sig/app
 /test/app/sig/path_helpers.rbs
