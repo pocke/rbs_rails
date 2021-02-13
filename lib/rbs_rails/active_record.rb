@@ -28,7 +28,7 @@ module RbsRails
       private def klass_decl
         <<~RBS
           #{header}
-            extend _ActiveRecord_Relation_ClassMethods[#{klass_name}, #{relation_class_name}]
+            extend _ActiveRecord_Relation_ClassMethods[#{klass_name}, #{relation_class_name}, #{pk_type}]
 
           #{columns}
           #{associations}
@@ -44,11 +44,18 @@ module RbsRails
         RBS
       end
 
+      private def pk_type
+        pk = klass.primary_key
+        col = klass.columns.find {|col| col.name == pk }
+        sql_type_to_class(col.type)
+      end
+
       private def relation_decl
         <<~RBS
           class #{relation_class_name} < ActiveRecord::Relation
-            include _ActiveRecord_Relation[#{klass_name}]
+            include _ActiveRecord_Relation[#{klass_name}, #{pk_type}]
             include Enumerable[#{klass_name}]
+
           #{enum_scope_methods(singleton: false)}
           #{scopes(singleton: false)}
           end
