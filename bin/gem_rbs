@@ -56,7 +56,7 @@ builder = QueryBuilder.new
 gems.each do |gem|
   path = "main:gems/#{gem}/#{VERSION}"
   builder.add(<<~GRAPHQL, { 'path' => path })
-    #{gem}:repository(owner: "ruby", name: "gem_rbs") {
+    #{gem}:repository(owner: "ruby", name: "gem_rbs_collection") {
       object(expression: $path) {
         ... on Tree {
           entries {
@@ -82,7 +82,7 @@ resp[:data].each do |gem_name, gem_value|
     if fname.end_with?('.rbs')
       content =
         if entry.dig(:object, :isTruncated)
-          `curl -H 'Accept: application/vnd.github.v3.raw' -H Authorization: token #{TOKEN} https://api.github.com/repos/ruby/gem_rbs/contents/gems/#{gem_name}/#{VERSION}/#{fname}`
+          `curl -H 'Accept: application/vnd.github.v3.raw' -H Authorization: token #{TOKEN} https://api.github.com/repos/ruby/gem_rbs_collection/contents/gems/#{gem_name}/#{VERSION}/#{fname}`
         else
           entry.dig(:object, :text)
         end
