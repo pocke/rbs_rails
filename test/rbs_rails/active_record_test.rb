@@ -29,6 +29,12 @@ class ActiveRecordTest < Minitest::Test
         def id_previously_changed?: () -> bool
         def id_previous_change: () -> Array[Integer?]?
         def id_previously_was: () -> Integer?
+        def id_before_last_save: () -> Integer?
+        def id_change_to_be_saved: () -> Array[Integer?]?
+        def id_in_database: () -> Integer?
+        def saved_change_to_id: () -> Array[Integer?]?
+        def saved_change_to_id?: () -> bool
+        def will_save_change_to_id?: () -> bool
         def restore_id!: () -> void
         def clear_id_change: () -> void
 
@@ -40,6 +46,12 @@ class ActiveRecordTest < Minitest::Test
         def name_previously_changed?: () -> bool
         def name_previous_change: () -> Array[String?]?
         def name_previously_was: () -> String?
+        def name_before_last_save: () -> String?
+        def name_change_to_be_saved: () -> Array[String?]?
+        def name_in_database: () -> String?
+        def saved_change_to_name: () -> Array[String?]?
+        def saved_change_to_name?: () -> bool
+        def will_save_change_to_name?: () -> bool
         def restore_name!: () -> void
         def clear_name_change: () -> void
 
@@ -51,6 +63,12 @@ class ActiveRecordTest < Minitest::Test
         def age_previously_changed?: () -> bool
         def age_previous_change: () -> Array[Integer?]?
         def age_previously_was: () -> Integer?
+        def age_before_last_save: () -> Integer?
+        def age_change_to_be_saved: () -> Array[Integer?]?
+        def age_in_database: () -> Integer?
+        def saved_change_to_age: () -> Array[Integer?]?
+        def saved_change_to_age?: () -> bool
+        def will_save_change_to_age?: () -> bool
         def restore_age!: () -> void
         def clear_age_change: () -> void
 
@@ -62,6 +80,12 @@ class ActiveRecordTest < Minitest::Test
         def created_at_previously_changed?: () -> bool
         def created_at_previous_change: () -> Array[ActiveSupport::TimeWithZone?]?
         def created_at_previously_was: () -> ActiveSupport::TimeWithZone?
+        def created_at_before_last_save: () -> ActiveSupport::TimeWithZone?
+        def created_at_change_to_be_saved: () -> Array[ActiveSupport::TimeWithZone?]?
+        def created_at_in_database: () -> ActiveSupport::TimeWithZone?
+        def saved_change_to_created_at: () -> Array[ActiveSupport::TimeWithZone?]?
+        def saved_change_to_created_at?: () -> bool
+        def will_save_change_to_created_at?: () -> bool
         def restore_created_at!: () -> void
         def clear_created_at_change: () -> void
 
@@ -73,6 +97,12 @@ class ActiveRecordTest < Minitest::Test
         def updated_at_previously_changed?: () -> bool
         def updated_at_previous_change: () -> Array[ActiveSupport::TimeWithZone?]?
         def updated_at_previously_was: () -> ActiveSupport::TimeWithZone?
+        def updated_at_before_last_save: () -> ActiveSupport::TimeWithZone?
+        def updated_at_change_to_be_saved: () -> Array[ActiveSupport::TimeWithZone?]?
+        def updated_at_in_database: () -> ActiveSupport::TimeWithZone?
+        def saved_change_to_updated_at: () -> Array[ActiveSupport::TimeWithZone?]?
+        def saved_change_to_updated_at?: () -> bool
+        def will_save_change_to_updated_at?: () -> bool
         def restore_updated_at!: () -> void
         def clear_updated_at_change: () -> void
 
