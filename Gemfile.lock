@@ -33,7 +33,7 @@ GEM
     rb-fsevent (0.10.4)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
-    rbs (1.0.5)
+    rbs (1.0.6)
     steep (0.41.0)
       activesupport (>= 5.1)
       ast_utils (>= 0.4.0)
