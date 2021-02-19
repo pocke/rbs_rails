@@ -12,6 +12,8 @@ class RbsRails::ActiveRecord::Generator
 
   def klass_decl: () -> String
 
+  def pk_type: () -> String
+
   def relation_decl: () -> String
 
   def collection_proxy_decl: () -> String
