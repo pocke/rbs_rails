@@ -2,6 +2,8 @@
 
 ## master (unreleased)
 
+## 0.8.2 (2021-02-20)
+
 *  Add ActiveRecord::AttributeMethods::Dirty methods [#104](https://github.com/pocke/rbs_rails/pull/104)
 *  Define find method based on primary key [#105](https://github.com/pocke/rbs_rails/pull/105)
 
