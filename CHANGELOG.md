@@ -2,6 +2,9 @@
 
 ## master (unreleased)
 
+*  Add ActiveRecord::AttributeMethods::Dirty methods [#104](https://github.com/pocke/rbs_rails/pull/104)
+*  Define find method based on primary key [#105](https://github.com/pocke/rbs_rails/pull/105)
+
 ## 0.8.1 (2021-01-09)
 
 * Skip generation RBS fro class that doesn't have table in DB. [#95](https://github.com/pocke/rbs_rails/pull/95)
