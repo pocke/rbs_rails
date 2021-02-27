@@ -69,12 +69,12 @@ target :app do
 end
 ```
 
-You need to put RBS repo to `path/to/rbs_repo`. See https://github.com/ruby/gem_rbs
+You need to put RBS repo to `path/to/rbs_repo`. See https://github.com/ruby/gem_rbs_collection
 
 ## Development
 
 After checking out the repo, run `GITHUB_TOKEN=xxx bin/setup` to install dependencies.
-`GITHUB_TOKEN` environment variable is required to fetch RBS from [ruby/gem_rbs](https://github.com/ruby/gem_rbs) repository.
+`GITHUB_TOKEN` environment variable is required to fetch RBS from [ruby/gem_rbs_collection](https://github.com/ruby/gem_rbs_collection) repository.
 
 You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
