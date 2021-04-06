@@ -27,7 +27,7 @@ GEM
       rb-inotify (~> 0.9, >= 0.9.10)
     minitest (5.14.4)
     parallel (1.20.1)
-    parser (3.0.0.0)
+    parser (3.0.1.0)
       ast (~> 2.4.1)
     rainbow (3.0.0)
     rake (13.0.3)
