@@ -46,6 +46,8 @@ module RbsRails
 
       private def pk_type
         pk = klass.primary_key
+        return 'top' unless pk
+
         col = klass.columns.find {|col| col.name == pk }
         sql_type_to_class(col.type)
       end
