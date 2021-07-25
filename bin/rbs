@@ -20,6 +20,8 @@ exec(
   # Require stdlibs
   '-rlogger', '-rpathname', '-rmutex_m', '-rdate', '-rmonitor', '-rsingleton', '-rtsort',
   "--repo=#{repo}",
+  # Require dependencies in ruby/gem_rbs_collection repo
+  '-rrack',
   # Require Rails libraries
   v('-ractivesupport'), v('-ractionpack'), v('-ractivejob'), v('-ractivemodel'), v('-ractionview'), v('-ractiverecord'), v('-rrailties'),
   # Load signatures that are bundled in rbs_rails

@@ -59,6 +59,8 @@ target :app do
   library 'singleton'
   library 'tsort'
 
+  library 'rack'
+
   library 'activesupport'
   library 'actionpack'
   library 'activejob'
