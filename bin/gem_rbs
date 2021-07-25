@@ -6,7 +6,7 @@ require 'securerandom'
 require 'pathname'
 
 TOKEN = ENV.fetch('GITHUB_TOKEN')
-VERSION = "6.0.3.2"
+VERSION = "6.0"
 
 def req(query)
   http = Net::HTTP.new("api.github.com", 443)
@@ -50,11 +50,14 @@ class QueryBuilder
   end
 end
 
-gems = %w[activesupport actionpack activejob activemodel actionview activerecord railties]
+gems = %w[activesupport actionpack activejob activemodel actionview activerecord railties].map do |gem|
+  "main:gems/#{gem}/#{VERSION}"
+end
+gems.push 'main:gems/rack/2.2.2'
 
 builder = QueryBuilder.new
-gems.each do |gem|
-  path = "main:gems/#{gem}/#{VERSION}"
+gems.each do |path|
+  gem = path[%r!^main:gems/(\w+)!, 1]
   builder.add(<<~GRAPHQL, { 'path' => path })
     #{gem}:repository(owner: "ruby", name: "gem_rbs_collection") {
       object(expression: $path) {
