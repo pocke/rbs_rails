@@ -6,7 +6,7 @@ require 'securerandom'
 require 'pathname'
 
 TOKEN = ENV.fetch('GITHUB_TOKEN')
-VERSION = "6.0.3.2"
+VERSION = "6.0"
 
 def req(query)
   http = Net::HTTP.new("api.github.com", 443)
