@@ -106,14 +106,14 @@ class ActiveRecordTest < Minitest::Test
         def restore_updated_at!: () -> void
         def clear_updated_at_change: () -> void
 
-        def self.all_kind_args: (untyped a, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped kwrest) { (*untyped) -> untyped } -> ActiveRecord_Relation
+        def self.all_kind_args: (untyped `type`, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped `untyped`) { (*untyped) -> untyped } -> ActiveRecord_Relation
         def self.no_arg: () -> ActiveRecord_Relation
 
         class ActiveRecord_Relation < ActiveRecord::Relation
           include _ActiveRecord_Relation[User, Integer]
           include Enumerable[User]
 
-          def all_kind_args: (untyped a, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped kwrest) { (*untyped) -> untyped } -> ActiveRecord_Relation
+          def all_kind_args: (untyped `type`, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped `untyped`) { (*untyped) -> untyped } -> ActiveRecord_Relation
           def no_arg: () -> ActiveRecord_Relation
         end
 
@@ -124,7 +124,7 @@ class ActiveRecordTest < Minitest::Test
   end
 
   def app_dir
-    File.expand_path('../app', __dir__) 
+    File.expand_path('../app', __dir__)
   end
 
   def setup!
