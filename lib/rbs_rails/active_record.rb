@@ -260,17 +260,17 @@ module RbsRails
         args_node.children.each do |node|
           case node.type
           when :arg
-            res << "untyped #{node.children[0]}"
+            res << "untyped `#{node.children[0]}`"
           when :optarg
-            res << "?untyped #{node.children[0]}"
+            res << "?untyped `#{node.children[0]}`"
           when :kwarg
             res << "#{node.children[0]}: untyped"
           when :kwoptarg
             res << "?#{node.children[0]}: untyped"
           when :restarg
-            res << "*untyped #{node.children[0]}"
+            res << "*untyped `#{node.children[0]}`"
           when :kwrestarg
-            res << "**untyped #{node.children[0]}"
+            res << "**untyped `#{node.children[0]}`"
           when :blockarg
             block = " { (*untyped) -> untyped }"
           else
