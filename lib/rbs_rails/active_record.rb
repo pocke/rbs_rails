@@ -134,7 +134,7 @@ module RbsRails
           type = a.polymorphic? ? 'untyped' : Util.module_name(a.klass)
           type_optional = optional(type)
           <<~RUBY.chomp
-            def #{a.name}: () -> #{type}
+            def #{a.name}: () -> #{type_optional}
             def #{a.name}=: (#{type_optional}) -> #{type_optional}
             def build_#{a.name}: (untyped) -> #{type}
             def create_#{a.name}: (untyped) -> #{type}
