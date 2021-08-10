@@ -109,15 +109,20 @@ class ActiveRecordTest < Minitest::Test
         def self.all_kind_args: (untyped `type`, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped `untyped`) { (*untyped) -> untyped } -> ActiveRecord_Relation
         def self.no_arg: () -> ActiveRecord_Relation
 
-        class ActiveRecord_Relation < ActiveRecord::Relation
-          include _ActiveRecord_Relation[User, Integer]
-          include Enumerable[User]
-
+        module GeneratedRelationMethods
           def all_kind_args: (untyped `type`, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped `untyped`) { (*untyped) -> untyped } -> ActiveRecord_Relation
+
           def no_arg: () -> ActiveRecord_Relation
         end
 
+        class ActiveRecord_Relation < ActiveRecord::Relation
+          include GeneratedRelationMethods
+          include _ActiveRecord_Relation[User, Integer]
+          include Enumerable[User]
+        end
+
         class ActiveRecord_Associations_CollectionProxy < ActiveRecord::Associations::CollectionProxy
+          include GeneratedRelationMethods
         end
       end
     RBS

@@ -36,6 +36,8 @@ module RbsRails
           #{enum_scope_methods(singleton: true)}
           #{scopes(singleton: true)}
 
+          #{generated_relation_methods_decl}
+
           #{relation_decl}
 
           #{collection_proxy_decl}
@@ -52,14 +54,22 @@ module RbsRails
         sql_type_to_class(col.type)
       end
 
+      private def generated_relation_methods_decl
+        <<~RBS
+          module GeneratedRelationMethods
+            #{scopes(singleton: false)}
+          end
+        RBS
+      end
+
       private def relation_decl
         <<~RBS
           class #{relation_class_name} < ActiveRecord::Relation
+            include GeneratedRelationMethods
             include _ActiveRecord_Relation[#{klass_name}, #{pk_type}]
             include Enumerable[#{klass_name}]
 
           #{enum_scope_methods(singleton: false)}
-          #{scopes(singleton: false)}
           end
         RBS
       end
@@ -67,6 +77,7 @@ module RbsRails
       private def collection_proxy_decl
         <<~RBS
           class ActiveRecord_Associations_CollectionProxy < ActiveRecord::Associations::CollectionProxy
+            include GeneratedRelationMethods
           end
         RBS
       end
