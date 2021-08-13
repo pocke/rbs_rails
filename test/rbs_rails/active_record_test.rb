@@ -106,10 +106,20 @@ class ActiveRecordTest < Minitest::Test
         def restore_updated_at!: () -> void
         def clear_updated_at_change: () -> void
 
+        def temporary!: () -> bool
+        def temporary?: () -> bool
+        def accepted!: () -> bool
+        def accepted?: () -> bool
+        def self.temporary: () -> ActiveRecord_Relation
+        def self.accepted: () -> ActiveRecord_Relation
         def self.all_kind_args: (untyped `type`, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped `untyped`) { (*untyped) -> untyped } -> ActiveRecord_Relation
         def self.no_arg: () -> ActiveRecord_Relation
 
         module GeneratedRelationMethods
+          def temporary: () -> ActiveRecord_Relation
+
+          def accepted: () -> ActiveRecord_Relation
+
           def all_kind_args: (untyped `type`, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped `untyped`) { (*untyped) -> untyped } -> ActiveRecord_Relation
 
           def no_arg: () -> ActiveRecord_Relation
