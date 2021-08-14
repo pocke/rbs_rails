@@ -32,6 +32,8 @@ module RbsRails
 
           #{columns}
           #{associations}
+          #{delegated_type_instance}
+          #{delegated_type_scope(singleton: true)}
           #{enum_instance_methods}
           #{enum_scope_methods(singleton: true)}
           #{scopes(singleton: true)}
@@ -58,6 +60,7 @@ module RbsRails
         <<~RBS
           module GeneratedRelationMethods
             #{scopes(singleton: false)}
+            #{delegated_type_scope(singleton: false)}
           end
         RBS
       end
@@ -157,6 +160,77 @@ module RbsRails
             def reload_#{a.name}: () -> #{type_optional}
           RUBY
         end.join("\n")
+      end
+
+      private def delegated_type_scope(singleton:)
+        definitions = delegated_type_definitions
+        return "" unless definitions
+        definitions.map do |definition|
+          definition[:types].map do |type|
+            scope_name = type.tableize.gsub("/", "_")
+            "def #{singleton ? 'self.' : ''}#{scope_name}: () -> #{relation_class_name}"
+          end
+        end.flatten.join("\n")
+      end
+
+      private def delegated_type_instance
+        definitions = delegated_type_definitions
+        return "" unless definitions
+        # @type var methods: Array[String]
+        methods = []
+        definitions.each do |definition|
+          methods << "def #{definition[:role]}_class: () -> Class"
+          methods << "def #{definition[:role]}_name: () -> String"
+          methods << definition[:types].map do |type|
+            scope_name = type.tableize.gsub("/", "_")
+            singular = scope_name.singularize
+            <<~RUBY.chomp
+              def #{singular}?: () -> bool
+              def #{singular}: () -> #{type.classify}?
+              def #{singular}_id: () -> Integer?
+            RUBY
+          end.join("\n")
+        end
+        methods.join("\n")
+      end
+
+      private def delegated_type_definitions
+        ast = parse_model_file
+        return unless ast
+
+        traverse(ast).map do |node|
+          # @type block: { role: Symbol, types: Array[String] }?
+          next unless node.type == :send
+          next unless node.children[0].nil?
+          next unless node.children[1] == :delegated_type
+
+          role_node = node.children[2]
+          next unless role_node
+          next unless role_node.type == :sym
+          # @type var role: Symbol
+          role = role_node.children[0]
+
+          args_node = node.children[3]
+          next unless args_node
+          next unless args_node.type == :hash
+
+          types = traverse(args_node).map do |n|
+            # @type block: Array[String]?
+            next unless n.type == :pair
+            key_node = n.children[0]
+            next unless key_node
+            next unless key_node.type == :sym
+            next unless key_node.children[0] == :types
+
+            types_node = n.children[1]
+            next unless types_node
+            next unless types_node.type == :array
+            code = types_node.loc.expression.source
+            eval(code)
+          end.compact.flatten
+
+          { role: role, types: types }
+        end.compact
       end
 
       private def enum_instance_methods

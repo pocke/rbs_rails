@@ -32,6 +32,12 @@ class RbsRails::ActiveRecord::Generator
 
   def belongs_to: () -> String
 
+  def delegated_type_scope: (singleton: bool) -> String
+
+  def delegated_type_instance: () -> String
+
+  def delegated_type_definitions: () -> Array[{ role: Symbol, types: Array[String] }]?
+
   def enum_instance_methods: () -> String
 
   def enum_scope_methods: (singleton: untyped `singleton`) -> String
