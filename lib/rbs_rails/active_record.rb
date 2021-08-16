@@ -151,14 +151,17 @@ module RbsRails
         klass.reflect_on_all_associations(:belongs_to).map do |a|
           type = a.polymorphic? ? 'untyped' : Util.module_name(a.klass)
           type_optional = optional(type)
-          <<~RUBY.chomp
-            def #{a.name}: () -> #{type}
-            def #{a.name}=: (#{type_optional}) -> #{type_optional}
-            def build_#{a.name}: (untyped) -> #{type}
-            def create_#{a.name}: (untyped) -> #{type}
-            def create_#{a.name}!: (untyped) -> #{type}
-            def reload_#{a.name}: () -> #{type_optional}
-          RUBY
+          # @type var methods: Array[String]
+          methods = []
+          methods << "def #{a.name}: () -> #{type}"
+          methods << "def #{a.name}=: (#{type_optional}) -> #{type_optional}"
+          methods << "def reload_#{a.name}: () -> #{type_optional}"
+          if !a.polymorphic?
+            methods << "def build_#{a.name}: (untyped) -> #{type}"
+            methods << "def create_#{a.name}: (untyped) -> #{type}"
+            methods << "def create_#{a.name}!: (untyped) -> #{type}"
+          end
+          methods.join("\n")
         end.join("\n")
       end
 
