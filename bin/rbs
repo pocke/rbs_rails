@@ -18,7 +18,7 @@ end
 exec(
   'rbs',
   # Require stdlibs
-  '-rlogger', '-rpathname', '-rmutex_m', '-rdate', '-rmonitor', '-rsingleton', '-rtsort',
+  '-rlogger', '-rpathname', '-rmutex_m', '-rdate', '-rmonitor', '-rsingleton', '-rtsort', '-rtime',
   "--repo=#{repo}",
   # Require dependencies in ruby/gem_rbs_collection repo
   '-rrack',
