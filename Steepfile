@@ -12,6 +12,7 @@ target :lib do
   library 'monitor'
   library 'singleton'
   library 'tsort'
+  library 'time'
 
   library 'rack'
 

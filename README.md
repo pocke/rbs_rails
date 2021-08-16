@@ -58,6 +58,7 @@ target :app do
   library 'monitor'
   library 'singleton'
   library 'tsort'
+  library 'time'
 
   library 'rack'
 
