@@ -59,6 +59,7 @@ module RbsRails
       private def generated_relation_methods_decl
         <<~RBS
           module GeneratedRelationMethods
+            #{enum_scope_methods(singleton: false)}
             #{scopes(singleton: false)}
             #{delegated_type_scope(singleton: false)}
           end
@@ -71,8 +72,6 @@ module RbsRails
             include GeneratedRelationMethods
             include _ActiveRecord_Relation[#{klass_name}, #{pk_type}]
             include Enumerable[#{klass_name}]
-
-          #{enum_scope_methods(singleton: false)}
           end
         RBS
       end
