@@ -110,14 +110,6 @@ gems:
     revision: efc56bf938e6c99581712b4f9c0c9b7dbdebfe29
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
-- name: listen
-  version: '3.2'
-  collection:
-    type: git
-    name: ruby/gem_rbs_collection
-    revision: efc56bf938e6c99581712b4f9c0c9b7dbdebfe29
-    remote: https://github.com/ruby/gem_rbs_collection.git
-    repo_dir: gems
 - name: railties
   version: '6.0'
   collection:
