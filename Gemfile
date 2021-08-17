@@ -6,8 +6,7 @@ git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 gemspec
 
 gem "rake", "~> 13.0"
-gem 'rbs', path: '../../ruby/rbs'
 gem 'rails'
-# gem 'rbs', github: 'pocke/rbs', branch: 'Add_gem_rbs_collection_manager'
+gem 'rbs', github: 'pocke/rbs', branch: 'Add_gem_rbs_collection_manager'
 gem 'steep', '>= 0.34.0'
 gem 'minitest'

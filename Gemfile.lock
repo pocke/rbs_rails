@@ -1,5 +1,7 @@
-PATH
-  remote: ../../ruby/rbs
+GIT
+  remote: https://github.com/pocke/rbs
+  revision: 56c849fcbc0a58d5c1b163a9ddbd41fc104032e2
+  branch: Add_gem_rbs_collection_manager
   specs:
     rbs (1.3.3)
 
@@ -178,4 +180,4 @@ DEPENDENCIES
   steep (>= 0.34.0)
 
 BUNDLED WITH
-   2.3.0.dev
+   2.2.16
