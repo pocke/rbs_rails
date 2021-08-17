@@ -33,3 +33,7 @@ gems:
     ignore: true
   - name: nokogiri
     ignore: true
+  - name: ast
+    ignore: true
+  - name: rainbow
+    ignore: true
