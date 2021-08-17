@@ -6,8 +6,8 @@ target :app do
 
   # rbs collection
   # TODO: Move the implementation to Steep
-  lock = RBS::Collection::Config.lockfile_of(Pathname('./rbs_collection.yaml'))
-  repo_path lock.repo_path
+  lock = RBS::Collection::Config.lockfile_of(Pathname('../../rbs_collection.yaml'))
+  repo_path Pathname('../../.gem_rbs_collection')
 
   lock.gems.each do |gem|
     library "#{gem['name']}:#{gem['version']}"
