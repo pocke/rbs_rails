@@ -122,7 +122,3 @@ gems:
   version: 1.3.3
   collection:
     type: rubygems
-- name: rbs_rails
-  version: 0.8.2
-  collection:
-    type: rubygems

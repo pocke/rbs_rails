@@ -3,24 +3,14 @@ target :lib do
   signature 'assets/sig'
 
   check "lib"                       # Directory name
-  repo_path ENV['RBS_REPO_DIR'] || './gem_rbs/gems'
+  repo_path ENV['RBS_REPO_DIR'] if ENV['RBS_REPO_DIR']
 
-  library "pathname"
-  library "logger"
-  library "mutex_m"
-  library "date"
-  library 'monitor'
-  library 'singleton'
-  library 'tsort'
-  library 'time'
+  # rbs collection
+  # TODO: Move the implementation to Steep
+  lock = RBS::Collection::Config.lockfile_of(Pathname('./rbs_collection.yaml'))
+  repo_path lock.repo_path
 
-  library 'rack'
-
-  library 'activesupport'
-  library 'actionpack'
-  library 'activejob'
-  library 'activemodel'
-  library 'actionview'
-  library 'activerecord'
-  library 'railties'
+  lock.gems.each do |gem|
+    library "#{gem['name']}:#{gem['version']}"
+  end
 end

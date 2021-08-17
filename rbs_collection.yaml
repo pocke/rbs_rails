@@ -39,3 +39,7 @@ gems:
     ignore: true
   - name: listen
     ignore: true
+
+  # ignore RBS Rails itself
+  - name: rbs_rails
+    ignore: true
