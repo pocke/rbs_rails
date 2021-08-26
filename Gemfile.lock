@@ -180,4 +180,4 @@ DEPENDENCIES
   steep (>= 0.34.0)
 
 BUNDLED WITH
-   2.3.0.dev
+   2.2.0
