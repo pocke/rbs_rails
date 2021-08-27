@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/pocke/rbs
-  revision: 11900228d172a57ba97583373a84eac4d0d92f23
+  revision: 602fac49a2b7d54403017c889b3c1b886413af37
   branch: Add_gem_rbs_collection_manager
   specs:
     rbs (1.4.0)
