@@ -7,6 +7,6 @@ gemspec
 
 gem "rake", "~> 13.0"
 gem 'rails'
-gem 'rbs', github: 'pocke/rbs', branch: 'Add_gem_rbs_collection_manager'
-gem 'steep', '>= 0.34.0'
+gem 'rbs', '>= 1.6'
+gem 'steep', github: 'soutaro/steep'
 gem 'minitest'
