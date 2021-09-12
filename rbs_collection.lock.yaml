@@ -47,7 +47,7 @@ gems:
   source:
     type: git
     name: ruby/gem_rbs_collection
-    revision: 410dc9cc1c3b5e31190e807221ac74a4da3dc743
+    revision: 51880bed87fbc3dc8076fedb5cf798be05148220
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
 - name: json
@@ -67,7 +67,7 @@ gems:
   source:
     type: git
     name: ruby/gem_rbs_collection
-    revision: 410dc9cc1c3b5e31190e807221ac74a4da3dc743
+    revision: 51880bed87fbc3dc8076fedb5cf798be05148220
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
 - name: actionview
@@ -75,7 +75,7 @@ gems:
   source:
     type: git
     name: ruby/gem_rbs_collection
-    revision: 410dc9cc1c3b5e31190e807221ac74a4da3dc743
+    revision: 51880bed87fbc3dc8076fedb5cf798be05148220
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
 - name: activejob
@@ -83,7 +83,7 @@ gems:
   source:
     type: git
     name: ruby/gem_rbs_collection
-    revision: 410dc9cc1c3b5e31190e807221ac74a4da3dc743
+    revision: 51880bed87fbc3dc8076fedb5cf798be05148220
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
 - name: activemodel
@@ -91,15 +91,15 @@ gems:
   source:
     type: git
     name: ruby/gem_rbs_collection
-    revision: 410dc9cc1c3b5e31190e807221ac74a4da3dc743
+    revision: 51880bed87fbc3dc8076fedb5cf798be05148220
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
 - name: activerecord
-  version: '6.0'
+  version: '6.1'
   source:
     type: git
     name: ruby/gem_rbs_collection
-    revision: 410dc9cc1c3b5e31190e807221ac74a4da3dc743
+    revision: 51880bed87fbc3dc8076fedb5cf798be05148220
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
 - name: activesupport
@@ -107,7 +107,15 @@ gems:
   source:
     type: git
     name: ruby/gem_rbs_collection
-    revision: 410dc9cc1c3b5e31190e807221ac74a4da3dc743
+    revision: 51880bed87fbc3dc8076fedb5cf798be05148220
+    remote: https://github.com/ruby/gem_rbs_collection.git
+    repo_dir: gems
+- name: parallel
+  version: '1.20'
+  source:
+    type: git
+    name: ruby/gem_rbs_collection
+    revision: 51880bed87fbc3dc8076fedb5cf798be05148220
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
 - name: railties
@@ -115,10 +123,10 @@ gems:
   source:
     type: git
     name: ruby/gem_rbs_collection
-    revision: 410dc9cc1c3b5e31190e807221ac74a4da3dc743
+    revision: 51880bed87fbc3dc8076fedb5cf798be05148220
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
 - name: rbs
-  version: 1.4.0
+  version: 1.6.2
   source:
     type: rubygems
