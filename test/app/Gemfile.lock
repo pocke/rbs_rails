@@ -95,7 +95,7 @@ GEM
       racc (~> 1.4)
     parser (3.0.1.0)
       ast (~> 2.4.1)
-    psych (4.0.0)
+    psych (3.3.2)
     puma (5.2.2)
       nio4r (~> 2.0)
     racc (1.5.2)
@@ -152,7 +152,7 @@ PLATFORMS
 
 DEPENDENCIES
   bootsnap
-  psych
+  psych (< 4)
   puma
   rails (>= 6, < 7)
   rbs_rails!

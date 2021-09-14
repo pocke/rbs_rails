@@ -381,7 +381,7 @@ module RbsRails
       end
 
       private def traverse(node, &block)
-        return to_enum(__method__, node) unless block_given?
+        return to_enum(__method__ || raise, node) unless block_given?
 
         # @type var block: ^(Parser::AST::Node) -> untyped
         block.call node

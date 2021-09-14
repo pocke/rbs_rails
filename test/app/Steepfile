@@ -2,24 +2,6 @@ target :app do
   signature 'sig'
   check "app/models"
 
-  repo_path ENV['RBS_REPO_DIR'] || '../../gem_rbs/gems'
-
-  library "logger"
-  library "mutex_m"
-  library "pathname"
-  library "date"
-  library 'monitor'
-  library 'singleton'
-  library 'tsort'
-  library 'time'
-
-  library 'rack'
-
-  library 'activesupport'
-  library 'actionpack'
-  library 'activejob'
-  library 'activemodel'
-  library 'actionview'
-  library 'activerecord'
-  library 'railties'
+  repo_path ENV['RBS_REPO_DIR'] if ENV['RBS_REPO_DIR']
+  collection_config '../../rbs_collection.yaml'
 end

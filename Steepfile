@@ -3,24 +3,5 @@ target :lib do
   signature 'assets/sig'
 
   check "lib"                       # Directory name
-  repo_path ENV['RBS_REPO_DIR'] || './gem_rbs/gems'
-
-  library "pathname"
-  library "logger"
-  library "mutex_m"
-  library "date"
-  library 'monitor'
-  library 'singleton'
-  library 'tsort'
-  library 'time'
-
-  library 'rack'
-
-  library 'activesupport'
-  library 'actionpack'
-  library 'activejob'
-  library 'activemodel'
-  library 'actionview'
-  library 'activerecord'
-  library 'railties'
+  repo_path ENV['RBS_REPO_DIR'] if ENV['RBS_REPO_DIR']
 end
