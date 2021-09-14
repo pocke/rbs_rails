@@ -3,4 +3,5 @@ target :app do
   check "app/models"
 
   repo_path ENV['RBS_REPO_DIR'] if ENV['RBS_REPO_DIR']
+  collection_config '../../rbs_collection.yaml'
 end
