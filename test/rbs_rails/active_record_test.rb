@@ -133,6 +133,7 @@ class ActiveRecordTest < Minitest::Test
 
         class ActiveRecord_Associations_CollectionProxy < ActiveRecord::Associations::CollectionProxy
           include GeneratedRelationMethods
+          include _ActiveRecord_Relation[User, Integer]
         end
       end
     RBS
