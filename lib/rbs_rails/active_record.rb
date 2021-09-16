@@ -80,6 +80,7 @@ module RbsRails
         <<~RBS
           class ActiveRecord_Associations_CollectionProxy < ActiveRecord::Associations::CollectionProxy
             include GeneratedRelationMethods
+            include _ActiveRecord_Relation[#{klass_name}, #{pk_type}]
           end
         RBS
       end
