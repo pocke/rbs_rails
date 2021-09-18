@@ -15,7 +15,7 @@ GIT
 PATH
   remote: .
   specs:
-    rbs_rails (0.8.2)
+    rbs_rails (0.9.0)
       parser
       rbs (>= 1)
 
