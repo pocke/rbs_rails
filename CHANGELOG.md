@@ -2,6 +2,22 @@
 
 ## master (unreleased)
 
+## 0.9.0 (2021-09-18)
+
+### New Features
+
+* Support delegated_type association. [#181](https://github.com/pocke/rbs_rails/pull/181)
+
+### Bug Fixes
+
+* Fix error on a table that doesn't have the PK. [#121](https://github.com/pocke/rbs_rails/pull/121)
+* Quote variable names to avoid syntax errors. [#178](https://github.com/pocke/rbs_rails/pull/178)
+* Add scope methods to `ActiveRecord_Associations_CollectionProxy`. [#182](https://github.com/pocke/rbs_rails/pull/182)
+* Make `has_one` association optional. [#180](https://github.com/pocke/rbs_rails/pull/180)
+* Omit some methods for polymorphic associations. [#184](https://github.com/pocke/rbs_rails/pull/184)
+* Include enum methods to GeneratedRelationMethods. [#183](https://github.com/pocke/rbs_rails/pull/183)
+* Include `_ActiveRecord_Relation` to `CollectionProxy`. [#189](https://github.com/pocke/rbs_rails/pull/189)
+
 ## 0.8.2 (2021-02-20)
 
 *  Add ActiveRecord::AttributeMethods::Dirty methods [#104](https://github.com/pocke/rbs_rails/pull/104)
