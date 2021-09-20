@@ -405,24 +405,24 @@ module RbsRails
           class_name_opt = optional(class_name)
           column_type = col.null ? class_name_opt : class_name
           sig = <<~EOS
-            attr_accessor #{col.name} (): #{column_type}
-            def #{col.name}_changed?: () -> bool
-            def #{col.name}_change: () -> [#{class_name_opt}, #{class_name_opt}]
-            def #{col.name}_will_change!: () -> void
-            def #{col.name}_was: () -> #{class_name_opt}
-            def #{col.name}_previously_changed?: () -> bool
-            def #{col.name}_previous_change: () -> Array[#{class_name_opt}]?
-            def #{col.name}_previously_was: () -> #{class_name_opt}
-            def #{col.name}_before_last_save: () -> #{class_name_opt}
-            def #{col.name}_change_to_be_saved: () -> Array[#{class_name_opt}]?
-            def #{col.name}_in_database: () -> #{class_name_opt}
-            def saved_change_to_#{col.name}: () -> Array[#{class_name_opt}]?
-            def saved_change_to_#{col.name}?: () -> bool
-            def will_save_change_to_#{col.name}?: () -> bool
-            def restore_#{col.name}!: () -> void
-            def clear_#{col.name}_change: () -> void
+            #{attr_accessor_sig(klass, col.name, column_type)}
+            #{def_sig(klass, "#{col.name}_changed?", "() -> bool")}
+            #{def_sig(klass, "#{col.name}_change", "() -> [#{class_name_opt}, #{class_name_opt}]")}
+            #{def_sig(klass, "#{col.name}_will_change!", "() -> void")}
+            #{def_sig(klass, "#{col.name}_was", "() -> #{class_name_opt}")}
+            #{def_sig(klass, "#{col.name}_previously_changed?", "() -> bool")}
+            #{def_sig(klass, "#{col.name}_previous_change", "() -> Array[#{class_name_opt}]?")}
+            #{def_sig(klass, "#{col.name}_previously_was", "() -> #{class_name_opt}")}
+            #{def_sig(klass, "#{col.name}_before_last_save", "() -> #{class_name_opt}")}
+            #{def_sig(klass, "#{col.name}_change_to_be_saved", "() -> Array[#{class_name_opt}]?")}
+            #{def_sig(klass, "#{col.name}_in_database", "() -> #{class_name_opt}")}
+            #{def_sig(klass, "saved_change_to_#{col.name}", "() -> Array[#{class_name_opt}]?")}
+            #{def_sig(klass, "saved_change_to_#{col.name}?", "() -> bool")}
+            #{def_sig(klass, "will_save_change_to_#{col.name}?", "() -> bool")}
+            #{def_sig(klass, "restore_#{col.name}!", "() -> void")}
+            #{def_sig(klass, "clear_#{col.name}_change", "() -> void")}
           EOS
-          sig << "attr_accessor #{col.name}? (): #{class_name}\n" if col.type == :boolean
+          sig << "#{attr_accessor_sig(klass, "#{col.name}?", class_name)}\n" if col.type == :boolean
           sig
         end.join("\n")
       end
@@ -457,6 +457,16 @@ module RbsRails
           # Unknown column type, give up
           'untyped'
         end
+      end
+
+      private def attr_accessor_sig(klass, name, res)
+        is_skip = klass.instance_methods(false).include?(name.to_sym)
+        "#{is_skip ? '# ' : ''}attr_accessor #{name} (): #{res}"
+      end
+
+      private def def_sig(klass, name, res)
+        is_skip = klass.instance_methods(false).include?(name.to_sym)
+        "#{is_skip ? '# ' : ''}def #{name}: #{res}"
       end
 
       private

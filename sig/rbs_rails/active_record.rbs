@@ -68,6 +68,10 @@ class RbsRails::ActiveRecord::Generator
 
   def optional: (String) -> String
 
+  def attr_accessor_sig: (singleton(::ActiveRecord::Base), String, String) -> String
+
+  def def_sig: (singleton(::ActiveRecord::Base), String, String) -> String
+
   private
 
   attr_reader klass: singleton(ActiveRecord::Base)
