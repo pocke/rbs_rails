@@ -19,6 +19,7 @@ gems:
   - name: 'tsort'
   - name: 'time'
   - name: 'set'
+  - name: 'tempfile'
 
   # gems
   - name: 'rack'
