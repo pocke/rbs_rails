@@ -396,7 +396,8 @@ module RbsRails
       end
 
       private def columns
-        klass.columns.map do |col|
+        mod_sig = +"module GeneratedAttributeMethods\n"
+        mod_sig << klass.columns.map do |col|
           class_name = if enum_definitions.any? { |hash| hash.key?(col.name) || hash.key?(col.name.to_sym) }
                          'String'
                        else
@@ -405,7 +406,9 @@ module RbsRails
           class_name_opt = optional(class_name)
           column_type = col.null ? class_name_opt : class_name
           sig = <<~EOS
-            attr_accessor #{col.name} (): #{column_type}
+            def #{col.name}: () -> #{column_type}
+            def #{col.name}=: (#{column_type}) -> #{column_type}
+            def #{col.name}?: () -> bool
             def #{col.name}_changed?: () -> bool
             def #{col.name}_change: () -> [#{class_name_opt}, #{class_name_opt}]
             def #{col.name}_will_change!: () -> void
@@ -422,9 +425,12 @@ module RbsRails
             def restore_#{col.name}!: () -> void
             def clear_#{col.name}_change: () -> void
           EOS
-          sig << "attr_accessor #{col.name}? (): #{class_name}\n" if col.type == :boolean
+          sig << "\n"
           sig
         end.join("\n")
+        mod_sig << "\nend\n"
+        mod_sig << "include GeneratedAttributeMethods"
+        mod_sig
       end
 
       private def optional(class_name)
