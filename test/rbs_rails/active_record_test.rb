@@ -106,6 +106,17 @@ class ActiveRecordTest < Minitest::Test
         def restore_updated_at!: () -> void
         def clear_updated_at_change: () -> void
 
+        module ::ActiveModel::SecurePassword::InstanceMethodsOnActivation_password
+          def password=: (String) -> String
+
+          def password_confirmation=: (String) -> String
+
+          def authenticate_password: (String) -> (User | false)
+
+          alias authenticate authenticate_password
+        end
+        include ::ActiveModel::SecurePassword::InstanceMethodsOnActivation_password
+
         def temporary!: () -> bool
         def temporary?: () -> bool
         def accepted!: () -> bool
