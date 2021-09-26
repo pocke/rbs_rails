@@ -3,6 +3,7 @@ class User < ApplicationRecord
   scope :no_arg, -> ()  { all }
 
   has_and_belongs_to_many :blogs
+  has_secure_password
 
   enum status: {
     temporary: 1,

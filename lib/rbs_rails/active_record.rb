@@ -32,6 +32,7 @@ module RbsRails
 
           #{columns}
           #{associations}
+          #{has_secure_password}
           #{delegated_type_instance}
           #{delegated_type_scope(singleton: true)}
           #{enum_instance_methods}
@@ -234,6 +235,35 @@ module RbsRails
 
           { role: role, types: types }
         end.compact
+      end
+
+      private def has_secure_password
+        ast = parse_model_file
+        return unless ast
+
+        traverse(ast).map do |node|
+          # @type block: String?
+          next unless node.type == :send
+          next unless node.children[0].nil?
+          next unless node.children[1] == :has_secure_password
+
+          attribute_node = node.children[2]
+          attribute = if attribute_node && attribute_node.type == :sym
+                        attribute_node.children[0]
+                      else
+                        :password
+                      end
+
+          <<~EOS
+            module ::ActiveModel::SecurePassword::InstanceMethodsOnActivation_#{attribute}
+              def #{attribute}=: (String) -> String
+              def #{attribute}_confirmation=: (String) -> String
+              def authenticate_#{attribute}: (String) -> (#{klass_name} | false)
+              #{attribute == :password ? "alias authenticate authenticate_password" : ""}
+            end
+            include ::ActiveModel::SecurePassword::InstanceMethodsOnActivation_#{attribute}
+          EOS
+        end.compact.join("\n")
       end
 
       private def enum_instance_methods

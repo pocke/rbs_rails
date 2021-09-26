@@ -38,6 +38,8 @@ class RbsRails::ActiveRecord::Generator
 
   def delegated_type_definitions: () -> Array[{ role: Symbol, types: Array[String] }]?
 
+  def has_secure_password: () -> String?
+
   def enum_instance_methods: () -> String
 
   def enum_scope_methods: (singleton: untyped `singleton`) -> String
