@@ -31,10 +31,10 @@ module RbsRails
       task("#{name}:generate_rbs_for_models": :environment) do
         require 'rbs_rails'
 
-        Rails.application.eager_load!
+        RbsRails::ActiveRecord::Generator.init
 
         dep_builder = DependencyBuilder.new
-        
+
         ::ActiveRecord::Base.descendants.each do |klass|
           next unless RbsRails::ActiveRecord.generatable?(klass)
           next if ignore_model_if&.call(klass)

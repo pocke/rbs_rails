@@ -6,6 +6,10 @@ end
 class RbsRails::ActiveRecord::Generator
   @parse_model_file: nil | Parser::AST::Node
 
+  def self.init: () -> void
+
+  def self.scopes: (singleton(ActiveRecord::Base) klass) -> Array[[String | Symbol, Proc, untyped]]
+
   def initialize: (singleton(ActiveRecord::Base) klass, dependencies: Array[String]) -> untyped
 
   def generate: () -> String
@@ -32,8 +36,6 @@ class RbsRails::ActiveRecord::Generator
 
   def belongs_to: () -> String
 
-  def delegated_type_scope: (singleton: bool) -> String
-
   def delegated_type_instance: () -> String
 
   def delegated_type_definitions: () -> Array[{ role: Symbol, types: Array[String] }]?
@@ -41,8 +43,6 @@ class RbsRails::ActiveRecord::Generator
   def has_secure_password: () -> String?
 
   def enum_instance_methods: () -> String
-
-  def enum_scope_methods: (singleton: untyped `singleton`) -> String
 
   def enum_definitions: () -> Array[Hash[Symbol, untyped]]
 
@@ -55,7 +55,7 @@ class RbsRails::ActiveRecord::Generator
 
   def scopes: (singleton: untyped `singleton`) -> untyped
 
-  def args_to_type: (untyped args_node) -> untyped
+  def parameters_to_type: (Array[[Symbol, Symbol?]] parameters) -> String
 
   def parse_model_file: () -> untyped
 

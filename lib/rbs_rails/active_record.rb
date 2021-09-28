@@ -12,6 +12,22 @@ module RbsRails
     end
 
     class Generator
+      def self.init
+        @@scopes = {}
+        ::ActiveRecord::Scoping::Named::ClassMethods.prepend(Module.new{
+          def scope(name, body, &block)
+            @@scopes[self] ||= {}
+            @@scopes[self][name.to_s] = body
+            super
+          end
+        })
+        Rails.application.eager_load!
+      end
+
+      def self.scopes(klass)
+        @@scopes[klass] || {}
+      end
+
       def initialize(klass, dependencies:)
         @klass = klass
         @dependencies = dependencies
@@ -34,9 +50,7 @@ module RbsRails
           #{associations}
           #{has_secure_password}
           #{delegated_type_instance}
-          #{delegated_type_scope(singleton: true)}
           #{enum_instance_methods}
-          #{enum_scope_methods(singleton: true)}
           #{scopes(singleton: true)}
 
           #{generated_relation_methods_decl}
@@ -60,9 +74,7 @@ module RbsRails
       private def generated_relation_methods_decl
         <<~RBS
           module GeneratedRelationMethods
-            #{enum_scope_methods(singleton: false)}
             #{scopes(singleton: false)}
-            #{delegated_type_scope(singleton: false)}
           end
         RBS
       end
@@ -164,17 +176,6 @@ module RbsRails
           end
           methods.join("\n")
         end.join("\n")
-      end
-
-      private def delegated_type_scope(singleton:)
-        definitions = delegated_type_definitions
-        return "" unless definitions
-        definitions.map do |definition|
-          definition[:types].map do |type|
-            scope_name = type.tableize.gsub("/", "_")
-            "def #{singleton ? 'self.' : ''}#{scope_name}: () -> #{relation_class_name}"
-          end
-        end.flatten.join("\n")
       end
 
       private def delegated_type_instance
@@ -284,22 +285,6 @@ module RbsRails
         methods.join("\n")
       end
 
-      private def enum_scope_methods(singleton:)
-        # @type var methods: Array[String]
-        methods = []
-        enum_definitions.each do |hash|
-          hash.each do |name, values|
-            next if name == :_prefix || name == :_suffix
-
-            values.each do |label, value|
-              value_method_name = enum_method_name(hash, name, label)
-              methods << "def #{singleton ? 'self.' : ''}#{value_method_name}: () -> #{relation_class_name}"
-            end
-          end
-        end
-        methods.join("\n")
-      end
-
       private def enum_definitions
         @enum_definitions ||= build_enum_definitions
       end
@@ -347,54 +332,36 @@ module RbsRails
       end
 
       private def scopes(singleton:)
-        ast = parse_model_file
-        return '' unless ast
-
-        traverse(ast).map do |node|
-          # @type block: nil | String
-          next unless node.type == :send
-          next unless node.children[0].nil?
-          next unless node.children[1] == :scope
-
-          name_node = node.children[2]
-          next unless name_node
-          next unless name_node.type == :sym
-
-          name = name_node.children[0]
-          body_node = node.children[3]
-          next unless body_node
-          next unless body_node.type == :block
-
-          args = args_to_type(body_node.children[1])
-          "def #{singleton ? 'self.' : ''}#{name}: #{args} -> #{relation_class_name}"
-        end.compact.join("\n")
+        Generator.scopes(klass).sort_by { |name,| name }.map do |name, body|
+          "def #{singleton ? 'self.' : ''}#{name}: #{parameters_to_type(body.parameters)} -> #{relation_class_name}"
+        end.join("\n")
       end
 
-      private def args_to_type(args_node)
+      private def parameters_to_type(parameters)
         # @type var res: Array[String]
         res = []
-        # @type var block: String?
-        block = nil
-        args_node.children.each do |node|
-          case node.type
-          when :arg
-            res << "untyped `#{node.children[0]}`"
-          when :optarg
-            res << "?untyped `#{node.children[0]}`"
-          when :kwarg
-            res << "#{node.children[0]}: untyped"
-          when :kwoptarg
-            res << "?#{node.children[0]}: untyped"
-          when :restarg
-            res << "*untyped `#{node.children[0]}`"
-          when :kwrestarg
-            res << "**untyped `#{node.children[0]}`"
-          when :blockarg
+        block = ""
+        parameters.each do |key, name|
+          case key
+          when :req
+            res << "untyped `#{name}`"
+          when :opt
+            res << "?untyped `#{name}`"
+          when :keyreq
+            res << "#{name}: untyped"
+          when :key
+            res << "?#{name}: untyped"
+          when :rest
+            res << "*untyped #{name ? "`#{name}`" : nil}"
+          when :keyrest
+            res << "**untyped #{name ? "`#{name}`" : nil}"
+          when :block
             block = " { (*untyped) -> untyped }"
           else
-            raise "unexpected: #{node}"
+            raise "unexpected: #{key}"
           end
         end
+
         "(#{res.join(", ")})#{block}"
       end
 
