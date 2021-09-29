@@ -94,6 +94,7 @@ GEM
     nokogiri (1.11.3)
       mini_portile2 (~> 2.5.0)
       racc (~> 1.4)
+    ostruct (0.4.0)
     parser (3.0.2.0)
       ast (~> 2.4.1)
     psych (3.3.2)
@@ -154,6 +155,7 @@ PLATFORMS
 DEPENDENCIES
   bcrypt
   bootsnap
+  ostruct
   psych (< 4)
   puma
   rails (>= 6, < 7)

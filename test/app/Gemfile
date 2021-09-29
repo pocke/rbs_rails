@@ -7,5 +7,6 @@ gem 'puma'
 gem 'bootsnap', require: false
 gem 'psych', '< 4' # for safe_load degration
 gem 'bcrypt'
+gem 'ostruct'
 
 gem 'rbs_rails', path: '../../'
