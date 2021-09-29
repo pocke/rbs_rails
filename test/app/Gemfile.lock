@@ -159,6 +159,7 @@ DEPENDENCIES
   psych (< 4)
   puma
   rails (>= 6, < 7)
+  rake
   rbs_rails!
   sqlite3
 
