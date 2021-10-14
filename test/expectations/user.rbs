@@ -1,4 +1,4 @@
-class User < ApplicationRecord
+class User < ::ApplicationRecord
   extend _ActiveRecord_Relation_ClassMethods[User, ActiveRecord_Relation, Integer]
 
   module GeneratedAttributeMethods
@@ -214,13 +214,13 @@ class User < ApplicationRecord
     def no_arg: () -> ActiveRecord_Relation
   end
 
-  class ActiveRecord_Relation < ActiveRecord::Relation
+  class ActiveRecord_Relation < ::ActiveRecord::Relation
     include GeneratedRelationMethods
     include _ActiveRecord_Relation[User, Integer]
     include Enumerable[User]
   end
 
-  class ActiveRecord_Associations_CollectionProxy < ActiveRecord::Associations::CollectionProxy
+  class ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
     include GeneratedRelationMethods
     include _ActiveRecord_Relation[User, Integer]
   end

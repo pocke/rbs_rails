@@ -69,7 +69,7 @@ module RbsRails
 
       private def relation_decl
         <<~RBS
-          class #{relation_class_name} < ActiveRecord::Relation
+          class #{relation_class_name} < ::ActiveRecord::Relation
             include GeneratedRelationMethods
             include _ActiveRecord_Relation[#{klass_name}, #{pk_type}]
             include Enumerable[#{klass_name}]
@@ -79,7 +79,7 @@ module RbsRails
 
       private def collection_proxy_decl
         <<~RBS
-          class ActiveRecord_Associations_CollectionProxy < ActiveRecord::Associations::CollectionProxy
+          class ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
             include GeneratedRelationMethods
             include _ActiveRecord_Relation[#{klass_name}, #{pk_type}]
           end
@@ -98,7 +98,7 @@ module RbsRails
             superclass_name = Util.module_name(superclass)
             @dependencies << superclass_name
 
-            "class #{mod_name} < #{superclass_name}"
+            "class #{mod_name} < ::#{superclass_name}"
           when Module
             "module #{mod_name}"
           else
