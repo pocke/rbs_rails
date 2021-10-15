@@ -255,13 +255,13 @@ module RbsRails
                       end
 
           <<~EOS
-            module ::ActiveModel::SecurePassword::InstanceMethodsOnActivation_#{attribute}
+            module ActiveModel_SecurePassword_InstanceMethodsOnActivation_#{attribute}
               def #{attribute}=: (String) -> String
               def #{attribute}_confirmation=: (String) -> String
               def authenticate_#{attribute}: (String) -> (#{klass_name} | false)
               #{attribute == :password ? "alias authenticate authenticate_password" : ""}
             end
-            include ::ActiveModel::SecurePassword::InstanceMethodsOnActivation_#{attribute}
+            include ActiveModel_SecurePassword_InstanceMethodsOnActivation_#{attribute}
           EOS
         end.compact.join("\n")
       end
