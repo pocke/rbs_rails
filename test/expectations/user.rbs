@@ -184,7 +184,7 @@ class User < ::ApplicationRecord
   end
   include GeneratedAttributeMethods
 
-  module ::ActiveModel::SecurePassword::InstanceMethodsOnActivation_password
+  module ActiveModel_SecurePassword_InstanceMethodsOnActivation_password
     def password=: (String) -> String
 
     def password_confirmation=: (String) -> String
@@ -193,7 +193,7 @@ class User < ::ApplicationRecord
 
     alias authenticate authenticate_password
   end
-  include ::ActiveModel::SecurePassword::InstanceMethodsOnActivation_password
+  include ActiveModel_SecurePassword_InstanceMethodsOnActivation_password
 
   def temporary!: () -> bool
   def temporary?: () -> bool
