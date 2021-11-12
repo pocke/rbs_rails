@@ -24,4 +24,7 @@ jobs:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - run: bin/setup
+    # avoid using a precompiled nokogiri on head
+    - run: bundle config set force_ruby_platform true
+      if: ${{ matrix.ruby == 'head' }}
     - run: bundle exec rake
