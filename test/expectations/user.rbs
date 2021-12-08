@@ -185,6 +185,8 @@ class User < ::ApplicationRecord
   include GeneratedAttributeMethods
 
   module ActiveModel_SecurePassword_InstanceMethodsOnActivation_password
+    attr_reader password: String?
+
     def password=: (String) -> String
 
     def password_confirmation=: (String) -> String
