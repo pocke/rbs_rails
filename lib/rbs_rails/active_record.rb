@@ -308,7 +308,7 @@ module RbsRails
         methods = []
         enum_definitions.each do |hash|
           hash.each do |name, values|
-            next if name == :_prefix || name == :_suffix
+            next if name == :_prefix || name == :_suffix || name == :_default
 
             values.each do |label, value|
               value_method_name = enum_method_name(hash, name, label)
@@ -326,7 +326,7 @@ module RbsRails
         methods = []
         enum_definitions.each do |hash|
           hash.each do |name, values|
-            next if name == :_prefix || name == :_suffix
+            next if name == :_prefix || name == :_suffix || name == :_default
 
             values.each do |label, value|
               value_method_name = enum_method_name(hash, name, label)

@@ -10,5 +10,5 @@ class User < ApplicationRecord
   enum status: {
     temporary: 1,
     accepted: 2,
-  }
+  }, _default: :temporary
 end
