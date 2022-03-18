@@ -9,25 +9,6 @@ sources:
 path: .gem_rbs_collection
 
 gems:
-  # stdlibs
-  - name: 'pathname'
-  - name: 'logger'
-  - name: 'mutex_m'
-  - name: 'date'
-  - name: 'monitor'
-  - name: 'singleton'
-  - name: 'tsort'
-  - name: 'time'
-  - name: 'set'
-
-  # gems
-  - name: 'rack'
-
-  # RBS gem dependencies
-  - name: 'json'
-  - name: 'strscan'
-  - name: 'optparse'
-
   # Ignores - Gemfile.lock contains them but their RBSs are unnecessary
   - name: steep
     ignore: true
