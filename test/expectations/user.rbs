@@ -184,6 +184,30 @@ class User < ::ApplicationRecord
   end
   include GeneratedAttributeMethods
 
+  def avatar_attachment: () -> ActiveStorage::Attachment?
+  def avatar_attachment=: (ActiveStorage::Attachment?) -> ActiveStorage::Attachment?
+  def build_avatar_attachment: (untyped) -> ActiveStorage::Attachment
+  def create_avatar_attachment: (untyped) -> ActiveStorage::Attachment
+  def create_avatar_attachment!: (untyped) -> ActiveStorage::Attachment
+  def reload_avatar_attachment: () -> ActiveStorage::Attachment?
+  def avatar_blob: () -> ActiveStorage::Blob?
+  def avatar_blob=: (ActiveStorage::Blob?) -> ActiveStorage::Blob?
+  def build_avatar_blob: (untyped) -> ActiveStorage::Blob
+  def create_avatar_blob: (untyped) -> ActiveStorage::Blob
+  def create_avatar_blob!: (untyped) -> ActiveStorage::Blob
+  def reload_avatar_blob: () -> ActiveStorage::Blob?
+
+  module GeneratedAssociationMethods
+    def avatar: () -> ActiveStorage::Attached::One
+
+    def avatar=: (ActionDispatch::Http::UploadedFile) -> ActionDispatch::Http::UploadedFile
+               | (Rack::Test::UploadedFile) -> Rack::Test::UploadedFile
+               | (ActiveStorage::Blob) -> ActiveStorage::Blob
+               | (String) -> String
+               | ({ io: IO, filename: String, :content_type => String? }) -> { io: IO, filename: String, :content_type => String? }
+               | (nil) -> nil
+  end
+  include GeneratedAssociationMethods
   module ActiveModel_SecurePassword_InstanceMethodsOnActivation_password
     attr_reader password: String?
 
@@ -205,6 +229,7 @@ class User < ::ApplicationRecord
   def self.accepted: () -> ActiveRecord_Relation
   def self.all_kind_args: (untyped `type`, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped `untyped`) { (*untyped) -> untyped } -> ActiveRecord_Relation
   def self.no_arg: () -> ActiveRecord_Relation
+  def self.with_attached_avatar: () -> ActiveRecord_Relation
 
   module GeneratedRelationMethods
     def temporary: () -> ActiveRecord_Relation
@@ -214,6 +239,8 @@ class User < ::ApplicationRecord
     def all_kind_args: (untyped `type`, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped `untyped`) { (*untyped) -> untyped } -> ActiveRecord_Relation
 
     def no_arg: () -> ActiveRecord_Relation
+
+    def with_attached_avatar: () -> ActiveRecord_Relation
   end
 
   class ActiveRecord_Relation < ::ActiveRecord::Relation
