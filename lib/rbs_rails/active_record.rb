@@ -292,6 +292,7 @@ module RbsRails
 
           <<~EOS
             module ActiveModel_SecurePassword_InstanceMethodsOnActivation_#{attribute}
+              attr_reader #{attribute}: String?
               def #{attribute}=: (String) -> String
               def #{attribute}_confirmation=: (String) -> String
               def authenticate_#{attribute}: (String) -> (#{klass_name} | false)
