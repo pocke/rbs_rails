@@ -204,7 +204,7 @@ class User < ::ApplicationRecord
                | (Rack::Test::UploadedFile) -> Rack::Test::UploadedFile
                | (ActiveStorage::Blob) -> ActiveStorage::Blob
                | (String) -> String
-               | ({ io: IO, filename: String, :content_type => String? }) -> { io: IO, filename: String, :content_type => String? }
+               | ({ io: IO, filename: String, content_type: String? }) -> { io: IO, filename: String, content_type: String? }
                | (nil) -> nil
   end
   include GeneratedAssociationMethods
