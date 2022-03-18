@@ -1,6 +1,7 @@
 module RbsRails
   class DependencyBuilder
     attr_reader deps: Array[String]
+    attr_reader done: Set[String]
 
     def initialize: () -> void
 

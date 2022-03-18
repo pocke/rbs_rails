@@ -1,14 +1,14 @@
 module RbsRails
   class DependencyBuilder
-    attr_reader :deps
+    attr_reader :deps, :done
 
     def initialize
       @deps = []
+      @done = Set.new(['ActiveRecord::Base', 'ActiveRecord', 'Object'])
     end
 
     def build
       dep_rbs = +""
-      done = Set.new(['ActiveRecord::Base', 'ActiveRecord', 'Object'])
       deps.uniq!
       while dep = deps.shift
         next unless done.add?(dep)

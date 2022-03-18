@@ -44,6 +44,7 @@ module RbsRails
 
           sig = RbsRails::ActiveRecord.class_to_rbs(klass, dependencies: dep_builder.deps)
           path.write sig
+          dep_builder.done << klass.name
         end
 
         if dep_rbs = dep_builder.build
