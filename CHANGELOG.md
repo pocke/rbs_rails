@@ -2,6 +2,18 @@
 
 ## master (unreleased)
 
+## 0.10.0 (2022-03-18)
+
+### New Features
+
+* Support `has_secure_password`. [#193](https://github.com/pocke/rbs_rails/pull/193)
+* Support Active Storage. [#195](https://github.com/pocke/rbs_rails/pull/195)
+
+### Bug Fixes
+
+* Use absolute path for class names to avoid using incorrect class. [#201](https://github.com/pocke/rbs_rails/pull/201)
+* Fix NoMethodError on enum with `_default` option. [#208](https://github.com/pocke/rbs_rails/pull/208)
+
 ## 0.9.0 (2021-09-18)
 
 ### New Features
