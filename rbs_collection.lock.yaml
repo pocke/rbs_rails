@@ -6,35 +6,7 @@ sources:
   repo_dir: gems
 path: ".gem_rbs_collection"
 gems:
-- name: pathname
-  version: '0'
-  source:
-    type: stdlib
 - name: logger
-  version: '0'
-  source:
-    type: stdlib
-- name: mutex_m
-  version: '0'
-  source:
-    type: stdlib
-- name: date
-  version: '0'
-  source:
-    type: stdlib
-- name: monitor
-  version: '0'
-  source:
-    type: stdlib
-- name: singleton
-  version: '0'
-  source:
-    type: stdlib
-- name: tsort
-  version: '0'
-  source:
-    type: stdlib
-- name: time
   version: '0'
   source:
     type: stdlib
@@ -42,23 +14,23 @@ gems:
   version: '0'
   source:
     type: stdlib
-- name: rack
-  version: 2.2.2
+- name: pathname
+  version: '0'
   source:
-    type: git
-    name: ruby/gem_rbs_collection
-    revision: 51880bed87fbc3dc8076fedb5cf798be05148220
-    remote: https://github.com/ruby/gem_rbs_collection.git
-    repo_dir: gems
+    type: stdlib
 - name: json
   version: '0'
   source:
     type: stdlib
-- name: strscan
+- name: optparse
   version: '0'
   source:
     type: stdlib
-- name: optparse
+- name: rubygems
+  version: '0'
+  source:
+    type: stdlib
+- name: tsort
   version: '0'
   source:
     type: stdlib
@@ -67,7 +39,7 @@ gems:
   source:
     type: git
     name: ruby/gem_rbs_collection
-    revision: 51880bed87fbc3dc8076fedb5cf798be05148220
+    revision: 6320a194c85afbf4ff332c3eb75fcae2a6518c92
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
 - name: actionview
@@ -75,7 +47,7 @@ gems:
   source:
     type: git
     name: ruby/gem_rbs_collection
-    revision: 51880bed87fbc3dc8076fedb5cf798be05148220
+    revision: 6320a194c85afbf4ff332c3eb75fcae2a6518c92
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
 - name: activejob
@@ -83,7 +55,7 @@ gems:
   source:
     type: git
     name: ruby/gem_rbs_collection
-    revision: 51880bed87fbc3dc8076fedb5cf798be05148220
+    revision: 6320a194c85afbf4ff332c3eb75fcae2a6518c92
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
 - name: activemodel
@@ -91,7 +63,7 @@ gems:
   source:
     type: git
     name: ruby/gem_rbs_collection
-    revision: 51880bed87fbc3dc8076fedb5cf798be05148220
+    revision: 6320a194c85afbf4ff332c3eb75fcae2a6518c92
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
 - name: activerecord
@@ -99,7 +71,15 @@ gems:
   source:
     type: git
     name: ruby/gem_rbs_collection
-    revision: 51880bed87fbc3dc8076fedb5cf798be05148220
+    revision: 6320a194c85afbf4ff332c3eb75fcae2a6518c92
+    remote: https://github.com/ruby/gem_rbs_collection.git
+    repo_dir: gems
+- name: activestorage
+  version: '6.0'
+  source:
+    type: git
+    name: ruby/gem_rbs_collection
+    revision: 6320a194c85afbf4ff332c3eb75fcae2a6518c92
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
 - name: activesupport
@@ -107,7 +87,7 @@ gems:
   source:
     type: git
     name: ruby/gem_rbs_collection
-    revision: 51880bed87fbc3dc8076fedb5cf798be05148220
+    revision: 6320a194c85afbf4ff332c3eb75fcae2a6518c92
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
 - name: parallel
@@ -115,7 +95,15 @@ gems:
   source:
     type: git
     name: ruby/gem_rbs_collection
-    revision: 51880bed87fbc3dc8076fedb5cf798be05148220
+    revision: 6320a194c85afbf4ff332c3eb75fcae2a6518c92
+    remote: https://github.com/ruby/gem_rbs_collection.git
+    repo_dir: gems
+- name: rack
+  version: 2.2.2
+  source:
+    type: git
+    name: ruby/gem_rbs_collection
+    revision: 6320a194c85afbf4ff332c3eb75fcae2a6518c92
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
 - name: railties
@@ -123,10 +111,34 @@ gems:
   source:
     type: git
     name: ruby/gem_rbs_collection
-    revision: 51880bed87fbc3dc8076fedb5cf798be05148220
+    revision: 6320a194c85afbf4ff332c3eb75fcae2a6518c92
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
 - name: rbs
-  version: 1.6.2
+  version: 2.2.2
   source:
     type: rubygems
+- name: monitor
+  version: '0'
+  source:
+    type: stdlib
+- name: tempfile
+  version: '0'
+  source:
+    type: stdlib
+- name: date
+  version: '0'
+  source:
+    type: stdlib
+- name: singleton
+  version: '0'
+  source:
+    type: stdlib
+- name: mutex_m
+  version: '0'
+  source:
+    type: stdlib
+- name: time
+  version: '0'
+  source:
+    type: stdlib

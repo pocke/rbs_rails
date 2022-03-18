@@ -32,6 +32,7 @@ module RbsRails
 
           #{columns}
           #{associations}
+          #{generated_association_methods}
           #{has_secure_password}
           #{delegated_type_instance}
           #{delegated_type_scope(singleton: true)}
@@ -166,6 +167,41 @@ module RbsRails
         end.join("\n")
       end
 
+      private def generated_association_methods
+        # @type var sigs: Array[String]
+        sigs = []
+
+        # Needs to require "active_storage/engine"
+        if klass.respond_to?(:attachment_reflections)
+          sigs << "module GeneratedAssociationMethods"
+          sigs << klass.attachment_reflections.map do |name, reflection|
+            case reflection.macro
+            when :has_one_attached
+              <<~EOS
+                def #{name}: () -> ActiveStorage::Attached::One
+                def #{name}=: (ActionDispatch::Http::UploadedFile) -> ActionDispatch::Http::UploadedFile
+                            | (Rack::Test::UploadedFile) -> Rack::Test::UploadedFile
+                            | (ActiveStorage::Blob) -> ActiveStorage::Blob
+                            | (String) -> String
+                            | ({ io: IO, filename: String, content_type: String? }) -> { io: IO, filename: String, content_type: String? }
+                            | (nil) -> nil
+              EOS
+            when :has_many_attached
+              <<~EOS
+                def #{name}: () -> ActiveStorage::Attached::Many
+                def #{name}=: (untyped) -> untyped
+              EOS
+            else
+              raise
+            end
+          end.join("\n")
+          sigs << "end"
+          sigs << "include GeneratedAssociationMethods"
+        end
+
+        sigs.join("\n")
+      end
+
       private def delegated_type_scope(singleton:)
         definitions = delegated_type_definitions
         return "" unless definitions
@@ -256,6 +292,7 @@ module RbsRails
 
           <<~EOS
             module ActiveModel_SecurePassword_InstanceMethodsOnActivation_#{attribute}
+              attr_reader #{attribute}: String?
               def #{attribute}=: (String) -> String
               def #{attribute}_confirmation=: (String) -> String
               def authenticate_#{attribute}: (String) -> (#{klass_name} | false)
@@ -350,7 +387,9 @@ module RbsRails
         ast = parse_model_file
         return '' unless ast
 
-        traverse(ast).map do |node|
+        prefix = singleton ? 'self.' : ''
+
+        sigs = traverse(ast).map do |node|
           # @type block: nil | String
           next unless node.type == :send
           next unless node.children[0].nil?
@@ -366,8 +405,16 @@ module RbsRails
           next unless body_node.type == :block
 
           args = args_to_type(body_node.children[1])
-          "def #{singleton ? 'self.' : ''}#{name}: #{args} -> #{relation_class_name}"
-        end.compact.join("\n")
+          "def #{prefix}#{name}: #{args} -> #{relation_class_name}"
+        end.compact
+
+        if klass.respond_to?(:attachment_reflections)
+          klass.attachment_reflections.each do |name, _reflection|
+            sigs << "def #{prefix}with_attached_#{name}: () -> #{relation_class_name}"
+          end
+        end
+
+        sigs.join("\n")
       end
 
       private def args_to_type(args_node)
