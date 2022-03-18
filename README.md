@@ -35,44 +35,30 @@ Then, the following three tasks are available.
 * `rbs_rails:all`: Execute all tasks of RBS Rails
 
 
+### Install RBS for `rails` gem
 
+You need to install `rails` gem's RBS files. I highly recommend using `rbs collection`.
+
+1. Add `gem 'rails'` to your `Gemfile`.
+1. Then execute the following commands
+   ```console
+   $ bundle install
+   $ bundle exec rbs collection install
+   ```
 
 ### Steep integration
 
-You need to specify the following libraries by `Steepfile`.
+Put the following code as `Steepfile`.
 
 ```ruby
-# Steepfile
-
 target :app do
   signature 'sig'
 
   check 'app'
-
-  repo_path "path/to/rbs_repo"
-
-  library 'pathname'
-  library 'logger'
-  library 'mutex_m'
-  library 'date'
-  library 'monitor'
-  library 'singleton'
-  library 'tsort'
-  library 'time'
-
-  library 'rack'
-
-  library 'activesupport'
-  library 'actionpack'
-  library 'activejob'
-  library 'activemodel'
-  library 'actionview'
-  library 'activerecord'
-  library 'railties'
 end
 ```
 
-You need to put RBS repo to `path/to/rbs_repo`. See https://github.com/ruby/gem_rbs_collection
+That's all! Now you can check your Rails app statically with `steep check` command.
 
 ## Development
 
