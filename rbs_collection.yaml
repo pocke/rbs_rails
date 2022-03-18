@@ -24,3 +24,13 @@ gems:
   # ignore RBS Rails itself
   - name: rbs_rails
     ignore: true
+
+  # They'are necessary to load RBS gem.
+  # See https://github.com/ruby/rbs/pull/921
+  - name: logger
+  - name: set
+  - name: pathname
+  - name: json
+  - name: optparse
+  - name: rubygems
+  - name: tsort
