@@ -122,9 +122,13 @@ module RbsRails
 
       private def has_many
         klass.reflect_on_all_associations(:has_many).map do |a|
+          @dependencies << a.klass.name
+
           singular_name = a.name.to_s.singularize
           type = Util.module_name(a.klass)
           collection_type = "#{type}::ActiveRecord_Associations_CollectionProxy"
+          @dependencies << collection_type
+
           <<~RUBY.chomp
             def #{a.name}: () -> #{collection_type}
             def #{a.name}=: (#{collection_type} | Array[#{type}]) -> (#{collection_type} | Array[#{type}])
@@ -136,6 +140,8 @@ module RbsRails
 
       private def has_one
         klass.reflect_on_all_associations(:has_one).map do |a|
+          @dependencies << a.klass.name unless a.polymorphic?
+
           type = a.polymorphic? ? 'untyped' : Util.module_name(a.klass)
           type_optional = optional(type)
           <<~RUBY.chomp
@@ -151,6 +157,8 @@ module RbsRails
 
       private def belongs_to
         klass.reflect_on_all_associations(:belongs_to).map do |a|
+          @dependencies << a.klass.name unless a.polymorphic?
+
           type = a.polymorphic? ? 'untyped' : Util.module_name(a.klass)
           type_optional = optional(type)
           # @type var methods: Array[String]
