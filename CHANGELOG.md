@@ -2,6 +2,12 @@
 
 ## master (unreleased)
 
+## 0.10.1 (2022-03-23)
+
+### Bug Fixes
+
+* Generate dependency types of relations. [#216](https://github.com/pocke/rbs_rails/pull/216)
+
 ## 0.10.0 (2022-03-18)
 
 ### New Features
