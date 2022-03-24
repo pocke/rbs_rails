@@ -1,0 +1,5 @@
+class Thor
+  module Actions
+    def create_file: (String, String) -> void
+  end
+end
