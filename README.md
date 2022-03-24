@@ -20,12 +20,10 @@ Or install it yourself as:
 
 ## Usage
 
-Put the following code to `lib/tasks/rbs.rake`.
+Run the following command. It generates `lib/tasks/rbs.rake`.
 
-```ruby
-require 'rbs_rails/rake_task'
-
-RbsRails::RakeTask.new
+```console
+$ bin/rails g rbs_rails:install
 ```
 
 Then, the following three tasks are available.
