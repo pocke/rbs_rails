@@ -2,6 +2,16 @@
 
 ## master (unreleased)
 
+## 0.11.0 (2022-03-24)
+
+### New Features
+
+* Add rails generator to generate rbs.rake. [#217](https://github.com/pocke/rbs_rails/pull/217)
+
+### Bug Fixes
+
+* Do not expose polyfil RBSs. [#218](https://github.com/pocke/rbs_rails/pull/218)
+
 ## 0.10.1 (2022-03-23)
 
 ### Bug Fixes
