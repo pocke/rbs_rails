@@ -39,7 +39,7 @@ class RbsRails::ActiveRecord::Generator
 
   def delegated_type_instance: () -> String
 
-  def delegated_type_definitions: () -> Array[{ role: Symbol, types: Array[String] }]?
+  def delegated_type_definitions: () -> Array[Hash[Symbol, untyped]]?
 
   def has_secure_password: () -> String?
 
@@ -58,12 +58,7 @@ class RbsRails::ActiveRecord::Generator
 
   def scopes: (singleton: untyped `singleton`) -> untyped
 
-  def args_to_type: (untyped args_node) -> untyped
-
-  def parse_model_file: () -> untyped
-
-  def traverse: (Parser::AST::Node node) { (Parser::AST::Node) -> untyped } -> untyped
-              | (Parser::AST::Node node) -> Enumerator[Parser::AST::Node, untyped]
+  def parameters_to_type: (untyped args_node) -> untyped
 
   def relation_class_name: () -> untyped
 

@@ -35,9 +35,7 @@ module RbsRails
           #{generated_association_methods}
           #{has_secure_password}
           #{delegated_type_instance}
-          #{delegated_type_scope(singleton: true)}
           #{enum_instance_methods}
-          #{enum_scope_methods(singleton: true)}
           #{scopes(singleton: true)}
 
           #{generated_relation_methods_decl}
@@ -61,9 +59,7 @@ module RbsRails
       private def generated_relation_methods_decl
         <<~RBS
           module GeneratedRelationMethods
-            #{enum_scope_methods(singleton: false)}
             #{scopes(singleton: false)}
-            #{delegated_type_scope(singleton: false)}
           end
         RBS
       end
@@ -210,17 +206,6 @@ module RbsRails
         sigs.join("\n")
       end
 
-      private def delegated_type_scope(singleton:)
-        definitions = delegated_type_definitions
-        return "" unless definitions
-        definitions.map do |definition|
-          definition[:types].map do |type|
-            scope_name = type.tableize.gsub("/", "_")
-            "def #{singleton ? 'self.' : ''}#{scope_name}: () -> #{relation_class_name}"
-          end
-        end.flatten.join("\n")
-      end
-
       private def delegated_type_instance
         definitions = delegated_type_definitions
         return "" unless definitions
@@ -243,61 +228,14 @@ module RbsRails
       end
 
       private def delegated_type_definitions
-        ast = parse_model_file
-        return unless ast
-
-        traverse(ast).map do |node|
-          # @type block: { role: Symbol, types: Array[String] }?
-          next unless node.type == :send
-          next unless node.children[0].nil?
-          next unless node.children[1] == :delegated_type
-
-          role_node = node.children[2]
-          next unless role_node
-          next unless role_node.type == :sym
-          # @type var role: Symbol
-          role = role_node.children[0]
-
-          args_node = node.children[3]
-          next unless args_node
-          next unless args_node.type == :hash
-
-          types = traverse(args_node).map do |n|
-            # @type block: Array[String]?
-            next unless n.type == :pair
-            key_node = n.children[0]
-            next unless key_node
-            next unless key_node.type == :sym
-            next unless key_node.children[0] == :types
-
-            types_node = n.children[1]
-            next unless types_node
-            next unless types_node.type == :array
-            code = types_node.loc.expression.source
-            eval(code)
-          end.compact.flatten
-
-          { role: role, types: types }
-        end.compact
+        # def delegated_type(role, types:, **options)
+        CallTracer.result(klass.method(:delegated_type))
       end
 
       private def has_secure_password
-        ast = parse_model_file
-        return unless ast
-
-        traverse(ast).map do |node|
-          # @type block: String?
-          next unless node.type == :send
-          next unless node.children[0].nil?
-          next unless node.children[1] == :has_secure_password
-
-          attribute_node = node.children[2]
-          attribute = if attribute_node && attribute_node.type == :sym
-                        attribute_node.children[0]
-                      else
-                        :password
-                      end
-
+        CallTracer.result(klass.method(:has_secure_password)).map do |arguments|
+          # def has_secure_password(attribute = :password, validations: true)
+          attribute = arguments[:attribute]
           <<~EOS
             module ActiveModel_SecurePassword_InstanceMethodsOnActivation_#{attribute}
               attr_reader #{attribute}: String?
@@ -308,7 +246,7 @@ module RbsRails
             end
             include ActiveModel_SecurePassword_InstanceMethodsOnActivation_#{attribute}
           EOS
-        end.compact.join("\n")
+        end.join("\n")
       end
 
       private def enum_instance_methods
@@ -329,22 +267,6 @@ module RbsRails
         methods.join("\n")
       end
 
-      private def enum_scope_methods(singleton:)
-        # @type var methods: Array[String]
-        methods = []
-        enum_definitions.each do |hash|
-          hash.each do |name, values|
-            next if name == :_prefix || name == :_suffix || name == :_default
-
-            values.each do |label, value|
-              value_method_name = enum_method_name(hash, name, label)
-              methods << "def #{singleton ? 'self.' : ''}#{value_method_name}: () -> #{relation_class_name}"
-            end
-          end
-        end
-        methods.join("\n")
-      end
-
       private def enum_definitions
         @enum_definitions ||= build_enum_definitions
       end
@@ -353,24 +275,10 @@ module RbsRails
       # ActiveRecord has `defined_enums` method,
       # but it does not contain _prefix and _suffix information.
       private def build_enum_definitions
-        ast = parse_model_file
-        return [] unless ast
-
-        traverse(ast).map do |node|
-          # @type block: nil | Hash[untyped, untyped]
-          next unless node.type == :send
-          next unless node.children[0].nil?
-          next unless node.children[1] == :enum
-
-          definitions = node.children[2]
-          next unless definitions
-          next unless definitions.type == :hash
-          next unless traverse(definitions).all? { |n| [:str, :sym, :int, :hash, :pair, :true, :false].include?(n.type) }
-
-          code = definitions.loc.expression.source
-          code = "{#{code}}" if code[0] != '{'
-          eval(code)
-        end.compact
+        CallTracer.result(klass.method(:enum)).to_a.map do |arguments|
+          # def enum(definitions)
+          arguments[:definitions]
+        end
       end
 
       private def enum_method_name(hash, name, label)
@@ -392,88 +300,47 @@ module RbsRails
       end
 
       private def scopes(singleton:)
-        ast = parse_model_file
-        return '' unless ast
-
         prefix = singleton ? 'self.' : ''
 
-        sigs = traverse(ast).map do |node|
-          # @type block: nil | String
-          next unless node.type == :send
-          next unless node.children[0].nil?
-          next unless node.children[1] == :scope
+        sigs = CallTracer.result(klass.method(:scope)).filter_map do |arguments|
+          # def scope(name, body, &block)
+          name = arguments[:name]
+          body = arguments[:body]
+          next unless body.kind_of?(Proc)
 
-          name_node = node.children[2]
-          next unless name_node
-          next unless name_node.type == :sym
-
-          name = name_node.children[0]
-          body_node = node.children[3]
-          next unless body_node
-          next unless body_node.type == :block
-
-          args = args_to_type(body_node.children[1])
-          "def #{prefix}#{name}: #{args} -> #{relation_class_name}"
-        end.compact
-
-        if klass.respond_to?(:attachment_reflections)
-          klass.attachment_reflections.each do |name, _reflection|
-            sigs << "def #{prefix}with_attached_#{name}: () -> #{relation_class_name}"
-          end
+          args_type = parameters_to_type(body.parameters)
+          "def #{prefix}#{name}: #{args_type} -> #{relation_class_name}"
         end
 
         sigs.join("\n")
       end
 
-      private def args_to_type(args_node)
+      private def parameters_to_type(parameters)
         # @type var res: Array[String]
         res = []
         # @type var block: String?
         block = nil
-        args_node.children.each do |node|
-          case node.type
-          when :arg
-            res << "untyped `#{node.children[0]}`"
-          when :optarg
-            res << "?untyped `#{node.children[0]}`"
-          when :kwarg
-            res << "#{node.children[0]}: untyped"
-          when :kwoptarg
-            res << "?#{node.children[0]}: untyped"
-          when :restarg
-            res << "*untyped `#{node.children[0]}`"
-          when :kwrestarg
-            res << "**untyped `#{node.children[0]}`"
-          when :blockarg
+        parameters.each do |(type, name)|
+          case type
+          when :req
+            res << "untyped `#{name}`"
+          when :opt
+            res << "?untyped `#{name}`"
+          when :keyreq
+            res << "#{name}: untyped"
+          when :key
+            res << "?#{name}: untyped"
+          when :rest
+            res << "*untyped `#{name}`"
+          when :keyrest
+            res << "**untyped `#{name}`"
+          when :block
             block = " { (*untyped) -> untyped }"
           else
-            raise "unexpected: #{node}"
+            raise "unexpected: #{type}"
           end
         end
         "(#{res.join(", ")})#{block}"
-      end
-
-      private def parse_model_file
-        return @parse_model_file if defined?(@parse_model_file)
-
-        path = Rails.root.join('app/models/', klass_name.underscore + '.rb')
-        return @parse_model_file = nil unless path.exist?
-        return [] unless path.exist?
-
-        ast = Parser::CurrentRuby.parse path.read
-        return @parse_model_file = nil unless path.exist?
-
-        @parse_model_file = ast
-      end
-
-      private def traverse(node, &block)
-        return to_enum(__method__ || raise, node) unless block_given?
-
-        # @type var block: ^(Parser::AST::Node) -> untyped
-        block.call node
-        node.children.each do |child|
-          traverse(child, &block) if child.is_a?(Parser::AST::Node)
-        end
       end
 
       private def relation_class_name

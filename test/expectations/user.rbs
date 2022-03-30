@@ -225,22 +225,31 @@ class User < ::ApplicationRecord
   def temporary?: () -> bool
   def accepted!: () -> bool
   def accepted?: () -> bool
-  def self.temporary: () -> ActiveRecord_Relation
-  def self.accepted: () -> ActiveRecord_Relation
+  def self.mixin: () -> ActiveRecord_Relation
   def self.all_kind_args: (untyped `type`, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped `untyped`) { (*untyped) -> untyped } -> ActiveRecord_Relation
   def self.no_arg: () -> ActiveRecord_Relation
   def self.with_attached_avatar: () -> ActiveRecord_Relation
+  def self.temporary: () -> ActiveRecord_Relation
+  def self.not_temporary: () -> ActiveRecord_Relation
+  def self.accepted: () -> ActiveRecord_Relation
+  def self.not_accepted: () -> ActiveRecord_Relation
 
   module GeneratedRelationMethods
-    def temporary: () -> ActiveRecord_Relation
-
-    def accepted: () -> ActiveRecord_Relation
+    def mixin: () -> ActiveRecord_Relation
 
     def all_kind_args: (untyped `type`, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped `untyped`) { (*untyped) -> untyped } -> ActiveRecord_Relation
 
     def no_arg: () -> ActiveRecord_Relation
 
     def with_attached_avatar: () -> ActiveRecord_Relation
+
+    def temporary: () -> ActiveRecord_Relation
+
+    def not_temporary: () -> ActiveRecord_Relation
+
+    def accepted: () -> ActiveRecord_Relation
+
+    def not_accepted: () -> ActiveRecord_Relation
   end
 
   class ActiveRecord_Relation < ::ActiveRecord::Relation

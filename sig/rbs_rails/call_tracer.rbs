@@ -1,0 +1,9 @@
+module RbsRails
+  class CallTracer
+    type target = Method | UnboundMethod
+    self.@call_map: Hash[target, Array[Hash[Symbol, untyped]]]
+    def initialize: () -> void
+    def self.trace: (target target) -> void
+    def self.result: (target target) -> Array[Hash[Symbol, untyped]]
+  end
+end

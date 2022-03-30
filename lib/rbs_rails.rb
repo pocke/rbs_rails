@@ -7,6 +7,7 @@ require_relative "rbs_rails/util"
 require_relative 'rbs_rails/active_record'
 require_relative 'rbs_rails/path_helpers'
 require_relative 'rbs_rails/dependency_builder'
+require_relative 'rbs_rails/call_tracer'
 
 module RbsRails
   class Error < StandardError; end

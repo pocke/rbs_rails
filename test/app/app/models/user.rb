@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  include Mixin
+
   scope :all_kind_args, -> (type, m = 1, n = 1, *rest, x, k: 1,**untyped, &blk)  { all }
   scope :no_arg, -> ()  { all }
 

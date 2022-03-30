@@ -31,10 +31,15 @@ module RbsRails
       task("#{name}:generate_rbs_for_models": :environment) do
         require 'rbs_rails'
 
+        CallTracer.trace(::ActiveRecord::Base.method(:enum))
+        CallTracer.trace(::ActiveRecord::Base.method(:delegated_type))
+        CallTracer.trace(::ActiveRecord::Base.method(:has_secure_password))
+        CallTracer.trace(::ActiveRecord::Base.method(:scope))
+
         Rails.application.eager_load!
 
         dep_builder = DependencyBuilder.new
-        
+
         ::ActiveRecord::Base.descendants.each do |klass|
           next unless RbsRails::ActiveRecord.generatable?(klass)
           next if ignore_model_if&.call(klass)

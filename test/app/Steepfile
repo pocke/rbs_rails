@@ -1,6 +1,7 @@
 target :app do
   signature 'sig'
   check "app/models"
+  ignore "app/models/concerns/mixin.rb"
 
   repo_path ENV['RBS_REPO_DIR'] if ENV['RBS_REPO_DIR']
   collection_config '../../rbs_collection.yaml'
