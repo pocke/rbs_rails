@@ -41,6 +41,7 @@ You need to install `rails` gem's RBS files. I highly recommend using `rbs colle
 1. Then execute the following commands
    ```console
    $ bundle install
+   $ bundle exec rbs collection init
    $ bundle exec rbs collection install
    ```
 
