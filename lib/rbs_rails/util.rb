@@ -17,6 +17,7 @@ module RbsRails
 
     def format_rbs(rbs)
       decls = RBS::Parser.parse_signature(rbs)
+      decls = decls[1] + decls[2] if RBS::VERSION.start_with? '3.'
       StringIO.new.tap do |io|
         RBS::Writer.new(out: io).write(decls)
       end.string
