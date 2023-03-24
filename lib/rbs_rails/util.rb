@@ -16,8 +16,16 @@ module RbsRails
     end
 
     def format_rbs(rbs)
-      decls = RBS::Parser.parse_signature(rbs)
-      decls = decls[1] + decls[2] if RBS::VERSION.start_with? '3.'
+      decls =
+        if Gem::Version.new('3') <= Gem::Version.new(RBS::VERSION) 
+          # TODO: Remove this type annotation when rbs_rails depends on RBS v3
+          # @type var parsed: [RBS::Buffer, untyped, RBS::Declarations::t]
+          parsed = _ = RBS::Parser.parse_signature(rbs)
+          parsed[1] + parsed[2]
+        else
+          RBS::Parser.parse_signature(rbs)
+        end
+
       StringIO.new.tap do |io|
         RBS::Writer.new(out: io).write(decls)
       end.string
