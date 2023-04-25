@@ -7,6 +7,8 @@ class RbsRails::ActiveRecord::Generator
   @parse_model_file: nil | Parser::AST::Node
   @dependencies: Array[String]
 
+  IGNORED_ENUM_KEYS: Array[Symbol]
+
   def initialize: (singleton(ActiveRecord::Base) klass, dependencies: Array[String]) -> untyped
 
   def generate: () -> String
