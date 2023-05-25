@@ -6,7 +6,7 @@ git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 gemspec
 
 gem "rake", "~> 13.0"
-gem 'rails', '< 7', '>= 6.0'
-gem 'rbs', '>= 2'
-gem 'steep'
+gem 'rails', '>= 7.0'
+gem 'rbs', '>= 3'
+gem 'steep', '>= 1.4'
 gem 'minitest'
