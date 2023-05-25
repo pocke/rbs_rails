@@ -9,7 +9,7 @@ module RbsRails
 
     attr_accessor signature_root_dir: Pathname
 
-    def initialize: (?::Symbol name) { (self) -> void } -> void
+    def initialize: (?::Symbol name) { (RbsRails::RakeTask) -> void } -> void
 
     def def_all: () -> void
 
