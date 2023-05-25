@@ -2,6 +2,11 @@
 
 ## master (unreleased)
 
+## 0.12.0
+
+* Support RBS v3. [#246](https://github.com/pocke/rbs_rails/pull/246)
+* Ignore `_scope` as enum field name. [#249](https://github.com/pocke/rbs_rails/pull/249)
+
 ## 0.11.0 (2022-03-24)
 
 ### New Features

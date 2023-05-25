@@ -12,6 +12,8 @@ module RbsRails
     end
 
     class Generator
+      IGNORED_ENUM_KEYS = %i[_prefix _suffix _default _scopes]
+
       def initialize(klass, dependencies:)
         @klass = klass
         @dependencies = dependencies
@@ -202,7 +204,7 @@ module RbsRails
                 def #{name}=: (untyped) -> untyped
               EOS
             else
-              raise
+              raise "unknown macro: #{reflection.macro}"
             end
           end.join("\n")
           sigs << "end"
@@ -318,7 +320,7 @@ module RbsRails
         methods = []
         enum_definitions.each do |hash|
           hash.each do |name, values|
-            next if name == :_prefix || name == :_suffix || name == :_default
+            next if IGNORED_ENUM_KEYS.include?(name)
 
             values.each do |label, value|
               value_method_name = enum_method_name(hash, name, label)
@@ -336,7 +338,7 @@ module RbsRails
         methods = []
         enum_definitions.each do |hash|
           hash.each do |name, values|
-            next if name == :_prefix || name == :_suffix || name == :_default
+            next if IGNORED_ENUM_KEYS.include?(name)
 
             values.each do |label, value|
               value_method_name = enum_method_name(hash, name, label)
@@ -469,9 +471,8 @@ module RbsRails
       end
 
       private def traverse(node, &block)
-        return to_enum(__method__ || raise, node) unless block_given?
+        return to_enum(__method__ || raise, node) unless block
 
-        # @type var block: ^(Parser::AST::Node) -> untyped
         block.call node
         node.children.each do |child|
           traverse(child, &block) if child.is_a?(Parser::AST::Node)
