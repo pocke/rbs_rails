@@ -204,7 +204,7 @@ module RbsRails
                 def #{name}=: (untyped) -> untyped
               EOS
             else
-              raise
+              raise "unknown macro: #{reflection.macro}"
             end
           end.join("\n")
           sigs << "end"
@@ -471,9 +471,8 @@ module RbsRails
       end
 
       private def traverse(node, &block)
-        return to_enum(__method__ || raise, node) unless block_given?
+        return to_enum(__method__ || raise, node) unless block
 
-        # @type var block: ^(Parser::AST::Node) -> untyped
         block.call node
         node.children.each do |child|
           traverse(child, &block) if child.is_a?(Parser::AST::Node)
