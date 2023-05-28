@@ -18,6 +18,8 @@ class RbsRails::ActiveRecord::Generator
 
   def pk_type: () -> String
 
+  def generated_finder_class_methods_decl: () -> String
+
   def generated_relation_methods_decl: () -> String
 
   def relation_decl: () -> String

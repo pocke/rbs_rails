@@ -30,7 +30,7 @@ module RbsRails
       private def klass_decl
         <<~RBS
           #{header}
-            extend _ActiveRecord_Relation_ClassMethods[#{klass_name}, #{relation_class_name}, #{pk_type}]
+          #{generated_finder_class_methods_decl}
 
           #{columns}
           #{associations}
@@ -58,6 +58,54 @@ module RbsRails
 
         col = klass.columns.find {|col| col.name == pk }
         sql_type_to_class(col.type)
+      end
+
+      private def generated_finder_class_methods_decl
+        <<~RBS
+          module GeneratedFinderClassMethods
+            def all: () -> #{relation_class_name}
+            def ids: () -> Array[#{pk_type}]
+            def none: () -> #{relation_class_name}
+            def pluck: (Symbol | String column) -> Array[untyped]
+                    | (*Symbol | String columns) -> Array[Array[untyped]]
+            def where: (*untyped) -> #{relation_class_name}
+            def exists?: (*untyped) -> bool
+            def order: (*untyped) -> #{relation_class_name}
+            def group: (*Symbol | String) -> untyped
+            def distinct: () -> self
+            def or: (#{relation_class_name}) -> #{relation_class_name}
+            def merge: (#{relation_class_name}) -> #{relation_class_name}
+            def joins: (*String | Symbol) -> self
+                    | (Hash[untyped, untyped]) -> self
+            def left_joins: (*String | Symbol) -> self
+                    | (Hash[untyped, untyped]) -> self
+            def left_outer_joins: (*String | Symbol) -> self
+                                | (Hash[untyped, untyped]) -> self
+            def includes: (*String | Symbol) -> self
+                        | (Hash[untyped, untyped]) -> self
+            def eager_load: (*String | Symbol) -> self
+                          | (Hash[untyped, untyped]) -> self
+            def preload: (*String | Symbol) -> self
+                      | (Hash[untyped, untyped]) -> self
+            def find_by: (*untyped) -> #{klass_name}?
+            def find_by!: (*untyped) -> #{klass_name}
+            def find: (#{pk_type} id) -> #{klass_name}
+                    | (Array[#{pk_type}]) -> Array[#{klass_name}]
+                    | (*#{pk_type}) -> Array[#{klass_name}]
+            def first: () -> #{klass_name}
+                    | (Integer count) -> Array[#{klass_name}]
+            def last: () -> #{klass_name}
+                    | (Integer count) -> Array[#{klass_name}]
+            def find_each: (?batch_size: Integer, ?start: Integer, ?finish: Integer, ?error_on_ignore: bool) { (#{klass_name}) -> void } -> nil
+            def find_in_batches: (?batch_size: Integer, ?start: Integer, ?finish: Integer, ?error_on_ignore: bool) { (self) -> void } -> nil
+            def destroy_all: () -> untyped
+            def delete_all: () -> untyped
+            def update_all: (*untyped) -> untyped
+            def select: (*Symbol | String) -> #{relation_class_name}
+                      | () { (#{klass_name}) -> boolish } -> Array[#{klass_name}]
+          end
+          extend GeneratedFinderClassMethods
+        RBS
       end
 
       private def generated_relation_methods_decl

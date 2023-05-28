@@ -1,5 +1,74 @@
 class User < ::ApplicationRecord
-  extend _ActiveRecord_Relation_ClassMethods[User, ActiveRecord_Relation, Integer]
+  module GeneratedFinderClassMethods
+    def all: () -> ActiveRecord_Relation
+
+    def ids: () -> Array[Integer]
+
+    def none: () -> ActiveRecord_Relation
+
+    def pluck: (Symbol | String column) -> Array[untyped]
+             | (*Symbol | String columns) -> Array[Array[untyped]]
+
+    def where: (*untyped) -> ActiveRecord_Relation
+
+    def exists?: (*untyped) -> bool
+
+    def order: (*untyped) -> ActiveRecord_Relation
+
+    def group: (*Symbol | String) -> untyped
+
+    def distinct: () -> self
+
+    def or: (ActiveRecord_Relation) -> ActiveRecord_Relation
+
+    def merge: (ActiveRecord_Relation) -> ActiveRecord_Relation
+
+    def joins: (*String | Symbol) -> self
+             | (Hash[untyped, untyped]) -> self
+
+    def left_joins: (*String | Symbol) -> self
+                  | (Hash[untyped, untyped]) -> self
+
+    def left_outer_joins: (*String | Symbol) -> self
+                        | (Hash[untyped, untyped]) -> self
+
+    def includes: (*String | Symbol) -> self
+                | (Hash[untyped, untyped]) -> self
+
+    def eager_load: (*String | Symbol) -> self
+                  | (Hash[untyped, untyped]) -> self
+
+    def preload: (*String | Symbol) -> self
+               | (Hash[untyped, untyped]) -> self
+
+    def find_by: (*untyped) -> User?
+
+    def find_by!: (*untyped) -> User
+
+    def find: (Integer id) -> User
+            | (Array[Integer]) -> Array[User]
+            | (*Integer) -> Array[User]
+
+    def first: () -> User
+             | (Integer count) -> Array[User]
+
+    def last: () -> User
+            | (Integer count) -> Array[User]
+
+    def find_each: (?batch_size: Integer, ?start: Integer, ?finish: Integer, ?error_on_ignore: bool) { (User) -> void } -> nil
+
+    def find_in_batches: (?batch_size: Integer, ?start: Integer, ?finish: Integer, ?error_on_ignore: bool) { (self) -> void } -> nil
+
+    def destroy_all: () -> untyped
+
+    def delete_all: () -> untyped
+
+    def update_all: (*untyped) -> untyped
+
+    def select: (*Symbol | String) -> ActiveRecord_Relation
+              | () { (User) -> boolish } -> Array[User]
+  end
+  extend GeneratedFinderClassMethods
 
   module GeneratedAttributeMethods
     def id: () -> Integer
