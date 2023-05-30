@@ -1,0 +1,19 @@
+module RbsRails::ActionController
+  def self.user_defined_controller?: (untyped klass) -> boolish
+  def self.class_to_rbs: (untyped klass, ?dependencies: Array[String]) -> String
+end
+
+class RbsRails::ActionController::Generator
+  @klass: untyped
+
+  def initialize: (untyped klass, dependencies: Array[String]) -> String
+  def generate: () -> String
+
+  private
+
+  def klass_decl: () -> String
+  def header: () -> String
+  def footer: () -> String
+
+  attr_reader klass: untyped
+end

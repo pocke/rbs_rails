@@ -4,6 +4,7 @@ require 'stringio'
 
 require_relative "rbs_rails/version"
 require_relative "rbs_rails/util"
+require_relative 'rbs_rails/action_controller'
 require_relative 'rbs_rails/active_record'
 require_relative 'rbs_rails/path_helpers'
 require_relative 'rbs_rails/dependency_builder'

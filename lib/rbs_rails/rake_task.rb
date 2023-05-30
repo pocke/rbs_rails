@@ -14,6 +14,7 @@ module RbsRails
 
       setup_signature_root_dir!
 
+      def_generate_rbs_for_controllers
       def_generate_rbs_for_models
       def_generate_rbs_for_path_helpers
       def_all
@@ -24,6 +25,32 @@ module RbsRails
 
       deps = [:"#{name}:generate_rbs_for_models", :"#{name}:generate_rbs_for_path_helpers"]
       task("#{name}:all": deps)
+    end
+
+    def def_generate_rbs_for_controllers
+      desc 'Generate RBS files for Action Controllers'
+      task("#{name}:generate_rbs_for_controllers": :environment) do
+        require 'rbs_rails'
+
+        Rails.application.eager_load!
+
+        Rails.application.routes.routes.map do |route|
+          controller_name = route.defaults[:controller].camelize + 'Controller'
+          controller_name.constantize
+        rescue NameError
+          nil
+        end
+
+        ::ActionController::Base.descendants.each do |klass|
+          next unless RbsRails::ActionController.user_defined_controller?(klass)
+
+          path = signature_root_dir / "app/controllers/#{klass.name.underscore}.rbs"
+          path.dirname.mkpath
+
+          sig = RbsRails::ActionController.class_to_rbs(klass)
+          path.write sig
+        end
+      end
     end
 
     def def_generate_rbs_for_models
