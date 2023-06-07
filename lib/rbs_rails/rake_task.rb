@@ -58,6 +58,7 @@ module RbsRails
       task("#{name}:generate_rbs_for_path_helpers": :environment) do
         require 'rbs_rails'
 
+        signature_root_dir.mkpath
         out_path = signature_root_dir.join 'path_helpers.rbs'
         rbs = RbsRails::PathHelpers.generate
         out_path.write rbs
