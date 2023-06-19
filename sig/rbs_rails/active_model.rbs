@@ -1,0 +1,25 @@
+module RbsRails
+  module ActiveModel
+    def self.all: () -> Array[untyped]
+    def self.class_to_rbs: (Class klass) -> String
+
+    class Generator
+      TYPES: Hash[Symbol, Class | Symbol]
+      @klass: Class
+      @klass_name: String
+
+      def initialize: (Class klass) -> void
+      def generate: () -> String
+
+      private
+
+      def klass_decl: () -> String
+      def header: () -> String
+      def attributes: () -> String
+      def footer: () -> String
+
+      attr_reader klass: Class
+      attr_reader klass_name: String
+    end
+  end
+end

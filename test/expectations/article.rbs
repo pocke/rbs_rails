@@ -1,0 +1,12 @@
+class Article < ::Object
+  def self.attribute: (Symbol name, ?Symbol? cast_type, ?untyped default, **untyped) -> void
+
+  def blog_id: () -> Integer?
+  def blog_id=: (Integer? value) -> Integer?
+
+  def title: () -> String?
+  def title=: (String? value) -> String?
+
+  def body: () -> String?
+  def body=: (String? value) -> String?
+end
