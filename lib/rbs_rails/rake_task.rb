@@ -3,16 +3,16 @@ require 'rake/tasklib'
 
 module RbsRails
   class RakeTask < Rake::TaskLib
-    attr_accessor :ignore_model_if, :name, :signature_root_dir
+    attr_accessor :ignore_model_if, :name
+    attr_writer :signature_root_dir
 
     def initialize(name = :rbs_rails, &block)
       super()
 
       @name = name
+      @signature_root_dir = Rails.root / 'sig/rbs_rails'
 
       block.call(self) if block
-
-      setup_signature_root_dir!
 
       def_generate_rbs_for_models
       def_generate_rbs_for_path_helpers
@@ -64,10 +64,10 @@ module RbsRails
       end
     end
 
-    private def setup_signature_root_dir!
-      @signature_root_dir ||= Rails.root / 'sig/rbs_rails'
-      @signature_root_dir = Pathname(@signature_root_dir)
-      @signature_root_dir.mkpath
+    private def signature_root_dir
+      Pathname(@signature_root_dir).tap do |dir|
+        dir.mkpath
+      end
     end
   end
 end
