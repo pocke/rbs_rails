@@ -33,6 +33,7 @@ module RbsRails
             extend _ActiveRecord_Relation_ClassMethods[#{klass_name}, #{relation_class_name}, #{pk_type}]
 
           #{columns}
+          #{alias_columns}
           #{associations}
           #{generated_association_methods}
           #{has_secure_password}
@@ -517,7 +518,46 @@ module RbsRails
           sig
         end.join("\n")
         mod_sig << "\nend\n"
-        mod_sig << "include GeneratedAttributeMethods"
+        mod_sig << "include GeneratedAttributeMethods\n"
+        mod_sig
+      end
+
+      private def alias_columns
+        mod_sig = +"module GeneratedAliasAttributeMethods\n"
+        mod_sig << klass.attribute_aliases.map do |col|
+          old_col = klass.columns.find{_1.name == col[1]}
+          class_name = if enum_definitions.any? { |hash| hash.key?(col[0]) || hash.key?(col[0].to_sym) }
+                         'String'
+                       else
+                         sql_type_to_class(old_col.type)
+                       end
+          class_name_opt = optional(class_name)
+          column_type = old_col.null ? class_name_opt : class_name
+          sig = <<~EOS
+            def #{col[0]}: () -> #{column_type}
+            def #{col[0]}=: (#{column_type}) -> #{column_type}
+            def #{col[0]}?: () -> bool
+            def #{col[0]}_changed?: () -> bool
+            def #{col[0]}_change: () -> [#{class_name_opt}, #{class_name_opt}]
+            def #{col[0]}_will_change!: () -> void
+            def #{col[0]}_was: () -> #{class_name_opt}
+            def #{col[0]}_previously_changed?: () -> bool
+            def #{col[0]}_previous_change: () -> Array[#{class_name_opt}]?
+            def #{col[0]}_previously_was: () -> #{class_name_opt}
+            def #{col[0]}_before_last_save: () -> #{class_name_opt}
+            def #{col[0]}_change_to_be_saved: () -> Array[#{class_name_opt}]?
+            def #{col[0]}_in_database: () -> #{class_name_opt}
+            def saved_change_to_#{col[0]}: () -> Array[#{class_name_opt}]?
+            def saved_change_to_#{col[0]}?: () -> bool
+            def will_save_change_to_#{col[0]}?: () -> bool
+            def restore_#{col[0]}!: () -> void
+            def clear_#{col[0]}_change: () -> void
+          EOS
+          sig << "\n"
+          sig
+        end.join("\n")
+        mod_sig << "\nend\n"
+        mod_sig << "include GeneratedAliasAttributeMethods"
         mod_sig
       end
 

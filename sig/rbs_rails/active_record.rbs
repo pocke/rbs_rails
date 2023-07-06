@@ -72,6 +72,8 @@ class RbsRails::ActiveRecord::Generator
 
   def columns: () -> untyped
 
+  def alias_columns: () -> untyped
+
   def sql_type_to_class: (untyped t) -> untyped
 
   def optional: (String) -> String
