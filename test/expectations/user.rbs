@@ -184,6 +184,45 @@ class User < ::ApplicationRecord
   end
   include GeneratedAttributeMethods
 
+  module GeneratedAliasAttributeMethods
+    def alias_name: () -> String
+
+    def alias_name=: (String) -> String
+
+    def alias_name?: () -> bool
+
+    def alias_name_changed?: () -> bool
+
+    def alias_name_change: () -> [ String?, String? ]
+
+    def alias_name_will_change!: () -> void
+
+    def alias_name_was: () -> String?
+
+    def alias_name_previously_changed?: () -> bool
+
+    def alias_name_previous_change: () -> Array[String?]?
+
+    def alias_name_previously_was: () -> String?
+
+    def alias_name_before_last_save: () -> String?
+
+    def alias_name_change_to_be_saved: () -> Array[String?]?
+
+    def alias_name_in_database: () -> String?
+
+    def saved_change_to_alias_name: () -> Array[String?]?
+
+    def saved_change_to_alias_name?: () -> bool
+
+    def will_save_change_to_alias_name?: () -> bool
+
+    def restore_alias_name!: () -> void
+
+    def clear_alias_name_change: () -> void
+  end
+  include GeneratedAliasAttributeMethods
+
   def avatar_attachment: () -> ActiveStorage::Attachment?
   def avatar_attachment=: (ActiveStorage::Attachment?) -> ActiveStorage::Attachment?
   def build_avatar_attachment: (?untyped) -> ActiveStorage::Attachment
