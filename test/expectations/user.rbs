@@ -1,34 +1,34 @@
 class User < ::ApplicationRecord
-  extend _ActiveRecord_Relation_ClassMethods[User, ActiveRecord_Relation, Integer]
+  extend ::_ActiveRecord_Relation_ClassMethods[::User, ::User::ActiveRecord_Relation, ::Integer]
 
   module GeneratedAttributeMethods
-    def id: () -> Integer
+    def id: () -> ::Integer
 
-    def id=: (Integer) -> Integer
+    def id=: (::Integer) -> ::Integer
 
     def id?: () -> bool
 
     def id_changed?: () -> bool
 
-    def id_change: () -> [ Integer?, Integer? ]
+    def id_change: () -> [ ::Integer?, ::Integer? ]
 
     def id_will_change!: () -> void
 
-    def id_was: () -> Integer?
+    def id_was: () -> ::Integer?
 
     def id_previously_changed?: () -> bool
 
-    def id_previous_change: () -> Array[Integer?]?
+    def id_previous_change: () -> ::Array[::Integer?]?
 
-    def id_previously_was: () -> Integer?
+    def id_previously_was: () -> ::Integer?
 
-    def id_before_last_save: () -> Integer?
+    def id_before_last_save: () -> ::Integer?
 
-    def id_change_to_be_saved: () -> Array[Integer?]?
+    def id_change_to_be_saved: () -> ::Array[::Integer?]?
 
-    def id_in_database: () -> Integer?
+    def id_in_database: () -> ::Integer?
 
-    def saved_change_to_id: () -> Array[Integer?]?
+    def saved_change_to_id: () -> ::Array[::Integer?]?
 
     def saved_change_to_id?: () -> bool
 
@@ -38,33 +38,33 @@ class User < ::ApplicationRecord
 
     def clear_id_change: () -> void
 
-    def name: () -> String
+    def name: () -> ::String
 
-    def name=: (String) -> String
+    def name=: (::String) -> ::String
 
     def name?: () -> bool
 
     def name_changed?: () -> bool
 
-    def name_change: () -> [ String?, String? ]
+    def name_change: () -> [ ::String?, ::String? ]
 
     def name_will_change!: () -> void
 
-    def name_was: () -> String?
+    def name_was: () -> ::String?
 
     def name_previously_changed?: () -> bool
 
-    def name_previous_change: () -> Array[String?]?
+    def name_previous_change: () -> ::Array[::String?]?
 
-    def name_previously_was: () -> String?
+    def name_previously_was: () -> ::String?
 
-    def name_before_last_save: () -> String?
+    def name_before_last_save: () -> ::String?
 
-    def name_change_to_be_saved: () -> Array[String?]?
+    def name_change_to_be_saved: () -> ::Array[::String?]?
 
-    def name_in_database: () -> String?
+    def name_in_database: () -> ::String?
 
-    def saved_change_to_name: () -> Array[String?]?
+    def saved_change_to_name: () -> ::Array[::String?]?
 
     def saved_change_to_name?: () -> bool
 
@@ -74,33 +74,33 @@ class User < ::ApplicationRecord
 
     def clear_name_change: () -> void
 
-    def age: () -> Integer
+    def age: () -> ::Integer
 
-    def age=: (Integer) -> Integer
+    def age=: (::Integer) -> ::Integer
 
     def age?: () -> bool
 
     def age_changed?: () -> bool
 
-    def age_change: () -> [ Integer?, Integer? ]
+    def age_change: () -> [ ::Integer?, ::Integer? ]
 
     def age_will_change!: () -> void
 
-    def age_was: () -> Integer?
+    def age_was: () -> ::Integer?
 
     def age_previously_changed?: () -> bool
 
-    def age_previous_change: () -> Array[Integer?]?
+    def age_previous_change: () -> ::Array[::Integer?]?
 
-    def age_previously_was: () -> Integer?
+    def age_previously_was: () -> ::Integer?
 
-    def age_before_last_save: () -> Integer?
+    def age_before_last_save: () -> ::Integer?
 
-    def age_change_to_be_saved: () -> Array[Integer?]?
+    def age_change_to_be_saved: () -> ::Array[::Integer?]?
 
-    def age_in_database: () -> Integer?
+    def age_in_database: () -> ::Integer?
 
-    def saved_change_to_age: () -> Array[Integer?]?
+    def saved_change_to_age: () -> ::Array[::Integer?]?
 
     def saved_change_to_age?: () -> bool
 
@@ -110,33 +110,33 @@ class User < ::ApplicationRecord
 
     def clear_age_change: () -> void
 
-    def created_at: () -> ActiveSupport::TimeWithZone
+    def created_at: () -> ::ActiveSupport::TimeWithZone
 
-    def created_at=: (ActiveSupport::TimeWithZone) -> ActiveSupport::TimeWithZone
+    def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
 
     def created_at?: () -> bool
 
     def created_at_changed?: () -> bool
 
-    def created_at_change: () -> [ ActiveSupport::TimeWithZone?, ActiveSupport::TimeWithZone? ]
+    def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
 
     def created_at_will_change!: () -> void
 
-    def created_at_was: () -> ActiveSupport::TimeWithZone?
+    def created_at_was: () -> ::ActiveSupport::TimeWithZone?
 
     def created_at_previously_changed?: () -> bool
 
-    def created_at_previous_change: () -> Array[ActiveSupport::TimeWithZone?]?
+    def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
 
-    def created_at_previously_was: () -> ActiveSupport::TimeWithZone?
+    def created_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
 
-    def created_at_before_last_save: () -> ActiveSupport::TimeWithZone?
+    def created_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
 
-    def created_at_change_to_be_saved: () -> Array[ActiveSupport::TimeWithZone?]?
+    def created_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
 
-    def created_at_in_database: () -> ActiveSupport::TimeWithZone?
+    def created_at_in_database: () -> ::ActiveSupport::TimeWithZone?
 
-    def saved_change_to_created_at: () -> Array[ActiveSupport::TimeWithZone?]?
+    def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
 
     def saved_change_to_created_at?: () -> bool
 
@@ -146,33 +146,33 @@ class User < ::ApplicationRecord
 
     def clear_created_at_change: () -> void
 
-    def updated_at: () -> ActiveSupport::TimeWithZone
+    def updated_at: () -> ::ActiveSupport::TimeWithZone
 
-    def updated_at=: (ActiveSupport::TimeWithZone) -> ActiveSupport::TimeWithZone
+    def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
 
     def updated_at?: () -> bool
 
     def updated_at_changed?: () -> bool
 
-    def updated_at_change: () -> [ ActiveSupport::TimeWithZone?, ActiveSupport::TimeWithZone? ]
+    def updated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
 
     def updated_at_will_change!: () -> void
 
-    def updated_at_was: () -> ActiveSupport::TimeWithZone?
+    def updated_at_was: () -> ::ActiveSupport::TimeWithZone?
 
     def updated_at_previously_changed?: () -> bool
 
-    def updated_at_previous_change: () -> Array[ActiveSupport::TimeWithZone?]?
+    def updated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
 
-    def updated_at_previously_was: () -> ActiveSupport::TimeWithZone?
+    def updated_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
 
-    def updated_at_before_last_save: () -> ActiveSupport::TimeWithZone?
+    def updated_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
 
-    def updated_at_change_to_be_saved: () -> Array[ActiveSupport::TimeWithZone?]?
+    def updated_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
 
-    def updated_at_in_database: () -> ActiveSupport::TimeWithZone?
+    def updated_at_in_database: () -> ::ActiveSupport::TimeWithZone?
 
-    def saved_change_to_updated_at: () -> Array[ActiveSupport::TimeWithZone?]?
+    def saved_change_to_updated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
 
     def saved_change_to_updated_at?: () -> bool
 
@@ -184,27 +184,27 @@ class User < ::ApplicationRecord
   end
   include GeneratedAttributeMethods
 
-  def avatar_attachment: () -> ActiveStorage::Attachment?
-  def avatar_attachment=: (ActiveStorage::Attachment?) -> ActiveStorage::Attachment?
-  def build_avatar_attachment: (?untyped) -> ActiveStorage::Attachment
-  def create_avatar_attachment: (untyped) -> ActiveStorage::Attachment
-  def create_avatar_attachment!: (untyped) -> ActiveStorage::Attachment
-  def reload_avatar_attachment: () -> ActiveStorage::Attachment?
-  def avatar_blob: () -> ActiveStorage::Blob?
-  def avatar_blob=: (ActiveStorage::Blob?) -> ActiveStorage::Blob?
-  def build_avatar_blob: (?untyped) -> ActiveStorage::Blob
-  def create_avatar_blob: (untyped) -> ActiveStorage::Blob
-  def create_avatar_blob!: (untyped) -> ActiveStorage::Blob
-  def reload_avatar_blob: () -> ActiveStorage::Blob?
+  def avatar_attachment: () -> ::ActiveStorage::Attachment?
+  def avatar_attachment=: (::ActiveStorage::Attachment?) -> ::ActiveStorage::Attachment?
+  def build_avatar_attachment: (?untyped) -> ::ActiveStorage::Attachment
+  def create_avatar_attachment: (untyped) -> ::ActiveStorage::Attachment
+  def create_avatar_attachment!: (untyped) -> ::ActiveStorage::Attachment
+  def reload_avatar_attachment: () -> ::ActiveStorage::Attachment?
+  def avatar_blob: () -> ::ActiveStorage::Blob?
+  def avatar_blob=: (::ActiveStorage::Blob?) -> ::ActiveStorage::Blob?
+  def build_avatar_blob: (?untyped) -> ::ActiveStorage::Blob
+  def create_avatar_blob: (untyped) -> ::ActiveStorage::Blob
+  def create_avatar_blob!: (untyped) -> ::ActiveStorage::Blob
+  def reload_avatar_blob: () -> ::ActiveStorage::Blob?
 
   module GeneratedAssociationMethods
-    def avatar: () -> ActiveStorage::Attached::One
+    def avatar: () -> ::ActiveStorage::Attached::One
 
-    def avatar=: (ActionDispatch::Http::UploadedFile) -> ActionDispatch::Http::UploadedFile
-               | (Rack::Test::UploadedFile) -> Rack::Test::UploadedFile
-               | (ActiveStorage::Blob) -> ActiveStorage::Blob
-               | (String) -> String
-               | ({ io: IO, filename: String, content_type: String? }) -> { io: IO, filename: String, content_type: String? }
+    def avatar=: (::ActionDispatch::Http::UploadedFile) -> ::ActionDispatch::Http::UploadedFile
+               | (::Rack::Test::UploadedFile) -> ::Rack::Test::UploadedFile
+               | (::ActiveStorage::Blob) -> ::ActiveStorage::Blob
+               | (::String) -> ::String
+               | ({ io: ::IO, filename: ::String, content_type: ::String? }) -> { io: ::IO, filename: ::String, content_type: ::String? }
                | (nil) -> nil
   end
   include GeneratedAssociationMethods
@@ -215,7 +215,7 @@ class User < ::ApplicationRecord
 
     def password_confirmation=: (String) -> String
 
-    def authenticate_password: (String) -> (User | false)
+    def authenticate_password: (String) -> (::User | false)
 
     alias authenticate authenticate_password
   end
@@ -225,32 +225,32 @@ class User < ::ApplicationRecord
   def temporary?: () -> bool
   def accepted!: () -> bool
   def accepted?: () -> bool
-  def self.temporary: () -> ActiveRecord_Relation
-  def self.accepted: () -> ActiveRecord_Relation
-  def self.all_kind_args: (untyped type, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped untyped) { (*untyped) -> untyped } -> ActiveRecord_Relation
-  def self.no_arg: () -> ActiveRecord_Relation
-  def self.with_attached_avatar: () -> ActiveRecord_Relation
+  def self.temporary: () -> ::User::ActiveRecord_Relation
+  def self.accepted: () -> ::User::ActiveRecord_Relation
+  def self.all_kind_args: (untyped type, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped untyped) { (*untyped) -> untyped } -> ::User::ActiveRecord_Relation
+  def self.no_arg: () -> ::User::ActiveRecord_Relation
+  def self.with_attached_avatar: () -> ::User::ActiveRecord_Relation
 
   module GeneratedRelationMethods
-    def temporary: () -> ActiveRecord_Relation
+    def temporary: () -> ::User::ActiveRecord_Relation
 
-    def accepted: () -> ActiveRecord_Relation
+    def accepted: () -> ::User::ActiveRecord_Relation
 
-    def all_kind_args: (untyped type, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped untyped) { (*untyped) -> untyped } -> ActiveRecord_Relation
+    def all_kind_args: (untyped type, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped untyped) { (*untyped) -> untyped } -> ::User::ActiveRecord_Relation
 
-    def no_arg: () -> ActiveRecord_Relation
+    def no_arg: () -> ::User::ActiveRecord_Relation
 
-    def with_attached_avatar: () -> ActiveRecord_Relation
+    def with_attached_avatar: () -> ::User::ActiveRecord_Relation
   end
 
   class ActiveRecord_Relation < ::ActiveRecord::Relation
-    include GeneratedRelationMethods
-    include _ActiveRecord_Relation[User, Integer]
-    include Enumerable[User]
+    include ::User::GeneratedRelationMethods
+    include ::_ActiveRecord_Relation[::User, ::Integer]
+    include ::Enumerable[::User]
   end
 
   class ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
-    include GeneratedRelationMethods
-    include _ActiveRecord_Relation[User, Integer]
+    include ::User::GeneratedRelationMethods
+    include ::_ActiveRecord_Relation[::User, ::Integer]
   end
 end
