@@ -6,5 +6,9 @@ module RbsRails
     def initialize: () -> void
 
     def build: () -> (String | nil)
+
+    private
+
+    def shift: () -> (String | nil)
   end
 end

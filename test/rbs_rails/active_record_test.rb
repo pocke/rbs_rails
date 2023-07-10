@@ -37,7 +37,7 @@ class ActiveRecordTest < Minitest::Test
     Bundler.with_unbundled_env do
       sh!('bundle', 'install', chdir: dir)
       sh!('bin/rake', 'db:create', 'db:schema:load', chdir: dir)
-      sh!('bin/rake', 'rbs_rails:all', chdir: dir)
+      sh!('bin/rake', 'rbs_rails:all', '--trace', chdir: dir)
     end
   end
 end

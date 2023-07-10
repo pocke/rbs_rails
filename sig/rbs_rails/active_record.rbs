@@ -7,6 +7,7 @@ class RbsRails::ActiveRecord::Generator
   @parse_model_file: nil | Parser::AST::Node
   @dependencies: Array[String]
   @enum_definitions: Array[Hash[Symbol, untyped]]
+  @klass_name: String
 
   IGNORED_ENUM_KEYS: Array[Symbol]
 
@@ -68,7 +69,11 @@ class RbsRails::ActiveRecord::Generator
   def traverse: (Parser::AST::Node node) { (Parser::AST::Node) -> untyped } -> untyped
               | (Parser::AST::Node node) -> Enumerator[Parser::AST::Node, untyped]
 
-  def relation_class_name: () -> untyped
+  def relation_class_name: (?abs: boolish) -> String
+
+  def klass_name: (?abs: boolish) -> String
+
+  def generated_relation_methods_name: (?abs: boolish) -> String
 
   def columns: () -> untyped
 
@@ -79,6 +84,4 @@ class RbsRails::ActiveRecord::Generator
   private
 
   attr_reader klass: singleton(ActiveRecord::Base)
-
-  attr_reader klass_name: String
 end
