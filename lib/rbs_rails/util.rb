@@ -4,8 +4,10 @@ module RbsRails
 
     extend self
 
-    def module_name(mod)
-      MODULE_NAME.bind_call(mod)
+    def module_name(mod, abs: true)
+      name = MODULE_NAME.bind_call(mod)
+      name ="::#{name}" if abs
+      name
     end
 
     def format_rbs(rbs)
