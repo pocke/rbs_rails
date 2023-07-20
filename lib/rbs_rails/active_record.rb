@@ -524,34 +524,27 @@ module RbsRails
 
       private def alias_columns
         mod_sig = +"module GeneratedAliasAttributeMethods\n"
+        mod_sig << "include GeneratedAttributeMethods\n"
         mod_sig << klass.attribute_aliases.map do |col|
-          old_col = klass.columns.find{_1.name == col[1]}
-          class_name = if enum_definitions.any? { |hash| hash.key?(col[0]) || hash.key?(col[0].to_sym) }
-                         'String'
-                       else
-                         sql_type_to_class(old_col.type)
-                       end
-          class_name_opt = optional(class_name)
-          column_type = old_col.null ? class_name_opt : class_name
           sig = <<~EOS
-            def #{col[0]}: () -> #{column_type}
-            def #{col[0]}=: (#{column_type}) -> #{column_type}
-            def #{col[0]}?: () -> bool
-            def #{col[0]}_changed?: () -> bool
-            def #{col[0]}_change: () -> [#{class_name_opt}, #{class_name_opt}]
-            def #{col[0]}_will_change!: () -> void
-            def #{col[0]}_was: () -> #{class_name_opt}
-            def #{col[0]}_previously_changed?: () -> bool
-            def #{col[0]}_previous_change: () -> Array[#{class_name_opt}]?
-            def #{col[0]}_previously_was: () -> #{class_name_opt}
-            def #{col[0]}_before_last_save: () -> #{class_name_opt}
-            def #{col[0]}_change_to_be_saved: () -> Array[#{class_name_opt}]?
-            def #{col[0]}_in_database: () -> #{class_name_opt}
-            def saved_change_to_#{col[0]}: () -> Array[#{class_name_opt}]?
-            def saved_change_to_#{col[0]}?: () -> bool
-            def will_save_change_to_#{col[0]}?: () -> bool
-            def restore_#{col[0]}!: () -> void
-            def clear_#{col[0]}_change: () -> void
+            alias #{col[0]} #{col[1]}
+            alias #{col[0]}= #{col[1]}=
+            alias #{col[0]}? #{col[1]}?
+            alias #{col[0]}_changed? #{col[1]}_changed?
+            alias #{col[0]}_change #{col[1]}_change
+            alias #{col[0]}_will_change! #{col[1]}_will_change!
+            alias #{col[0]}_was #{col[1]}_was
+            alias #{col[0]}_previously_changed? #{col[1]}_previously_changed?
+            alias #{col[0]}_previous_change #{col[1]}_previous_change
+            alias #{col[0]}_previously_was #{col[1]}_previously_was
+            alias #{col[0]}_before_last_save #{col[1]}_before_last_save
+            alias #{col[0]}_change_to_be_saved #{col[1]}_change_to_be_saved
+            alias #{col[0]}_in_database #{col[1]}_in_database
+            alias saved_change_to_#{col[0]} saved_change_to_#{col[1]}
+            alias saved_change_to_#{col[0]}? saved_change_to_#{col[1]}?
+            alias will_save_change_to_#{col[0]}? will_save_change_to_#{col[1]}?
+            alias restore_#{col[0]}! restore_#{col[1]}!
+            alias clear_#{col[0]}_change clear_#{col[1]}_change
           EOS
           sig << "\n"
           sig

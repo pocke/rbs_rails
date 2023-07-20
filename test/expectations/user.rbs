@@ -185,41 +185,43 @@ class User < ::ApplicationRecord
   include GeneratedAttributeMethods
 
   module GeneratedAliasAttributeMethods
-    def alias_name: () -> String
+    include GeneratedAttributeMethods
 
-    def alias_name=: (String) -> String
+    alias alias_name name
 
-    def alias_name?: () -> bool
+    alias alias_name= name=
 
-    def alias_name_changed?: () -> bool
+    alias alias_name? name?
 
-    def alias_name_change: () -> [ String?, String? ]
+    alias alias_name_changed? name_changed?
 
-    def alias_name_will_change!: () -> void
+    alias alias_name_change name_change
 
-    def alias_name_was: () -> String?
+    alias alias_name_will_change! name_will_change!
 
-    def alias_name_previously_changed?: () -> bool
+    alias alias_name_was name_was
 
-    def alias_name_previous_change: () -> Array[String?]?
+    alias alias_name_previously_changed? name_previously_changed?
 
-    def alias_name_previously_was: () -> String?
+    alias alias_name_previous_change name_previous_change
 
-    def alias_name_before_last_save: () -> String?
+    alias alias_name_previously_was name_previously_was
 
-    def alias_name_change_to_be_saved: () -> Array[String?]?
+    alias alias_name_before_last_save name_before_last_save
 
-    def alias_name_in_database: () -> String?
+    alias alias_name_change_to_be_saved name_change_to_be_saved
 
-    def saved_change_to_alias_name: () -> Array[String?]?
+    alias alias_name_in_database name_in_database
 
-    def saved_change_to_alias_name?: () -> bool
+    alias saved_change_to_alias_name saved_change_to_name
 
-    def will_save_change_to_alias_name?: () -> bool
+    alias saved_change_to_alias_name? saved_change_to_name?
 
-    def restore_alias_name!: () -> void
+    alias will_save_change_to_alias_name? will_save_change_to_name?
 
-    def clear_alias_name_change: () -> void
+    alias restore_alias_name! restore_name!
+
+    alias clear_alias_name_change clear_name_change
   end
   include GeneratedAliasAttributeMethods
 
