@@ -6,7 +6,7 @@
 /pkg/
 /spec/reports/
 /tmp/
-/test/app/sig/rbs_rails
-/test/app/sig/app
-/test/app/sig/path_helpers.rbs
+/test/rails6/sig/rbs_rails
+/test/rails6/sig/app
+/test/rails6/sig/path_helpers.rbs
 /.gem_rbs_collection/
