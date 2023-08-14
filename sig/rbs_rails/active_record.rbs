@@ -9,8 +9,6 @@ class RbsRails::ActiveRecord::Generator
   @enum_definitions: Array[Hash[Symbol, untyped]]
   @klass_name: String
 
-  IGNORED_ENUM_KEYS: Array[Symbol]
-
   def initialize: (singleton(ActiveRecord::Base) klass, dependencies: Array[String]) -> untyped
 
   def generate: () -> String
@@ -51,14 +49,7 @@ class RbsRails::ActiveRecord::Generator
 
   def enum_scope_methods: (singleton: untyped `singleton`) -> String
 
-  def enum_definitions: () -> Array[Hash[Symbol, untyped]]
-
-  # We need static analysis to detect enum.
-  # ActiveRecord has `defined_enums` method,
-  # but it does not contain _prefix and _suffix information.
-  def build_enum_definitions: () -> Array[Hash[Symbol, untyped]]
-
-  def enum_method_name: (Hash[Symbol, untyped] hash, Symbol name, Symbol label) -> String
+  def enum_definitions: () -> Array[String]
 
   def scopes: (singleton: untyped `singleton`) -> untyped
 
