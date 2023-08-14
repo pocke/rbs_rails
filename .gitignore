@@ -9,4 +9,7 @@
 /test/rails6/sig/rbs_rails
 /test/rails6/sig/app
 /test/rails6/sig/path_helpers.rbs
+/test/rails7/sig/rbs_rails
+/test/rails7/sig/app
+/test/rails7/sig/path_helpers.rbs
 /.gem_rbs_collection/
