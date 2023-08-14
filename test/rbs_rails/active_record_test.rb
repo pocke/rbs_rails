@@ -34,7 +34,7 @@ class ActiveRecordTest < Minitest::Test
     # expect_path.write rbs_path.read
 
     # TODO: Implement enum support for Rails7
-    # assert_equal expect_path.read, rbs_path.read
+    assert_equal expect_path.read, rbs_path.read
   end
 
   def rails6_app_dir

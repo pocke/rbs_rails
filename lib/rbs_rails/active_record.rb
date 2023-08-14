@@ -12,7 +12,7 @@ module RbsRails
     end
 
     class Generator
-      IGNORED_ENUM_KEYS = %i[_prefix _suffix _default _scopes]
+      IGNORED_ENUM_KEYS = %i[_prefix _suffix _default _scopes prefix suffix default scopes]
 
       def initialize(klass, dependencies:)
         @klass = klass
@@ -366,20 +366,46 @@ module RbsRails
           next unless node.children[0].nil?
           next unless node.children[1] == :enum
 
-          definitions = node.children[2]
-          next unless definitions
-          next unless definitions.type == :hash
-          next unless traverse(definitions).all? { |n| [:str, :sym, :int, :hash, :pair, :true, :false].include?(n.type) }
+          if Rails::VERSION::MAJOR >= 7
+            definitions = node.children[2..]
+            next unless definitions
+            next unless definitions.all? { |d| traverse(d).all? { |n| [:str, :sym, :int, :hash, :pair, :true, :false].include?(n.type) } }
 
-          code = definitions.loc.expression.source
-          code = "{#{code}}" if code[0] != '{'
-          eval(code)
+            args = definitions.map do |d|
+              code = d.loc.expression.source
+              code = "{#{code}}" if code[0] != '{' && d.type != :sym
+              eval(code)
+            end
+
+            if args.first.is_a?(Symbol)
+              name, values, options = args
+            else
+              name = ""
+              values, options = args
+            end
+
+            values = values.to_h { |e| [e, nil] } if values.is_a?(Array)
+
+            next unless values.is_a?(Hash)
+            next unless options.nil? || options.is_a?(Hash)
+            { name => values }.merge(options || {})
+          else
+            # Rails 5 or 6
+            definitions = node.children[2]
+            next unless definitions
+            next unless definitions.type == :hash
+            next unless traverse(definitions).all? { |n| [:str, :sym, :int, :hash, :pair, :true, :false].include?(n.type) }
+
+            code = definitions.loc.expression.source
+            code = "{#{code}}" if code[0] != '{'
+            eval(code)
+          end
         end.compact
       end
 
       private def enum_method_name(hash, name, label)
-        enum_prefix = hash[:_prefix]
-        enum_suffix = hash[:_suffix]
+        enum_prefix = hash[:_prefix] || hash[:prefix]
+        enum_suffix = hash[:_suffix] || hash[:suffix]
 
         if enum_prefix == true
           prefix = "#{name}_"
