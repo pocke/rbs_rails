@@ -28,6 +28,7 @@ $ bin/rails g rbs_rails:install
 
 Then, the following three tasks are available.
 
+* `rbs_rails:generate_rbs_for_mailers`: Generate RBS files for Action Mailer classes
 * `rbs_rails:generate_rbs_for_models`: Generate RBS files for Active Record models
 * `rbs_rails:generate_rbs_for_path_helpers`: Generate RBS files for path helpers
 * `rbs_rails:all`: Execute all tasks of RBS Rails
@@ -37,6 +38,9 @@ You can also run rbs_rails from command line:
 ```console
 # Generate all RBS files
 $ bundle exec rbs_rails all
+
+# Generate RBS files for mailers
+$ bundle exec rbs_rails mailers
 
 # Generate RBS files for models
 $ bundle exec rbs_rails models
