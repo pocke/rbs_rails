@@ -76,6 +76,7 @@ GEM
     builder (3.2.4)
     concurrent-ruby (1.1.10)
     crass (1.0.6)
+    date (3.3.4)
     drb (2.2.0)
       ruby2_keywords
     erubi (1.10.0)
@@ -86,8 +87,11 @@ GEM
     loofah (2.21.3)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
-    mail (2.7.1)
+    mail (2.8.1)
       mini_mime (>= 0.1.1)
+      net-imap
+      net-pop
+      net-smtp
     marcel (1.0.1)
     method_source (1.0.0)
     mini_mime (1.0.3)
@@ -95,6 +99,15 @@ GEM
     minitest (5.17.0)
     msgpack (1.4.2)
     mutex_m (0.2.0)
+    net-imap (0.4.10)
+      date
+      net-protocol
+    net-pop (0.1.2)
+      net-protocol
+    net-protocol (0.2.2)
+      timeout
+    net-smtp (0.4.0.1)
+      net-protocol
     nio4r (2.5.8)
     nokogiri (1.15.2)
       mini_portile2 (~> 2.8.2)
@@ -147,6 +160,7 @@ GEM
       sprockets (>= 3.0.0)
     sqlite3 (1.4.2)
     thor (1.1.0)
+    timeout (0.4.1)
     tzinfo (2.0.5)
       concurrent-ruby (~> 1.0)
     websocket-driver (0.7.3)
@@ -163,6 +177,7 @@ DEPENDENCIES
   bigdecimal
   bootsnap
   drb
+  mail (>= 2.8.0)
   mutex_m
   psych (< 4)
   puma

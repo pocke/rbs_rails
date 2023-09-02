@@ -10,6 +10,9 @@ gem 'bcrypt'
 
 gem 'rbs_rails', path: '../../'
 
+# to run Rails6.1 under Ruby 3.1+
+gem 'mail', '>= 2.8.0'
+
 # to run Rails6.1 under Ruby 3.4
 gem 'base64'
 gem 'bigdecimal'
