@@ -32,7 +32,7 @@ module RbsRails
 
       def initialize(klass)
         @klass = klass
-        @klass_name = Util.module_name(klass)
+        @klass_name = Util.module_name(klass, abs: false)
       end
 
       def generate
@@ -60,7 +60,7 @@ module RbsRails
             superclass = _ = mod_object.superclass
             superclass_name = Util.module_name(superclass)
 
-            "class #{mod_name} < ::#{superclass_name}"
+            "class #{mod_name} < #{superclass_name}"
           when Module
             "module #{mod_name}"
           else
