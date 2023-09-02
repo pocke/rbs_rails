@@ -20,6 +20,8 @@ module RbsRails
 
     def def_generate_rbs_for_models: () -> void
 
+    def def_generate_rbs_for_mailers: () -> void
+
     def def_generate_rbs_for_path_helpers: () -> void
 
     private def signature_root_dir: () -> Pathname?

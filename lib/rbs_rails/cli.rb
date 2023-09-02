@@ -28,8 +28,14 @@ module RbsRails
         when "all"
           load_application
           load_config
+          generate_mailers
           generate_models
           generate_path_helpers
+          0
+        when "mailers"
+          load_application
+          load_config
+          generate_mailers
           0
         when "models"
           load_application
@@ -89,6 +95,18 @@ module RbsRails
       require 'rbs_rails/active_record/enum'
     end
 
+    def generate_mailers #: void
+      Rails.application.eager_load!
+
+      ::ActionMailer::Base.descendants.each do |klass|
+        path = config.signature_root_dir / rbs_path_for(klass)
+        path.dirname.mkpath
+
+        sig = RbsRails::ActionMailer.class_to_rbs(klass)
+        path.write sig
+      end
+    end
+
     def generate_models #: void
       Rails.application.eager_load!
 
@@ -112,17 +130,7 @@ module RbsRails
       return false if config.ignored_model?(klass)
       return false unless RbsRails::ActiveRecord.generatable?(klass)
 
-      original_path, _line = Object.const_source_location(klass.name) rescue nil
-
-      rbs_relative_path = if original_path && Pathname.new(original_path).fnmatch?("#{Rails.root}/**")
-                            Pathname.new(original_path)
-                                    .relative_path_from(Rails.root)
-                                    .sub_ext('.rbs')
-                          else
-                            "app/models/#{klass.name.underscore}.rbs"
-                          end
-
-      path = config.signature_root_dir / rbs_relative_path
+      path = config.signature_root_dir / rbs_path_for(klass)
       path.dirname.mkpath
 
       sig = RbsRails::ActiveRecord.class_to_rbs(klass, dependencies: dep_builder.deps)
@@ -138,6 +146,20 @@ module RbsRails
 
       sig = RbsRails::PathHelpers.generate
       path.write sig
+    end
+
+    # @rbs klass: singleton(Object)
+    def rbs_path_for(klass) #: String
+      original_path, _line = Object.const_source_location(klass.name) rescue nil
+
+      if original_path && Pathname.new(original_path).fnmatch?("#{Rails.root}/**")
+        Pathname.new(original_path)
+                .relative_path_from(Rails.root)
+                .sub_ext('.rbs')
+                .to_s
+      else
+        "app/models/#{klass.name.underscore}.rbs"
+      end
     end
 
     def create_option_parser #: OptionParser
