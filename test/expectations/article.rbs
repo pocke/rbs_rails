@@ -1,5 +1,9 @@
 class Article < ::Object
-  def self.attribute: (Symbol name, ?Symbol? cast_type, ?untyped default, **untyped) -> void
+  include ::ActiveModel::Model
+  include ::ActiveModel::Attributes
+  extend ::ActiveModel::Attributes::ClassMethods
+  include ::ActiveModel::Validations
+  extend ::ActiveModel::Validations::ClassMethods
 
   def blog_id: () -> Integer?
   def blog_id=: (Integer? value) -> Integer?
