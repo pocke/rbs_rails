@@ -42,7 +42,7 @@ module RbsRails
       private def klass_decl
         <<~RBS
           #{header}
-          def self.attribute: (Symbol name, ?Symbol? cast_type, ?untyped default, **untyped) -> void
+          #{mixins}
 
           #{attributes}
           #{footer}
@@ -67,6 +67,22 @@ module RbsRails
             raise 'unreachable'
           end
         end.join("\n")
+      end
+
+      private def mixins
+        mixins = []
+        if klass < ::ActiveModel::Model
+          mixins << "include ::ActiveModel::Model"
+        end
+        if klass < ::ActiveModel::Attributes
+          mixins << "include ::ActiveModel::Attributes"
+          mixins << "extend ::ActiveModel::Attributes::ClassMethods"
+        end
+        if klass < ::ActiveModel::Validations
+          mixins << "include ::ActiveModel::Validations"
+          mixins << "extend ::ActiveModel::Validations::ClassMethods"
+        end
+        mixins.join("\n")
       end
 
       private def attributes

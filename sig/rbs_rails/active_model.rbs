@@ -15,6 +15,7 @@ module RbsRails
 
       def klass_decl: () -> String
       def header: () -> String
+      def mixins: () -> String
       def attributes: () -> String
       def footer: () -> String
 
