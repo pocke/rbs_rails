@@ -33,6 +33,8 @@ class RbsRails::ActiveRecord::Generator
 
   def has_many: () -> String
 
+  def has_and_belongs_to_many: () -> String
+
   def has_one: () -> String
 
   def belongs_to: () -> String
