@@ -90,6 +90,7 @@ GEM
     mini_portile2 (2.8.2)
     minitest (5.17.0)
     msgpack (1.4.2)
+    mutex_m (0.2.0)
     nio4r (2.5.8)
     nokogiri (1.15.2)
       mini_portile2 (~> 2.8.2)
@@ -154,6 +155,7 @@ PLATFORMS
 DEPENDENCIES
   bcrypt
   bootsnap
+  mutex_m
   psych (< 4)
   puma
   rails (>= 6, < 7)
