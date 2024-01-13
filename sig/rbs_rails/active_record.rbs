@@ -71,6 +71,10 @@ module RbsRails
       # @rbs args_node: untyped
       private def args_to_type: (untyped args_node) -> untyped
 
+      private def pluck_overloads: () -> String
+
+      private def pluck_overloads_instance: () -> String
+
       private def parse_model_file: () -> untyped
 
       # : (Parser::AST::Node) { (Parser::AST::Node) -> untyped } -> untyped
