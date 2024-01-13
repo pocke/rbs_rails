@@ -545,6 +545,16 @@ class ::User < ::ApplicationRecord
   def self.not_temporary: () -> ::User::ActiveRecord_Relation
   def self.accepted: () -> ::User::ActiveRecord_Relation
   def self.not_accepted: () -> ::User::ActiveRecord_Relation
+  def self.pluck: (:id | "id") -> ::Array[::Integer]
+                | (:name | "name") -> ::Array[::String]
+                | (:age | "age") -> ::Array[::Integer]
+                | (:status | "status") -> ::Array[::String]
+                | (:phone_numbers | "phone_numbers") -> ::Array[::String?]
+                | (:contact_info | "contact_info") -> ::Array[::String?]
+                | (:family_tree | "family_tree") -> ::Array[::String?]
+                | (:created_at | "created_at") -> ::Array[::ActiveSupport::TimeWithZone]
+                | (:updated_at | "updated_at") -> ::Array[::ActiveSupport::TimeWithZone]
+                | ...
   def self.all_kind_args: (untyped type, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped untyped) { (*untyped) -> untyped } -> ::User::ActiveRecord_Relation
   def self.no_arg: () -> ::User::ActiveRecord_Relation
   def self.with_attached_avatar: () -> ::User::ActiveRecord_Relation
@@ -571,6 +581,17 @@ class ::User < ::ApplicationRecord
     include ::Enumerable[::User]
     include ::User::GeneratedRelationMethods
     include ::ActiveRecord::Relation::Methods[::User, ::Integer]
+
+    def pluck: (:id | "id") -> ::Array[::Integer]
+             | (:name | "name") -> ::Array[::String]
+             | (:age | "age") -> ::Array[::Integer]
+             | (:status | "status") -> ::Array[::String]
+             | (:phone_numbers | "phone_numbers") -> ::Array[::String?]
+             | (:contact_info | "contact_info") -> ::Array[::String?]
+             | (:family_tree | "family_tree") -> ::Array[::String?]
+             | (:created_at | "created_at") -> ::Array[::ActiveSupport::TimeWithZone]
+             | (:updated_at | "updated_at") -> ::Array[::ActiveSupport::TimeWithZone]
+             | ...
   end
 
   class ::User::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
@@ -591,5 +612,15 @@ class ::User < ::ApplicationRecord
     def destroy: (*::User | ::Integer) -> ::Array[::User]
     def <<: (*::User | ::Array[::User]) -> self
     def prepend: (*::User | ::Array[::User]) -> self
+    def pluck: (:id | "id") -> ::Array[::Integer]
+             | (:name | "name") -> ::Array[::String]
+             | (:age | "age") -> ::Array[::Integer]
+             | (:status | "status") -> ::Array[::String]
+             | (:phone_numbers | "phone_numbers") -> ::Array[::String?]
+             | (:contact_info | "contact_info") -> ::Array[::String?]
+             | (:family_tree | "family_tree") -> ::Array[::String?]
+             | (:created_at | "created_at") -> ::Array[::ActiveSupport::TimeWithZone]
+             | (:updated_at | "updated_at") -> ::Array[::ActiveSupport::TimeWithZone]
+             | ...
   end
 end
