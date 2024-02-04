@@ -10,4 +10,8 @@ gem 'bcrypt'
 
 gem 'rbs_rails', path: '../../'
 
-gem 'mutex_m'  # to run Rails6.1 under Ruby 3.4
+# to run Rails6.1 under Ruby 3.4
+gem 'base64'
+gem 'bigdecimal'
+gem 'drb'
+gem 'mutex_m'
