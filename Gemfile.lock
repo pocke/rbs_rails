@@ -8,6 +8,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
+    abbrev (0.1.2)
     actioncable (7.0.5)
       actionpack (= 7.0.5)
       activesupport (= 7.0.5)
@@ -104,7 +105,7 @@ GEM
     method_source (1.0.0)
     mini_mime (1.1.2)
     mini_portile2 (2.8.2)
-    minitest (5.15.0)
+    minitest (5.21.1)
     net-imap (0.3.4)
       date
       net-protocol
@@ -155,7 +156,8 @@ GEM
     rb-fsevent (0.11.2)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
-    rbs (3.1.0)
+    rbs (3.4.3)
+      abbrev
     securerandom (0.2.2)
     steep (1.4.0)
       activesupport (>= 5.1)
