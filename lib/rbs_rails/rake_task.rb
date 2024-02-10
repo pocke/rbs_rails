@@ -15,6 +15,7 @@ module RbsRails
       block.call(self) if block
 
       def_generate_rbs_for_models
+      def_generate_rbs_for_mailers
       def_generate_rbs_for_path_helpers
       def_all
     end
@@ -22,7 +23,7 @@ module RbsRails
     def def_all
       desc 'Run all tasks of rbs_rails'
 
-      deps = [:"#{name}:generate_rbs_for_models", :"#{name}:generate_rbs_for_path_helpers"]
+      deps = [:"#{name}:generate_rbs_for_models", :"#{name}:generate_rbs_for_mailers", :"#{name}:generate_rbs_for_path_helpers"]
       task("#{name}:all": deps)
     end
 
@@ -34,7 +35,7 @@ module RbsRails
         Rails.application.eager_load!
 
         dep_builder = DependencyBuilder.new
-        
+
         ::ActiveRecord::Base.descendants.each do |klass|
           next unless RbsRails::ActiveRecord.generatable?(klass)
           next if ignore_model_if&.call(klass)
@@ -49,6 +50,23 @@ module RbsRails
 
         if dep_rbs = dep_builder.build
           signature_root_dir.join('model_dependencies.rbs').write(dep_rbs)
+        end
+      end
+    end
+
+    def def_generate_rbs_for_mailers
+      desc 'Generate RBS files for Active Mailer mailers'
+      task("#{name}:generate_rbs_for_mailers": :environment) do
+        require 'rbs_rails'
+
+        Rails.application.eager_load!
+
+        ::ActionMailer::Base.descendants.each do |klass|
+          path = signature_root_dir / "app/mailers/#{klass.name.underscore}.rbs"
+          path.dirname.mkpath
+
+          sig = RbsRails::ActionMailer.class_to_rbs(klass)
+          path.write sig
         end
       end
     end
