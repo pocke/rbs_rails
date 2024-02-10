@@ -9,3 +9,9 @@ gem 'psych', '< 4' # for safe_load degration
 gem 'bcrypt'
 
 gem 'rbs_rails', path: '../../'
+
+# to run Rails6.1 under Ruby 3.4
+gem 'base64'
+gem 'bigdecimal'
+gem 'drb'
+gem 'mutex_m'

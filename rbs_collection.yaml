@@ -32,3 +32,6 @@ gems:
   - name: json
   - name: optparse
   - name: tsort
+
+  # necessary for rbs_rails
+  - name: fileutils
