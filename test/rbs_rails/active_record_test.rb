@@ -23,6 +23,17 @@ class ActiveRecordTest < Minitest::Test
     assert_equal expect_path.read, rbs_path.read
   end
 
+  def test_product_model_rbs_snapshot
+    clean_test_signatures
+
+    setup!
+
+    rbs_path = app_dir.join('sig/rbs_rails/app/models/product.rbs')
+    expect_path = expectations_dir / 'product.rbs'
+
+    assert_equal expect_path.read, rbs_path.read
+  end
+
   def app_dir
     Pathname(__dir__).join('../app')
   end

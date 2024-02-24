@@ -8,6 +8,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
+    abbrev (0.1.2)
     actioncable (7.0.5)
       actionpack (= 7.0.5)
       activesupport (= 7.0.5)
@@ -105,6 +106,7 @@ GEM
     mini_mime (1.1.2)
     mini_portile2 (2.8.2)
     minitest (5.15.0)
+    mutex_m (0.2.0)
     net-imap (0.3.4)
       date
       net-protocol
@@ -189,7 +191,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  abbrev
   minitest
+  mutex_m
   rails (>= 7.0)
   rake (~> 13.0)
   rbs (>= 3)
