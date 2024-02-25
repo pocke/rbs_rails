@@ -10,14 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_14_110904) do
-
+ActiveRecord::Schema[7.1].define(version: 2024_02_14_044754) do
   create_table "blogs", force: :cascade do |t|
     t.string "title", null: false
     t.string "description", null: false
     t.integer "user_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_blogs_on_user_id"
   end
 
@@ -26,11 +25,20 @@ ActiveRecord::Schema.define(version: 2021_04_14_110904) do
     t.integer "blog_id", null: false
   end
 
+  create_table "products", primary_key: ["store_id", "sku"], force: :cascade do |t|
+    t.integer "store_id", null: false
+    t.string "sku", null: false
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "name", null: false
     t.integer "age", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.integer "status", default: 1, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
 end
