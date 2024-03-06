@@ -261,16 +261,25 @@ class User < ::ApplicationRecord
   def temporary?: () -> bool
   def accepted!: () -> bool
   def accepted?: () -> bool
+  def self.statuses: () -> ::ActiveSupport::HashWithIndifferentAccess[::String, ::Integer]
   def self.temporary: () -> ::User::ActiveRecord_Relation
+  def self.not_temporary: () -> ::User::ActiveRecord_Relation
   def self.accepted: () -> ::User::ActiveRecord_Relation
+  def self.not_accepted: () -> ::User::ActiveRecord_Relation
   def self.all_kind_args: (untyped type, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped untyped) { (*untyped) -> untyped } -> ::User::ActiveRecord_Relation
   def self.no_arg: () -> ::User::ActiveRecord_Relation
   def self.with_attached_avatar: () -> ::User::ActiveRecord_Relation
 
   module GeneratedRelationMethods
+    def statuses: () -> ::ActiveSupport::HashWithIndifferentAccess[::String, ::Integer]
+
     def temporary: () -> ::User::ActiveRecord_Relation
 
+    def not_temporary: () -> ::User::ActiveRecord_Relation
+
     def accepted: () -> ::User::ActiveRecord_Relation
+
+    def not_accepted: () -> ::User::ActiveRecord_Relation
 
     def all_kind_args: (untyped type, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped untyped) { (*untyped) -> untyped } -> ::User::ActiveRecord_Relation
 
