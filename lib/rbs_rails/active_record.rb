@@ -39,7 +39,7 @@ module RbsRails
           #{delegated_type_instance}
           #{delegated_type_scope(singleton: true)}
           #{enum_instance_methods}
-          #{enum_scope_methods(singleton: true)}
+          #{enum_class_methods(singleton: true)}
           #{scopes(singleton: true)}
 
           #{generated_relation_methods_decl}
@@ -63,7 +63,7 @@ module RbsRails
       private def generated_relation_methods_decl
         <<~RBS
           module #{generated_relation_methods_name(abs: false)}
-            #{enum_scope_methods(singleton: false)}
+            #{enum_class_methods(singleton: false)}
             #{scopes(singleton: false)}
             #{delegated_type_scope(singleton: false)}
           end
@@ -333,16 +333,20 @@ module RbsRails
         methods.join("\n")
       end
 
-      private def enum_scope_methods(singleton:)
+      private def enum_class_methods(singleton:)
         # @type var methods: Array[String]
         methods = []
         enum_definitions.each do |hash|
           hash.each do |name, values|
             next if IGNORED_ENUM_KEYS.include?(name)
 
+            class_name = sql_type_to_class(klass.columns_hash[name.to_s].type)
+            methods << "def #{singleton ? 'self.' : ''}#{name.to_s.pluralize}: () -> ::ActiveSupport::HashWithIndifferentAccess[::String, #{class_name}]"
+
             values.each do |label, value|
               value_method_name = enum_method_name(hash, name, label)
               methods << "def #{singleton ? 'self.' : ''}#{value_method_name}: () -> #{relation_class_name}"
+              methods << "def #{singleton ? 'self.' : ''}not_#{value_method_name}: () -> #{relation_class_name}"
             end
           end
         end
