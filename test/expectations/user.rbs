@@ -252,5 +252,6 @@ class User < ::ApplicationRecord
   class ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
     include ::User::GeneratedRelationMethods
     include ::_ActiveRecord_Relation[::User, ::Integer]
+    include ::Enumerable[::User]
   end
 end
