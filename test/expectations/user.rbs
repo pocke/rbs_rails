@@ -250,6 +250,7 @@ class User < ::ApplicationRecord
   end
 
   class ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Enumerable[::User]
     include ::User::GeneratedRelationMethods
     include ::_ActiveRecord_Relation[::User, ::Integer]
   end
