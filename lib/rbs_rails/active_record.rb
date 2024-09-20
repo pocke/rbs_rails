@@ -25,6 +25,9 @@ module RbsRails
 
       def generate
         Util.format_rbs klass_decl
+      rescue StandardError => e
+        require 'pry'
+        binding.pry
       end
 
       private def klass_decl
@@ -368,11 +371,32 @@ module RbsRails
 
           definitions = node.children[2]
           next unless definitions
-          next unless definitions.type == :hash
-          next unless traverse(definitions).all? { |n| [:str, :sym, :int, :hash, :pair, :true, :false].include?(n.type) }
 
-          code = definitions.loc.expression.source
-          code = "{#{code}}" if code[0] != '{'
+          # Rails 7.2 format
+          if definitions.type == :sym
+            enum_name = definitions.children[0]
+            
+            # When enum for type STI column
+            next if enum_name == :type
+
+            definitions = node.children[3]
+
+            next unless traverse(definitions).all? { |n| [:str, :sym, :int, :hash, :pair, :true, :false].include?(n.type) }
+
+            code = definitions.loc.expression.source
+            code = "{#{code}}" if code[0] != '{'
+            code = "{#{enum_name}: #{code}}"
+
+          # Old format
+          elsif definitions.type == :hash
+            next unless traverse(definitions).all? { |n| [:str, :sym, :int, :hash, :pair, :true, :false].include?(n.type) }
+
+            code = definitions.loc.expression.source
+            code = "{#{code}}" if code[0] != '{'
+          else
+            next
+          end
+
           eval(code)
         end.compact
       end
@@ -490,7 +514,6 @@ module RbsRails
       private def generated_relation_methods_name(abs: true)
         abs ? "#{klass_name}::GeneratedRelationMethods" : "GeneratedRelationMethods"
       end
-
 
       private def columns
         mod_sig = +"module GeneratedAttributeMethods\n"
