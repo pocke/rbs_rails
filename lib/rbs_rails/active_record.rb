@@ -25,9 +25,6 @@ module RbsRails
 
       def generate
         Util.format_rbs klass_decl
-      rescue StandardError => e
-        require 'pry'
-        binding.pry
       end
 
       private def klass_decl
@@ -375,7 +372,7 @@ module RbsRails
           # Rails 7.2 format
           if definitions.type == :sym
             enum_name = definitions.children[0]
-            
+
             # When enum for type STI column
             next if enum_name == :type
 
