@@ -541,6 +541,9 @@ module RbsRails
                        else
                          sql_type_to_class(col.type)
                        end
+
+          class_name = "::Array[#{class_name}]" if col.sql_type_metadata.sql_type.include?('[]')
+
           class_name_opt = optional(class_name)
           column_type = col.null ? class_name_opt : class_name
           sig = <<~EOS
