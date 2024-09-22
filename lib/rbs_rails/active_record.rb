@@ -213,10 +213,10 @@ module RbsRails
 
         sigs.join("\n")
       end
-
       private def delegated_type_scope(singleton:)
         definitions = delegated_type_definitions
         return "" unless definitions
+
         definitions.map do |definition|
           definition[:types].map do |type|
             scope_name = type.tableize.gsub("/", "_")
@@ -247,7 +247,7 @@ module RbsRails
       end
 
       private def delegated_type_definitions
-        [parse_model_file, parse_parent_model_file].map do |ast|
+        looking_modules.map do |ast|
           next unless ast
 
           traverse(ast).map do |node|
@@ -287,7 +287,7 @@ module RbsRails
       end
 
       private def has_secure_password
-        [parse_model_file, parse_parent_model_file].map do |ast|
+        looking_modules.map do |ast|
           next unless ast
 
           traverse(ast).map do |node|
@@ -359,7 +359,7 @@ module RbsRails
       # ActiveRecord has `defined_enums` method,
       # but it does not contain _prefix and _suffix information.
       private def build_enum_definitions
-        [parse_model_file, parse_parent_model_file].map do |ast|
+        looking_modules.map do |ast|
           next unless ast
 
           traverse(ast).map do |node|
@@ -421,10 +421,9 @@ module RbsRails
 
       private def scopes(singleton:)
         prefix = singleton ? 'self.' : ''
+        return '' if looking_modules.compact.blank?
 
-        return '' if [parse_model_file, parse_parent_model_file].compact.blank?
-
-        sigs = [parse_model_file, parse_parent_model_file].map do |ast|
+        sigs = looking_modules.map do |ast|
           next unless ast
 
           traverse(ast).map do |node|
@@ -510,6 +509,33 @@ module RbsRails
         return @parse_parent_model_file = nil unless path.exist?
 
         @parse_parent_model_file = ast
+      end
+
+      private def looking_modules
+        [parse_model_file, parse_parent_model_file] + parse_concerns
+      end
+
+      private def parse_concerns
+        return @parse_concerns if defined?(@parse_concerns)
+
+        modules = []
+
+        (klass.included_modules + klass.base_class.included_modules).uniq.each do |concern|
+          next unless concern.singleton_class.included_modules.include?(ActiveSupport::Concern)
+
+          ast = parse_concern_file(concern)
+
+          modules << parse_concern_file(concern) if ast
+        end
+
+        @parse_concerns = modules
+      end
+
+      private def parse_concern_file(concern)
+        path = Rails.root.join('app/models/concerns', concern.name.underscore + '.rb')
+        return nil unless path.exist?
+
+        Parser::CurrentRuby.parse path.read
       end
 
       private def traverse(node, &block)
