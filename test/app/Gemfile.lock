@@ -97,6 +97,7 @@ GEM
     mini_portile2 (2.8.7)
     minitest (5.25.1)
     msgpack (1.7.3)
+    mutex_m (0.2.0)
     net-imap (0.5.0)
       date
       net-protocol
@@ -177,6 +178,7 @@ DEPENDENCIES
   bcrypt
   bigdecimal
   bootsnap
+  mutex_m
   psych (< 4)
   puma
   rails (>= 6, < 7)
