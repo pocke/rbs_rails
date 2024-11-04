@@ -8,4 +8,7 @@ gem 'bootsnap', require: false
 gem 'psych', '< 4' # for safe_load degration
 gem 'bcrypt'
 
+# https://bugs.ruby-lang.org/issues/20859
+gem 'base64'
+
 gem 'rbs_rails', path: '../../'
