@@ -1,5 +1,10 @@
 # Change log
 
+* Added support enum 7.2 format
+* Added support STI for enum, scope
+* Added support PosgreSQL Array type
+* Added support concerns
+
 ## master (unreleased)
 
 ## 0.12.0
