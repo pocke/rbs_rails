@@ -612,14 +612,14 @@ module RbsRails
           '::Float'
         when :decimal
           '::BigDecimal'
-        when :string, :text, :citext, :uuid, :binary
+        when :string, :text, :citext, :uuid, :binary, :enum
           '::String'
         when :datetime
           '::ActiveSupport::TimeWithZone'
         when :boolean
           "bool"
         when :jsonb, :json
-          "untyped"
+          "::Hash[::String | ::Symbol, untyped]"
         when :date
           '::Date'
         when :time
