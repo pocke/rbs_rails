@@ -11,4 +11,7 @@ gem 'bcrypt'
 # https://bugs.ruby-lang.org/issues/20859
 gem 'base64'
 
+# It's a bundled gem since Ruby 3.4
+gem 'bigdecimal'
+
 gem 'rbs_rails', path: '../../'
