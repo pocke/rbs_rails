@@ -1,6 +1,10 @@
 module RbsRails
   class PathHelpers
     def self.generate(routes: Rails.application.routes)
+      # Since Rails 8.0, route drawing has been defered to the first request.
+      # This forcedly do route drawing to scan path_helpers.
+      Rails.application.reload_routes_unless_loaded if Rails.application.respond_to?(:reload_routes_unless_loaded)
+
       new(routes: Rails.application.routes).generate
     end
 
