@@ -221,20 +221,20 @@ class User < ::ApplicationRecord
   end
   include ActiveModel_SecurePassword_InstanceMethodsOnActivation_password
 
-  def temporary!: () -> bool
-  def temporary?: () -> bool
   def accepted!: () -> bool
   def accepted?: () -> bool
-  def self.temporary: () -> ::User::ActiveRecord_Relation
+  def temporary!: () -> bool
+  def temporary?: () -> bool
   def self.accepted: () -> ::User::ActiveRecord_Relation
+  def self.temporary: () -> ::User::ActiveRecord_Relation
   def self.all_kind_args: (untyped type, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped untyped) { (*untyped) -> untyped } -> ::User::ActiveRecord_Relation
   def self.no_arg: () -> ::User::ActiveRecord_Relation
   def self.with_attached_avatar: () -> ::User::ActiveRecord_Relation
 
   module GeneratedRelationMethods
-    def temporary: () -> ::User::ActiveRecord_Relation
-
     def accepted: () -> ::User::ActiveRecord_Relation
+
+    def temporary: () -> ::User::ActiveRecord_Relation
 
     def all_kind_args: (untyped type, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped untyped) { (*untyped) -> untyped } -> ::User::ActiveRecord_Relation
 
