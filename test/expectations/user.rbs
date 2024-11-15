@@ -225,8 +225,20 @@ class User < ::ApplicationRecord
   def temporary?: () -> bool
   def accepted!: () -> bool
   def accepted?: () -> bool
+  def America_Los_Angeles!: () -> bool
+  def America_Los_Angeles?: () -> bool
+  def America_Denver!: () -> bool
+  def America_Denver?: () -> bool
+  def America_Chicago!: () -> bool
+  def America_Chicago?: () -> bool
+  def America_New_York!: () -> bool
+  def America_New_York?: () -> bool
   def self.temporary: () -> ::User::ActiveRecord_Relation
   def self.accepted: () -> ::User::ActiveRecord_Relation
+  def self.America_Los_Angeles: () -> ::User::ActiveRecord_Relation
+  def self.America_Denver: () -> ::User::ActiveRecord_Relation
+  def self.America_Chicago: () -> ::User::ActiveRecord_Relation
+  def self.America_New_York: () -> ::User::ActiveRecord_Relation
   def self.all_kind_args: (untyped type, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped untyped) { (*untyped) -> untyped } -> ::User::ActiveRecord_Relation
   def self.no_arg: () -> ::User::ActiveRecord_Relation
   def self.with_attached_avatar: () -> ::User::ActiveRecord_Relation
@@ -235,6 +247,14 @@ class User < ::ApplicationRecord
     def temporary: () -> ::User::ActiveRecord_Relation
 
     def accepted: () -> ::User::ActiveRecord_Relation
+
+    def America_Los_Angeles: () -> ::User::ActiveRecord_Relation
+
+    def America_Denver: () -> ::User::ActiveRecord_Relation
+
+    def America_Chicago: () -> ::User::ActiveRecord_Relation
+
+    def America_New_York: () -> ::User::ActiveRecord_Relation
 
     def all_kind_args: (untyped type, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped untyped) { (*untyped) -> untyped } -> ::User::ActiveRecord_Relation
 
