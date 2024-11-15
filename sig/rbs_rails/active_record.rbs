@@ -64,6 +64,10 @@ class RbsRails::ActiveRecord::Generator
 
   def args_to_type: (untyped args_node) -> untyped
 
+  def pluck_overloads: () -> String
+
+  def pluck_overloads_instance: () -> String
+
   def parse_model_file: () -> untyped
 
   def traverse: (Parser::AST::Node node) { (Parser::AST::Node) -> untyped } -> untyped

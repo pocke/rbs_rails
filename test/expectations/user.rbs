@@ -227,6 +227,12 @@ class User < ::ApplicationRecord
   def accepted?: () -> bool
   def self.temporary: () -> ::User::ActiveRecord_Relation
   def self.accepted: () -> ::User::ActiveRecord_Relation
+  def self.pluck: (:id | "id") -> ::Array[::Integer]
+                | (:name | "name") -> ::Array[::String]
+                | (:age | "age") -> ::Array[::Integer]
+                | (:created_at | "created_at") -> ::Array[::ActiveSupport::TimeWithZone]
+                | (:updated_at | "updated_at") -> ::Array[::ActiveSupport::TimeWithZone]
+                | ...
   def self.all_kind_args: (untyped type, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped untyped) { (*untyped) -> untyped } -> ::User::ActiveRecord_Relation
   def self.no_arg: () -> ::User::ActiveRecord_Relation
   def self.with_attached_avatar: () -> ::User::ActiveRecord_Relation
@@ -247,10 +253,24 @@ class User < ::ApplicationRecord
     include ::User::GeneratedRelationMethods
     include ::_ActiveRecord_Relation[::User, ::Integer]
     include ::Enumerable[::User]
+
+    def pluck: (:id | "id") -> ::Array[::Integer]
+             | (:name | "name") -> ::Array[::String]
+             | (:age | "age") -> ::Array[::Integer]
+             | (:created_at | "created_at") -> ::Array[::ActiveSupport::TimeWithZone]
+             | (:updated_at | "updated_at") -> ::Array[::ActiveSupport::TimeWithZone]
+             | ...
   end
 
   class ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
     include ::User::GeneratedRelationMethods
     include ::_ActiveRecord_Relation[::User, ::Integer]
+
+    def pluck: (:id | "id") -> ::Array[::Integer]
+             | (:name | "name") -> ::Array[::String]
+             | (:age | "age") -> ::Array[::Integer]
+             | (:created_at | "created_at") -> ::Array[::ActiveSupport::TimeWithZone]
+             | (:updated_at | "updated_at") -> ::Array[::ActiveSupport::TimeWithZone]
+             | ...
   end
 end
