@@ -18,6 +18,12 @@ module RbsRails
         interface _RbsRailsPathHelpers
         #{methods.join("\n").indent(2)}
         end
+
+        module ActionController
+          class Base
+            include _RbsRailsPathHelpers
+          end
+        end
       RBS
     end
 
