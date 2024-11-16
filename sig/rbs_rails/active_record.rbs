@@ -49,6 +49,8 @@ class RbsRails::ActiveRecord::Generator
 
   def enum_instance_methods: () -> String
 
+  def enum_mapping_methods: () -> String
+
   def enum_scope_methods: (singleton: untyped `singleton`) -> String
 
   def enum_definitions: () -> Array[Hash[Symbol, untyped]]
