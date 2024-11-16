@@ -39,6 +39,7 @@ module RbsRails
           #{delegated_type_instance}
           #{delegated_type_scope(singleton: true)}
           #{enum_instance_methods}
+          #{enum_mapping_methods}
           #{enum_scope_methods(singleton: true)}
           #{scopes(singleton: true)}
 
@@ -331,6 +332,16 @@ module RbsRails
         end
 
         methods.join("\n")
+      end
+
+      private def enum_mapping_methods
+        enum_definitions.flat_map do |hash|
+          hash.keys.filter_map do |name|
+            next if IGNORED_ENUM_KEYS.include?(name)
+
+            "def self.#{name.to_s.pluralize}: () -> ActiveSupport::HashWithIndifferentAccess[Symbol, untyped]"
+          end
+        end.join("\n")
       end
 
       private def enum_scope_methods(singleton:)
