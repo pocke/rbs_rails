@@ -40,6 +40,7 @@ module RbsRails
           #{delegated_type_scope(singleton: true)}
           #{enum_instance_methods}
           #{enum_scope_methods(singleton: true)}
+          #{enum_mapping}
           #{scopes(singleton: true)}
 
           #{generated_relation_methods_decl}
@@ -213,10 +214,10 @@ module RbsRails
 
         sigs.join("\n")
       end
-
       private def delegated_type_scope(singleton:)
         definitions = delegated_type_definitions
         return "" unless definitions
+
         definitions.map do |definition|
           definition[:types].map do |type|
             scope_name = type.tableize.gsub("/", "_")
@@ -247,72 +248,74 @@ module RbsRails
       end
 
       private def delegated_type_definitions
-        ast = parse_model_file
-        return unless ast
+        looking_modules.map do |ast|
+          next unless ast
 
-        traverse(ast).map do |node|
-          # @type block: { role: Symbol, types: Array[String] }?
-          next unless node.type == :send
-          next unless node.children[0].nil?
-          next unless node.children[1] == :delegated_type
+          traverse(ast).map do |node|
+            # @type block: { role: Symbol, types: Array[String] }?
+            next unless node.type == :send
+            next unless node.children[0].nil?
+            next unless node.children[1] == :delegated_type
 
-          role_node = node.children[2]
-          next unless role_node
-          next unless role_node.type == :sym
-          # @type var role: Symbol
-          role = role_node.children[0]
+            role_node = node.children[2]
+            next unless role_node
+            next unless role_node.type == :sym
+            # @type var role: Symbol
+            role = role_node.children[0]
 
-          args_node = node.children[3]
-          next unless args_node
-          next unless args_node.type == :hash
+            args_node = node.children[3]
+            next unless args_node
+            next unless args_node.type == :hash
 
-          types = traverse(args_node).map do |n|
-            # @type block: Array[String]?
-            next unless n.type == :pair
-            key_node = n.children[0]
-            next unless key_node
-            next unless key_node.type == :sym
-            next unless key_node.children[0] == :types
+            types = traverse(args_node).map do |n|
+              # @type block: Array[String]?
+              next unless n.type == :pair
+              key_node = n.children[0]
+              next unless key_node
+              next unless key_node.type == :sym
+              next unless key_node.children[0] == :types
 
-            types_node = n.children[1]
-            next unless types_node
-            next unless types_node.type == :array
-            code = types_node.loc.expression.source
-            eval(code)
-          end.compact.flatten
+              types_node = n.children[1]
+              next unless types_node
+              next unless types_node.type == :array
+              code = types_node.loc.expression.source
+              eval(code)
+            end.compact.flatten
 
-          { role: role, types: types }
-        end.compact
+            { role: role, types: types }
+          end.compact
+        end.flatten.compact
       end
 
       private def has_secure_password
-        ast = parse_model_file
-        return unless ast
+        looking_modules.map do |ast|
+          next unless ast
 
-        traverse(ast).map do |node|
-          # @type block: String?
-          next unless node.type == :send
-          next unless node.children[0].nil?
-          next unless node.children[1] == :has_secure_password
+          traverse(ast).map do |node|
+            # @type block: String?
+            next unless node.type == :send
+            next unless node.children[0].nil?
+            next unless node.children[1] == :has_secure_password
 
-          attribute_node = node.children[2]
-          attribute = if attribute_node && attribute_node.type == :sym
-                        attribute_node.children[0]
-                      else
-                        :password
-                      end
+            attribute_node = node.children[2]
+            attribute = if attribute_node && attribute_node.type == :sym
+                          attribute_node.children[0]
+                        else
+                          :password
+                        end
 
-          <<~EOS
-            module ActiveModel_SecurePassword_InstanceMethodsOnActivation_#{attribute}
-              attr_reader #{attribute}: String?
-              def #{attribute}=: (String) -> String
-              def #{attribute}_confirmation=: (String) -> String
-              def authenticate_#{attribute}: (String) -> (#{klass_name} | false)
-              #{attribute == :password ? "alias authenticate authenticate_password" : ""}
-            end
-            include ActiveModel_SecurePassword_InstanceMethodsOnActivation_#{attribute}
-          EOS
-        end.compact.join("\n")
+            <<~EOS
+              module ActiveModel_SecurePassword_InstanceMethodsOnActivation_#{attribute}
+                attr_reader #{attribute}: String?
+                def #{attribute}=: (String) -> String
+                def #{attribute}_confirmation=: (String) -> String
+                def authenticate_#{attribute}: (String) -> (#{klass_name} | false)
+                #{attribute == :password ? "alias authenticate authenticate_password" : ""}
+              end
+              include ActiveModel_SecurePassword_InstanceMethodsOnActivation_#{attribute}
+            EOS
+          end.compact
+        end.flatten.compact.join("\n")
       end
 
       private def enum_instance_methods
@@ -349,6 +352,23 @@ module RbsRails
         methods.join("\n")
       end
 
+      private def enum_mapping
+        methods = []
+        enum_definitions.each do |hash|
+          hash.each do |name, values|
+            next if IGNORED_ENUM_KEYS.include?(name)
+
+            col = klass.columns.find { |col| col.name == name.to_s }
+            class_name = sql_type_to_class(col.type)
+            class_name_opt = optional(class_name)
+            column_type = col.null ? class_name_opt : class_name
+
+            methods << "def self.#{name.to_s.pluralize}: () -> ::Hash[(::String | ::Symbol), #{column_type}]"
+          end
+        end
+        methods.join("\n")
+      end
+
       private def enum_definitions
         @enum_definitions ||= build_enum_definitions
       end
@@ -357,24 +377,46 @@ module RbsRails
       # ActiveRecord has `defined_enums` method,
       # but it does not contain _prefix and _suffix information.
       private def build_enum_definitions
-        ast = parse_model_file
-        return [] unless ast
+        looking_modules.map do |ast|
+          next unless ast
 
-        traverse(ast).map do |node|
-          # @type block: nil | Hash[untyped, untyped]
-          next unless node.type == :send
-          next unless node.children[0].nil?
-          next unless node.children[1] == :enum
+          traverse(ast).map do |node|
+            # @type block: nil | Hash[untyped, untyped]
+            next unless node.type == :send
+            next unless node.children[0].nil?
+            next unless node.children[1] == :enum
 
-          definitions = node.children[2]
-          next unless definitions
-          next unless definitions.type == :hash
-          next unless traverse(definitions).all? { |n| [:str, :sym, :int, :hash, :pair, :true, :false].include?(n.type) }
+            definitions = node.children[2]
+            next unless definitions
 
-          code = definitions.loc.expression.source
-          code = "{#{code}}" if code[0] != '{'
-          eval(code)
-        end.compact
+            # Rails 7.2 format
+            if definitions.type == :sym
+              enum_name = definitions.children[0]
+
+              # When enum for type STI column
+              next if enum_name == :type
+
+              definitions = node.children[3]
+
+              next unless traverse(definitions).all? { |n| [:str, :sym, :int, :hash, :pair, :true, :false].include?(n.type) }
+
+              code = definitions.loc.expression.source
+              code = "{#{code}}" if code[0] != '{'
+              code = "{#{enum_name}: #{code}}"
+
+            # Old format
+            elsif definitions.type == :hash
+              next unless traverse(definitions).all? { |n| [:str, :sym, :int, :hash, :pair, :true, :false].include?(n.type) }
+
+              code = definitions.loc.expression.source
+              code = "{#{code}}" if code[0] != '{'
+            else
+              next
+            end
+
+            eval(code)
+          end.compact
+        end.flatten.compact || []
       end
 
       private def enum_method_name(hash, name, label)
@@ -396,29 +438,31 @@ module RbsRails
       end
 
       private def scopes(singleton:)
-        ast = parse_model_file
-        return '' unless ast
-
         prefix = singleton ? 'self.' : ''
+        return '' if looking_modules.compact.blank?
 
-        sigs = traverse(ast).map do |node|
-          # @type block: nil | String
-          next unless node.type == :send
-          next unless node.children[0].nil?
-          next unless node.children[1] == :scope
+        sigs = looking_modules.map do |ast|
+          next unless ast
 
-          name_node = node.children[2]
-          next unless name_node
-          next unless name_node.type == :sym
+          traverse(ast).map do |node|
+            # @type block: nil | String
+            next unless node.type == :send
+            next unless node.children[0].nil?
+            next unless node.children[1] == :scope
 
-          name = name_node.children[0]
-          body_node = node.children[3]
-          next unless body_node
-          next unless body_node.type == :block
+            name_node = node.children[2]
+            next unless name_node
+            next unless name_node.type == :sym
 
-          args = args_to_type(body_node.children[1])
-          "def #{prefix}#{name}: #{args} -> #{relation_class_name}"
-        end.compact
+            name = name_node.children[0]
+            body_node = node.children[3]
+            next unless body_node
+            next unless body_node.type == :block
+
+            args = args_to_type(body_node.children[1])
+            "def #{prefix}#{name}: #{args} -> #{relation_class_name}"
+          end.compact
+        end.compact.flatten
 
         if klass.respond_to?(:attachment_reflections)
           klass.attachment_reflections.each do |name, _reflection|
@@ -470,6 +514,48 @@ module RbsRails
         @parse_model_file = ast
       end
 
+      private def parse_parent_model_file
+        return @parse_parent_model_file if defined?(@parse_parent_model_file)
+
+        return @parse_parent_model_file = nil if klass == klass.base_class
+
+        path = Rails.root.join('app/models/', klass.base_class.name.underscore + '.rb')
+        return @parse_parent_model_file = nil unless path.exist?
+        return [] unless path.exist?
+
+        ast = Parser::CurrentRuby.parse path.read
+        return @parse_parent_model_file = nil unless path.exist?
+
+        @parse_parent_model_file = ast
+      end
+
+      private def looking_modules
+        [parse_model_file, parse_parent_model_file] + parse_concerns
+      end
+
+      private def parse_concerns
+        return @parse_concerns if defined?(@parse_concerns)
+
+        modules = []
+
+        (klass.included_modules + klass.base_class.included_modules).uniq.each do |concern|
+          next unless concern.singleton_class.included_modules.include?(ActiveSupport::Concern)
+
+          ast = parse_concern_file(concern)
+
+          modules << parse_concern_file(concern) if ast
+        end
+
+        @parse_concerns = modules
+      end
+
+      private def parse_concern_file(concern)
+        path = Rails.root.join('app/models/concerns', concern.name.underscore + '.rb')
+        return nil unless path.exist?
+
+        Parser::CurrentRuby.parse path.read
+      end
+
       private def traverse(node, &block)
         return to_enum(__method__ || raise, node) unless block
 
@@ -491,17 +577,20 @@ module RbsRails
         abs ? "#{klass_name}::GeneratedRelationMethods" : "GeneratedRelationMethods"
       end
 
-
       private def columns
         mod_sig = +"module GeneratedAttributeMethods\n"
         mod_sig << klass.columns.map do |col|
           class_name = if enum_definitions.any? { |hash| hash.key?(col.name) || hash.key?(col.name.to_sym) }
-                         '::String'
+                         '(::String | ::Symbol)'
                        else
                          sql_type_to_class(col.type)
                        end
+
+          class_name = "::Array[#{class_name}]" if col.sql_type_metadata.sql_type.include?('[]')
+
           class_name_opt = optional(class_name)
-          column_type = col.null ? class_name_opt : class_name
+          column_type = col.null && !col.type.in?([:jsonb, :json]) ? class_name_opt : class_name
+
           sig = <<~EOS
             def #{col.name}: () -> #{column_type}
             def #{col.name}=: (#{column_type}) -> #{column_type}
@@ -542,14 +631,14 @@ module RbsRails
           '::Float'
         when :decimal
           '::BigDecimal'
-        when :string, :text, :citext, :uuid, :binary
+        when :string, :text, :citext, :uuid, :binary, :enum
           '::String'
         when :datetime
           '::ActiveSupport::TimeWithZone'
         when :boolean
           "bool"
         when :jsonb, :json
-          "untyped"
+          "::Hash[::String | ::Symbol, untyped]"
         when :date
           '::Date'
         when :time
