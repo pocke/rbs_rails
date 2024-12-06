@@ -40,6 +40,7 @@ module RbsRails
           #{delegated_type_scope(singleton: true)}
           #{enum_instance_methods}
           #{enum_scope_methods(singleton: true)}
+          #{enum_mapping}
           #{scopes(singleton: true)}
 
           #{generated_relation_methods_decl}
@@ -346,6 +347,23 @@ module RbsRails
               value_method_name = enum_method_name(hash, name, label)
               methods << "def #{singleton ? 'self.' : ''}#{value_method_name}: () -> #{relation_class_name}"
             end
+          end
+        end
+        methods.join("\n")
+      end
+
+      private def enum_mapping
+        methods = []
+        enum_definitions.each do |hash|
+          hash.each do |name, values|
+            next if IGNORED_ENUM_KEYS.include?(name)
+
+            col = klass.columns.find { |col| col.name == name.to_s }
+            class_name = sql_type_to_class(col.type)
+            class_name_opt = optional(class_name)
+            column_type = col.null ? class_name_opt : class_name
+
+            methods << "def self.#{name.to_s.pluralize}: () -> ::Hash[(::String | ::Symbol), #{column_type}]"
           end
         end
         methods.join("\n")
