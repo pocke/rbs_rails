@@ -563,7 +563,7 @@ module RbsRails
         mod_sig = +"module GeneratedAttributeMethods\n"
         mod_sig << klass.columns.map do |col|
           class_name = if enum_definitions.any? { |hash| hash.key?(col.name) || hash.key?(col.name.to_sym) }
-                         '::String'
+                         '(::String | ::Symbol)'
                        else
                          sql_type_to_class(col.type)
                        end
@@ -572,6 +572,7 @@ module RbsRails
 
           class_name_opt = optional(class_name)
           column_type = col.null && !col.type.in?([:jsonb, :json]) ? class_name_opt : class_name
+
           sig = <<~EOS
             def #{col.name}: () -> #{column_type}
             def #{col.name}=: (#{column_type}) -> #{column_type}
