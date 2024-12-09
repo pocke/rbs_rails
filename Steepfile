@@ -7,6 +7,6 @@ target :lib do
   repo_path ENV['RBS_REPO_DIR'] if ENV['RBS_REPO_DIR']
 
   configure_code_diagnostics do |hash|
-    hash[D::Ruby::ElseOnExhaustiveCase] = :information
+    hash[D::Ruby::UnreachableBranch] = :information
   end
 end

@@ -17,9 +17,9 @@ module RbsRails
       def initialize(klass, dependencies:)
         @klass = klass
         @dependencies = dependencies
-        @klass_name = Util.module_name(klass)
+        @klass_name = Util.module_name(klass, abs: false)
 
-        namespaces = klass_name.split('::').tap{ |names| names.pop }
+        namespaces = klass_name(abs: false).split('::').tap{ |names| names.pop }
         @dependencies << namespaces.join('::') unless namespaces.empty?
       end
 
@@ -30,7 +30,7 @@ module RbsRails
       private def klass_decl
         <<~RBS
           #{header}
-            extend _ActiveRecord_Relation_ClassMethods[#{klass_name}, #{relation_class_name}, #{pk_type}]
+            extend ::_ActiveRecord_Relation_ClassMethods[#{klass_name}, #{relation_class_name}, #{pk_type}]
 
           #{columns}
           #{alias_columns}
@@ -63,7 +63,7 @@ module RbsRails
 
       private def generated_relation_methods_decl
         <<~RBS
-          module GeneratedRelationMethods
+          module #{generated_relation_methods_name(abs: false)}
             #{enum_scope_methods(singleton: false)}
             #{scopes(singleton: false)}
             #{delegated_type_scope(singleton: false)}
@@ -73,10 +73,10 @@ module RbsRails
 
       private def relation_decl
         <<~RBS
-          class #{relation_class_name} < ::ActiveRecord::Relation
-            include GeneratedRelationMethods
-            include _ActiveRecord_Relation[#{klass_name}, #{pk_type}]
-            include Enumerable[#{klass_name}]
+          class #{relation_class_name(abs: false)} < ::ActiveRecord::Relation
+            include #{generated_relation_methods_name}
+            include ::_ActiveRecord_Relation[#{klass_name}, #{pk_type}]
+            include ::Enumerable[#{klass_name}]
           end
         RBS
       end
@@ -84,22 +84,22 @@ module RbsRails
       private def collection_proxy_decl
         <<~RBS
           class ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
-            include GeneratedRelationMethods
-            include _ActiveRecord_Relation[#{klass_name}, #{pk_type}]
+            include #{generated_relation_methods_name}
+            include ::_ActiveRecord_Relation[#{klass_name}, #{pk_type}]
           end
         RBS
       end
 
       private def header
         namespace = +''
-        klass_name.split('::').map do |mod_name|
+        klass_name(abs: false).split('::').map do |mod_name|
           namespace += "::#{mod_name}"
           mod_object = Object.const_get(namespace)
           case mod_object
           when Class
             # @type var superclass: Class
             superclass = _ = mod_object.superclass
-            superclass_name = Util.module_name(superclass)
+            superclass_name = Util.module_name(superclass, abs: false)
             @dependencies << superclass_name
 
             "class #{mod_name} < ::#{superclass_name}"
@@ -112,7 +112,7 @@ module RbsRails
       end
 
       private def footer
-        "end\n" * klass_name.split('::').size
+        "end\n" * klass_name(abs: false).split('::').size
       end
 
       private def associations
@@ -134,9 +134,9 @@ module RbsRails
 
           <<~RUBY.chomp
             def #{a.name}: () -> #{collection_type}
-            def #{a.name}=: (#{collection_type} | Array[#{type}]) -> (#{collection_type} | Array[#{type}])
-            def #{singular_name}_ids: () -> Array[Integer]
-            def #{singular_name}_ids=: (Array[Integer]) -> Array[Integer]
+            def #{a.name}=: (#{collection_type} | ::Array[#{type}]) -> (#{collection_type} | ::Array[#{type}])
+            def #{singular_name}_ids: () -> ::Array[::Integer]
+            def #{singular_name}_ids=: (::Array[::Integer]) -> ::Array[::Integer]
           RUBY
         end.join("\n")
       end
@@ -191,17 +191,17 @@ module RbsRails
             case reflection.macro
             when :has_one_attached
               <<~EOS
-                def #{name}: () -> ActiveStorage::Attached::One
-                def #{name}=: (ActionDispatch::Http::UploadedFile) -> ActionDispatch::Http::UploadedFile
-                            | (Rack::Test::UploadedFile) -> Rack::Test::UploadedFile
-                            | (ActiveStorage::Blob) -> ActiveStorage::Blob
-                            | (String) -> String
-                            | ({ io: IO, filename: String, content_type: String? }) -> { io: IO, filename: String, content_type: String? }
+                def #{name}: () -> ::ActiveStorage::Attached::One
+                def #{name}=: (::ActionDispatch::Http::UploadedFile) -> ::ActionDispatch::Http::UploadedFile
+                            | (::Rack::Test::UploadedFile) -> ::Rack::Test::UploadedFile
+                            | (::ActiveStorage::Blob) -> ::ActiveStorage::Blob
+                            | (::String) -> ::String
+                            | ({ io: ::IO, filename: ::String, content_type: ::String? }) -> { io: ::IO, filename: ::String, content_type: ::String? }
                             | (nil) -> nil
               EOS
             when :has_many_attached
               <<~EOS
-                def #{name}: () -> ActiveStorage::Attached::Many
+                def #{name}: () -> ::ActiveStorage::Attached::Many
                 def #{name}=: (untyped) -> untyped
               EOS
             else
@@ -461,7 +461,7 @@ module RbsRails
       private def parse_model_file
         return @parse_model_file if defined?(@parse_model_file)
 
-        path = Rails.root.join('app/models/', klass_name.underscore + '.rb')
+        path = Rails.root.join('app/models/', klass_name(abs: false).underscore + '.rb')
         return @parse_model_file = nil unless path.exist?
         return [] unless path.exist?
 
@@ -480,15 +480,24 @@ module RbsRails
         end
       end
 
-      private def relation_class_name
-        "ActiveRecord_Relation"
+      private def relation_class_name(abs: true)
+        abs ? "#{klass_name}::ActiveRecord_Relation" : "ActiveRecord_Relation"
       end
+
+      private def klass_name(abs: true)
+        abs ? "::#{@klass_name}" : @klass_name
+      end
+
+      private def generated_relation_methods_name(abs: true)
+        abs ? "#{klass_name}::GeneratedRelationMethods" : "GeneratedRelationMethods"
+      end
+
 
       private def columns
         mod_sig = +"module GeneratedAttributeMethods\n"
         mod_sig << klass.columns.map do |col|
           class_name = if enum_definitions.any? { |hash| hash.key?(col.name) || hash.key?(col.name.to_sym) }
-                         'String'
+                         '::String'
                        else
                          sql_type_to_class(col.type)
                        end
@@ -503,12 +512,12 @@ module RbsRails
             def #{col.name}_will_change!: () -> void
             def #{col.name}_was: () -> #{class_name_opt}
             def #{col.name}_previously_changed?: () -> bool
-            def #{col.name}_previous_change: () -> Array[#{class_name_opt}]?
+            def #{col.name}_previous_change: () -> ::Array[#{class_name_opt}]?
             def #{col.name}_previously_was: () -> #{class_name_opt}
             def #{col.name}_before_last_save: () -> #{class_name_opt}
-            def #{col.name}_change_to_be_saved: () -> Array[#{class_name_opt}]?
+            def #{col.name}_change_to_be_saved: () -> ::Array[#{class_name_opt}]?
             def #{col.name}_in_database: () -> #{class_name_opt}
-            def saved_change_to_#{col.name}: () -> Array[#{class_name_opt}]?
+            def saved_change_to_#{col.name}: () -> ::Array[#{class_name_opt}]?
             def saved_change_to_#{col.name}?: () -> bool
             def will_save_change_to_#{col.name}?: () -> bool
             def restore_#{col.name}!: () -> void
@@ -561,25 +570,25 @@ module RbsRails
       private def sql_type_to_class(t)
         case t
         when :integer
-          'Integer'
+          '::Integer'
         when :float
-          'Float'
+          '::Float'
         when :decimal
-          'BigDecimal'
+          '::BigDecimal'
         when :string, :text, :citext, :uuid, :binary
-          'String'
+          '::String'
         when :datetime
-          'ActiveSupport::TimeWithZone'
+          '::ActiveSupport::TimeWithZone'
         when :boolean
           "bool"
         when :jsonb, :json
           "untyped"
         when :date
-          'Date'
+          '::Date'
         when :time
-          'Time'
+          '::Time'
         when :inet
-          "IPAddr"
+          "::IPAddr"
         else
           # Unknown column type, give up
           'untyped'
@@ -587,7 +596,7 @@ module RbsRails
       end
 
       private
-      attr_reader :klass, :klass_name
+      attr_reader :klass
     end
   end
 end

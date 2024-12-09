@@ -4,7 +4,7 @@ module RbsRails
 
     extend Util
 
-    def module_name: (Module) -> String
+    def module_name: (Module, ?abs: boolish) -> String
 
     def format_rbs: (String) -> String
   end

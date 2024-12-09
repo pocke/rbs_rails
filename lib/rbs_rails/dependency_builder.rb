@@ -10,7 +10,7 @@ module RbsRails
     def build
       dep_rbs = +""
       deps.uniq!
-      while dep = deps.shift
+      while dep = shift
         next unless done.add?(dep)
 
         case dep_object = Object.const_get(dep)
@@ -38,6 +38,10 @@ module RbsRails
       unless dep_rbs.empty?
         Util.format_rbs(dep_rbs)
       end
+    end
+
+    private def shift
+      deps.shift&.sub(/^::/, '')
     end
   end
 end
