@@ -1,6 +1,8 @@
 module RbsRails
   class PathHelpers
     def self.generate(routes: Rails.application.routes)
+      Rails.application.reload_routes_unless_loaded
+
       new(routes: Rails.application.routes).generate
     end
 
