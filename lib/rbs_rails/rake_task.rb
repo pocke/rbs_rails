@@ -14,6 +14,7 @@ module RbsRails
 
       block.call(self) if block
 
+      def_prepare
       def_generate_rbs_for_models
       def_generate_rbs_for_path_helpers
       def_all
@@ -22,19 +23,29 @@ module RbsRails
     def def_all
       desc 'Run all tasks of rbs_rails'
 
-      deps = [:"#{name}:generate_rbs_for_models", :"#{name}:generate_rbs_for_path_helpers"]
+      deps = [:"#{name}:prepare",
+              :"#{name}:generate_rbs_for_models",
+              :"#{name}:generate_rbs_for_path_helpers"]
       task("#{name}:all": deps)
+    end
+
+    def def_prepare
+      desc 'Prepare rbs_rails'
+      task "#{name}:prepare" do
+        # Load inspectors.  This is necessary to load earlier than Rails application.
+        require 'rbs_rails/active_record/enum'
+      end
     end
 
     def def_generate_rbs_for_models
       desc 'Generate RBS files for Active Record models'
-      task("#{name}:generate_rbs_for_models": :environment) do
+      task("#{name}:generate_rbs_for_models": [:"#{name}:prepare", :environment]) do
         require 'rbs_rails'
 
         Rails.application.eager_load!
 
         dep_builder = DependencyBuilder.new
-        
+
         ::ActiveRecord::Base.descendants.each do |klass|
           next unless RbsRails::ActiveRecord.generatable?(klass)
           next if ignore_model_if&.call(klass)
@@ -55,7 +66,7 @@ module RbsRails
 
     def def_generate_rbs_for_path_helpers
       desc 'Generate RBS files for path helpers'
-      task("#{name}:generate_rbs_for_path_helpers": :environment) do
+      task("#{name}:generate_rbs_for_path_helpers": [:"#{name}:prepare", :environment]) do
         require 'rbs_rails'
 
         out_path = signature_root_dir.join 'path_helpers.rbs'

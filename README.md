@@ -26,12 +26,19 @@ Run the following command. It generates `lib/tasks/rbs.rake`.
 $ bin/rails g rbs_rails:install
 ```
 
-Then, the following three tasks are available.
+Then, the following four tasks are available.
 
+* `rbs_rails:prepare`: Install inspector modules for Active Record models.  This task is required to run before loading Rails application.
 * `rbs_rails:generate_rbs_for_models`: Generate RBS files for Active Record models
 * `rbs_rails:generate_rbs_for_path_helpers`: Generate RBS files for path helpers
 * `rbs_rails:all`: Execute all tasks of RBS Rails
 
+
+If you invoke multiple tasks, please run `rbs_rails:prepare` first.
+
+```console
+$ bin/rails rbs_rails:prepare some_task another_task rbs_rails:generate_rbs_for_models
+```
 
 ### Install RBS for `rails` gem
 

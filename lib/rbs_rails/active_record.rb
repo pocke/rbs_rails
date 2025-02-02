@@ -318,16 +318,9 @@ module RbsRails
       private def enum_instance_methods
         # @type var methods: Array[String]
         methods = []
-        enum_definitions.each do |hash|
-          hash.each do |name, values|
-            next if IGNORED_ENUM_KEYS.include?(name)
-
-            values.each do |label, value|
-              value_method_name = enum_method_name(hash, name, label)
-              methods << "def #{value_method_name}!: () -> bool"
-              methods << "def #{value_method_name}?: () -> bool"
-            end
-          end
+        klass.enum_definitions.each do |_, method_name|
+          methods << "def #{method_name}!: () -> bool"
+          methods << "def #{method_name}?: () -> bool"
         end
 
         methods.join("\n")
@@ -336,63 +329,10 @@ module RbsRails
       private def enum_scope_methods(singleton:)
         # @type var methods: Array[String]
         methods = []
-        enum_definitions.each do |hash|
-          hash.each do |name, values|
-            next if IGNORED_ENUM_KEYS.include?(name)
-
-            values.each do |label, value|
-              value_method_name = enum_method_name(hash, name, label)
-              methods << "def #{singleton ? 'self.' : ''}#{value_method_name}: () -> #{relation_class_name}"
-            end
-          end
+        klass.enum_definitions.each do |_, method_name|
+          methods << "def #{singleton ? 'self.' : ''}#{method_name}: () -> #{relation_class_name}"
         end
         methods.join("\n")
-      end
-
-      private def enum_definitions
-        @enum_definitions ||= build_enum_definitions
-      end
-
-      # We need static analysis to detect enum.
-      # ActiveRecord has `defined_enums` method,
-      # but it does not contain _prefix and _suffix information.
-      private def build_enum_definitions
-        ast = parse_model_file
-        return [] unless ast
-
-        traverse(ast).map do |node|
-          # @type block: nil | Hash[untyped, untyped]
-          next unless node.type == :send
-          next unless node.children[0].nil?
-          next unless node.children[1] == :enum
-
-          definitions = node.children[2]
-          next unless definitions
-          next unless definitions.type == :hash
-          next unless traverse(definitions).all? { |n| [:str, :sym, :int, :hash, :pair, :true, :false].include?(n.type) }
-
-          code = definitions.loc.expression.source
-          code = "{#{code}}" if code[0] != '{'
-          eval(code)
-        end.compact
-      end
-
-      private def enum_method_name(hash, name, label)
-        enum_prefix = hash[:_prefix]
-        enum_suffix = hash[:_suffix]
-
-        if enum_prefix == true
-          prefix = "#{name}_"
-        elsif enum_prefix
-          prefix = "#{enum_prefix}_"
-        end
-        if enum_suffix == true
-          suffix = "_#{name}"
-        elsif enum_suffix
-          suffix = "_#{enum_suffix}"
-        end
-
-        "#{prefix}#{label}#{suffix}"
       end
 
       private def scopes(singleton:)
@@ -495,7 +435,7 @@ module RbsRails
       private def columns
         mod_sig = +"module GeneratedAttributeMethods\n"
         mod_sig << klass.columns.map do |col|
-          class_name = if enum_definitions.any? { |hash| hash.key?(col.name) || hash.key?(col.name.to_sym) }
+          class_name = if klass.enum_definitions.any? { |name, _| name == col.name.to_sym }
                          '::String'
                        else
                          sql_type_to_class(col.type)
