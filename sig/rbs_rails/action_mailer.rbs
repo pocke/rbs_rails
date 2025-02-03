@@ -1,0 +1,27 @@
+module RbsRails
+  module ActionMailer
+    def self.class_to_rbs: (untyped klass) -> String
+
+    class Generator
+      @klass_name: String
+
+      def initialize: (singleton(ActionMailer::Base) klass) -> void
+
+      def generate: () -> String
+
+      def klass_decl: () -> String
+
+      def header: () -> String
+
+      def methods: () -> String
+
+      def footer: () -> String
+
+      def klass_name: (?abs: boolish) -> String
+
+      private
+
+      attr_reader klass: singleton(ActionMailer::Base)
+    end
+  end
+end
