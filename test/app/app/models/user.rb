@@ -11,4 +11,11 @@ class User < ApplicationRecord
     temporary: 1,
     accepted: 2,
   }, _default: :temporary
+
+  enum timezone: {
+    'America/Los_Angeles': 'America/Los_Angeles',
+    'America/Denver': 'America/Denver',
+    'America/Chicago': 'America/Chicago',
+    'America/New_York': 'America/New_York'
+  }
 end
