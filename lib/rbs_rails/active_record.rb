@@ -83,6 +83,7 @@ module RbsRails
       private def collection_proxy_decl
         <<~RBS
           class ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+            include ::Enumerable[#{klass_name}]
             include #{generated_relation_methods_name}
             include ::_ActiveRecord_Relation[#{klass_name}, #{pk_type}]
           end
