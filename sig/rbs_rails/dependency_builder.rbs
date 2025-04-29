@@ -1,14 +1,15 @@
+# Generated from lib/rbs_rails/dependency_builder.rb with RBS::Inline
+
 module RbsRails
   class DependencyBuilder
     attr_reader deps: Array[String]
+
     attr_reader done: Set[String]
 
     def initialize: () -> void
 
     def build: () -> (String | nil)
 
-    private
-
-    def shift: () -> (String | nil)
+    private def shift: () -> (String | nil)
   end
 end

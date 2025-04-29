@@ -1,20 +1,30 @@
 module RbsRails
   module ActiveRecord
 
-    def self.generatable?(klass)
+    # @rbs klass: untyped
+    def self.generatable?(klass) #: boolish
       return false if klass.abstract_class?
 
       klass.connection.table_exists?(klass.table_name)
     end
 
-    def self.class_to_rbs(klass, dependencies: [])
+    # @rbs klass: untyped
+    # @rbs dependencies: Array[String]
+    def self.class_to_rbs(klass, dependencies: []) #: untyped
       Generator.new(klass, dependencies: dependencies).generate
     end
 
     class Generator
-      IGNORED_ENUM_KEYS = %i[_prefix _suffix _default _scopes]
+      IGNORED_ENUM_KEYS = %i[_prefix _suffix _default _scopes] #: Array[Symbol]
 
-      def initialize(klass, dependencies:)
+      # @rbs @parse_model_file: nil | Parser::AST::Node
+      # @rbs @dependencies: Array[String]
+      # @rbs @enum_definitions: Array[Hash[Symbol, untyped]]
+      # @rbs @klass_name: String
+
+      # @rbs klass: singleton(ActiveRecord::Base)
+      # @rbs dependencies: Array[String]
+      def initialize(klass, dependencies:) #: untyped
         @klass = klass
         @dependencies = dependencies
         @klass_name = Util.module_name(klass, abs: false)
@@ -23,11 +33,11 @@ module RbsRails
         @dependencies << namespaces.join('::') unless namespaces.empty?
       end
 
-      def generate
+      def generate #: String
         Util.format_rbs klass_decl
       end
 
-      private def klass_decl
+      private def klass_decl #: String
         <<~RBS
           #{header}
             extend ::_ActiveRecord_Relation_ClassMethods[#{klass_name}, #{relation_class_name}, #{pk_type}]
@@ -52,7 +62,7 @@ module RbsRails
         RBS
       end
 
-      private def pk_type
+      private def pk_type #: String
         pk = klass.primary_key
         return 'top' unless pk
 
@@ -60,7 +70,7 @@ module RbsRails
         sql_type_to_class(col.type)
       end
 
-      private def generated_relation_methods_decl
+      private def generated_relation_methods_decl #: String
         <<~RBS
           module #{generated_relation_methods_name(abs: false)}
             #{enum_scope_methods(singleton: false)}
@@ -70,7 +80,7 @@ module RbsRails
         RBS
       end
 
-      private def relation_decl
+      private def relation_decl #: String
         <<~RBS
           class #{relation_class_name(abs: false)} < ::ActiveRecord::Relation
             include #{generated_relation_methods_name}
@@ -80,7 +90,7 @@ module RbsRails
         RBS
       end
 
-      private def collection_proxy_decl
+      private def collection_proxy_decl #: String
         <<~RBS
           class ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
             include #{generated_relation_methods_name}
@@ -89,7 +99,7 @@ module RbsRails
         RBS
       end
 
-      private def header
+      private def header #: String
         namespace = +''
         klass_name(abs: false).split('::').map do |mod_name|
           namespace += "::#{mod_name}"
@@ -110,11 +120,11 @@ module RbsRails
         end.join("\n")
       end
 
-      private def footer
+      private def footer #: String
         "end\n" * klass_name(abs: false).split('::').size
       end
 
-      private def associations
+      private def associations #: String
         [
           has_many,
           has_one,
@@ -122,7 +132,7 @@ module RbsRails
         ].join("\n")
       end
 
-      private def has_many
+      private def has_many #: String
         klass.reflect_on_all_associations(:has_many).map do |a|
           @dependencies << a.klass.name
 
@@ -140,7 +150,7 @@ module RbsRails
         end.join("\n")
       end
 
-      private def has_one
+      private def has_one #: String
         klass.reflect_on_all_associations(:has_one).map do |a|
           @dependencies << a.klass.name unless a.polymorphic?
 
@@ -157,7 +167,7 @@ module RbsRails
         end.join("\n")
       end
 
-      private def belongs_to
+      private def belongs_to #: String
         klass.reflect_on_all_associations(:belongs_to).map do |a|
           @dependencies << a.klass.name unless a.polymorphic?
 
@@ -179,7 +189,7 @@ module RbsRails
         end.join("\n")
       end
 
-      private def generated_association_methods
+      private def generated_association_methods #: String
         # @type var sigs: Array[String]
         sigs = []
 
@@ -214,7 +224,8 @@ module RbsRails
         sigs.join("\n")
       end
 
-      private def delegated_type_scope(singleton:)
+      # @rbs singleton: bool
+      private def delegated_type_scope(singleton:) #: String
         definitions = delegated_type_definitions
         return "" unless definitions
         definitions.map do |definition|
@@ -225,7 +236,7 @@ module RbsRails
         end.flatten.join("\n")
       end
 
-      private def delegated_type_instance
+      private def delegated_type_instance #: String
         definitions = delegated_type_definitions
         return "" unless definitions
         # @type var methods: Array[String]
@@ -246,7 +257,7 @@ module RbsRails
         methods.join("\n")
       end
 
-      private def delegated_type_definitions
+      private def delegated_type_definitions #: Array[{ role: Symbol, types: Array[String] }]?
         ast = parse_model_file
         return unless ast
 
@@ -285,7 +296,7 @@ module RbsRails
         end.compact
       end
 
-      private def has_secure_password
+      private def has_secure_password #: String?
         ast = parse_model_file
         return unless ast
 
@@ -315,7 +326,7 @@ module RbsRails
         end.compact.join("\n")
       end
 
-      private def enum_instance_methods
+      private def enum_instance_methods #: String
         # @type var methods: Array[String]
         methods = []
         enum_definitions.each do |hash|
@@ -333,7 +344,8 @@ module RbsRails
         methods.join("\n")
       end
 
-      private def enum_scope_methods(singleton:)
+      # @rbs singleton: untyped
+      private def enum_scope_methods(singleton:) #: String
         # @type var methods: Array[String]
         methods = []
         enum_definitions.each do |hash|
@@ -349,14 +361,14 @@ module RbsRails
         methods.join("\n")
       end
 
-      private def enum_definitions
+      private def enum_definitions #: Array[Hash[Symbol, untyped]]
         @enum_definitions ||= build_enum_definitions
       end
 
       # We need static analysis to detect enum.
       # ActiveRecord has `defined_enums` method,
       # but it does not contain _prefix and _suffix information.
-      private def build_enum_definitions
+      private def build_enum_definitions #: Array[Hash[Symbol, untyped]]
         ast = parse_model_file
         return [] unless ast
 
@@ -377,7 +389,10 @@ module RbsRails
         end.compact
       end
 
-      private def enum_method_name(hash, name, label)
+      # @rbs hash: Hash[Symbol, untyped]
+      # @rbs name: Symbol
+      # @rbs label: Symbol
+      private def enum_method_name(hash, name, label) #: String
         enum_prefix = hash[:_prefix]
         enum_suffix = hash[:_suffix]
 
@@ -395,7 +410,8 @@ module RbsRails
         "#{prefix}#{label}#{suffix}"
       end
 
-      private def scopes(singleton:)
+      # @rbs singleton: untyped
+      private def scopes(singleton:) #: untyped
         ast = parse_model_file
         return '' unless ast
 
@@ -429,7 +445,8 @@ module RbsRails
         sigs.join("\n")
       end
 
-      private def args_to_type(args_node)
+      # @rbs args_node: untyped
+      private def args_to_type(args_node) #: untyped
         # @type var res: Array[String]
         res = []
         # @type var block: String?
@@ -457,7 +474,7 @@ module RbsRails
         "(#{res.join(", ")})#{block}"
       end
 
-      private def parse_model_file
+      private def parse_model_file #: untyped
         return @parse_model_file if defined?(@parse_model_file)
 
         path = Rails.root.join('app/models/', klass_name(abs: false).underscore + '.rb')
@@ -470,6 +487,8 @@ module RbsRails
         @parse_model_file = ast
       end
 
+      #: (Parser::AST::Node) { (Parser::AST::Node) -> untyped } -> untyped
+      #: (Parser::AST::Node) -> Enumerator[Parser::AST::Node, untyped]
       private def traverse(node, &block)
         return to_enum(__method__ || raise, node) unless block
 
@@ -479,20 +498,23 @@ module RbsRails
         end
       end
 
-      private def relation_class_name(abs: true)
+      # @rbs abs: boolish
+      private def relation_class_name(abs: true) #: String
         abs ? "#{klass_name}::ActiveRecord_Relation" : "ActiveRecord_Relation"
       end
 
-      private def klass_name(abs: true)
+      # @rbs abs: boolish
+      private def klass_name(abs: true) #: String
         abs ? "::#{@klass_name}" : @klass_name
       end
 
-      private def generated_relation_methods_name(abs: true)
+      # @rbs abs: boolish
+      private def generated_relation_methods_name(abs: true) #: String
         abs ? "#{klass_name}::GeneratedRelationMethods" : "GeneratedRelationMethods"
       end
 
 
-      private def columns
+      private def columns #: untyped
         mod_sig = +"module GeneratedAttributeMethods\n"
         mod_sig << klass.columns.map do |col|
           class_name = if enum_definitions.any? { |hash| hash.key?(col.name) || hash.key?(col.name.to_sym) }
@@ -530,11 +552,13 @@ module RbsRails
         mod_sig
       end
 
-      private def optional(class_name)
+      # @rbs class_name: String
+      private def optional(class_name) #: String
         class_name.include?("|") ? "(#{class_name})?" : "#{class_name}?"
       end
 
-      private def sql_type_to_class(t)
+      # @rbs t: untyped
+      private def sql_type_to_class(t) #: untyped
         case t
         when :integer
           '::Integer'
@@ -563,7 +587,7 @@ module RbsRails
       end
 
       private
-      attr_reader :klass
+      attr_reader :klass #: singleton(ActiveRecord::Base)
     end
   end
 end
