@@ -29,6 +29,8 @@ module RbsRails
 
       private def klass_decl
         <<~RBS
+          # resolve-type-names: false
+
           #{header}
             extend ::_ActiveRecord_Relation_ClassMethods[#{klass_name}, #{relation_class_name}, #{pk_type}]
 
@@ -62,7 +64,7 @@ module RbsRails
 
       private def generated_relation_methods_decl
         <<~RBS
-          module #{generated_relation_methods_name(abs: false)}
+          module #{generated_relation_methods_name}
             #{enum_scope_methods(singleton: false)}
             #{scopes(singleton: false)}
             #{delegated_type_scope(singleton: false)}
@@ -72,7 +74,7 @@ module RbsRails
 
       private def relation_decl
         <<~RBS
-          class #{relation_class_name(abs: false)} < ::ActiveRecord::Relation
+          class #{relation_class_name} < ::ActiveRecord::Relation
             include #{generated_relation_methods_name}
             include ::_ActiveRecord_Relation[#{klass_name}, #{pk_type}]
             include ::Enumerable[#{klass_name}]
@@ -82,7 +84,7 @@ module RbsRails
 
       private def collection_proxy_decl
         <<~RBS
-          class ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+          class #{klass_name}::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
             include #{generated_relation_methods_name}
             include ::_ActiveRecord_Relation[#{klass_name}, #{pk_type}]
           end
@@ -101,9 +103,9 @@ module RbsRails
             superclass_name = Util.module_name(superclass, abs: false)
             @dependencies << superclass_name
 
-            "class #{mod_name} < ::#{superclass_name}"
+            "class #{namespace} < ::#{superclass_name}"
           when Module
-            "module #{mod_name}"
+            "module #{namespace}"
           else
             raise 'unreachable'
           end
@@ -185,7 +187,7 @@ module RbsRails
 
         # Needs to require "active_storage/engine"
         if klass.respond_to?(:attachment_reflections)
-          sigs << "module GeneratedAssociationMethods"
+          sigs << "module #{klass_name}::GeneratedAssociationMethods"
           sigs << klass.attachment_reflections.map do |name, reflection|
             case reflection.macro
             when :has_one_attached
@@ -208,7 +210,7 @@ module RbsRails
             end
           end.join("\n")
           sigs << "end"
-          sigs << "include GeneratedAssociationMethods"
+          sigs << "include #{klass_name}::GeneratedAssociationMethods"
         end
 
         sigs.join("\n")
@@ -231,8 +233,8 @@ module RbsRails
         # @type var methods: Array[String]
         methods = []
         definitions.each do |definition|
-          methods << "def #{definition[:role]}_class: () -> Class"
-          methods << "def #{definition[:role]}_name: () -> String"
+          methods << "def #{definition[:role]}_class: () -> ::Class"
+          methods << "def #{definition[:role]}_name: () -> ::String"
           methods << definition[:types].map do |type|
             scope_name = type.tableize.gsub("/", "_")
             singular = scope_name.singularize
@@ -303,14 +305,14 @@ module RbsRails
                       end
 
           <<~EOS
-            module ActiveModel_SecurePassword_InstanceMethodsOnActivation_#{attribute}
-              attr_reader #{attribute}: String?
-              def #{attribute}=: (String) -> String
-              def #{attribute}_confirmation=: (String) -> String
-              def authenticate_#{attribute}: (String) -> (#{klass_name} | false)
+            module #{klass_name}::ActiveModel_SecurePassword_InstanceMethodsOnActivation_#{attribute}
+              attr_reader #{attribute}: ::String?
+              def #{attribute}=: (::String) -> ::String
+              def #{attribute}_confirmation=: (::String) -> ::String
+              def authenticate_#{attribute}: (::String) -> (#{klass_name} | false)
               #{attribute == :password ? "alias authenticate authenticate_password" : ""}
             end
-            include ActiveModel_SecurePassword_InstanceMethodsOnActivation_#{attribute}
+            include #{klass_name}::ActiveModel_SecurePassword_InstanceMethodsOnActivation_#{attribute}
           EOS
         end.compact.join("\n")
       end
@@ -479,21 +481,21 @@ module RbsRails
         end
       end
 
-      private def relation_class_name(abs: true)
-        abs ? "#{klass_name}::ActiveRecord_Relation" : "ActiveRecord_Relation"
+      private def relation_class_name
+        "#{klass_name}::ActiveRecord_Relation"
       end
 
       private def klass_name(abs: true)
         abs ? "::#{@klass_name}" : @klass_name
       end
 
-      private def generated_relation_methods_name(abs: true)
-        abs ? "#{klass_name}::GeneratedRelationMethods" : "GeneratedRelationMethods"
+      private def generated_relation_methods_name
+        "#{klass_name}::GeneratedRelationMethods"
       end
 
 
       private def columns
-        mod_sig = +"module GeneratedAttributeMethods\n"
+        mod_sig = +"module #{klass_name}::GeneratedAttributeMethods\n"
         mod_sig << klass.columns.map do |col|
           # NOTE:
           #   `klass.attribute_types[col.name].try(:coder)` is for Rails 6.0 and before
@@ -547,7 +549,7 @@ module RbsRails
           sig
         end.join("\n")
         mod_sig << "\nend\n"
-        mod_sig << "include GeneratedAttributeMethods"
+        mod_sig << "include #{klass_name}::GeneratedAttributeMethods"
         mod_sig
       end
 

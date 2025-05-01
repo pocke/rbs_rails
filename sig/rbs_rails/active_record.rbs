@@ -69,11 +69,11 @@ class RbsRails::ActiveRecord::Generator
   def traverse: (Parser::AST::Node node) { (Parser::AST::Node) -> untyped } -> untyped
               | (Parser::AST::Node node) -> Enumerator[Parser::AST::Node, untyped]
 
-  def relation_class_name: (?abs: boolish) -> String
+  def relation_class_name: () -> String
 
   def klass_name: (?abs: boolish) -> String
 
-  def generated_relation_methods_name: (?abs: boolish) -> String
+  def generated_relation_methods_name: () -> String
 
   def columns: () -> untyped
 

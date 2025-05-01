@@ -16,11 +16,11 @@ module RbsRails
         case dep_object = Object.const_get(dep)
         when Class
           superclass = dep_object.superclass or raise
-          super_name = Util.module_name(superclass)
+          super_name = Util.module_name(superclass, abs: false)
           deps << super_name
-          dep_rbs << "class #{dep} < #{super_name} end\n"
+          dep_rbs << "class ::#{dep} < ::#{super_name} end\n"
         when Module
-          dep_rbs << "module #{dep} end\n"
+          dep_rbs << "module ::#{dep} end\n"
         else
           raise
         end
