@@ -495,12 +495,33 @@ module RbsRails
       private def columns
         mod_sig = +"module GeneratedAttributeMethods\n"
         mod_sig << klass.columns.map do |col|
-          class_name = if enum_definitions.any? { |hash| hash.key?(col.name) || hash.key?(col.name.to_sym) }
-                         '::String'
-                       else
-                         sql_type_to_class(col.type)
-                       end
-          class_name_opt = optional(class_name)
+          # NOTE:
+          #   `klass.attribute_types[col.name].try(:coder)` is for Rails 6.0 and before
+          #   `klass.attribute_types[col.name]&.instance_variable_get(:@coder)` is for Rails 6.1 and after
+          col_serializer = klass.attribute_types[col.name].try(:coder) ||
+                           klass.attribute_types[col.name]&.instance_variable_get(:@coder)
+          # e.g. ActiveRecord::Coders::JSON
+          #      if your model has `serialize ..., JSON`
+          # e.g. #<ActiveRecord::Coders::YAMLColumn:0x0000aaaafdc54970 @attr_name=..., @object_class=Array>
+          #      if your model has `serialize ..., Array`
+          # etc.
+          col_serialize_to = col_serializer.try(:object_class)&.name
+          if col_serializer.is_a?(Class) && col_serializer.name == 'ActiveRecord::Coders::JSON'
+            class_name = 'untyped' # JSON
+          elsif col_serialize_to == 'Array'
+            class_name = '::Array[untyped]' # Array
+          elsif col_serialize_to == 'Hash'
+            class_name = '::Hash[untyped, untyped]' # Hash
+          else
+            class_name = if enum_definitions.any? { |hash| hash.key?(col.name) || hash.key?(col.name.to_sym) }
+                           '::String'
+                         else
+                           sql_type_to_class(col.type)
+                         end
+          end
+          # If the DB says the column can be null, we need `<type>?`
+          # ...but if the type is already `untyped` there's no point in writing `untyped?`
+          class_name_opt = (class_name == 'untyped') ? 'untyped' : optional(class_name)
           column_type = col.null ? class_name_opt : class_name
           sig = <<~EOS
             def #{col.name}: () -> #{column_type}

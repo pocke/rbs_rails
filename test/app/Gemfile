@@ -2,10 +2,20 @@ source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 gem 'rails', '>= 6', '< 7'
-gem 'sqlite3'
+gem 'sqlite3', '~> 1.4'
 gem 'puma'
 gem 'bootsnap', require: false
 gem 'psych', '< 4' # for safe_load degration
 gem 'bcrypt'
+
+# https://bugs.ruby-lang.org/issues/20859
+gem 'base64'
+
+# They are bundled gems since Ruby 3.4
+gem 'bigdecimal'
+gem 'mutex_m'
+
+# They are bundled gems since Ruby 3.5
+gem 'benchmark'
 
 gem 'rbs_rails', path: '../../'

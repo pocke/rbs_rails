@@ -1,6 +1,10 @@
 module RbsRails
   class PathHelpers
     def self.generate(routes: Rails.application.routes)
+      # Since Rails 8.0, route drawing has been deferred to the first request.
+      # This forcedly loads routes before generating path_helpers.
+      Rails.application.routes.eager_load!
+
       new(routes: Rails.application.routes).generate
     end
 
