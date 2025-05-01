@@ -12,7 +12,7 @@ task :rbs_validate do
   repo = ENV['RBS_REPO_DIR']&.then do |env|
     "--repo=#{env}"
   end
-  sh "rbs #{repo} validate --silent"
+  sh "rbs #{repo} validate"
 end
 
 Rake::TestTask.new do |test|
