@@ -2,7 +2,7 @@ require 'test_helper'
 require 'active_record'
 
 class EnumTest < Minitest::Test
-  def test_array_enum
+  def test_rails4_array_enum
     model = Class.new(ActiveRecord::Base) do
       extend RbsRails::ActiveRecord::Enum
 
@@ -12,7 +12,7 @@ class EnumTest < Minitest::Test
     assert_equal [[:status, "temporary"], [:status, "accepted"]], model.enum_definitions
   end
 
-  def test_hash_enum
+  def test_rails4_hash_enum
     model = Class.new(ActiveRecord::Base) do
       extend RbsRails::ActiveRecord::Enum
 
@@ -25,7 +25,7 @@ class EnumTest < Minitest::Test
     assert_equal [[:status, "temporary"], [:status, "accepted"]], model.enum_definitions
   end
 
-  def test_enum_has_prefix
+  def test_rails4_enum_has_prefix
     model = Class.new(ActiveRecord::Base) do
       extend RbsRails::ActiveRecord::Enum
 
@@ -38,7 +38,7 @@ class EnumTest < Minitest::Test
     assert_equal [[:status, "status_temporary"], [:status, "status_accepted"]], model.enum_definitions
   end
 
-  def test_enum_named_prefix
+  def test_rails4_enum_named_prefix
     model = Class.new(ActiveRecord::Base) do
       extend RbsRails::ActiveRecord::Enum
 
@@ -51,7 +51,7 @@ class EnumTest < Minitest::Test
     assert_equal [[:status, "prefix_temporary"], [:status, "prefix_accepted"]], model.enum_definitions
   end
 
-  def test_enum_has_suffix
+  def test_rails4_enum_has_suffix
     model = Class.new(ActiveRecord::Base) do
       extend RbsRails::ActiveRecord::Enum
 
@@ -64,7 +64,7 @@ class EnumTest < Minitest::Test
     assert_equal [[:status, "temporary_status"], [:status, "accepted_status"]], model.enum_definitions
   end
 
-  def test_enum_named_suffix
+  def test_rails4_enum_named_suffix
     model = Class.new(ActiveRecord::Base) do
       extend RbsRails::ActiveRecord::Enum
 
@@ -72,6 +72,66 @@ class EnumTest < Minitest::Test
         temporary: 1,
         accepted: 2,
       }, _suffix: "suffix"
+    end
+
+    assert_equal [[:status, "temporary_suffix"], [:status, "accepted_suffix"]], model.enum_definitions
+  end
+
+  def test_rails7_array_enum
+    model = Class.new(ActiveRecord::Base) do
+      extend RbsRails::ActiveRecord::Enum
+
+      enum :status, [:temporary, :accepted], default: :temporary
+    end
+
+    assert_equal [[:status, "temporary"], [:status, "accepted"]], model.enum_definitions
+  end
+
+  def test_rails7_kwargs_enum
+    model = Class.new(ActiveRecord::Base) do
+      extend RbsRails::ActiveRecord::Enum
+
+      enum :status, temporary: 1, accepted: 2, default: :temporary
+    end
+
+    assert_equal [[:status, "temporary"], [:status, "accepted"]], model.enum_definitions
+  end
+
+  def test_rails7_enum_has_prefix
+    model = Class.new(ActiveRecord::Base) do
+      extend RbsRails::ActiveRecord::Enum
+
+      enum :status, [:temporary, :accepted], prefix: true
+    end
+
+    assert_equal [[:status, "status_temporary"], [:status, "status_accepted"]], model.enum_definitions
+  end
+
+  def test_rails7_enum_named_prefix
+    model = Class.new(ActiveRecord::Base) do
+      extend RbsRails::ActiveRecord::Enum
+
+      enum :status, [:temporary, :accepted], prefix: "prefix"
+    end
+
+    assert_equal [[:status, "prefix_temporary"], [:status, "prefix_accepted"]], model.enum_definitions
+  end
+
+  def test_rails7_enum_has_suffix
+    model = Class.new(ActiveRecord::Base) do
+      extend RbsRails::ActiveRecord::Enum
+
+      enum :status, [:temporary, :accepted], suffix: true
+    end
+
+    assert_equal [[:status, "temporary_status"], [:status, "accepted_status"]], model.enum_definitions
+  end
+
+  def test_rails7_enum_named_suffix
+    model = Class.new(ActiveRecord::Base) do
+      extend RbsRails::ActiveRecord::Enum
+
+      enum :status, [:temporary, :accepted], suffix: "suffix"
     end
 
     assert_equal [[:status, "temporary_suffix"], [:status, "accepted_suffix"]], model.enum_definitions
