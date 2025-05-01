@@ -110,6 +110,114 @@ class User < ::ApplicationRecord
 
     def clear_age_change: () -> void
 
+    def phone_numbers: () -> ::Array[untyped]?
+
+    def phone_numbers=: (::Array[untyped]?) -> ::Array[untyped]?
+
+    def phone_numbers?: () -> bool
+
+    def phone_numbers_changed?: () -> bool
+
+    def phone_numbers_change: () -> [ ::Array[untyped]?, ::Array[untyped]? ]
+
+    def phone_numbers_will_change!: () -> void
+
+    def phone_numbers_was: () -> ::Array[untyped]?
+
+    def phone_numbers_previously_changed?: () -> bool
+
+    def phone_numbers_previous_change: () -> ::Array[::Array[untyped]?]?
+
+    def phone_numbers_previously_was: () -> ::Array[untyped]?
+
+    def phone_numbers_before_last_save: () -> ::Array[untyped]?
+
+    def phone_numbers_change_to_be_saved: () -> ::Array[::Array[untyped]?]?
+
+    def phone_numbers_in_database: () -> ::Array[untyped]?
+
+    def saved_change_to_phone_numbers: () -> ::Array[::Array[untyped]?]?
+
+    def saved_change_to_phone_numbers?: () -> bool
+
+    def will_save_change_to_phone_numbers?: () -> bool
+
+    def restore_phone_numbers!: () -> void
+
+    def clear_phone_numbers_change: () -> void
+
+    def contact_info: () -> ::Hash[untyped, untyped]?
+
+    def contact_info=: (::Hash[untyped, untyped]?) -> ::Hash[untyped, untyped]?
+
+    def contact_info?: () -> bool
+
+    def contact_info_changed?: () -> bool
+
+    def contact_info_change: () -> [ ::Hash[untyped, untyped]?, ::Hash[untyped, untyped]? ]
+
+    def contact_info_will_change!: () -> void
+
+    def contact_info_was: () -> ::Hash[untyped, untyped]?
+
+    def contact_info_previously_changed?: () -> bool
+
+    def contact_info_previous_change: () -> ::Array[::Hash[untyped, untyped]?]?
+
+    def contact_info_previously_was: () -> ::Hash[untyped, untyped]?
+
+    def contact_info_before_last_save: () -> ::Hash[untyped, untyped]?
+
+    def contact_info_change_to_be_saved: () -> ::Array[::Hash[untyped, untyped]?]?
+
+    def contact_info_in_database: () -> ::Hash[untyped, untyped]?
+
+    def saved_change_to_contact_info: () -> ::Array[::Hash[untyped, untyped]?]?
+
+    def saved_change_to_contact_info?: () -> bool
+
+    def will_save_change_to_contact_info?: () -> bool
+
+    def restore_contact_info!: () -> void
+
+    def clear_contact_info_change: () -> void
+
+    def family_tree: () -> untyped
+
+    def family_tree=: (untyped) -> untyped
+
+    def family_tree?: () -> bool
+
+    def family_tree_changed?: () -> bool
+
+    def family_tree_change: () -> [ untyped, untyped ]
+
+    def family_tree_will_change!: () -> void
+
+    def family_tree_was: () -> untyped
+
+    def family_tree_previously_changed?: () -> bool
+
+    def family_tree_previous_change: () -> ::Array[untyped]?
+
+    def family_tree_previously_was: () -> untyped
+
+    def family_tree_before_last_save: () -> untyped
+
+    def family_tree_change_to_be_saved: () -> ::Array[untyped]?
+
+    def family_tree_in_database: () -> untyped
+
+    def saved_change_to_family_tree: () -> ::Array[untyped]?
+
+    def saved_change_to_family_tree?: () -> bool
+
+    def will_save_change_to_family_tree?: () -> bool
+
+    def restore_family_tree!: () -> void
+
+    def clear_family_tree_change: () -> void
+
     def created_at: () -> ::ActiveSupport::TimeWithZone
 
     def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone

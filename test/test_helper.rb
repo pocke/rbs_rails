@@ -14,3 +14,21 @@ def sh!(*commands, **kw)
   puts '$ ' + commands.join(' ')
   system(*commands, exception: true, **kw)
 end
+
+def app_dir
+  Pathname(__dir__).join('app')
+end
+
+def expectations_dir
+  Pathname(__dir__).join('expectations')
+end
+
+def setup!
+  dir = app_dir
+
+  Bundler.with_unbundled_env do
+    sh!('bundle', 'install', chdir: dir)
+    sh!('bin/rake', 'db:create', 'db:schema:load', chdir: dir)
+    sh!('bin/rake', 'rbs_rails:all', '--trace', chdir: dir)
+  end
+end
