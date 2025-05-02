@@ -4,6 +4,9 @@ class Init < ActiveRecord::Migration[6.0]
       t.string :name, null: false
       t.integer :age, null: false
       t.integer :status, null: false
+      t.string :phone_numbers
+      t.string :contact_info
+      t.string :family_tree
 
       t.timestamps null: false
     end
