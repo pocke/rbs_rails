@@ -40,6 +40,7 @@ module RbsRails
           #{delegated_type_scope(singleton: true)}
           #{enum_instance_methods}
           #{enum_scope_methods(singleton: true)}
+          #{pluck_overloads}
           #{scopes(singleton: true)}
 
           #{generated_relation_methods_decl}
@@ -76,6 +77,8 @@ module RbsRails
             include #{generated_relation_methods_name}
             include ::_ActiveRecord_Relation[#{klass_name}, #{pk_type}]
             include ::Enumerable[#{klass_name}]
+
+            #{pluck_overloads_instance}
           end
         RBS
       end
@@ -85,6 +88,8 @@ module RbsRails
           class ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
             include #{generated_relation_methods_name}
             include ::_ActiveRecord_Relation[#{klass_name}, #{pk_type}]
+
+            #{pluck_overloads_instance}
           end
         RBS
       end
@@ -455,6 +460,35 @@ module RbsRails
           end
         end
         "(#{res.join(", ")})#{block}"
+      end
+
+      private def pluck_overloads
+        sigs = klass.columns.map do |col|
+          class_name = if enum_definitions.any? { |hash| hash.key?(col.name) || hash.key?(col.name.to_sym) }
+                         '::String'
+                       else
+                         sql_type_to_class(col.type)
+                       end
+          class_name_opt = optional(class_name)
+          column_type = col.null ? class_name_opt : class_name
+          "(:#{col.name} | \"#{col.name}\") -> ::Array[#{column_type}]"
+        end
+        "def self.pluck: #{sigs.join(' | ')} | ..."
+      end
+
+      private def pluck_overloads_instance
+        sigs = klass.columns.map do |col|
+          class_name = if enum_definitions.any? { |hash| hash.key?(col.name) || hash.key?(col.name.to_sym) }
+                         '::String'
+                       else
+                         sql_type_to_class(col.type)
+                       end
+          class_name_opt = optional(class_name)
+          column_type = col.null ? class_name_opt : class_name
+          "(:#{col.name} | \"#{col.name}\") -> ::Array[#{column_type}]"
+        end
+
+        "def pluck: #{sigs.join(' | ')} | ..."
       end
 
       private def parse_model_file
