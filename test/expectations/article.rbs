@@ -1,0 +1,16 @@
+class Article < ::Object
+  include ::ActiveModel::Model
+  include ::ActiveModel::Attributes
+  extend ::ActiveModel::Attributes::ClassMethods
+  include ::ActiveModel::Validations
+  extend ::ActiveModel::Validations::ClassMethods
+
+  def blog_id: () -> Integer?
+  def blog_id=: (Integer? value) -> Integer?
+
+  def title: () -> String?
+  def title=: (String? value) -> String?
+
+  def body: () -> String?
+  def body=: (String? value) -> String?
+end
