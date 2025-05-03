@@ -3,9 +3,11 @@ require 'active_support/lazy_load_hooks'
 module RbsRails
   module ActiveRecord
     module Enum
-      IGNORED_ENUM_KEYS = %i[_prefix _suffix _default _scopes]
+      IGNORED_ENUM_KEYS = %i[_prefix _suffix _default _scopes] #: Array[Symbol]
 
-      def enum(*args, **options)
+      # @rbs @enum_definitions: Array[[Hash[Symbol, untyped], Hash[Symbol, untyped]]]
+
+      def enum(*args, **options) #: void
         super  # steep:ignore
 
         if args.empty?
@@ -15,7 +17,7 @@ module RbsRails
         end
       end
 
-      def enum_definitions
+      def enum_definitions #: Array[[Symbol, String]]
         @enum_definitions&.flat_map do |(definitions, options)|
           definitions.flat_map do |name, values|
             values.map do |label, value|
@@ -25,7 +27,10 @@ module RbsRails
         end.to_a
       end
 
-      private def enum_method_name(name, label, options)
+      # @rbs name: Symbol
+      # @rbs label: Symbol
+      # @rbs options: Hash[Symbol, untyped]
+      private def enum_method_name(name, label, options) #: String
         enum_prefix = options[:_prefix]
         enum_suffix = options[:_suffix]
 

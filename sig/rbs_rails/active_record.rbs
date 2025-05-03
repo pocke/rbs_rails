@@ -20,9 +20,9 @@ module RbsRails
 
       @parse_model_file: nil | Parser::AST::Node
 
-      # @rbs klass: singleton(ActiveRecord::Base)
+      # @rbs klass: singleton(ActiveRecord::Base) & Enum
       # @rbs dependencies: Array[String]
-      def initialize: (singleton(ActiveRecord::Base) klass, dependencies: Array[String]) -> untyped
+      def initialize: (singleton(ActiveRecord::Base) & Enum klass, dependencies: Array[String]) -> untyped
 
       def generate: () -> String
 
@@ -96,7 +96,7 @@ module RbsRails
 
       private
 
-      attr_reader klass: singleton(ActiveRecord::Base)
+      attr_reader klass: singleton(ActiveRecord::Base) & Enum
     end
   end
 end

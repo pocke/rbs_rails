@@ -22,7 +22,7 @@ module RbsRails
       # @rbs @enum_definitions: Array[Hash[Symbol, untyped]]
       # @rbs @klass_name: String
 
-      # @rbs klass: singleton(ActiveRecord::Base)
+      # @rbs klass: singleton(ActiveRecord::Base) & Enum
       # @rbs dependencies: Array[String]
       def initialize(klass, dependencies:) #: untyped
         @klass = klass
@@ -545,7 +545,7 @@ module RbsRails
       end
 
       private
-      attr_reader :klass #: singleton(ActiveRecord::Base)
+      attr_reader :klass #: singleton(ActiveRecord::Base) & Enum
     end
   end
 end
