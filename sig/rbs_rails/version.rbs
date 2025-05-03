@@ -1,1 +1,5 @@
-RbsRails::VERSION: ::String
+# Generated from lib/rbs_rails/version.rb with RBS::Inline
+
+module RbsRails
+  VERSION: String
+end

@@ -1,28 +1,29 @@
+# Generated from lib/rbs_rails/rake_task.rb with RBS::Inline
+
 module RbsRails
   class RakeTask < Rake::TaskLib
     interface _Filter
       def call: (Class) -> boolish
     end
+
     attr_accessor ignore_model_if: _Filter | nil
 
     attr_accessor name: Symbol
 
-    attr_accessor signature_root_dir: Pathname
+    attr_writer signature_root_dir: Pathname
 
+    # @rbs name: ::Symbol
+    # @rbs &block: (RbsRails::RakeTask) -> void
     def initialize: (?::Symbol name) { (RbsRails::RakeTask) -> void } -> void
 
     def def_all: () -> void
 
-    def def_copy_signature_files: () -> void
-
-    def def_prepare: () -> void
+    def def_prepare: () -> untyped
 
     def def_generate_rbs_for_models: () -> void
 
     def def_generate_rbs_for_path_helpers: () -> void
 
-    private
-
-    def setup_signature_root_dir!: () -> void
+    private def signature_root_dir: () -> Pathname
   end
 end

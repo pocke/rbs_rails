@@ -2,7 +2,7 @@ require 'rails'
 
 module RbsRails
   class InstallGenerator < Rails::Generators::Base
-    def create_raketask
+    def create_raketask #: void
       create_file "lib/tasks/rbs.rake", <<~RUBY
         begin
           require 'rbs_rails/rake_task'
