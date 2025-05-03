@@ -1,13 +1,14 @@
 module RbsRails
   class DependencyBuilder
-    attr_reader :deps, :done
+    attr_reader :deps #: Array[String]
+    attr_reader :done #: Set[String]
 
-    def initialize
+    def initialize #: void
       @deps = []
       @done = Set.new(['ActiveRecord::Base', 'ActiveRecord', 'Object'])
     end
 
-    def build
+    def build #: String | nil
       dep_rbs = +""
       deps.uniq!
       while dep = shift
@@ -40,7 +41,7 @@ module RbsRails
       end
     end
 
-    private def shift
+    private def shift #: String | nil
       deps.shift&.sub(/^::/, '')
     end
   end
