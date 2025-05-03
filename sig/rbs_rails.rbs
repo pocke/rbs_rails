@@ -1,6 +1,9 @@
-module RbsRails
-  def self.copy_signatures: (to: untyped to) -> untyped
-end
+# Generated from lib/rbs_rails.rb with RBS::Inline
 
-class RbsRails::Error < StandardError
+module RbsRails
+  class Error < StandardError
+  end
+
+  # @rbs to: untyped
+  def self.copy_signatures: (to: untyped) -> untyped
 end
