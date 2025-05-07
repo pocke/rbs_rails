@@ -20,9 +20,9 @@ module RbsRails
 
       @parse_model_file: nil | Parser::AST::Node
 
-      # @rbs klass: singleton(ActiveRecord::Base)
+      # @rbs klass: singleton(ActiveRecord::Base) & Enum
       # @rbs dependencies: Array[String]
-      def initialize: (singleton(ActiveRecord::Base) klass, dependencies: Array[String]) -> untyped
+      def initialize: (singleton(ActiveRecord::Base) & Enum klass, dependencies: Array[String]) -> untyped
 
       def generate: () -> String
 
@@ -64,18 +64,6 @@ module RbsRails
       # @rbs singleton: untyped
       private def enum_scope_methods: (singleton: untyped) -> String
 
-      private def enum_definitions: () -> Array[Hash[Symbol, untyped]]
-
-      # We need static analysis to detect enum.
-      # ActiveRecord has `defined_enums` method,
-      # but it does not contain _prefix and _suffix information.
-      private def build_enum_definitions: () -> Array[Hash[Symbol, untyped]]
-
-      # @rbs hash: Hash[Symbol, untyped]
-      # @rbs name: Symbol
-      # @rbs label: Symbol
-      private def enum_method_name: (Hash[Symbol, untyped] hash, Symbol name, Symbol label) -> String
-
       # @rbs singleton: untyped
       private def scopes: (singleton: untyped) -> untyped
 
@@ -106,7 +94,7 @@ module RbsRails
 
       private
 
-      attr_reader klass: singleton(ActiveRecord::Base)
+      attr_reader klass: singleton(ActiveRecord::Base) & Enum
     end
   end
 end

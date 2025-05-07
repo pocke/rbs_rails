@@ -18,6 +18,8 @@ module RbsRails
 
     def def_all: () -> void
 
+    def def_prepare: () -> untyped
+
     def def_generate_rbs_for_models: () -> void
 
     def def_generate_rbs_for_path_helpers: () -> void
