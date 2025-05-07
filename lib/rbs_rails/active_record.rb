@@ -95,8 +95,23 @@ module RbsRails
       private def collection_proxy_decl #: String
         <<~RBS
           class #{klass_name}::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+            include ::Enumerable[#{klass_name}]
             include #{generated_relation_methods_name}
             include ::_ActiveRecord_Relation[#{klass_name}, #{pk_type}]
+
+            def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> #{klass_name}
+                     | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[#{klass_name}]
+            def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> #{klass_name}
+                      | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[#{klass_name}]
+            def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> #{klass_name}
+                       | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[#{klass_name}]
+            def reload: () -> ::Array[#{klass_name}]
+
+            def replace: (::Array[#{klass_name}]) -> void
+            def delete: (*#{klass_name} | #{pk_type}) -> ::Array[#{klass_name}]
+            def destroy: (*#{klass_name} | #{pk_type}) -> ::Array[#{klass_name}]
+            def <<: (*#{klass_name} | ::Array[#{klass_name}]) -> self
+            def prepend: (*#{klass_name} | ::Array[#{klass_name}]) -> self
           end
         RBS
       end

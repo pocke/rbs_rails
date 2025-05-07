@@ -38,3 +38,9 @@ interface ::_RbsRailsPathHelpers
   def rails_storage_proxy_url: (*untyped) -> ::String
   def rails_storage_redirect_url: (*untyped) -> ::String
 end
+
+module ::ActionController
+  class ::ActionController::Base
+    include ::_RbsRailsPathHelpers
+  end
+end
