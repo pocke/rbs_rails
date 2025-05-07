@@ -1,0 +1,20 @@
+# Generated from lib/rbs_rails/active_record/enum.rb with RBS::Inline
+
+module RbsRails
+  module ActiveRecord
+    module Enum
+      IGNORED_ENUM_KEYS: Array[Symbol]
+
+      @enum_definitions: Array[[ Hash[Symbol, untyped], Hash[Symbol, untyped] ]]
+
+      def enum: (*untyped args, **untyped options) -> void
+
+      def enum_definitions: () -> Array[[ Symbol, String ]]
+
+      # @rbs name: Symbol
+      # @rbs label: Symbol
+      # @rbs options: Hash[Symbol, untyped]
+      private def enum_method_name: (Symbol name, Symbol label, Hash[Symbol, untyped] options) -> String
+    end
+  end
+end

@@ -1,87 +1,100 @@
-module RbsRails::ActiveRecord
-  def self.class_to_rbs: (untyped klass, ?dependencies: Array[String]) -> untyped
-  def self.generatable?: (untyped klass) -> boolish
-end
+# Generated from lib/rbs_rails/active_record.rb with RBS::Inline
 
-class RbsRails::ActiveRecord::Generator
-  @parse_model_file: nil | Parser::AST::Node
-  @dependencies: Array[String]
-  @enum_definitions: Array[Hash[Symbol, untyped]]
-  @klass_name: String
+module RbsRails
+  module ActiveRecord
+    # @rbs klass: untyped
+    def self.generatable?: (untyped klass) -> boolish
 
-  IGNORED_ENUM_KEYS: Array[Symbol]
+    # @rbs klass: untyped
+    # @rbs dependencies: Array[String]
+    def self.class_to_rbs: (untyped klass, ?dependencies: Array[String]) -> untyped
 
-  def initialize: (singleton(ActiveRecord::Base) klass, dependencies: Array[String]) -> untyped
+    class Generator
+      IGNORED_ENUM_KEYS: Array[Symbol]
 
-  def generate: () -> String
+      @klass_name: String
 
-  def klass_decl: () -> String
+      @enum_definitions: Array[Hash[Symbol, untyped]]
 
-  def pk_type: () -> String
+      @dependencies: Array[String]
 
-  def generated_relation_methods_decl: () -> String
+      @parse_model_file: nil | Parser::AST::Node
 
-  def relation_decl: () -> String
+      # @rbs klass: singleton(ActiveRecord::Base) & Enum
+      # @rbs dependencies: Array[String]
+      def initialize: (singleton(ActiveRecord::Base) & Enum klass, dependencies: Array[String]) -> untyped
 
-  def collection_proxy_decl: () -> String
+      def generate: () -> String
 
-  def header: () -> String
+      private def klass_decl: () -> String
 
-  def footer: () -> String
+      private def pk_type: () -> String
 
-  def associations: () -> String
+      private def generated_relation_methods_decl: () -> String
 
-  def has_many: () -> String
+      private def relation_decl: () -> String
 
-  def has_one: () -> String
+      private def collection_proxy_decl: () -> String
 
-  def belongs_to: () -> String
+      private def header: () -> String
 
-  def generated_association_methods: () -> String
+      private def footer: () -> String
 
-  def delegated_type_scope: (singleton: bool) -> String
+      private def associations: () -> String
 
-  def delegated_type_instance: () -> String
+      private def has_many: () -> String
 
-  def delegated_type_definitions: () -> Array[{ role: Symbol, types: Array[String] }]?
+      private def has_one: () -> String
 
-  def has_secure_password: () -> String?
+      private def belongs_to: () -> String
 
-  def enum_instance_methods: () -> String
+      private def generated_association_methods: () -> String
 
-  def enum_class_methods: (singleton: untyped `singleton`) -> String
+      # @rbs singleton: bool
+      private def delegated_type_scope: (singleton: bool) -> String
 
-  def enum_definitions: () -> Array[Hash[Symbol, untyped]]
+      private def delegated_type_instance: () -> String
 
-  # We need static analysis to detect enum.
-  # ActiveRecord has `defined_enums` method,
-  # but it does not contain _prefix and _suffix information.
-  def build_enum_definitions: () -> Array[Hash[Symbol, untyped]]
+      private def delegated_type_definitions: () -> Array[{ role: Symbol, types: Array[String] }]?
 
-  def enum_method_name: (Hash[Symbol, untyped] hash, Symbol name, Symbol label) -> String
+      private def has_secure_password: () -> String?
 
-  def scopes: (singleton: untyped `singleton`) -> untyped
+      private def enum_instance_methods: () -> String
 
-  def args_to_type: (untyped args_node) -> untyped
+      # @rbs singleton: untyped
+      private def enum_class_methods: (singleton: untyped) -> String
 
-  def parse_model_file: () -> untyped
+      # @rbs singleton: untyped
+      private def scopes: (singleton: untyped) -> untyped
 
-  def traverse: (Parser::AST::Node node) { (Parser::AST::Node) -> untyped } -> untyped
-              | (Parser::AST::Node node) -> Enumerator[Parser::AST::Node, untyped]
+      # @rbs args_node: untyped
+      private def args_to_type: (untyped args_node) -> untyped
 
-  def relation_class_name: (?abs: boolish) -> String
+      private def parse_model_file: () -> untyped
 
-  def klass_name: (?abs: boolish) -> String
+      # : (Parser::AST::Node) { (Parser::AST::Node) -> untyped } -> untyped
+      # : (Parser::AST::Node) -> Enumerator[Parser::AST::Node, untyped]
+      private def traverse: (Parser::AST::Node) { (Parser::AST::Node) -> untyped } -> untyped
+                          | (Parser::AST::Node) -> Enumerator[Parser::AST::Node, untyped]
 
-  def generated_relation_methods_name: (?abs: boolish) -> String
+      private def relation_class_name: () -> String
 
-  def columns: () -> untyped
+      # @rbs abs: boolish
+      private def klass_name: (?abs: boolish) -> String
 
-  def sql_type_to_class: (untyped t) -> untyped
+      private def generated_relation_methods_name: () -> String
 
-  def optional: (String) -> String
+      private def columns: () -> untyped
 
-  private
+      # @rbs class_name: String
+      private def optional: (String class_name) -> String
 
-  attr_reader klass: singleton(ActiveRecord::Base)
+      # @rbs t: untyped
+      private def sql_type_to_class: (untyped t) -> untyped
+
+      private
+
+      attr_reader klass: singleton(ActiveRecord::Base) & Enum
+    end
+  end
 end

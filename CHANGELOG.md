@@ -2,6 +2,14 @@
 
 ## master (unreleased)
 
+## 0.12.1
+
+* Drop support for old Rubies. [#284](https://github.com/pocke/rbs_rails/pull/284)
+* Make type names absolute to avoid referring to incorrect class. [#265](https://github.com/pocke/rbs_rails/pull/265)
+* Avoid to create directory on initialization. [#261](https://github.com/pocke/rbs_rails/pull/261)
+* Make `build_*` methods parameters optional. [#258](https://github.com/pocke/rbs_rails/pull/258)
+* Skip to define rake tasks when rbs_rails is not able to load. [#251](https://github.com/pocke/rbs_rails/pull/251)
+
 ## 0.12.0
 
 * Support RBS v3. [#246](https://github.com/pocke/rbs_rails/pull/246)
