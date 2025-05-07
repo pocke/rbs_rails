@@ -361,5 +361,19 @@ class User < ::ApplicationRecord
     include ::Enumerable[::User]
     include ::User::GeneratedRelationMethods
     include ::_ActiveRecord_Relation[::User, ::Integer]
+
+    def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::User
+             | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::User]
+    def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::User
+              | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::User]
+    def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::User
+               | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::User]
+    def reload: () -> ::Array[::User]
+
+    def replace: (::Array[::User]) -> void
+    def delete: (*::User | ::Integer) -> ::Array[::User]
+    def destroy: (*::User | ::Integer) -> ::Array[::User]
+    def <<: (*::User | ::Array[::User]) -> self
+    def prepend: (*::User | ::Array[::User]) -> self
   end
 end
