@@ -89,14 +89,12 @@ module RbsRails
       private def traverse: (Parser::AST::Node) { (Parser::AST::Node) -> untyped } -> untyped
                           | (Parser::AST::Node) -> Enumerator[Parser::AST::Node, untyped]
 
-      # @rbs abs: boolish
-      private def relation_class_name: (?abs: boolish) -> String
+      private def relation_class_name: () -> String
 
       # @rbs abs: boolish
       private def klass_name: (?abs: boolish) -> String
 
-      # @rbs abs: boolish
-      private def generated_relation_methods_name: (?abs: boolish) -> String
+      private def generated_relation_methods_name: () -> String
 
       private def columns: () -> untyped
 

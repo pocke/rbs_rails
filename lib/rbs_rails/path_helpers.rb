@@ -15,11 +15,13 @@ module RbsRails
     def generate
       methods = helpers.map do |helper|
         # TODO: More restrict argument types
-        "def #{helper}: (*untyped) -> String"
+        "def #{helper}: (*untyped) -> ::String"
       end
 
       <<~RBS
-        interface _RbsRailsPathHelpers
+        # resolve-type-names: false
+
+        interface ::_RbsRailsPathHelpers
         #{methods.join("\n").indent(2)}
         end
 
