@@ -5,7 +5,13 @@ module RbsRails
     module Enum
       IGNORED_ENUM_KEYS: Array[Symbol]
 
-      @enum_definitions: Array[[ Hash[Symbol, untyped], Hash[Symbol, untyped] ]]
+      type definitions = Hash[Symbol, Array[Symbol] | Hash[Symbol, untyped]]
+
+      type options = Hash[Symbol, untyped]
+
+      type enum_definitions = Array[[ definitions, options ]]
+
+      @enum_definitions: enum_definitions
 
       def enum: (*untyped args, **untyped options) -> void
 
