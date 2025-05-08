@@ -5,14 +5,19 @@ module RbsRails
     module Enum
       IGNORED_ENUM_KEYS = %i[_prefix _suffix _default _scopes] #: Array[Symbol]
 
-      # @rbs @enum_definitions: Array[[Hash[Symbol, untyped], Hash[Symbol, untyped]]]
+      # @rbs!
+      #   type definitions = Hash[Symbol, Array[Symbol] | Hash[Symbol, untyped]]
+      #   type options = Hash[Symbol, untyped]
+      #   type enum_definitions = Array[[definitions, options]]
+      #
+      #   @enum_definitions: enum_definitions
 
       def enum(*args, **options) #: void
         super  # steep:ignore
 
         if args.empty?
           definitions = options.slice!(*IGNORED_ENUM_KEYS)
-          @enum_definitions ||= []
+          @enum_definitions ||= [] #: enum_definitions
           @enum_definitions&.append([definitions, options])
         end
       end
@@ -20,8 +25,14 @@ module RbsRails
       def enum_definitions #: Array[[Symbol, String]]
         @enum_definitions&.flat_map do |(definitions, options)|
           definitions.flat_map do |name, values|
-            values.map do |label, value|
-              [name, enum_method_name(name, label, options)]
+            labels = case values
+                     when Array
+                       values
+                     when Hash
+                       values.keys
+                     end
+            labels.map do |label|
+              [name, enum_method_name(name, label, options)] #: [Symbol, String]
             end
           end
         end.to_a

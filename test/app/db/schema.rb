@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_14_110904) do
+ActiveRecord::Schema.define(version: 2025_05_02_115736) do
 
   create_table "blogs", force: :cascade do |t|
     t.string "title", null: false
@@ -29,6 +29,7 @@ ActiveRecord::Schema.define(version: 2021_04_14_110904) do
   create_table "users", force: :cascade do |t|
     t.string "name", null: false
     t.integer "age", null: false
+    t.integer "status", null: false
     t.string "phone_numbers"
     t.string "contact_info"
     t.string "family_tree"
