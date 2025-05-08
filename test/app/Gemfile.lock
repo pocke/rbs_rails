@@ -121,7 +121,6 @@ GEM
     parser (3.3.5.1)
       ast (~> 2.4.1)
       racc
-    psych (3.3.4)
     puma (6.4.3)
       nio4r (~> 2.0)
     racc (1.8.1)
@@ -182,7 +181,6 @@ DEPENDENCIES
   bootsnap
   concurrent-ruby (= 1.3.4)
   mutex_m
-  psych (< 4)
   puma
   rails (~> 7.0.0)
   rbs_rails!
