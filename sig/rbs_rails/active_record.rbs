@@ -62,7 +62,7 @@ module RbsRails
       private def enum_instance_methods: () -> String
 
       # @rbs singleton: untyped
-      private def enum_scope_methods: (singleton: untyped) -> String
+      private def enum_class_methods: (singleton: untyped) -> String
 
       # @rbs singleton: untyped
       private def scopes: (singleton: untyped) -> untyped
