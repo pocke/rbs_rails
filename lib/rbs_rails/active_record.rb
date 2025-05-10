@@ -42,7 +42,7 @@ module RbsRails
           # resolve-type-names: false
 
           #{header}
-            extend ::_ActiveRecord_Relation_ClassMethods[#{klass_name}, #{relation_class_name}, #{pk_type}]
+            extend ::ActiveRecord::Base::ClassMethods[#{klass_name}, #{relation_class_name}, #{pk_type}]
 
           #{columns}
           #{associations}
@@ -86,7 +86,7 @@ module RbsRails
         <<~RBS
           class #{relation_class_name} < ::ActiveRecord::Relation
             include #{generated_relation_methods_name}
-            include ::_ActiveRecord_Relation[#{klass_name}, #{pk_type}]
+            include ::ActiveRecord::Relation::Methods[#{klass_name}, #{pk_type}]
             include ::Enumerable[#{klass_name}]
           end
         RBS
@@ -97,7 +97,7 @@ module RbsRails
           class #{klass_name}::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
             include ::Enumerable[#{klass_name}]
             include #{generated_relation_methods_name}
-            include ::_ActiveRecord_Relation[#{klass_name}, #{pk_type}]
+            include ::ActiveRecord::Relation::Methods[#{klass_name}, #{pk_type}]
 
             def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> #{klass_name}
                      | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[#{klass_name}]

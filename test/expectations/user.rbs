@@ -1,7 +1,7 @@
 # resolve-type-names: false
 
 class ::User < ::ApplicationRecord
-  extend ::_ActiveRecord_Relation_ClassMethods[::User, ::User::ActiveRecord_Relation, ::Integer]
+  extend ::ActiveRecord::Base::ClassMethods[::User, ::User::ActiveRecord_Relation, ::Integer]
 
   module ::User::GeneratedAttributeMethods
     def id: () -> ::Integer
@@ -400,14 +400,14 @@ class ::User < ::ApplicationRecord
 
   class ::User::ActiveRecord_Relation < ::ActiveRecord::Relation
     include ::User::GeneratedRelationMethods
-    include ::_ActiveRecord_Relation[::User, ::Integer]
+    include ::ActiveRecord::Relation::Methods[::User, ::Integer]
     include ::Enumerable[::User]
   end
 
   class ::User::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
     include ::Enumerable[::User]
     include ::User::GeneratedRelationMethods
-    include ::_ActiveRecord_Relation[::User, ::Integer]
+    include ::ActiveRecord::Relation::Methods[::User, ::Integer]
 
     def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::User
              | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::User]
