@@ -1,0 +1,14 @@
+# Generated from lib/rbs_rails/active_record/scope.rb with RBS::Inline
+
+module RbsRails
+  module ActiveRecord
+    module Scope
+      attr_accessor scope_definitions: Hash[Symbol, untyped]?
+
+      # @rbs name: Symbol
+      # @rbs body: untyped
+      # @rbs &block: (?) -> untyped
+      def scope: (Symbol name, untyped body) { (?) -> untyped } -> void
+    end
+  end
+end
