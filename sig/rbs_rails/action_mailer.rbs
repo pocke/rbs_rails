@@ -1,3 +1,5 @@
+# Generated from lib/rbs_rails/action_mailer.rb with RBS::Inline
+
 module RbsRails
   module ActionMailer
     def self.class_to_rbs: (untyped klass) -> String
@@ -5,19 +7,21 @@ module RbsRails
     class Generator
       @klass_name: String
 
+      # @rbs klass: singleton(ActionMailer::Base)
       def initialize: (singleton(ActionMailer::Base) klass) -> void
 
       def generate: () -> String
 
-      def klass_decl: () -> String
+      private def klass_decl: () -> String
 
-      def header: () -> String
+      private def header: () -> String
 
-      def methods: () -> String
+      private def methods: () -> String
 
-      def footer: () -> String
+      private def footer: () -> String
 
-      def klass_name: (?abs: boolish) -> String
+      # @rbs abs: boolish
+      private def klass_name: (?abs: boolish) -> String
 
       private
 
