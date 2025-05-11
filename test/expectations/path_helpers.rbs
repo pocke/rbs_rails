@@ -4,6 +4,7 @@ interface ::_RbsRailsPathHelpers
   def rails_info_properties_path: (*untyped) -> ::String
   def rails_info_routes_path: (*untyped) -> ::String
   def rails_info_path: (*untyped) -> ::String
+  def rails_mailers_path: (*untyped) -> ::String
   def users_path: (*untyped) -> ::String
   def new_user_path: (*untyped) -> ::String
   def edit_user_path: (*untyped) -> ::String
@@ -22,6 +23,7 @@ interface ::_RbsRailsPathHelpers
   def rails_info_properties_url: (*untyped) -> ::String
   def rails_info_routes_url: (*untyped) -> ::String
   def rails_info_url: (*untyped) -> ::String
+  def rails_mailers_url: (*untyped) -> ::String
   def users_url: (*untyped) -> ::String
   def new_user_url: (*untyped) -> ::String
   def edit_user_url: (*untyped) -> ::String
