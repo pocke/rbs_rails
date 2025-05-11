@@ -6,6 +6,10 @@ class User < ApplicationRecord
   has_and_belongs_to_many :blogs
   has_secure_password
 
+  serialize :phone_numbers, Array
+  serialize :contact_info, Hash
+  serialize :family_tree, JSON
+
   has_one_attached :avatar
 
   enum status: {

@@ -8,5 +8,6 @@ gemspec
 gem "rake", "~> 13.0"
 gem 'rails', '>= 7.0'
 gem 'rbs', '>= 3'
+gem 'rbs-inline'
 gem 'steep', '>= 1.4'
 gem 'minitest'

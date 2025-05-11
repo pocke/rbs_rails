@@ -1,7 +1,9 @@
-class User < ::ApplicationRecord
+# resolve-type-names: false
+
+class ::User < ::ApplicationRecord
   extend ::_ActiveRecord_Relation_ClassMethods[::User, ::User::ActiveRecord_Relation, ::Integer]
 
-  module GeneratedAttributeMethods
+  module ::User::GeneratedAttributeMethods
     def id: () -> ::Integer
 
     def id=: (::Integer) -> ::Integer
@@ -110,6 +112,150 @@ class User < ::ApplicationRecord
 
     def clear_age_change: () -> void
 
+    def status: () -> ::String
+
+    def status=: (::String) -> ::String
+
+    def status?: () -> bool
+
+    def status_changed?: () -> bool
+
+    def status_change: () -> [ ::String?, ::String? ]
+
+    def status_will_change!: () -> void
+
+    def status_was: () -> ::String?
+
+    def status_previously_changed?: () -> bool
+
+    def status_previous_change: () -> ::Array[::String?]?
+
+    def status_previously_was: () -> ::String?
+
+    def status_before_last_save: () -> ::String?
+
+    def status_change_to_be_saved: () -> ::Array[::String?]?
+
+    def status_in_database: () -> ::String?
+
+    def saved_change_to_status: () -> ::Array[::String?]?
+
+    def saved_change_to_status?: () -> bool
+
+    def will_save_change_to_status?: () -> bool
+
+    def restore_status!: () -> void
+
+    def clear_status_change: () -> void
+
+    def phone_numbers: () -> ::Array[untyped]?
+
+    def phone_numbers=: (::Array[untyped]?) -> ::Array[untyped]?
+
+    def phone_numbers?: () -> bool
+
+    def phone_numbers_changed?: () -> bool
+
+    def phone_numbers_change: () -> [ ::Array[untyped]?, ::Array[untyped]? ]
+
+    def phone_numbers_will_change!: () -> void
+
+    def phone_numbers_was: () -> ::Array[untyped]?
+
+    def phone_numbers_previously_changed?: () -> bool
+
+    def phone_numbers_previous_change: () -> ::Array[::Array[untyped]?]?
+
+    def phone_numbers_previously_was: () -> ::Array[untyped]?
+
+    def phone_numbers_before_last_save: () -> ::Array[untyped]?
+
+    def phone_numbers_change_to_be_saved: () -> ::Array[::Array[untyped]?]?
+
+    def phone_numbers_in_database: () -> ::Array[untyped]?
+
+    def saved_change_to_phone_numbers: () -> ::Array[::Array[untyped]?]?
+
+    def saved_change_to_phone_numbers?: () -> bool
+
+    def will_save_change_to_phone_numbers?: () -> bool
+
+    def restore_phone_numbers!: () -> void
+
+    def clear_phone_numbers_change: () -> void
+
+    def contact_info: () -> ::Hash[untyped, untyped]?
+
+    def contact_info=: (::Hash[untyped, untyped]?) -> ::Hash[untyped, untyped]?
+
+    def contact_info?: () -> bool
+
+    def contact_info_changed?: () -> bool
+
+    def contact_info_change: () -> [ ::Hash[untyped, untyped]?, ::Hash[untyped, untyped]? ]
+
+    def contact_info_will_change!: () -> void
+
+    def contact_info_was: () -> ::Hash[untyped, untyped]?
+
+    def contact_info_previously_changed?: () -> bool
+
+    def contact_info_previous_change: () -> ::Array[::Hash[untyped, untyped]?]?
+
+    def contact_info_previously_was: () -> ::Hash[untyped, untyped]?
+
+    def contact_info_before_last_save: () -> ::Hash[untyped, untyped]?
+
+    def contact_info_change_to_be_saved: () -> ::Array[::Hash[untyped, untyped]?]?
+
+    def contact_info_in_database: () -> ::Hash[untyped, untyped]?
+
+    def saved_change_to_contact_info: () -> ::Array[::Hash[untyped, untyped]?]?
+
+    def saved_change_to_contact_info?: () -> bool
+
+    def will_save_change_to_contact_info?: () -> bool
+
+    def restore_contact_info!: () -> void
+
+    def clear_contact_info_change: () -> void
+
+    def family_tree: () -> untyped
+
+    def family_tree=: (untyped) -> untyped
+
+    def family_tree?: () -> bool
+
+    def family_tree_changed?: () -> bool
+
+    def family_tree_change: () -> [ untyped, untyped ]
+
+    def family_tree_will_change!: () -> void
+
+    def family_tree_was: () -> untyped
+
+    def family_tree_previously_changed?: () -> bool
+
+    def family_tree_previous_change: () -> ::Array[untyped]?
+
+    def family_tree_previously_was: () -> untyped
+
+    def family_tree_before_last_save: () -> untyped
+
+    def family_tree_change_to_be_saved: () -> ::Array[untyped]?
+
+    def family_tree_in_database: () -> untyped
+
+    def saved_change_to_family_tree: () -> ::Array[untyped]?
+
+    def saved_change_to_family_tree?: () -> bool
+
+    def will_save_change_to_family_tree?: () -> bool
+
+    def restore_family_tree!: () -> void
+
+    def clear_family_tree_change: () -> void
+
     def created_at: () -> ::ActiveSupport::TimeWithZone
 
     def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
@@ -182,7 +328,7 @@ class User < ::ApplicationRecord
 
     def clear_updated_at_change: () -> void
   end
-  include GeneratedAttributeMethods
+  include ::User::GeneratedAttributeMethods
 
   module GeneratedAliasAttributeMethods
     include GeneratedAttributeMethods
@@ -238,7 +384,7 @@ class User < ::ApplicationRecord
   def create_avatar_blob!: (untyped) -> ::ActiveStorage::Blob
   def reload_avatar_blob: () -> ::ActiveStorage::Blob?
 
-  module GeneratedAssociationMethods
+  module ::User::GeneratedAssociationMethods
     def avatar: () -> ::ActiveStorage::Attached::One
 
     def avatar=: (::ActionDispatch::Http::UploadedFile) -> ::ActionDispatch::Http::UploadedFile
@@ -248,34 +394,43 @@ class User < ::ApplicationRecord
                | ({ io: ::IO, filename: ::String, content_type: ::String? }) -> { io: ::IO, filename: ::String, content_type: ::String? }
                | (nil) -> nil
   end
-  include GeneratedAssociationMethods
-  module ActiveModel_SecurePassword_InstanceMethodsOnActivation_password
-    attr_reader password: String?
+  include ::User::GeneratedAssociationMethods
+  module ::User::ActiveModel_SecurePassword_InstanceMethodsOnActivation_password
+    attr_reader password: ::String?
 
-    def password=: (String) -> String
+    def password=: (::String) -> ::String
 
-    def password_confirmation=: (String) -> String
+    def password_confirmation=: (::String) -> ::String
 
-    def authenticate_password: (String) -> (::User | false)
+    def authenticate_password: (::String) -> (::User | false)
 
     alias authenticate authenticate_password
   end
-  include ActiveModel_SecurePassword_InstanceMethodsOnActivation_password
+  include ::User::ActiveModel_SecurePassword_InstanceMethodsOnActivation_password
 
   def temporary!: () -> bool
   def temporary?: () -> bool
   def accepted!: () -> bool
   def accepted?: () -> bool
+  def self.statuses: () -> ::ActiveSupport::HashWithIndifferentAccess[::String, ::Integer]
   def self.temporary: () -> ::User::ActiveRecord_Relation
+  def self.not_temporary: () -> ::User::ActiveRecord_Relation
   def self.accepted: () -> ::User::ActiveRecord_Relation
+  def self.not_accepted: () -> ::User::ActiveRecord_Relation
   def self.all_kind_args: (untyped type, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped untyped) { (*untyped) -> untyped } -> ::User::ActiveRecord_Relation
   def self.no_arg: () -> ::User::ActiveRecord_Relation
   def self.with_attached_avatar: () -> ::User::ActiveRecord_Relation
 
-  module GeneratedRelationMethods
+  module ::User::GeneratedRelationMethods
+    def statuses: () -> ::ActiveSupport::HashWithIndifferentAccess[::String, ::Integer]
+
     def temporary: () -> ::User::ActiveRecord_Relation
 
+    def not_temporary: () -> ::User::ActiveRecord_Relation
+
     def accepted: () -> ::User::ActiveRecord_Relation
+
+    def not_accepted: () -> ::User::ActiveRecord_Relation
 
     def all_kind_args: (untyped type, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped untyped) { (*untyped) -> untyped } -> ::User::ActiveRecord_Relation
 
@@ -284,14 +439,29 @@ class User < ::ApplicationRecord
     def with_attached_avatar: () -> ::User::ActiveRecord_Relation
   end
 
-  class ActiveRecord_Relation < ::ActiveRecord::Relation
+  class ::User::ActiveRecord_Relation < ::ActiveRecord::Relation
     include ::User::GeneratedRelationMethods
     include ::_ActiveRecord_Relation[::User, ::Integer]
     include ::Enumerable[::User]
   end
 
-  class ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+  class ::User::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Enumerable[::User]
     include ::User::GeneratedRelationMethods
     include ::_ActiveRecord_Relation[::User, ::Integer]
+
+    def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::User
+             | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::User]
+    def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::User
+              | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::User]
+    def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::User
+               | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::User]
+    def reload: () -> ::Array[::User]
+
+    def replace: (::Array[::User]) -> void
+    def delete: (*::User | ::Integer) -> ::Array[::User]
+    def destroy: (*::User | ::Integer) -> ::Array[::User]
+    def <<: (*::User | ::Array[::User]) -> self
+    def prepend: (*::User | ::Array[::User]) -> self
   end
 end
