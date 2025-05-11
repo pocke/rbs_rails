@@ -26,12 +26,19 @@ Run the following command. It generates `lib/tasks/rbs.rake`.
 $ bin/rails g rbs_rails:install
 ```
 
-Then, the following three tasks are available.
+Then, the following four tasks are available.
 
+* `rbs_rails:prepare`: Install inspector modules for Active Record models.  This task is required to run before loading Rails application.
 * `rbs_rails:generate_rbs_for_models`: Generate RBS files for Active Record models
 * `rbs_rails:generate_rbs_for_path_helpers`: Generate RBS files for path helpers
 * `rbs_rails:all`: Execute all tasks of RBS Rails
 
+
+If you invoke multiple tasks, please run `rbs_rails:prepare` first.
+
+```console
+$ bin/rails rbs_rails:prepare some_task another_task rbs_rails:generate_rbs_for_models
+```
 
 ### Install RBS for `rails` gem
 
@@ -64,6 +71,9 @@ That's all! Now you can check your Rails app statically with `steep check` comma
 After checking out the repo, run `bin/setup` to install dependencies.
 
 You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+
+This gem uses [RBS::Inline](https://github.com/soutaro/rbs-inline) to generate RBS files.  Please mark up your code with RBS comments.
+And then, run `bundle exec rake rbs_update` to reflect the type definitions to the RBS files.
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 

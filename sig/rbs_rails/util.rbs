@@ -1,11 +1,16 @@
+# Generated from lib/rbs_rails/util.rb with RBS::Inline
+
 module RbsRails
   module Util
     MODULE_NAME: UnboundMethod
 
     extend Util
 
-    def module_name: (Module, ?abs: boolish) -> String
+    # @rbs mod: Module
+    # @rbs abs: boolish
+    def module_name: (Module mod, ?abs: boolish) -> String
 
-    def format_rbs: (String) -> String
+    # @rbs rbs: String
+    def format_rbs: (String rbs) -> String
   end
 end

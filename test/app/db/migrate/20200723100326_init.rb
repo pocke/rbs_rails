@@ -3,7 +3,10 @@ class Init < ActiveRecord::Migration[6.0]
     create_table :users do |t|
       t.string :name, null: false
       t.integer :age, null: false
-      t.string :status, null: false
+      t.integer :status, null: false
+      t.string :phone_numbers
+      t.string :contact_info
+      t.string :family_tree
 
       t.timestamps null: false
     end

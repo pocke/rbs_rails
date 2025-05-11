@@ -15,4 +15,7 @@ gem 'base64'
 gem 'bigdecimal'
 gem 'mutex_m'
 
+# They are bundled gems since Ruby 3.5
+gem 'benchmark'
+
 gem 'rbs_rails', path: '../../'

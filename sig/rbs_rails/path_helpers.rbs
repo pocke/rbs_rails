@@ -1,11 +1,18 @@
-class RbsRails::PathHelpers
-  def self.generate: (?routes: untyped routes) -> untyped
+# Generated from lib/rbs_rails/path_helpers.rb with RBS::Inline
 
-  def initialize: (routes: untyped routes) -> untyped
+module RbsRails
+  class PathHelpers
+    def self.generate: (?routes: untyped) -> untyped
 
-  def generate: () -> untyped
+    def initialize: (routes: untyped) -> untyped
 
-  def helpers: () -> untyped
+    def generate: () -> untyped
 
-  attr_reader routes: untyped
+    private def helpers: () -> untyped
+
+    private
+
+    # @dynamic routes
+    attr_reader routes: untyped
+  end
 end

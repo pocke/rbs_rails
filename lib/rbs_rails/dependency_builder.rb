@@ -1,13 +1,14 @@
 module RbsRails
   class DependencyBuilder
-    attr_reader :deps, :done
+    attr_reader :deps #: Array[String]
+    attr_reader :done #: Set[String]
 
-    def initialize
+    def initialize #: void
       @deps = []
       @done = Set.new(['ActiveRecord::Base', 'ActiveRecord', 'Object'])
     end
 
-    def build
+    def build #: String | nil
       dep_rbs = +""
       deps.uniq!
       while dep = shift
@@ -16,11 +17,11 @@ module RbsRails
         case dep_object = Object.const_get(dep)
         when Class
           superclass = dep_object.superclass or raise
-          super_name = Util.module_name(superclass)
+          super_name = Util.module_name(superclass, abs: false)
           deps << super_name
-          dep_rbs << "class #{dep} < #{super_name} end\n"
+          dep_rbs << "class ::#{dep} < ::#{super_name} end\n"
         when Module
-          dep_rbs << "module #{dep} end\n"
+          dep_rbs << "module ::#{dep} end\n"
         else
           raise
         end
@@ -40,7 +41,7 @@ module RbsRails
       end
     end
 
-    private def shift
+    private def shift #: String | nil
       deps.shift&.sub(/^::/, '')
     end
   end
