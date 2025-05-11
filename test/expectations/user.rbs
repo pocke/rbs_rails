@@ -329,9 +329,8 @@ class ::User < ::ApplicationRecord
     def clear_updated_at_change: () -> void
   end
   include ::User::GeneratedAttributeMethods
-
-  module GeneratedAliasAttributeMethods
-    include GeneratedAttributeMethods
+  module ::User::GeneratedAliasAttributeMethods
+    include ::User::GeneratedAttributeMethods
 
     alias alias_name name
 
@@ -369,7 +368,7 @@ class ::User < ::ApplicationRecord
 
     alias clear_alias_name_change clear_name_change
   end
-  include GeneratedAliasAttributeMethods
+  include ::User::GeneratedAliasAttributeMethods
 
   def avatar_attachment: () -> ::ActiveStorage::Attachment?
   def avatar_attachment=: (::ActiveStorage::Attachment?) -> ::ActiveStorage::Attachment?

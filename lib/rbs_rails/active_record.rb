@@ -532,8 +532,8 @@ module RbsRails
       end
 
       private def alias_columns
-        mod_sig = +"module GeneratedAliasAttributeMethods\n"
-        mod_sig << "include GeneratedAttributeMethods\n"
+        mod_sig = +"module #{klass_name}::GeneratedAliasAttributeMethods\n"
+        mod_sig << "include #{klass_name}::GeneratedAttributeMethods\n"
         mod_sig << klass.attribute_aliases.map do |col|
           sig = <<~EOS
             alias #{col[0]} #{col[1]}
@@ -559,7 +559,7 @@ module RbsRails
           sig
         end.join("\n")
         mod_sig << "\nend\n"
-        mod_sig << "include GeneratedAliasAttributeMethods"
+        mod_sig << "include #{klass_name}::GeneratedAliasAttributeMethods"
         mod_sig
       end
 
