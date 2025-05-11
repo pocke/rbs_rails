@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class ActiveRecordTest < Minitest::Test
+class PathHelperTest < Minitest::Test
   def test_type_check
     clean_test_signatures
 
@@ -15,8 +15,8 @@ class ActiveRecordTest < Minitest::Test
 
     setup!
 
-    rbs_path = app_dir.join('sig/rbs_rails/app/models/user.rbs')
-    expect_path = expectations_dir / 'user.rbs'
+    rbs_path = app_dir.join('sig/rbs_rails/path_helpers.rbs')
+    expect_path = expectations_dir / 'path_helpers.rbs'
     # Code to re-generate the expectation files
     # expect_path.write rbs_path.read
 
