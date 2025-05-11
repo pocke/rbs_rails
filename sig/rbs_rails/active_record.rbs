@@ -86,6 +86,8 @@ module RbsRails
 
       private def columns: () -> untyped
 
+      private def alias_columns: () -> untyped
+
       # @rbs class_name: String
       private def optional: (String class_name) -> String
 
