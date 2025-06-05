@@ -3,7 +3,8 @@ require 'active_support/lazy_load_hooks'
 module RbsRails
   module ActiveRecord
     module Enum
-      IGNORED_ENUM_KEYS = %i[_prefix _suffix _default _scopes] #: Array[Symbol]
+      RAILS4_IGNORED_ENUM_KEYS = %i[_prefix _suffix _default _scopes]
+      RAILS7_IGNORED_ENUM_KEYS = %i[prefix suffix default scopes]
 
       # @rbs!
       #   type definitions = Hash[Symbol, Array[Symbol] | Hash[Symbol, untyped]]
@@ -16,10 +17,25 @@ module RbsRails
         super  # steep:ignore
 
         if args.empty?
-          definitions = options.slice!(*IGNORED_ENUM_KEYS)
-          @enum_definitions ||= [] #: enum_definitions
-          @enum_definitions&.append([definitions, options])
+          # Rails 4.1 style
+          definitions = options.slice!(*RAILS4_IGNORED_ENUM_KEYS)
+        else
+          # Rails 7 style
+          name, values = args #: [Symbol, Array[Symbol]?]
+          if values
+            # Enum definitions are passed via array argument
+            #   ex. enum :status, [:temporary, :accepted]
+            definitions = { name => values }
+          else
+            # Enum definitions are passed via keyword arguments
+            #   ex. enum :status, temporary: 1, accepted: 2
+            values = options.slice!(*RAILS7_IGNORED_ENUM_KEYS)
+            definitions = { name => values }
+          end
         end
+
+        @enum_definitions ||= [] #: enum_definitions
+        @enum_definitions&.append([definitions, options])
       end
 
       def enum_definitions #: Array[[Symbol, String]]
@@ -42,8 +58,8 @@ module RbsRails
       # @rbs label: Symbol
       # @rbs options: Hash[Symbol, untyped]
       private def enum_method_name(name, label, options) #: String
-        enum_prefix = options[:_prefix]
-        enum_suffix = options[:_suffix]
+        enum_prefix = options[:_prefix] || options[:prefix]
+        enum_suffix = options[:_suffix] || options[:suffix]
 
         if enum_prefix == true
           prefix = "#{name}_"
