@@ -10,4 +10,7 @@ gem 'bcrypt'
 # https://bugs.ruby-lang.org/issues/20859
 gem 'base64'
 
+# https://bugs.ruby-lang.org/issues/21258
+gem 'cgi'
+
 gem 'rbs_rails', path: '../../'
