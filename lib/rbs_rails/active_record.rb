@@ -45,13 +45,14 @@ module RbsRails
             extend ::_ActiveRecord_Relation_ClassMethods[#{klass_name}, #{relation_class_name}, #{pk_type}]
 
           #{columns}
+          #{alias_columns}
           #{associations}
           #{generated_association_methods}
           #{has_secure_password}
           #{delegated_type_instance}
           #{delegated_type_scope(singleton: true)}
           #{enum_instance_methods}
-          #{enum_scope_methods(singleton: true)}
+          #{enum_class_methods(singleton: true)}
           #{scopes(singleton: true)}
 
           #{generated_relation_methods_decl}
@@ -75,7 +76,7 @@ module RbsRails
       private def generated_relation_methods_decl #: String
         <<~RBS
           module #{generated_relation_methods_name}
-            #{enum_scope_methods(singleton: false)}
+            #{enum_class_methods(singleton: false)}
             #{scopes(singleton: false)}
             #{delegated_type_scope(singleton: false)}
           end
@@ -355,11 +356,16 @@ module RbsRails
       end
 
       # @rbs singleton: untyped
-      private def enum_scope_methods(singleton:) #: String
+      private def enum_class_methods(singleton:) #: String
         # @type var methods: Array[String]
         methods = []
+        klass.enum_definitions.map(&:first).uniq.each do |name|
+          class_name = sql_type_to_class(klass.columns_hash[name.to_s].type)
+          methods << "def #{singleton ? 'self.' : ''}#{name.to_s.pluralize}: () -> ::ActiveSupport::HashWithIndifferentAccess[::String, #{class_name}]"
+        end
         klass.enum_definitions.each do |_, method_name|
           methods << "def #{singleton ? 'self.' : ''}#{method_name}: () -> #{relation_class_name}"
+          methods << "def #{singleton ? 'self.' : ''}not_#{method_name}: () -> #{relation_class_name}"
         end
         methods.join("\n")
       end
@@ -522,6 +528,38 @@ module RbsRails
         end.join("\n")
         mod_sig << "\nend\n"
         mod_sig << "include #{klass_name}::GeneratedAttributeMethods"
+        mod_sig
+      end
+
+      private def alias_columns
+        mod_sig = +"module #{klass_name}::GeneratedAliasAttributeMethods\n"
+        mod_sig << "include #{klass_name}::GeneratedAttributeMethods\n"
+        mod_sig << klass.attribute_aliases.map do |col|
+          sig = <<~EOS
+            alias #{col[0]} #{col[1]}
+            alias #{col[0]}= #{col[1]}=
+            alias #{col[0]}? #{col[1]}?
+            alias #{col[0]}_changed? #{col[1]}_changed?
+            alias #{col[0]}_change #{col[1]}_change
+            alias #{col[0]}_will_change! #{col[1]}_will_change!
+            alias #{col[0]}_was #{col[1]}_was
+            alias #{col[0]}_previously_changed? #{col[1]}_previously_changed?
+            alias #{col[0]}_previous_change #{col[1]}_previous_change
+            alias #{col[0]}_previously_was #{col[1]}_previously_was
+            alias #{col[0]}_before_last_save #{col[1]}_before_last_save
+            alias #{col[0]}_change_to_be_saved #{col[1]}_change_to_be_saved
+            alias #{col[0]}_in_database #{col[1]}_in_database
+            alias saved_change_to_#{col[0]} saved_change_to_#{col[1]}
+            alias saved_change_to_#{col[0]}? saved_change_to_#{col[1]}?
+            alias will_save_change_to_#{col[0]}? will_save_change_to_#{col[1]}?
+            alias restore_#{col[0]}! restore_#{col[1]}!
+            alias clear_#{col[0]}_change clear_#{col[1]}_change
+          EOS
+          sig << "\n"
+          sig
+        end.join("\n")
+        mod_sig << "\nend\n"
+        mod_sig << "include #{klass_name}::GeneratedAliasAttributeMethods"
         mod_sig
       end
 
