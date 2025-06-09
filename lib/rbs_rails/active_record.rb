@@ -437,14 +437,14 @@ module RbsRails
       private def parse_model_file #: untyped
         return @parse_model_file if defined?(@parse_model_file)
 
-        path = Rails.root.join('app/models/', klass_name(abs: false).underscore + '.rb')
-        return @parse_model_file = nil unless path.exist?
-        return [] unless path.exist?
+        path, _line = Object.const_source_location(klass.name) rescue nil
+        return @parse_model_file = nil if path.nil?
 
-        ast = Parser::CurrentRuby.parse path.read
-        return @parse_model_file = nil unless path.exist?
-
-        @parse_model_file = ast
+        begin
+          @parse_model_file = Parser::CurrentRuby.parse File.read(path)
+        rescue => e
+          @parse_model_file = nil
+        end
       end
 
       #: (Parser::AST::Node) { (Parser::AST::Node) -> untyped } -> untyped
