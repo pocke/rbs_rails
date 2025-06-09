@@ -72,7 +72,11 @@ module RbsRails
           suffix = "_#{enum_suffix}"
         end
 
-        "#{prefix}#{label}#{suffix}"
+        enum_method_name = "#{prefix}#{label}#{suffix}"
+
+        # Make enum_method_name friendly
+        # refs: https://github.com/rails/rails/blob/v8.0.0/activerecord/lib/active_record/enum.rb#L270
+        enum_method_name.gsub(/[\W&&[:ascii:]]+/, "_")
       end
     end
   end
