@@ -20,4 +20,6 @@ gem 'mutex_m'
 # They are bundled gems since Ruby 3.5
 gem 'benchmark'
 
+gem 'packs-rails'
+
 gem 'rbs_rails', path: '../../'
