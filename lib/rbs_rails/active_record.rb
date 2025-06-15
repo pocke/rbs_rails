@@ -438,7 +438,7 @@ module RbsRails
         return @parse_model_file if defined?(@parse_model_file)
 
         path, _line = Object.const_source_location(klass.name) rescue nil
-        return @parse_model_file = nil if path.nil?
+        return @parse_model_file = nil unless path
 
         begin
           @parse_model_file = Parser::CurrentRuby.parse File.read(path)
