@@ -28,7 +28,7 @@ class ActiveRecordTest < Minitest::Test
 
     setup!
 
-    rbs_path = app_dir.join('sig/rbs_rails/app/models/blog.rbs')
+    rbs_path = app_dir.join('sig/rbs_rails/packs/blogs/app/models/blog.rbs')
     expect_path = expectations_dir / 'blog.rbs'
     # Code to re-generate the expectation files
     # expect_path.write rbs_path.read

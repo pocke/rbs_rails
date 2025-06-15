@@ -58,7 +58,17 @@ module RbsRails
           next if ignore_model_if&.call(klass)
           next unless RbsRails::ActiveRecord.generatable?(klass)
 
-          path = signature_root_dir / "app/models/#{klass.name.underscore}.rbs"
+          original_path, _line = Object.const_source_location(klass.name) rescue nil
+
+          rbs_relative_path = if original_path
+                                Pathname.new(original_path)
+                                        .relative_path_from(Rails.root)
+                                        .sub_ext('.rbs')
+                              else
+                                "app/models/#{klass.name.underscore}.rbs"
+                              end
+
+          path = signature_root_dir / rbs_relative_path
           path.dirname.mkpath
 
           sig = RbsRails::ActiveRecord.class_to_rbs(klass, dependencies: dep_builder.deps)
