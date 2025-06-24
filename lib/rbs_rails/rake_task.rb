@@ -60,7 +60,7 @@ module RbsRails
 
           original_path, _line = Object.const_source_location(klass.name) rescue nil
 
-          rbs_relative_path = if original_path
+          rbs_relative_path = if original_path && Pathname.new(original_path).fnmatch?("#{Rails.root}/**")
                                 Pathname.new(original_path)
                                         .relative_path_from(Rails.root)
                                         .sub_ext('.rbs')
