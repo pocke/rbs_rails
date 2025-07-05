@@ -226,6 +226,11 @@ class ::Blog < ::ApplicationRecord
   end
   include ::Blog::GeneratedAliasAttributeMethods
 
+  def users: () -> ::User::ActiveRecord_Associations_CollectionProxy
+  def users=: (::User::ActiveRecord_Associations_CollectionProxy | ::Array[::User]) -> (::User::ActiveRecord_Associations_CollectionProxy | ::Array[::User])
+  def user_ids: () -> ::Array[::Integer]
+  def user_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+
   module ::Blog::GeneratedAssociationMethods
   end
   include ::Blog::GeneratedAssociationMethods
