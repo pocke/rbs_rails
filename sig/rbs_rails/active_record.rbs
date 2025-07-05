@@ -20,9 +20,9 @@ module RbsRails
 
       @parse_model_file: nil | Parser::AST::Node
 
-      # @rbs klass: singleton(ActiveRecord::Base) & Enum
+      # @rbs klass: singleton(ActiveRecord::Base) & Enum & Scope
       # @rbs dependencies: Array[String]
-      def initialize: (singleton(ActiveRecord::Base) & Enum klass, dependencies: Array[String]) -> untyped
+      def initialize: (singleton(ActiveRecord::Base) & Enum & Scope klass, dependencies: Array[String]) -> untyped
 
       def generate: () -> String
 
@@ -69,8 +69,8 @@ module RbsRails
       # @rbs singleton: untyped
       private def scopes: (singleton: untyped) -> untyped
 
-      # @rbs args_node: untyped
-      private def args_to_type: (untyped args_node) -> untyped
+      # @rbs callable: untyped
+      private def scope_method_to_type: (untyped callable) -> String
 
       private def parse_model_file: () -> untyped
 
@@ -98,7 +98,7 @@ module RbsRails
 
       private
 
-      attr_reader klass: singleton(ActiveRecord::Base) & Enum
+      attr_reader klass: singleton(ActiveRecord::Base) & Enum & Scope
     end
   end
 end
