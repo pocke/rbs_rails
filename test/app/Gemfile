@@ -22,4 +22,7 @@ gem 'benchmark'
 
 gem 'packs-rails'
 
+# Gem that creates external library models for testing
+gem 'audited'
+
 gem 'rbs_rails', path: '../../'

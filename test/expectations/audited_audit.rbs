@@ -1,0 +1,623 @@
+# resolve-type-names: false
+
+module ::Audited
+  class ::Audited::Audit < ::ActiveRecord::Base
+    extend ::_ActiveRecord_Relation_ClassMethods[::Audited::Audit, ::Audited::Audit::ActiveRecord_Relation, ::Integer]
+
+    module ::Audited::Audit::GeneratedAttributeMethods
+      def id: () -> ::Integer
+
+      def id=: (::Integer) -> ::Integer
+
+      def id?: () -> bool
+
+      def id_changed?: () -> bool
+
+      def id_change: () -> [ ::Integer?, ::Integer? ]
+
+      def id_will_change!: () -> void
+
+      def id_was: () -> ::Integer?
+
+      def id_previously_changed?: () -> bool
+
+      def id_previous_change: () -> ::Array[::Integer?]?
+
+      def id_previously_was: () -> ::Integer?
+
+      def id_before_last_save: () -> ::Integer?
+
+      def id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+      def id_in_database: () -> ::Integer?
+
+      def saved_change_to_id: () -> ::Array[::Integer?]?
+
+      def saved_change_to_id?: () -> bool
+
+      def will_save_change_to_id?: () -> bool
+
+      def restore_id!: () -> void
+
+      def clear_id_change: () -> void
+
+      def auditable_id: () -> ::Integer?
+
+      def auditable_id=: (::Integer?) -> ::Integer?
+
+      def auditable_id?: () -> bool
+
+      def auditable_id_changed?: () -> bool
+
+      def auditable_id_change: () -> [ ::Integer?, ::Integer? ]
+
+      def auditable_id_will_change!: () -> void
+
+      def auditable_id_was: () -> ::Integer?
+
+      def auditable_id_previously_changed?: () -> bool
+
+      def auditable_id_previous_change: () -> ::Array[::Integer?]?
+
+      def auditable_id_previously_was: () -> ::Integer?
+
+      def auditable_id_before_last_save: () -> ::Integer?
+
+      def auditable_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+      def auditable_id_in_database: () -> ::Integer?
+
+      def saved_change_to_auditable_id: () -> ::Array[::Integer?]?
+
+      def saved_change_to_auditable_id?: () -> bool
+
+      def will_save_change_to_auditable_id?: () -> bool
+
+      def restore_auditable_id!: () -> void
+
+      def clear_auditable_id_change: () -> void
+
+      def auditable_type: () -> ::String?
+
+      def auditable_type=: (::String?) -> ::String?
+
+      def auditable_type?: () -> bool
+
+      def auditable_type_changed?: () -> bool
+
+      def auditable_type_change: () -> [ ::String?, ::String? ]
+
+      def auditable_type_will_change!: () -> void
+
+      def auditable_type_was: () -> ::String?
+
+      def auditable_type_previously_changed?: () -> bool
+
+      def auditable_type_previous_change: () -> ::Array[::String?]?
+
+      def auditable_type_previously_was: () -> ::String?
+
+      def auditable_type_before_last_save: () -> ::String?
+
+      def auditable_type_change_to_be_saved: () -> ::Array[::String?]?
+
+      def auditable_type_in_database: () -> ::String?
+
+      def saved_change_to_auditable_type: () -> ::Array[::String?]?
+
+      def saved_change_to_auditable_type?: () -> bool
+
+      def will_save_change_to_auditable_type?: () -> bool
+
+      def restore_auditable_type!: () -> void
+
+      def clear_auditable_type_change: () -> void
+
+      def associated_id: () -> ::Integer?
+
+      def associated_id=: (::Integer?) -> ::Integer?
+
+      def associated_id?: () -> bool
+
+      def associated_id_changed?: () -> bool
+
+      def associated_id_change: () -> [ ::Integer?, ::Integer? ]
+
+      def associated_id_will_change!: () -> void
+
+      def associated_id_was: () -> ::Integer?
+
+      def associated_id_previously_changed?: () -> bool
+
+      def associated_id_previous_change: () -> ::Array[::Integer?]?
+
+      def associated_id_previously_was: () -> ::Integer?
+
+      def associated_id_before_last_save: () -> ::Integer?
+
+      def associated_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+      def associated_id_in_database: () -> ::Integer?
+
+      def saved_change_to_associated_id: () -> ::Array[::Integer?]?
+
+      def saved_change_to_associated_id?: () -> bool
+
+      def will_save_change_to_associated_id?: () -> bool
+
+      def restore_associated_id!: () -> void
+
+      def clear_associated_id_change: () -> void
+
+      def associated_type: () -> ::String?
+
+      def associated_type=: (::String?) -> ::String?
+
+      def associated_type?: () -> bool
+
+      def associated_type_changed?: () -> bool
+
+      def associated_type_change: () -> [ ::String?, ::String? ]
+
+      def associated_type_will_change!: () -> void
+
+      def associated_type_was: () -> ::String?
+
+      def associated_type_previously_changed?: () -> bool
+
+      def associated_type_previous_change: () -> ::Array[::String?]?
+
+      def associated_type_previously_was: () -> ::String?
+
+      def associated_type_before_last_save: () -> ::String?
+
+      def associated_type_change_to_be_saved: () -> ::Array[::String?]?
+
+      def associated_type_in_database: () -> ::String?
+
+      def saved_change_to_associated_type: () -> ::Array[::String?]?
+
+      def saved_change_to_associated_type?: () -> bool
+
+      def will_save_change_to_associated_type?: () -> bool
+
+      def restore_associated_type!: () -> void
+
+      def clear_associated_type_change: () -> void
+
+      def user_id: () -> ::Integer?
+
+      def user_id=: (::Integer?) -> ::Integer?
+
+      def user_id?: () -> bool
+
+      def user_id_changed?: () -> bool
+
+      def user_id_change: () -> [ ::Integer?, ::Integer? ]
+
+      def user_id_will_change!: () -> void
+
+      def user_id_was: () -> ::Integer?
+
+      def user_id_previously_changed?: () -> bool
+
+      def user_id_previous_change: () -> ::Array[::Integer?]?
+
+      def user_id_previously_was: () -> ::Integer?
+
+      def user_id_before_last_save: () -> ::Integer?
+
+      def user_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+      def user_id_in_database: () -> ::Integer?
+
+      def saved_change_to_user_id: () -> ::Array[::Integer?]?
+
+      def saved_change_to_user_id?: () -> bool
+
+      def will_save_change_to_user_id?: () -> bool
+
+      def restore_user_id!: () -> void
+
+      def clear_user_id_change: () -> void
+
+      def user_type: () -> ::String?
+
+      def user_type=: (::String?) -> ::String?
+
+      def user_type?: () -> bool
+
+      def user_type_changed?: () -> bool
+
+      def user_type_change: () -> [ ::String?, ::String? ]
+
+      def user_type_will_change!: () -> void
+
+      def user_type_was: () -> ::String?
+
+      def user_type_previously_changed?: () -> bool
+
+      def user_type_previous_change: () -> ::Array[::String?]?
+
+      def user_type_previously_was: () -> ::String?
+
+      def user_type_before_last_save: () -> ::String?
+
+      def user_type_change_to_be_saved: () -> ::Array[::String?]?
+
+      def user_type_in_database: () -> ::String?
+
+      def saved_change_to_user_type: () -> ::Array[::String?]?
+
+      def saved_change_to_user_type?: () -> bool
+
+      def will_save_change_to_user_type?: () -> bool
+
+      def restore_user_type!: () -> void
+
+      def clear_user_type_change: () -> void
+
+      def username: () -> ::String?
+
+      def username=: (::String?) -> ::String?
+
+      def username?: () -> bool
+
+      def username_changed?: () -> bool
+
+      def username_change: () -> [ ::String?, ::String? ]
+
+      def username_will_change!: () -> void
+
+      def username_was: () -> ::String?
+
+      def username_previously_changed?: () -> bool
+
+      def username_previous_change: () -> ::Array[::String?]?
+
+      def username_previously_was: () -> ::String?
+
+      def username_before_last_save: () -> ::String?
+
+      def username_change_to_be_saved: () -> ::Array[::String?]?
+
+      def username_in_database: () -> ::String?
+
+      def saved_change_to_username: () -> ::Array[::String?]?
+
+      def saved_change_to_username?: () -> bool
+
+      def will_save_change_to_username?: () -> bool
+
+      def restore_username!: () -> void
+
+      def clear_username_change: () -> void
+
+      def action: () -> ::String?
+
+      def action=: (::String?) -> ::String?
+
+      def action?: () -> bool
+
+      def action_changed?: () -> bool
+
+      def action_change: () -> [ ::String?, ::String? ]
+
+      def action_will_change!: () -> void
+
+      def action_was: () -> ::String?
+
+      def action_previously_changed?: () -> bool
+
+      def action_previous_change: () -> ::Array[::String?]?
+
+      def action_previously_was: () -> ::String?
+
+      def action_before_last_save: () -> ::String?
+
+      def action_change_to_be_saved: () -> ::Array[::String?]?
+
+      def action_in_database: () -> ::String?
+
+      def saved_change_to_action: () -> ::Array[::String?]?
+
+      def saved_change_to_action?: () -> bool
+
+      def will_save_change_to_action?: () -> bool
+
+      def restore_action!: () -> void
+
+      def clear_action_change: () -> void
+
+      def audited_changes: () -> ::String?
+
+      def audited_changes=: (::String?) -> ::String?
+
+      def audited_changes?: () -> bool
+
+      def audited_changes_changed?: () -> bool
+
+      def audited_changes_change: () -> [ ::String?, ::String? ]
+
+      def audited_changes_will_change!: () -> void
+
+      def audited_changes_was: () -> ::String?
+
+      def audited_changes_previously_changed?: () -> bool
+
+      def audited_changes_previous_change: () -> ::Array[::String?]?
+
+      def audited_changes_previously_was: () -> ::String?
+
+      def audited_changes_before_last_save: () -> ::String?
+
+      def audited_changes_change_to_be_saved: () -> ::Array[::String?]?
+
+      def audited_changes_in_database: () -> ::String?
+
+      def saved_change_to_audited_changes: () -> ::Array[::String?]?
+
+      def saved_change_to_audited_changes?: () -> bool
+
+      def will_save_change_to_audited_changes?: () -> bool
+
+      def restore_audited_changes!: () -> void
+
+      def clear_audited_changes_change: () -> void
+
+      def version: () -> ::Integer?
+
+      def version=: (::Integer?) -> ::Integer?
+
+      def version?: () -> bool
+
+      def version_changed?: () -> bool
+
+      def version_change: () -> [ ::Integer?, ::Integer? ]
+
+      def version_will_change!: () -> void
+
+      def version_was: () -> ::Integer?
+
+      def version_previously_changed?: () -> bool
+
+      def version_previous_change: () -> ::Array[::Integer?]?
+
+      def version_previously_was: () -> ::Integer?
+
+      def version_before_last_save: () -> ::Integer?
+
+      def version_change_to_be_saved: () -> ::Array[::Integer?]?
+
+      def version_in_database: () -> ::Integer?
+
+      def saved_change_to_version: () -> ::Array[::Integer?]?
+
+      def saved_change_to_version?: () -> bool
+
+      def will_save_change_to_version?: () -> bool
+
+      def restore_version!: () -> void
+
+      def clear_version_change: () -> void
+
+      def comment: () -> ::String?
+
+      def comment=: (::String?) -> ::String?
+
+      def comment?: () -> bool
+
+      def comment_changed?: () -> bool
+
+      def comment_change: () -> [ ::String?, ::String? ]
+
+      def comment_will_change!: () -> void
+
+      def comment_was: () -> ::String?
+
+      def comment_previously_changed?: () -> bool
+
+      def comment_previous_change: () -> ::Array[::String?]?
+
+      def comment_previously_was: () -> ::String?
+
+      def comment_before_last_save: () -> ::String?
+
+      def comment_change_to_be_saved: () -> ::Array[::String?]?
+
+      def comment_in_database: () -> ::String?
+
+      def saved_change_to_comment: () -> ::Array[::String?]?
+
+      def saved_change_to_comment?: () -> bool
+
+      def will_save_change_to_comment?: () -> bool
+
+      def restore_comment!: () -> void
+
+      def clear_comment_change: () -> void
+
+      def remote_address: () -> ::String?
+
+      def remote_address=: (::String?) -> ::String?
+
+      def remote_address?: () -> bool
+
+      def remote_address_changed?: () -> bool
+
+      def remote_address_change: () -> [ ::String?, ::String? ]
+
+      def remote_address_will_change!: () -> void
+
+      def remote_address_was: () -> ::String?
+
+      def remote_address_previously_changed?: () -> bool
+
+      def remote_address_previous_change: () -> ::Array[::String?]?
+
+      def remote_address_previously_was: () -> ::String?
+
+      def remote_address_before_last_save: () -> ::String?
+
+      def remote_address_change_to_be_saved: () -> ::Array[::String?]?
+
+      def remote_address_in_database: () -> ::String?
+
+      def saved_change_to_remote_address: () -> ::Array[::String?]?
+
+      def saved_change_to_remote_address?: () -> bool
+
+      def will_save_change_to_remote_address?: () -> bool
+
+      def restore_remote_address!: () -> void
+
+      def clear_remote_address_change: () -> void
+
+      def request_uuid: () -> ::String?
+
+      def request_uuid=: (::String?) -> ::String?
+
+      def request_uuid?: () -> bool
+
+      def request_uuid_changed?: () -> bool
+
+      def request_uuid_change: () -> [ ::String?, ::String? ]
+
+      def request_uuid_will_change!: () -> void
+
+      def request_uuid_was: () -> ::String?
+
+      def request_uuid_previously_changed?: () -> bool
+
+      def request_uuid_previous_change: () -> ::Array[::String?]?
+
+      def request_uuid_previously_was: () -> ::String?
+
+      def request_uuid_before_last_save: () -> ::String?
+
+      def request_uuid_change_to_be_saved: () -> ::Array[::String?]?
+
+      def request_uuid_in_database: () -> ::String?
+
+      def saved_change_to_request_uuid: () -> ::Array[::String?]?
+
+      def saved_change_to_request_uuid?: () -> bool
+
+      def will_save_change_to_request_uuid?: () -> bool
+
+      def restore_request_uuid!: () -> void
+
+      def clear_request_uuid_change: () -> void
+
+      def created_at: () -> ::ActiveSupport::TimeWithZone?
+
+      def created_at=: (::ActiveSupport::TimeWithZone?) -> ::ActiveSupport::TimeWithZone?
+
+      def created_at?: () -> bool
+
+      def created_at_changed?: () -> bool
+
+      def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+      def created_at_will_change!: () -> void
+
+      def created_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+      def created_at_previously_changed?: () -> bool
+
+      def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def created_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+      def created_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+      def created_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def created_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+      def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def saved_change_to_created_at?: () -> bool
+
+      def will_save_change_to_created_at?: () -> bool
+
+      def restore_created_at!: () -> void
+
+      def clear_created_at_change: () -> void
+    end
+    include ::Audited::Audit::GeneratedAttributeMethods
+    module ::Audited::Audit::GeneratedAliasAttributeMethods
+      include ::Audited::Audit::GeneratedAttributeMethods
+    end
+    include ::Audited::Audit::GeneratedAliasAttributeMethods
+
+    def auditable: () -> untyped
+    def auditable=: (untyped?) -> untyped?
+    def reload_auditable: () -> untyped?
+    def user: () -> untyped
+    def user=: (untyped?) -> untyped?
+    def reload_user: () -> untyped?
+    def associated: () -> untyped
+    def associated=: (untyped?) -> untyped?
+    def reload_associated: () -> untyped?
+    module ::Audited::Audit::GeneratedAssociationMethods
+    end
+    include ::Audited::Audit::GeneratedAssociationMethods
+
+    def self.ascending: () -> ::Audited::Audit::ActiveRecord_Relation
+    def self.descending: () -> ::Audited::Audit::ActiveRecord_Relation
+    def self.creates: () -> ::Audited::Audit::ActiveRecord_Relation
+    def self.updates: () -> ::Audited::Audit::ActiveRecord_Relation
+    def self.destroys: () -> ::Audited::Audit::ActiveRecord_Relation
+    def self.up_until: (untyped date_or_time) -> ::Audited::Audit::ActiveRecord_Relation
+    def self.from_version: (untyped version) -> ::Audited::Audit::ActiveRecord_Relation
+    def self.to_version: (untyped version) -> ::Audited::Audit::ActiveRecord_Relation
+    def self.auditable_finder: (untyped auditable_id, untyped auditable_type) -> ::Audited::Audit::ActiveRecord_Relation
+
+    module ::Audited::Audit::GeneratedRelationMethods
+      def ascending: () -> ::Audited::Audit::ActiveRecord_Relation
+
+      def descending: () -> ::Audited::Audit::ActiveRecord_Relation
+
+      def creates: () -> ::Audited::Audit::ActiveRecord_Relation
+
+      def updates: () -> ::Audited::Audit::ActiveRecord_Relation
+
+      def destroys: () -> ::Audited::Audit::ActiveRecord_Relation
+
+      def up_until: (untyped date_or_time) -> ::Audited::Audit::ActiveRecord_Relation
+
+      def from_version: (untyped version) -> ::Audited::Audit::ActiveRecord_Relation
+
+      def to_version: (untyped version) -> ::Audited::Audit::ActiveRecord_Relation
+
+      def auditable_finder: (untyped auditable_id, untyped auditable_type) -> ::Audited::Audit::ActiveRecord_Relation
+    end
+
+    class ::Audited::Audit::ActiveRecord_Relation < ::ActiveRecord::Relation
+      include ::Audited::Audit::GeneratedRelationMethods
+      include ::_ActiveRecord_Relation[::Audited::Audit, ::Integer]
+      include ::Enumerable[::Audited::Audit]
+    end
+
+    class ::Audited::Audit::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+      include ::Enumerable[::Audited::Audit]
+      include ::Audited::Audit::GeneratedRelationMethods
+      include ::_ActiveRecord_Relation[::Audited::Audit, ::Integer]
+
+      def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Audited::Audit
+               | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Audited::Audit]
+      def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Audited::Audit
+                | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Audited::Audit]
+      def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Audited::Audit
+                 | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Audited::Audit]
+      def reload: () -> ::Array[::Audited::Audit]
+
+      def replace: (::Array[::Audited::Audit]) -> void
+      def delete: (*::Audited::Audit | ::Integer) -> ::Array[::Audited::Audit]
+      def destroy: (*::Audited::Audit | ::Integer) -> ::Array[::Audited::Audit]
+      def <<: (*::Audited::Audit | ::Array[::Audited::Audit]) -> self
+      def prepend: (*::Audited::Audit | ::Array[::Audited::Audit]) -> self
+    end
+  end
+end
