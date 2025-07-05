@@ -518,10 +518,12 @@ module RbsRails
                            sql_type_to_class(col.type)
                          end
           end
+          sql_class_name = col.type == :datetime ? '::Time' : sql_type_to_class(col.type)
           # If the DB says the column can be null, we need `<type>?`
           # ...but if the type is already `untyped` there's no point in writing `untyped?`
           class_name_opt = (class_name == 'untyped') ? 'untyped' : optional(class_name)
           column_type = col.null ? class_name_opt : class_name
+          sql_column_type = col.null ? optional(sql_class_name) : sql_class_name
           sig = <<~EOS
             def #{col.name}: () -> #{column_type}
             def #{col.name}=: (#{column_type}) -> #{column_type}
@@ -541,6 +543,8 @@ module RbsRails
             def will_save_change_to_#{col.name}?: () -> bool
             def restore_#{col.name}!: () -> void
             def clear_#{col.name}_change: () -> void
+            def #{col.name}_before_type_cast: () -> #{sql_column_type}
+            def #{col.name}_for_database: () -> #{sql_column_type}
           EOS
           sig << "\n"
           sig
@@ -573,6 +577,8 @@ module RbsRails
             alias will_save_change_to_#{col[0]}? will_save_change_to_#{col[1]}?
             alias restore_#{col[0]}! restore_#{col[1]}!
             alias clear_#{col[0]}_change clear_#{col[1]}_change
+            alias #{col[0]}_before_type_cast #{col[1]}_before_type_cast
+            alias #{col[0]}_for_database #{col[1]}_for_database
           EOS
           sig << "\n"
           sig

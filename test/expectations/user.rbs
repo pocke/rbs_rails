@@ -40,6 +40,10 @@ class ::User < ::ApplicationRecord
 
     def clear_id_change: () -> void
 
+    def id_before_type_cast: () -> ::Integer
+
+    def id_for_database: () -> ::Integer
+
     def name: () -> ::String
 
     def name=: (::String) -> ::String
@@ -75,6 +79,10 @@ class ::User < ::ApplicationRecord
     def restore_name!: () -> void
 
     def clear_name_change: () -> void
+
+    def name_before_type_cast: () -> ::String
+
+    def name_for_database: () -> ::String
 
     def age: () -> ::Integer
 
@@ -112,6 +120,10 @@ class ::User < ::ApplicationRecord
 
     def clear_age_change: () -> void
 
+    def age_before_type_cast: () -> ::Integer
+
+    def age_for_database: () -> ::Integer
+
     def status: () -> ::String
 
     def status=: (::String) -> ::String
@@ -147,6 +159,10 @@ class ::User < ::ApplicationRecord
     def restore_status!: () -> void
 
     def clear_status_change: () -> void
+
+    def status_before_type_cast: () -> ::Integer
+
+    def status_for_database: () -> ::Integer
 
     def phone_numbers: () -> ::Array[untyped]?
 
@@ -184,6 +200,10 @@ class ::User < ::ApplicationRecord
 
     def clear_phone_numbers_change: () -> void
 
+    def phone_numbers_before_type_cast: () -> ::String?
+
+    def phone_numbers_for_database: () -> ::String?
+
     def contact_info: () -> ::Hash[untyped, untyped]?
 
     def contact_info=: (::Hash[untyped, untyped]?) -> ::Hash[untyped, untyped]?
@@ -219,6 +239,10 @@ class ::User < ::ApplicationRecord
     def restore_contact_info!: () -> void
 
     def clear_contact_info_change: () -> void
+
+    def contact_info_before_type_cast: () -> ::String?
+
+    def contact_info_for_database: () -> ::String?
 
     def family_tree: () -> untyped
 
@@ -256,6 +280,10 @@ class ::User < ::ApplicationRecord
 
     def clear_family_tree_change: () -> void
 
+    def family_tree_before_type_cast: () -> ::String?
+
+    def family_tree_for_database: () -> ::String?
+
     def created_at: () -> ::ActiveSupport::TimeWithZone
 
     def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
@@ -292,6 +320,10 @@ class ::User < ::ApplicationRecord
 
     def clear_created_at_change: () -> void
 
+    def created_at_before_type_cast: () -> ::Time
+
+    def created_at_for_database: () -> ::Time
+
     def updated_at: () -> ::ActiveSupport::TimeWithZone
 
     def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
@@ -327,6 +359,10 @@ class ::User < ::ApplicationRecord
     def restore_updated_at!: () -> void
 
     def clear_updated_at_change: () -> void
+
+    def updated_at_before_type_cast: () -> ::Time
+
+    def updated_at_for_database: () -> ::Time
   end
   include ::User::GeneratedAttributeMethods
   module ::User::GeneratedAliasAttributeMethods
@@ -367,6 +403,10 @@ class ::User < ::ApplicationRecord
     alias restore_alias_name! restore_name!
 
     alias clear_alias_name_change clear_name_change
+
+    alias alias_name_before_type_cast name_before_type_cast
+
+    alias alias_name_for_database name_for_database
   end
   include ::User::GeneratedAliasAttributeMethods
 
