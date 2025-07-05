@@ -84,6 +84,46 @@ class ::User < ::ApplicationRecord
 
     def name_for_database: () -> ::String
 
+    def group_id: () -> ::Integer
+
+    def group_id=: (::Integer) -> ::Integer
+
+    def group_id?: () -> bool
+
+    def group_id_changed?: () -> bool
+
+    def group_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def group_id_will_change!: () -> void
+
+    def group_id_was: () -> ::Integer?
+
+    def group_id_previously_changed?: () -> bool
+
+    def group_id_previous_change: () -> ::Array[::Integer?]?
+
+    def group_id_previously_was: () -> ::Integer?
+
+    def group_id_before_last_save: () -> ::Integer?
+
+    def group_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def group_id_in_database: () -> ::Integer?
+
+    def saved_change_to_group_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_group_id?: () -> bool
+
+    def will_save_change_to_group_id?: () -> bool
+
+    def restore_group_id!: () -> void
+
+    def clear_group_id_change: () -> void
+
+    def group_id_before_type_cast: () -> ::Integer
+
+    def group_id_for_database: () -> ::Integer
+
     def age: () -> ::Integer
 
     def age=: (::Integer) -> ::Integer
@@ -426,7 +466,12 @@ class ::User < ::ApplicationRecord
   def create_avatar_blob: (?untyped) -> ::ActiveStorage::Blob
   def create_avatar_blob!: (?untyped) -> ::ActiveStorage::Blob
   def reload_avatar_blob: () -> ::ActiveStorage::Blob?
-
+  def group: () -> ::Group
+  def group=: (::Group?) -> ::Group?
+  def reload_group: () -> ::Group?
+  def build_group: (untyped) -> ::Group
+  def create_group: (untyped) -> ::Group
+  def create_group!: (untyped) -> ::Group
   module ::User::GeneratedAssociationMethods
     def avatar: () -> ::ActiveStorage::Attached::One
 
