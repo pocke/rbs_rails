@@ -145,6 +145,7 @@ module RbsRails
       private def associations #: String
         [
           has_many,
+          has_and_belongs_to_many,
           has_one,
           belongs_to,
         ].join("\n")
@@ -152,6 +153,24 @@ module RbsRails
 
       private def has_many #: String
         klass.reflect_on_all_associations(:has_many).map do |a|
+          @dependencies << a.klass.name
+
+          singular_name = a.name.to_s.singularize
+          type = Util.module_name(a.klass)
+          collection_type = "#{type}::ActiveRecord_Associations_CollectionProxy"
+          @dependencies << collection_type
+
+          <<~RUBY.chomp
+            def #{a.name}: () -> #{collection_type}
+            def #{a.name}=: (#{collection_type} | ::Array[#{type}]) -> (#{collection_type} | ::Array[#{type}])
+            def #{singular_name}_ids: () -> ::Array[::Integer]
+            def #{singular_name}_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+          RUBY
+        end.join("\n")
+      end
+
+      private def has_and_belongs_to_many #: String
+        klass.reflect_on_all_associations(:has_and_belongs_to_many).map do |a|
           @dependencies << a.klass.name
 
           singular_name = a.name.to_s.singularize

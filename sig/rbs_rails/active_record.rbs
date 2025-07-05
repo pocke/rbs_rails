@@ -44,6 +44,8 @@ module RbsRails
 
       private def has_many: () -> String
 
+      private def has_and_belongs_to_many: () -> String
+
       private def has_one: () -> String
 
       private def belongs_to: () -> String

@@ -370,6 +370,10 @@ class ::User < ::ApplicationRecord
   end
   include ::User::GeneratedAliasAttributeMethods
 
+  def blogs: () -> ::Blog::ActiveRecord_Associations_CollectionProxy
+  def blogs=: (::Blog::ActiveRecord_Associations_CollectionProxy | ::Array[::Blog]) -> (::Blog::ActiveRecord_Associations_CollectionProxy | ::Array[::Blog])
+  def blog_ids: () -> ::Array[::Integer]
+  def blog_ids=: (::Array[::Integer]) -> ::Array[::Integer]
   def avatar_attachment: () -> ::ActiveStorage::Attachment?
   def avatar_attachment=: (::ActiveStorage::Attachment?) -> ::ActiveStorage::Attachment?
   def build_avatar_attachment: (?untyped) -> ::ActiveStorage::Attachment
