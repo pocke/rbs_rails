@@ -74,6 +74,9 @@ module RbsRails
           sig = RbsRails::ActiveRecord.class_to_rbs(klass, dependencies: dep_builder.deps)
           path.write sig
           dep_builder.done << klass.name
+        rescue => e
+          puts "Error generating RBS for #{klass.name} model"
+          raise e
         end
 
         if dep_rbs = dep_builder.build
