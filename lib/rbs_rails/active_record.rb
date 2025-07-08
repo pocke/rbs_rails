@@ -197,8 +197,8 @@ module RbsRails
             def #{a.name}: () -> #{type_optional}
             def #{a.name}=: (#{type_optional}) -> #{type_optional}
             def build_#{a.name}: (?untyped) -> #{type}
-            def create_#{a.name}: (untyped) -> #{type}
-            def create_#{a.name}!: (untyped) -> #{type}
+            def create_#{a.name}: (?untyped) -> #{type}
+            def create_#{a.name}!: (?untyped) -> #{type}
             def reload_#{a.name}: () -> #{type_optional}
           RUBY
         end.join("\n")
