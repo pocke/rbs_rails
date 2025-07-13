@@ -40,6 +40,10 @@ class ::Blog < ::ApplicationRecord
 
     def clear_id_change: () -> void
 
+    def id_before_type_cast: () -> ::Integer
+
+    def id_for_database: () -> ::Integer
+
     def title: () -> ::String
 
     def title=: (::String) -> ::String
@@ -75,6 +79,10 @@ class ::Blog < ::ApplicationRecord
     def restore_title!: () -> void
 
     def clear_title_change: () -> void
+
+    def title_before_type_cast: () -> ::String
+
+    def title_for_database: () -> ::String
 
     def description: () -> ::String
 
@@ -112,6 +120,10 @@ class ::Blog < ::ApplicationRecord
 
     def clear_description_change: () -> void
 
+    def description_before_type_cast: () -> ::String
+
+    def description_for_database: () -> ::String
+
     def user_id: () -> ::Integer
 
     def user_id=: (::Integer) -> ::Integer
@@ -147,6 +159,10 @@ class ::Blog < ::ApplicationRecord
     def restore_user_id!: () -> void
 
     def clear_user_id_change: () -> void
+
+    def user_id_before_type_cast: () -> ::Integer
+
+    def user_id_for_database: () -> ::Integer
 
     def created_at: () -> ::ActiveSupport::TimeWithZone
 
@@ -184,6 +200,10 @@ class ::Blog < ::ApplicationRecord
 
     def clear_created_at_change: () -> void
 
+    def created_at_before_type_cast: () -> ::Time
+
+    def created_at_for_database: () -> ::Time
+
     def updated_at: () -> ::ActiveSupport::TimeWithZone
 
     def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
@@ -219,6 +239,10 @@ class ::Blog < ::ApplicationRecord
     def restore_updated_at!: () -> void
 
     def clear_updated_at_change: () -> void
+
+    def updated_at_before_type_cast: () -> ::Time
+
+    def updated_at_for_database: () -> ::Time
   end
   include ::Blog::GeneratedAttributeMethods
   module ::Blog::GeneratedAliasAttributeMethods
