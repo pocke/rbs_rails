@@ -1,12 +1,14 @@
 require "optparse"
+require "rbs_rails/cli/configuration"
 
 module RbsRails
-  class CLI
-    attr_reader :options #: Hash[Symbol, untyped]
+  # @rbs &block: (CLI::Configuration) -> void
+  def self.configure(&block) #: void
+    CLI::Configuration.configure(&block)
+  end
 
-    def initialize #: void
-      @options = {}
-    end
+  class CLI
+    attr_reader :config_file #: String?
 
     # @rbs argv: Array[String]
     def run(argv) #: Integer
@@ -25,15 +27,18 @@ module RbsRails
           0
         when "all"
           load_application
+          load_config
           generate_models
           generate_path_helpers
           0
         when "models"
           load_application
+          load_config
           generate_models
           0
         when "path_helpers"
           load_application
+          load_config
           generate_path_helpers
           0
         else
@@ -52,6 +57,22 @@ module RbsRails
     end
 
     private
+
+    def config #: Configuration
+      Configuration.instance
+    end
+
+    def load_config #: void
+      if config_file
+        load config_file
+      else
+        if File.exist?(".rbs_rails.rb")
+          load ".rbs_rails.rb"
+        elsif Rails.root.join("config/rbs_rails.rb").exist?
+          load Rails.root.join("config/rbs_rails.rb").to_s
+        end
+      end
+    end
 
     def load_application #: void
       require_relative "#{Dir.getwd}/config/application"
@@ -79,14 +100,14 @@ module RbsRails
       end
 
       if dep_rbs = dep_builder.build
-        signature_root_dir.join('model_dependencies.rbs').write(dep_rbs)
+        config.signature_root_dir.join('model_dependencies.rbs').write(dep_rbs)
       end
     end
 
     # @rbs klass: singleton(ActiveRecord::Base)
     # @rbs dep_builder: DependencyBuilder
     def generate_single_model(klass, dep_builder) #: bool
-      # next if ignore_model_if&.call(klass)
+      return false if config.ignored_model?(klass)
       return false unless RbsRails::ActiveRecord.generatable?(klass)
 
       original_path, _line = Object.const_source_location(klass.name) rescue nil
@@ -99,7 +120,7 @@ module RbsRails
                             "app/models/#{klass.name.underscore}.rbs"
                           end
 
-      path = signature_root_dir / rbs_relative_path
+      path = config.signature_root_dir / rbs_relative_path
       path.dirname.mkpath
 
       sig = RbsRails::ActiveRecord.class_to_rbs(klass, dependencies: dep_builder.deps)
@@ -110,7 +131,7 @@ module RbsRails
     end
 
     def generate_path_helpers #: void
-      path = signature_root_dir.join 'path_helpers.rbs'
+      path = config.signature_root_dir.join 'path_helpers.rbs'
       path.dirname.mkpath
 
       sig = RbsRails::PathHelpers.generate
@@ -133,13 +154,13 @@ module RbsRails
         BANNER
 
         opts.on("--signature-root-dir=DIR", "Specify the root directory for RBS signatures") do |dir|
-          @options[:signature_root_dir] = Pathname.new(dir)
+          config.signature_root_dir = Pathname.new(dir)
+        end
+
+        opts.on("--config=FILE", "Load configuration from FILE") do |file|
+          @config_file = file
         end
       end
-    end
-
-    def signature_root_dir #: Pathname
-      @options[:signature_root_dir] || Rails.root.join("sig/rbs_rails")
     end
   end
 end
