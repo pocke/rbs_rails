@@ -119,6 +119,8 @@ GEM
     mini_mime (1.1.5)
     mini_portile2 (2.8.9)
     minitest (5.25.5)
+    minitest-hooks (1.5.2)
+      minitest (> 5.3)
     mutex_m (0.3.0)
     net-imap (0.5.7)
       date
@@ -232,6 +234,7 @@ PLATFORMS
 
 DEPENDENCIES
   minitest
+  minitest-hooks
   rails (>= 7.0)
   rake (~> 13.0)
   rbs (>= 3)
