@@ -259,6 +259,14 @@ class ::Blog < ::ApplicationRecord
   end
   include ::Blog::GeneratedAssociationMethods
 
+  def self.pluck: (:id | "id") -> ::Array[::Integer]
+                | (:title | "title") -> ::Array[::String]
+                | (:description | "description") -> ::Array[::String]
+                | (:user_id | "user_id") -> ::Array[::Integer]
+                | (:created_at | "created_at") -> ::Array[::ActiveSupport::TimeWithZone]
+                | (:updated_at | "updated_at") -> ::Array[::ActiveSupport::TimeWithZone]
+                | ...
+
   module ::Blog::GeneratedRelationMethods
   end
 
@@ -266,6 +274,14 @@ class ::Blog < ::ApplicationRecord
     include ::Blog::GeneratedRelationMethods
     include ::_ActiveRecord_Relation[::Blog, ::Integer]
     include ::Enumerable[::Blog]
+
+    def pluck: (:id | "id") -> ::Array[::Integer]
+             | (:title | "title") -> ::Array[::String]
+             | (:description | "description") -> ::Array[::String]
+             | (:user_id | "user_id") -> ::Array[::Integer]
+             | (:created_at | "created_at") -> ::Array[::ActiveSupport::TimeWithZone]
+             | (:updated_at | "updated_at") -> ::Array[::ActiveSupport::TimeWithZone]
+             | ...
   end
 
   class ::Blog::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
@@ -286,5 +302,12 @@ class ::Blog < ::ApplicationRecord
     def destroy: (*::Blog | ::Integer) -> ::Array[::Blog]
     def <<: (*::Blog | ::Array[::Blog]) -> self
     def prepend: (*::Blog | ::Array[::Blog]) -> self
+    def pluck: (:id | "id") -> ::Array[::Integer]
+             | (:title | "title") -> ::Array[::String]
+             | (:description | "description") -> ::Array[::String]
+             | (:user_id | "user_id") -> ::Array[::Integer]
+             | (:created_at | "created_at") -> ::Array[::ActiveSupport::TimeWithZone]
+             | (:updated_at | "updated_at") -> ::Array[::ActiveSupport::TimeWithZone]
+             | ...
   end
 end
