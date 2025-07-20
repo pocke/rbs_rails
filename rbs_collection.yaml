@@ -32,3 +32,4 @@ gems:
   - name: json
   - name: optparse
   - name: tsort
+  - name: forwardable

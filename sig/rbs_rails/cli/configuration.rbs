@@ -1,0 +1,35 @@
+# Generated from lib/rbs_rails/cli/configuration.rb with RBS::Inline
+
+module RbsRails
+  class CLI
+    class Configuration
+      include Singleton
+
+      def self.instance: () -> Configuration
+
+      def self.configure: () { (Configuration) -> void } -> void
+
+      extend Forwardable
+
+      @signature_root_dir: Pathname?
+
+      @ignore_model_if: (^(singleton(ActiveRecord::Base)) -> bool)?
+
+      def initialize: () -> void
+
+      # @rbs &block: (Configuration) -> void
+      def configure: () { (Configuration) -> void } -> void
+
+      def signature_root_dir: () -> Pathname
+
+      # @rbs dir: String | Pathname
+      def signature_root_dir=: (String | Pathname dir) -> Pathname
+
+      # @rbs &block: (singleton(ActiveRecord::Base)) -> bool
+      def ignore_model_if: () { (singleton(ActiveRecord::Base)) -> bool } -> void
+
+      # @rbs klass: singleton(ActiveRecord::Base)
+      def ignored_model?: (singleton(ActiveRecord::Base) klass) -> bool
+    end
+  end
+end

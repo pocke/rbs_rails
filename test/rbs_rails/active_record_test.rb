@@ -36,6 +36,15 @@ class ActiveRecordTest < Minitest::Test
     assert_equal expect_path.read, rbs_path.read
   end
 
+  def test_article_model_rbs_is_skipped
+    clean_test_signatures
+
+    setup!
+
+    rbs_path = app_dir.join('sig/rbs_rails/app/models/article.rbs')
+    refute rbs_path.exist?
+  end
+
   def test_external_library_model_rbs_generation
     clean_test_signatures
 

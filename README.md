@@ -26,18 +26,23 @@ Run the following command. It generates `lib/tasks/rbs.rake`.
 $ bin/rails g rbs_rails:install
 ```
 
-Then, the following four tasks are available.
+Then, the following three tasks are available.
 
-* `rbs_rails:prepare`: Install inspector modules for Active Record models.  This task is required to run before loading Rails application.
 * `rbs_rails:generate_rbs_for_models`: Generate RBS files for Active Record models
 * `rbs_rails:generate_rbs_for_path_helpers`: Generate RBS files for path helpers
 * `rbs_rails:all`: Execute all tasks of RBS Rails
 
-
-If you invoke multiple tasks, please run `rbs_rails:prepare` first.
+You can also run rbs_rails from command line:
 
 ```console
-$ bin/rails rbs_rails:prepare some_task another_task rbs_rails:generate_rbs_for_models
+# Generate all RBS files
+$ bundle exec rbs_rails all
+
+# Generate RBS files for models
+$ bundle exec rbs_rails models
+
+# Generate RBS files for path helpers
+$ bundle exec rbs_rails path_helpers
 ```
 
 ### Install RBS for `rails` gem
@@ -51,6 +56,31 @@ You need to install `rails` gem's RBS files. I highly recommend using `rbs colle
    $ bundle exec rbs collection init
    $ bundle exec rbs collection install
    ```
+
+### Configuration
+
+You can customize the behavior of rbs_rails via configuration file. Place one of the following files in your project:
+
+* `.rbs_rails.rb` (in the project root)
+* `config/rbs_rails.rb`
+
+```ruby
+RbsRails.configure do |config|
+  # Specify the directory where RBS signatures will be generated
+  # Default: Rails.root.join("sig/rbs_rails")
+  config.signature_root_dir = "sig/rbs_rails"
+
+  # Define which models should be ignored during generation
+  config.ignore_model_if do |klass|
+    # Example: Ignore test models
+    klass.name.start_with?("Test") ||
+    # Example: Ignore models in specific namespaces
+    klass.name.start_with?("Admin::") ||
+    # Example: Ignore models without database tables
+    !klass.table_exists?
+  end
+end
+```
 
 ### Steep integration
 
