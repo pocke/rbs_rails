@@ -11,3 +11,4 @@ gem 'rbs', '>= 3'
 gem 'rbs-inline', require: false
 gem 'steep', '>= 1.4'
 gem 'minitest'
+gem 'minitest-hooks'
