@@ -33,3 +33,4 @@ gems:
   - name: optparse
   - name: tsort
   - name: forwardable
+  - name: webrick

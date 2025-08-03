@@ -1,0 +1,7 @@
+module Rackup
+  module Handler
+    class WEBrick < ::WEBrick::HTTPServlet::AbstractServlet
+      def self.run: (untyped app, Hash[untyped, untyped] options) -> void
+    end
+  end
+end

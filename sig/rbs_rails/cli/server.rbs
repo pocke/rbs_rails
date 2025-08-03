@@ -1,0 +1,20 @@
+# Generated from lib/rbs_rails/cli/server.rb with RBS::Inline
+
+module RbsRails
+  class CLI
+    class Server
+      attr_reader config: CLI::Configuration
+
+      # @rbs config: CLI::Configuration
+      def initialize: (CLI::Configuration config) -> void
+
+      def start: () -> untyped
+
+      private
+
+      def enable_zeitwerk_reloading: () -> void
+
+      def build_rack_app: () -> untyped
+    end
+  end
+end

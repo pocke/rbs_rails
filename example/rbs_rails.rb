@@ -19,4 +19,9 @@ RbsRails.configure do |config|
     # Example: Ignore anonymous classes
     klass.name.blank?
   end
+
+  # Set the host and port for the rbs_rails server
+  # Default: host is "0.0.0.0", port is 8080
+  config.host = "localhost"
+  config.port = 12345
 end

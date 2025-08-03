@@ -20,9 +20,14 @@ module RbsRails
       #   @signature_root_dir: Pathname?
       #   @ignore_model_if: (^(singleton(ActiveRecord::Base)) -> bool)?
 
+      attr_accessor :host #: String
+      attr_accessor :port #: Integer
+
       def initialize #: void
         @signature_root_dir = nil
         @ignore_model_if = nil
+        @host = "0.0.0.0"
+        @port = 8080
       end
 
       # @rbs &block: (Configuration) -> void

@@ -1,0 +1,32 @@
+# Generated from lib/rbs_rails/cli/server/handler.rb with RBS::Inline
+
+module RbsRails
+  class CLI
+    class Server
+      class Handler
+        attr_reader config: CLI::Configuration
+
+        # @rbs config: CLI::Configuration
+        def initialize: (CLI::Configuration config) -> void
+
+        # @rbs env: Rack::env
+        def call: (Rack::env env) -> Rack::response
+
+        # @rbs path: String?
+        def do_POST: (String? path) -> Rack::response
+
+        private
+
+        # @rbs path: String?
+        def regulate_path: (String? path) -> Pathname?
+
+        # @rbs path: Pathname
+        def classify: (Pathname path) -> String?
+
+        # @rbs path: String
+        # @rbs class_name: String
+        def generate_signature: (String class_name) -> void
+      end
+    end
+  end
+end
