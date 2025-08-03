@@ -27,4 +27,5 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'parser'
   spec.add_runtime_dependency 'rbs', '>= 1'
+  spec.add_runtime_dependency 'language_server-protocol'
 end

@@ -27,6 +27,8 @@ module RbsRails
 
     def generate_path_helpers: () -> void
 
+    def run_server: () -> void
+
     def create_option_parser: () -> OptionParser
   end
 end
