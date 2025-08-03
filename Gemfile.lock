@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     rbs_rails (0.12.1)
+      language_server-protocol
       parser
       rbs (>= 1)
 

@@ -1,0 +1,28 @@
+# Generated from lib/rbs_rails/cli/server/logger.rb with RBS::Inline
+
+module RbsRails
+  class CLI
+    class Server
+      class Logger
+        include LanguageServer::Protocol::Constant
+
+        attr_reader transport: Transport
+
+        # @rbs transport: Transport
+        def initialize: (Transport transport) -> void
+
+        # @rbs message: String
+        def info: (String message) -> void
+
+        # @rbs message: String
+        def error: (String message) -> void
+
+        # @rbs message: String
+        def warn: (String message) -> void
+
+        # @rbs message: String
+        def debug: (String message) -> void
+      end
+    end
+  end
+end

@@ -1,0 +1,21 @@
+# Generated from lib/rbs_rails/cli/server/debouncer.rb with RBS::Inline
+
+module RbsRails
+  class CLI
+    class Server
+      # The Debouncer module provides functionality to debounce RBS generation requests.
+      module Debouncer
+        DEBOUNCE_INTERVAL: ::Float
+
+        private
+
+        @last_generation_time: Hash[String, Time]
+
+        def last_generation_time: () -> Hash[String, Time]
+
+        # @rbs uri: String
+        def should_skip_generation?: (String uri) -> bool
+      end
+    end
+  end
+end

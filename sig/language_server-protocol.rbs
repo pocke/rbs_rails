@@ -1,0 +1,66 @@
+module LanguageServer
+  module Protocol
+    module Constant
+      module ErrorCodes
+        INTERNAL_ERROR: Integer
+      end
+
+      module FileChangeType
+        CREATED: Integer
+        CHANGED: Integer
+        DELETED: Integer
+      end
+
+      module MessageType
+        ERROR: Integer
+        WARNING: Integer
+        INFO: Integer
+        LOG: Integer
+      end
+
+      module TextDocumentSyncKind
+        NONE: Integer
+        FULL: Integer
+        INCREMENTAL: Integer
+      end
+
+      module WatchKind
+        CREATE: Integer
+        CHANGE: Integer
+        DELETE: Integer
+      end
+    end
+
+    module Interface
+      class InitializeResult
+        def initialize: (capabilities: untyped) -> void
+      end
+
+      class SaveOptions
+        def initialize: (?include_text: bool) -> void
+      end
+
+      class ServerCapabilities
+        def initialize: (?position_encoding: String, ?text_document_sync: untyped, ?notebook_document_sync: untyped, ?completion_provider: untyped, ?hover_provider: untyped, ?signature_help_provider: untyped, ?declaration_provider: untyped, ?definition_provider: untyped, ?type_definition_provider: untyped, ?implementation_provider: untyped, ?references_provider: untyped, ?document_highlight_provider: untyped, ?document_symbol_provider: untyped, ?code_action_provider: untyped, ?code_lens_provider: untyped, ?document_link_provider: untyped, ?color_provider: untyped, ?document_formatting_provider: untyped, ?document_range_formatting_provider: untyped, ?document_on_type_formatting_provider: untyped, ?rename_provider: untyped, ?folding_range_provider: untyped, ?execute_command_provider: untyped, ?selection_range_provider: untyped, ?linked_editing_range_provider: untyped, ?call_hierarchy_provider: untyped, ?semantic_tokens_provider: untyped, ?moniker_provider: untyped, ?type_hierarchy_provider: untyped, ?inline_value_provider: untyped, ?inlay_hint_provider: untyped, ?diagnostic_provider: untyped, ?workspace_symbol_provider: untyped, ?workspace: untyped, ?experimental: untyped) -> void
+      end
+
+      class TextDocumentSyncOptions
+        def initialize: (?open_close: bool, ?change: untyped, ?will_save: bool, ?will_save_wait_until: bool, ?save: untyped) -> void
+      end
+    end
+
+    module Transport
+      module Io
+        class Reader
+          def initialize: (::IO) -> void
+          def read: () { (untyped) -> untyped } -> untyped
+        end
+
+        class Writer
+          def initialize: (::IO) -> void
+          def write: (untyped) -> void
+        end
+      end
+    end
+  end
+end

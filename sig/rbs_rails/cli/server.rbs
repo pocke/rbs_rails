@@ -1,0 +1,43 @@
+# Generated from lib/rbs_rails/cli/server.rb with RBS::Inline
+
+module RbsRails
+  class CLI
+    class Server
+      include LanguageServer::Protocol
+
+      include LanguageServer::Protocol::Constant
+
+      attr_reader config: CLI::Configuration
+
+      attr_reader handler: Server::Handler
+
+      attr_reader transport: Transport
+
+      attr_reader logger: Logger
+
+      # @rbs config: CLI::Configuration
+      # @rbs stdin: IO
+      # @rbs stdout: IO
+      def initialize: (CLI::Configuration config, ?stdin: IO, ?stdout: IO) -> void
+
+      def start: () -> void
+
+      private
+
+      # @rbs request: Hash[Symbol, untyped]
+      def handle_request: (Hash[Symbol, untyped] request) -> void
+
+      # @rbs request: Hash[Symbol, untyped]
+      def handle_initialize: (Hash[Symbol, untyped] request) -> void
+
+      def send_initialize_result: (untyped request) -> void
+
+      def send_register_capability_request: () -> void
+
+      # @rbs request: Hash[Symbol, untyped]
+      def handle_shutdown: (Hash[Symbol, untyped] request) -> void
+
+      def enable_zeitwerk_reloading: () -> void
+    end
+  end
+end

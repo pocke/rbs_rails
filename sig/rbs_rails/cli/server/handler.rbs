@@ -1,0 +1,49 @@
+# Generated from lib/rbs_rails/cli/server/handler.rb with RBS::Inline
+
+module RbsRails
+  class CLI
+    class Server
+      class Handler
+        include Debouncer
+
+        include LanguageServer::Protocol::Constant
+
+        attr_reader config: CLI::Configuration
+
+        attr_reader logger: Logger
+
+        # @rbs config: CLI::Configuration
+        # @rbs logger: Logger
+        def initialize: (CLI::Configuration config, Logger logger) -> void
+
+        # @rbs request: Hash[Symbol, untyped]
+        def handle_did_save: (Hash[Symbol, untyped] request) -> void
+
+        # @rbs request: Hash[Symbol, untyped]
+        def handle_did_change_watched_files: (Hash[Symbol, untyped] request) -> void
+
+        private
+
+        # @rbs uri: String
+        def generate_signature: (String uri) -> void
+
+        def generate_all_model_signatures: () -> void
+
+        def generate_path_helpers_signature: () -> void
+
+        # @rbs path: Pathname
+        # @rbs klass: Class
+        def generate_signature0: (Pathname path, Class klass) -> void
+
+        # @rbs uri: String
+        def delete_signature: (String uri) -> void
+
+        # @rbs uri: String
+        def uri_to_path: (String uri) -> Pathname?
+
+        # @rbs path: Pathname
+        def constantize: (Pathname path) -> Class?
+      end
+    end
+  end
+end

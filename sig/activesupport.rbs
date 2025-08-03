@@ -1,0 +1,5 @@
+module ActiveSupport
+  class Reloader
+    def self.wrap: () { () -> void } -> void | ...
+  end
+end

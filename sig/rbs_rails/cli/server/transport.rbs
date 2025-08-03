@@ -1,0 +1,40 @@
+# Generated from lib/rbs_rails/cli/server/transport.rb with RBS::Inline
+
+module RbsRails
+  class CLI
+    class Server
+      class Transport
+        include LanguageServer::Protocol
+
+        include LanguageServer::Protocol::Constant
+
+        attr_reader reader: LanguageServer::Protocol::Transport::Io::Reader
+
+        attr_reader writer: LanguageServer::Protocol::Transport::Io::Writer
+
+        # @rbs stdin: IO
+        # @rbs stdout: IO
+        def initialize: (?stdin: IO, ?stdout: IO) -> void
+
+        # @rbs id: String
+        # @rbs result: untyped
+        def send_response: (String id, untyped result) -> void
+
+        # @rbs request: Hash[Symbol, untyped]
+        # @rbs error: Exception
+        def send_error_response: (Hash[Symbol, untyped] request, Exception error) -> void
+
+        # @rbs method: String
+        # @rbs params: Hash[Symbol, untyped]
+        def send_request: (String method, Hash[Symbol, untyped] params) -> void
+
+        # @rbs method: String
+        # @rbs params: Hash[Symbol, untyped]
+        def send_notification: (String method, Hash[Symbol, untyped] params) -> void
+
+        # @rbs &block: (Hash[Symbol, untyped]) -> void
+        def read_requests: () { (Hash[Symbol, untyped]) -> void } -> untyped
+      end
+    end
+  end
+end
