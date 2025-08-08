@@ -1,0 +1,33 @@
+# Generated from lib/rbs_rails/cli.rb with RBS::Inline
+
+module RbsRails
+  # @rbs &block: (CLI::Configuration) -> void
+  def self.configure: () { (CLI::Configuration) -> void } -> void
+
+  class CLI
+    attr_reader config_file: String?
+
+    # @rbs argv: Array[String]
+    def run: (Array[String] argv) -> Integer
+
+    private
+
+    def config: () -> Configuration
+
+    def load_config: () -> void
+
+    def load_application: () -> void
+
+    def install_hooks: () -> void
+
+    def generate_models: () -> void
+
+    # @rbs klass: singleton(ActiveRecord::Base)
+    # @rbs dep_builder: DependencyBuilder
+    def generate_single_model: (singleton(ActiveRecord::Base) klass, DependencyBuilder dep_builder) -> bool
+
+    def generate_path_helpers: () -> void
+
+    def create_option_parser: () -> OptionParser
+  end
+end
