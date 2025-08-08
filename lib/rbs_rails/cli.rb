@@ -1,5 +1,6 @@
 require "optparse"
 require "rbs_rails/cli/configuration"
+require "rbs_rails/cli/server"
 
 module RbsRails
   # @rbs &block: (CLI::Configuration) -> void
@@ -40,6 +41,11 @@ module RbsRails
           load_application
           load_config
           generate_path_helpers
+          0
+        when "server"
+          load_application
+          load_config
+          run_server
           0
         else
           $stdout.puts "Unknown command: #{subcommand}"
@@ -138,6 +144,10 @@ module RbsRails
 
       sig = RbsRails::PathHelpers.generate
       path.write sig
+    end
+
+    def run_server #: void
+      Server.new(config).start
     end
 
     def create_option_parser #: OptionParser
