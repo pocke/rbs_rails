@@ -80,6 +80,8 @@ module RbsRails
       install_hooks
 
       Rails.application.initialize!
+    rescue LoadError => e
+      raise "Failed to load Rails application: #{e.message}"
     end
 
     def install_hooks #: void
