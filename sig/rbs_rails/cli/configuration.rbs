@@ -15,6 +15,10 @@ module RbsRails
 
       @ignore_model_if: (^(singleton(ActiveRecord::Base)) -> bool)?
 
+      attr_accessor host: String
+
+      attr_accessor port: Integer
+
       def initialize: () -> void
 
       # @rbs &block: (Configuration) -> void
