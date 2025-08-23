@@ -6,17 +6,3 @@ class ::User::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associ
 end
 class ::Blog::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
 end
-class ::ActiveStorage::Attachment < ::ActiveStorage::Record
-end
-class ::ActiveStorage::Blob < ::ActiveStorage::Record
-end
-class ::ActiveRecord::Associations::CollectionProxy < ::ActiveRecord::Relation
-end
-class ::ActiveStorage::Record < ::ActiveRecord::Base
-end
-module ::ActiveStorage
-end
-class ::ActiveRecord::Relation < ::Object
-end
-module ::ActiveRecord::Associations
-end
