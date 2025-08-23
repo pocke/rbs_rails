@@ -8,6 +8,9 @@ module RbsRails
 
     def initialize: () -> void
 
+    # @rbs name: String
+    def <<: (String name) -> Array[String]
+
     def build: () -> (String | nil)
 
     private def shift: () -> (String | nil)

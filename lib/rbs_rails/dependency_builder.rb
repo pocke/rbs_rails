@@ -5,7 +5,23 @@ module RbsRails
 
     def initialize #: void
       @deps = []
-      @done = Set.new(['ActiveRecord::Base', 'ActiveRecord', 'Object'])
+      @done = Set.new([
+        'ActiveRecord',
+        'ActiveRecord::Associations',
+        'ActiveRecord::Associations::CollectionProxy',
+        'ActiveRecord::Base',
+        'ActiveRecord::Relation',
+        'ActiveStorage',
+        'ActiveStorage::Attachment',
+        'ActiveStorage::Blob',
+        'ActiveStorage::Record',
+        'Object'
+      ])
+    end
+
+    # @rbs name: String
+    def <<(name) #: Array[String]
+      deps << name
     end
 
     def build #: String | nil
