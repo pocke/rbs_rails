@@ -20,6 +20,8 @@ module RbsRails
 
     def install_hooks: () -> void
 
+    def generate_mailers: () -> void
+
     def generate_models: () -> void
 
     # @rbs klass: singleton(ActiveRecord::Base)
@@ -27,6 +29,9 @@ module RbsRails
     def generate_single_model: (singleton(ActiveRecord::Base) klass, DependencyBuilder dep_builder) -> bool
 
     def generate_path_helpers: () -> void
+
+    # @rbs klass: singleton(Object)
+    def rbs_path_for: (singleton(Object) klass) -> String
 
     def create_option_parser: () -> OptionParser
   end
