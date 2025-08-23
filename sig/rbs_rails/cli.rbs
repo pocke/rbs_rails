@@ -22,6 +22,9 @@ module RbsRails
 
     def generate_models: () -> void
 
+    # Raise an error if database is not migrated to the latest version
+    def check_db_migrations!: () -> void
+
     # @rbs klass: singleton(ActiveRecord::Base)
     # @rbs dep_builder: DependencyBuilder
     def generate_single_model: (singleton(ActiveRecord::Base) klass, DependencyBuilder dep_builder) -> bool

@@ -7,6 +7,11 @@ RbsRails.configure do |config|
   # Default: Rails.root.join("sig/rbs_rails")
   config.signature_root_dir = "sig/rbs_rails"
 
+  # Enable or disable checking for database migrations.
+  # If enabled, rbs_rails stops to generate RBS files if database is not migrated to the latest version.
+  # Default: enabled
+  check_db_migrations = true
+
   # Define a proc to determine which models should be ignored during generation
   # The proc receives a model class and should return true if the model should be ignored
   config.ignore_model_if do |klass|
