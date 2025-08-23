@@ -93,17 +93,11 @@ module RbsRails
       check_db_migrations!
       Rails.application.eager_load!
 
-      dep_builder = DependencyBuilder.new
-
       ::ActiveRecord::Base.descendants.each do |klass|
-        generate_single_model(klass, dep_builder)
+        generate_single_model(klass)
       rescue => e
         puts "Error generating RBS for #{klass.name} model"
         raise e
-      end
-
-      if dep_rbs = dep_builder.build
-        config.signature_root_dir.join('model_dependencies.rbs').write(dep_rbs)
       end
     end
 
@@ -120,8 +114,7 @@ module RbsRails
     end
 
     # @rbs klass: singleton(ActiveRecord::Base)
-    # @rbs dep_builder: DependencyBuilder
-    def generate_single_model(klass, dep_builder) #: bool
+    def generate_single_model(klass) #: bool
       return false if config.ignored_model?(klass)
       return false unless RbsRails::ActiveRecord.generatable?(klass)
 
@@ -138,9 +131,8 @@ module RbsRails
       path = config.signature_root_dir / rbs_relative_path
       path.dirname.mkpath
 
-      sig = RbsRails::ActiveRecord.class_to_rbs(klass, dependencies: dep_builder.deps)
+      sig = RbsRails::ActiveRecord.class_to_rbs(klass)
       path.write sig
-      dep_builder.done << klass.name
 
       true
     end

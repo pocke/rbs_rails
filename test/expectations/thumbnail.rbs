@@ -249,3 +249,8 @@ class ::Thumbnail < ::ApplicationRecord
     def prepend: (*::Thumbnail | ::Array[::Thumbnail]) -> self
   end
 end
+
+class ::ApplicationRecord < ::ActiveRecord::Base
+end
+class ::Blog < ::ApplicationRecord
+end

@@ -328,3 +328,10 @@ class ::Blog < ::ApplicationRecord
     def prepend: (*::Blog | ::Array[::Blog]) -> self
   end
 end
+
+class ::ApplicationRecord < ::ActiveRecord::Base
+end
+class ::User < ::ApplicationRecord
+end
+class ::User::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
