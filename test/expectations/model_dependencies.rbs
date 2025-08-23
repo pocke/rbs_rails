@@ -1,8 +1,0 @@
-class ::ApplicationRecord < ::ActiveRecord::Base
-end
-module ::Audited
-end
-class ::User::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
-end
-class ::Blog::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
-end

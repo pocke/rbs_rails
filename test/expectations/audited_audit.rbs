@@ -681,3 +681,6 @@ module ::Audited
     end
   end
 end
+
+module ::Audited
+end
