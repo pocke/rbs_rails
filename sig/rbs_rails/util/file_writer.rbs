@@ -1,0 +1,16 @@
+# Generated from lib/rbs_rails/util/file_writer.rb with RBS::Inline
+
+module RbsRails
+  module Util
+    # To avoid unnecessary type reloading by type checkers and other utilities,
+    # FileWriter modifies the target file only if its content has been changed.
+    class FileWriter
+      attr_reader path: Pathname
+
+      # @rbs path: Pathname
+      def initialize: (Pathname path) -> void
+
+      def write: (untyped content) -> void
+    end
+  end
+end
