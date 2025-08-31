@@ -7,7 +7,7 @@ module RbsRails
 
     # @rbs klass: untyped
     # @rbs dependencies: Array[String]
-    def self.class_to_rbs: (untyped klass, ?dependencies: Array[String]) -> untyped
+    def self.class_to_rbs: (untyped klass) -> untyped
 
     class Generator
       IGNORED_ENUM_KEYS: Array[Symbol]
@@ -16,13 +16,12 @@ module RbsRails
 
       @enum_definitions: Array[Hash[Symbol, untyped]]
 
-      @dependencies: Array[String]
-
       @parse_model_file: nil | Parser::AST::Node
 
+      attr_reader dependencies: DependencyBuilder
+
       # @rbs klass: singleton(ActiveRecord::Base) & Enum
-      # @rbs dependencies: Array[String]
-      def initialize: (singleton(ActiveRecord::Base) & Enum klass, dependencies: Array[String]) -> untyped
+      def initialize: (singleton(ActiveRecord::Base) & Enum klass) -> untyped
 
       def generate: () -> String
 

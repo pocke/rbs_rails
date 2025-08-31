@@ -1,5 +1,6 @@
 require "optparse"
 require "rbs_rails/cli/configuration"
+require "rbs_rails/cli/server"
 
 module RbsRails
   # @rbs &block: (CLI::Configuration) -> void
@@ -40,6 +41,11 @@ module RbsRails
           load_application
           load_config
           generate_path_helpers
+          0
+        when "server"
+          load_application
+          load_config
+          run_server
           0
         else
           $stdout.puts "Unknown command: #{subcommand}"
@@ -92,23 +98,16 @@ module RbsRails
     def generate_models #: void
       Rails.application.eager_load!
 
-      dep_builder = DependencyBuilder.new
-
       ::ActiveRecord::Base.descendants.each do |klass|
-        generate_single_model(klass, dep_builder)
+        generate_single_model(klass)
       rescue => e
         puts "Error generating RBS for #{klass.name} model"
         raise e
       end
-
-      if dep_rbs = dep_builder.build
-        config.signature_root_dir.join('model_dependencies.rbs').write(dep_rbs)
-      end
     end
 
     # @rbs klass: singleton(ActiveRecord::Base)
-    # @rbs dep_builder: DependencyBuilder
-    def generate_single_model(klass, dep_builder) #: bool
+    def generate_single_model(klass) #: bool
       return false if config.ignored_model?(klass)
       return false unless RbsRails::ActiveRecord.generatable?(klass)
 
@@ -126,8 +125,7 @@ module RbsRails
       path.dirname.mkpath
 
       sig = RbsRails::ActiveRecord.class_to_rbs(klass, dependencies: dep_builder.deps)
-      path.write sig
-      dep_builder.done << klass.name
+      Util::FileWriter.new(path).write sig
 
       true
     end
@@ -137,7 +135,11 @@ module RbsRails
       path.dirname.mkpath
 
       sig = RbsRails::PathHelpers.generate
-      path.write sig
+      Util::FileWriter.new(path).write sig
+    end
+
+    def run_server #: void
+      Server.new(config).start
     end
 
     def create_option_parser #: OptionParser
@@ -151,6 +153,7 @@ module RbsRails
                   all            Generate all RBS files
                   models         Generate RBS files for models
                   path_helpers   Generate RBS for Rails path helpers
+                  server         Start LSP (Language Server Protocol) server
 
           Options:
         BANNER
