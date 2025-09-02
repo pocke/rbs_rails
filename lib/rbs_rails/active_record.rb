@@ -379,7 +379,8 @@ module RbsRails
         # @type var methods: Array[String]
         methods = []
         klass.enum_definitions.map(&:first).uniq.each do |name|
-          class_name = sql_type_to_class(klass.columns_hash[name.to_s].type)
+          column = klass.columns_hash[name.to_s] || klass.columns_hash[klass.attribute_aliases[name.to_s]]
+          class_name = sql_type_to_class(column.type)
           methods << "def #{singleton ? 'self.' : ''}#{name.to_s.pluralize}: () -> ::ActiveSupport::HashWithIndifferentAccess[::String, #{class_name}]"
         end
         klass.enum_definitions.each do |_, method_name|

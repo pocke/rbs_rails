@@ -363,6 +363,46 @@ class ::User < ::ApplicationRecord
     def updated_at_before_type_cast: () -> ::Time
 
     def updated_at_for_database: () -> ::Time
+
+    def role: () -> ::Integer
+
+    def role=: (::Integer) -> ::Integer
+
+    def role?: () -> bool
+
+    def role_changed?: () -> bool
+
+    def role_change: () -> [ ::Integer?, ::Integer? ]
+
+    def role_will_change!: () -> void
+
+    def role_was: () -> ::Integer?
+
+    def role_previously_changed?: () -> bool
+
+    def role_previous_change: () -> ::Array[::Integer?]?
+
+    def role_previously_was: () -> ::Integer?
+
+    def role_before_last_save: () -> ::Integer?
+
+    def role_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def role_in_database: () -> ::Integer?
+
+    def saved_change_to_role: () -> ::Array[::Integer?]?
+
+    def saved_change_to_role?: () -> bool
+
+    def will_save_change_to_role?: () -> bool
+
+    def restore_role!: () -> void
+
+    def clear_role_change: () -> void
+
+    def role_before_type_cast: () -> ::Integer
+
+    def role_for_database: () -> ::Integer
   end
   include ::User::GeneratedAttributeMethods
   module ::User::GeneratedAliasAttributeMethods
@@ -407,6 +447,46 @@ class ::User < ::ApplicationRecord
     alias alias_name_before_type_cast name_before_type_cast
 
     alias alias_name_for_database name_for_database
+
+    alias alias_role role
+
+    alias alias_role= role=
+
+    alias alias_role? role?
+
+    alias alias_role_changed? role_changed?
+
+    alias alias_role_change role_change
+
+    alias alias_role_will_change! role_will_change!
+
+    alias alias_role_was role_was
+
+    alias alias_role_previously_changed? role_previously_changed?
+
+    alias alias_role_previous_change role_previous_change
+
+    alias alias_role_previously_was role_previously_was
+
+    alias alias_role_before_last_save role_before_last_save
+
+    alias alias_role_change_to_be_saved role_change_to_be_saved
+
+    alias alias_role_in_database role_in_database
+
+    alias saved_change_to_alias_role saved_change_to_role
+
+    alias saved_change_to_alias_role? saved_change_to_role?
+
+    alias will_save_change_to_alias_role? will_save_change_to_role?
+
+    alias restore_alias_role! restore_role!
+
+    alias clear_alias_role_change clear_role_change
+
+    alias alias_role_before_type_cast role_before_type_cast
+
+    alias alias_role_for_database role_for_database
   end
   include ::User::GeneratedAliasAttributeMethods
 
@@ -455,17 +535,28 @@ class ::User < ::ApplicationRecord
   def temporary?: () -> bool
   def accepted!: () -> bool
   def accepted?: () -> bool
+  def member!: () -> bool
+  def member?: () -> bool
+  def manager!: () -> bool
+  def manager?: () -> bool
   def self.statuses: () -> ::ActiveSupport::HashWithIndifferentAccess[::String, ::Integer]
+  def self.alias_roles: () -> ::ActiveSupport::HashWithIndifferentAccess[::String, ::Integer]
   def self.temporary: () -> ::User::ActiveRecord_Relation
   def self.not_temporary: () -> ::User::ActiveRecord_Relation
   def self.accepted: () -> ::User::ActiveRecord_Relation
   def self.not_accepted: () -> ::User::ActiveRecord_Relation
+  def self.member: () -> ::User::ActiveRecord_Relation
+  def self.not_member: () -> ::User::ActiveRecord_Relation
+  def self.manager: () -> ::User::ActiveRecord_Relation
+  def self.not_manager: () -> ::User::ActiveRecord_Relation
   def self.all_kind_args: (untyped type, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped untyped) { (*untyped) -> untyped } -> ::User::ActiveRecord_Relation
   def self.no_arg: () -> ::User::ActiveRecord_Relation
   def self.with_attached_avatar: () -> ::User::ActiveRecord_Relation
 
   module ::User::GeneratedRelationMethods
     def statuses: () -> ::ActiveSupport::HashWithIndifferentAccess[::String, ::Integer]
+
+    def alias_roles: () -> ::ActiveSupport::HashWithIndifferentAccess[::String, ::Integer]
 
     def temporary: () -> ::User::ActiveRecord_Relation
 
@@ -474,6 +565,14 @@ class ::User < ::ApplicationRecord
     def accepted: () -> ::User::ActiveRecord_Relation
 
     def not_accepted: () -> ::User::ActiveRecord_Relation
+
+    def member: () -> ::User::ActiveRecord_Relation
+
+    def not_member: () -> ::User::ActiveRecord_Relation
+
+    def manager: () -> ::User::ActiveRecord_Relation
+
+    def not_manager: () -> ::User::ActiveRecord_Relation
 
     def all_kind_args: (untyped type, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped untyped) { (*untyped) -> untyped } -> ::User::ActiveRecord_Relation
 
