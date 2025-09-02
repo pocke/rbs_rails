@@ -2,6 +2,17 @@ require 'test_helper'
 require 'active_record'
 
 class EnumTest < Minitest::Test
+  def test_rails4_alias_attribute_enum
+    model = Class.new(ActiveRecord::Base) do
+      extend RbsRails::ActiveRecord::Enum
+
+      alias_attribute :alias_status, :status
+      enum alias_status: [:temporary, :accepted], _default: :temporary
+    end
+
+    assert_equal [[:alias_status, "temporary"], [:alias_status, "accepted"]], model.enum_definitions
+  end
+
   def test_rails4_array_enum
     model = Class.new(ActiveRecord::Base) do
       extend RbsRails::ActiveRecord::Enum
@@ -94,6 +105,17 @@ class EnumTest < Minitest::Test
                   [:timezone, "America_Chicago"],
                   [:timezone, "America_New_York"]],
                  model.enum_definitions
+  end
+
+  def test_rails7_alias_attribute_enum
+    model = Class.new(ActiveRecord::Base) do
+      extend RbsRails::ActiveRecord::Enum
+
+      alias_attribute :alias_status, :status
+      enum :alias_status, [:temporary, :accepted], default: :temporary
+    end
+
+    assert_equal [[:alias_status, "temporary"], [:alias_status, "accepted"]], model.enum_definitions
   end
 
   def test_rails7_array_enum
