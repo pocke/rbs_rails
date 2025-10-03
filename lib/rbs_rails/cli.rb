@@ -90,6 +90,7 @@ module RbsRails
     end
 
     def generate_models #: void
+      check_db_migrations!
       Rails.application.eager_load!
 
       dep_builder = DependencyBuilder.new
@@ -103,6 +104,18 @@ module RbsRails
 
       if dep_rbs = dep_builder.build
         config.signature_root_dir.join('model_dependencies.rbs').write(dep_rbs)
+      end
+    end
+
+    # Raise an error if database is not migrated to the latest version
+    def check_db_migrations! #: void
+      return unless config.check_db_migrations
+
+      if ::ActiveRecord::Migration.respond_to? :check_all_pending!
+        # Rails 7.1 or later
+        ::ActiveRecord::Migration.check_all_pending!  # steep:ignore NoMethod
+      else
+        ::ActiveRecord::Migration.check_pending!
       end
     end
 
