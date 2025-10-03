@@ -1,3 +1,5 @@
+require_relative 'util/file_writer'
+
 module RbsRails
   module Util
     MODULE_NAME = Module.instance_method(:name) #: UnboundMethod
