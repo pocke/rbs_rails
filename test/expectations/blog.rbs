@@ -1,7 +1,7 @@
 # resolve-type-names: false
 
 class ::Blog < ::ApplicationRecord
-  extend ::_ActiveRecord_Relation_ClassMethods[::Blog, ::Blog::ActiveRecord_Relation, ::Integer]
+  extend ::ActiveRecord::Base::ClassMethods[::Blog, ::Blog::ActiveRecord_Relation, ::Integer]
 
   module ::Blog::GeneratedAttributeMethods
     def id: () -> ::Integer
@@ -264,14 +264,14 @@ class ::Blog < ::ApplicationRecord
 
   class ::Blog::ActiveRecord_Relation < ::ActiveRecord::Relation
     include ::Blog::GeneratedRelationMethods
-    include ::_ActiveRecord_Relation[::Blog, ::Integer]
+    include ::ActiveRecord::Relation::Methods[::Blog, ::Integer]
     include ::Enumerable[::Blog]
   end
 
   class ::Blog::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
     include ::Enumerable[::Blog]
     include ::Blog::GeneratedRelationMethods
-    include ::_ActiveRecord_Relation[::Blog, ::Integer]
+    include ::ActiveRecord::Relation::Methods[::Blog, ::Integer]
 
     def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Blog
              | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Blog]

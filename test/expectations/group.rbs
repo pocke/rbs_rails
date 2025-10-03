@@ -1,7 +1,7 @@
 # resolve-type-names: false
 
 class ::Group < ::ApplicationRecord
-  extend ::_ActiveRecord_Relation_ClassMethods[::Group, ::Group::ActiveRecord_Relation, ::Integer]
+  extend ::ActiveRecord::Base::ClassMethods[::Group, ::Group::ActiveRecord_Relation, ::Integer]
 
   module ::Group::GeneratedAttributeMethods
     def id: () -> ::Integer
@@ -150,14 +150,14 @@ class ::Group < ::ApplicationRecord
 
   class ::Group::ActiveRecord_Relation < ::ActiveRecord::Relation
     include ::Group::GeneratedRelationMethods
-    include ::_ActiveRecord_Relation[::Group, ::Integer]
+    include ::ActiveRecord::Relation::Methods[::Group, ::Integer]
     include ::Enumerable[::Group]
   end
 
   class ::Group::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
     include ::Enumerable[::Group]
     include ::Group::GeneratedRelationMethods
-    include ::_ActiveRecord_Relation[::Group, ::Integer]
+    include ::ActiveRecord::Relation::Methods[::Group, ::Integer]
 
     def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Group
              | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Group]
