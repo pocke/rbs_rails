@@ -1,7 +1,7 @@
 # resolve-type-names: false
 
 class ::Thumbnail < ::ApplicationRecord
-  extend ::_ActiveRecord_Relation_ClassMethods[::Thumbnail, ::Thumbnail::ActiveRecord_Relation, ::Integer]
+  extend ::ActiveRecord::Base::ClassMethods[::Thumbnail, ::Thumbnail::ActiveRecord_Relation, ::Integer]
 
   module ::Thumbnail::GeneratedAttributeMethods
     def id: () -> ::Integer
@@ -185,14 +185,14 @@ class ::Thumbnail < ::ApplicationRecord
 
   class ::Thumbnail::ActiveRecord_Relation < ::ActiveRecord::Relation
     include ::Thumbnail::GeneratedRelationMethods
-    include ::_ActiveRecord_Relation[::Thumbnail, ::Integer]
+    include ::ActiveRecord::Relation::Methods[::Thumbnail, ::Integer]
     include ::Enumerable[::Thumbnail]
   end
 
   class ::Thumbnail::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
     include ::Enumerable[::Thumbnail]
     include ::Thumbnail::GeneratedRelationMethods
-    include ::_ActiveRecord_Relation[::Thumbnail, ::Integer]
+    include ::ActiveRecord::Relation::Methods[::Thumbnail, ::Integer]
 
     def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Thumbnail
              | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Thumbnail]
