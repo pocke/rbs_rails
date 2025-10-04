@@ -10,7 +10,7 @@ module RbsRails
 
     attr_accessor name: Symbol
 
-    attr_writer signature_root_dir: Pathname
+    attr_writer signature_root_dir: Pathname?
 
     # @rbs name: ::Symbol
     # @rbs &block: (RbsRails::RakeTask) -> void
@@ -18,12 +18,10 @@ module RbsRails
 
     def def_all: () -> void
 
-    def def_prepare: () -> untyped
-
     def def_generate_rbs_for_models: () -> void
 
     def def_generate_rbs_for_path_helpers: () -> void
 
-    private def signature_root_dir: () -> Pathname
+    private def signature_root_dir: () -> Pathname?
   end
 end

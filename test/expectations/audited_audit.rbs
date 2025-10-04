@@ -2,7 +2,7 @@
 
 module ::Audited
   class ::Audited::Audit < ::ActiveRecord::Base
-    extend ::_ActiveRecord_Relation_ClassMethods[::Audited::Audit, ::Audited::Audit::ActiveRecord_Relation, ::Integer]
+    extend ::ActiveRecord::Base::ClassMethods[::Audited::Audit, ::Audited::Audit::ActiveRecord_Relation, ::Integer]
 
     module ::Audited::Audit::GeneratedAttributeMethods
       def id: () -> ::Integer
@@ -656,14 +656,14 @@ module ::Audited
 
     class ::Audited::Audit::ActiveRecord_Relation < ::ActiveRecord::Relation
       include ::Audited::Audit::GeneratedRelationMethods
-      include ::_ActiveRecord_Relation[::Audited::Audit, ::Integer]
+      include ::ActiveRecord::Relation::Methods[::Audited::Audit, ::Integer]
       include ::Enumerable[::Audited::Audit]
     end
 
     class ::Audited::Audit::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
       include ::Enumerable[::Audited::Audit]
       include ::Audited::Audit::GeneratedRelationMethods
-      include ::_ActiveRecord_Relation[::Audited::Audit, ::Integer]
+      include ::ActiveRecord::Relation::Methods[::Audited::Audit, ::Integer]
 
       def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Audited::Audit
                | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Audited::Audit]
