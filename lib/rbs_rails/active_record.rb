@@ -555,9 +555,12 @@ module RbsRails
       end
 
       private def alias_columns
+        attribute_aliases = klass.attribute_aliases
+        attribute_aliases["id_value"] ||= "id" if klass.attribute_names.include?("id")
+
         mod_sig = +"module #{klass_name}::GeneratedAliasAttributeMethods\n"
         mod_sig << "include #{klass_name}::GeneratedAttributeMethods\n"
-        mod_sig << klass.attribute_aliases.map do |col|
+        mod_sig << attribute_aliases.map do |col|
           sig = <<~EOS
             alias #{col[0]} #{col[1]}
             alias #{col[0]}= #{col[1]}=
