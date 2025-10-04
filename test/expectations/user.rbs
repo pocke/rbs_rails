@@ -284,33 +284,33 @@ class ::User < ::ApplicationRecord
 
     def contact_info_for_database: () -> ::String?
 
-    def family_tree: () -> untyped
+    def family_tree: () -> ::String?
 
-    def family_tree=: (untyped) -> untyped
+    def family_tree=: (::String?) -> ::String?
 
     def family_tree?: () -> bool
 
     def family_tree_changed?: () -> bool
 
-    def family_tree_change: () -> [ untyped, untyped ]
+    def family_tree_change: () -> [ ::String?, ::String? ]
 
     def family_tree_will_change!: () -> void
 
-    def family_tree_was: () -> untyped
+    def family_tree_was: () -> ::String?
 
     def family_tree_previously_changed?: () -> bool
 
-    def family_tree_previous_change: () -> ::Array[untyped]?
+    def family_tree_previous_change: () -> ::Array[::String?]?
 
-    def family_tree_previously_was: () -> untyped
+    def family_tree_previously_was: () -> ::String?
 
-    def family_tree_before_last_save: () -> untyped
+    def family_tree_before_last_save: () -> ::String?
 
-    def family_tree_change_to_be_saved: () -> ::Array[untyped]?
+    def family_tree_change_to_be_saved: () -> ::Array[::String?]?
 
-    def family_tree_in_database: () -> untyped
+    def family_tree_in_database: () -> ::String?
 
-    def saved_change_to_family_tree: () -> ::Array[untyped]?
+    def saved_change_to_family_tree: () -> ::Array[::String?]?
 
     def saved_change_to_family_tree?: () -> bool
 
