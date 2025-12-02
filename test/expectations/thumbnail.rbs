@@ -224,9 +224,9 @@ class ::Thumbnail < ::ApplicationRecord
   end
 
   class ::Thumbnail::ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Enumerable[::Thumbnail]
     include ::Thumbnail::GeneratedRelationMethods
     include ::ActiveRecord::Relation::Methods[::Thumbnail, ::Integer]
-    include ::Enumerable[::Thumbnail]
   end
 
   class ::Thumbnail::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy

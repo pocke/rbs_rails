@@ -303,9 +303,9 @@ class ::Blog < ::ApplicationRecord
   end
 
   class ::Blog::ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Enumerable[::Blog]
     include ::Blog::GeneratedRelationMethods
     include ::ActiveRecord::Relation::Methods[::Blog, ::Integer]
-    include ::Enumerable[::Blog]
   end
 
   class ::Blog::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
