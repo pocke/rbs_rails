@@ -9,22 +9,6 @@ sources:
 path: .gem_rbs_collection
 
 gems:
-  # Ignores - Gemfile.lock contains them but their RBSs are unnecessary
-  - name: steep
-    ignore: true
-  - name: nokogiri
-    ignore: true
-  - name: ast
-    ignore: true
-  - name: rainbow
-    ignore: true
-  - name: listen
-    ignore: true
-
-  # ignore RBS Rails itself
-  - name: rbs_rails
-    ignore: true
-
   # They'are necessary to load RBS gem.
   # See https://github.com/ruby/rbs/pull/921
   - name: logger

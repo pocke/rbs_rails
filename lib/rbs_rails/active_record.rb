@@ -42,7 +42,7 @@ module RbsRails
           # resolve-type-names: false
 
           #{header}
-            extend ::_ActiveRecord_Relation_ClassMethods[#{klass_name}, #{relation_class_name}, #{pk_type}]
+            extend ::ActiveRecord::Base::ClassMethods[#{klass_name}, #{relation_class_name}, #{pk_type}]
 
           #{columns}
           #{alias_columns}
@@ -86,9 +86,9 @@ module RbsRails
       private def relation_decl #: String
         <<~RBS
           class #{relation_class_name} < ::ActiveRecord::Relation
-            include #{generated_relation_methods_name}
-            include ::_ActiveRecord_Relation[#{klass_name}, #{pk_type}]
             include ::Enumerable[#{klass_name}]
+            include #{generated_relation_methods_name}
+            include ::ActiveRecord::Relation::Methods[#{klass_name}, #{pk_type}]
           end
         RBS
       end
@@ -98,7 +98,7 @@ module RbsRails
           class #{klass_name}::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
             include ::Enumerable[#{klass_name}]
             include #{generated_relation_methods_name}
-            include ::_ActiveRecord_Relation[#{klass_name}, #{pk_type}]
+            include ::ActiveRecord::Relation::Methods[#{klass_name}, #{pk_type}]
 
             def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> #{klass_name}
                      | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[#{klass_name}]
@@ -556,9 +556,12 @@ module RbsRails
       end
 
       private def alias_columns
+        attribute_aliases = klass.attribute_aliases
+        attribute_aliases["id_value"] ||= "id" if klass.attribute_names.include?("id")
+
         mod_sig = +"module #{klass_name}::GeneratedAliasAttributeMethods\n"
         mod_sig << "include #{klass_name}::GeneratedAttributeMethods\n"
-        mod_sig << klass.attribute_aliases.map do |col|
+        mod_sig << attribute_aliases.map do |col|
           sig = <<~EOS
             alias #{col[0]} #{col[1]}
             alias #{col[0]}= #{col[1]}=
