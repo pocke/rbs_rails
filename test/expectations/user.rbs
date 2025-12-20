@@ -568,9 +568,9 @@ class ::User < ::ApplicationRecord
   end
 
   class ::User::ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Enumerable[::User]
     include ::User::GeneratedRelationMethods
     include ::ActiveRecord::Relation::Methods[::User, ::Integer]
-    include ::Enumerable[::User]
   end
 
   class ::User::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy

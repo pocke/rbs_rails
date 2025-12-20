@@ -189,9 +189,9 @@ class ::Group < ::ApplicationRecord
   end
 
   class ::Group::ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Enumerable[::Group]
     include ::Group::GeneratedRelationMethods
     include ::ActiveRecord::Relation::Methods[::Group, ::Integer]
-    include ::Enumerable[::Group]
   end
 
   class ::Group::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy

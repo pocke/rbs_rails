@@ -695,9 +695,9 @@ module ::Audited
     end
 
     class ::Audited::Audit::ActiveRecord_Relation < ::ActiveRecord::Relation
+      include ::Enumerable[::Audited::Audit]
       include ::Audited::Audit::GeneratedRelationMethods
       include ::ActiveRecord::Relation::Methods[::Audited::Audit, ::Integer]
-      include ::Enumerable[::Audited::Audit]
     end
 
     class ::Audited::Audit::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy

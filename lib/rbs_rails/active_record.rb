@@ -86,9 +86,9 @@ module RbsRails
       private def relation_decl #: String
         <<~RBS
           class #{relation_class_name} < ::ActiveRecord::Relation
+            include ::Enumerable[#{klass_name}]
             include #{generated_relation_methods_name}
             include ::ActiveRecord::Relation::Methods[#{klass_name}, #{pk_type}]
-            include ::Enumerable[#{klass_name}]
           end
         RBS
       end
