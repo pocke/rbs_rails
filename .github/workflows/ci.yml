@@ -24,10 +24,4 @@ jobs:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - run: bin/setup
-      # Skip to test with Ruby HEAD because rbs-3.9.4 crashes with Ruby 3.5.0
-      # ref: https://github.com/ruby/rbs/pull/2537/commits/c9389681acf10c9fdd34601e74153011919b8544
-      if: matrix.ruby != 'head'
     - run: bundle exec rake
-      # Skip to test with Ruby HEAD because rbs-3.9.4 crashes with Ruby 3.5.0
-      # ref: https://github.com/ruby/rbs/pull/2537/commits/c9389681acf10c9fdd34601e74153011919b8544
-      if: matrix.ruby != 'head'
