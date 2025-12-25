@@ -11,7 +11,7 @@ module ::Audited
 
       def id?: () -> bool
 
-      def id_changed?: () -> bool
+      def id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
       def id_change: () -> [ ::Integer?, ::Integer? ]
 
@@ -19,7 +19,7 @@ module ::Audited
 
       def id_was: () -> ::Integer?
 
-      def id_previously_changed?: () -> bool
+      def id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
       def id_previous_change: () -> ::Array[::Integer?]?
 
@@ -51,7 +51,7 @@ module ::Audited
 
       def auditable_id?: () -> bool
 
-      def auditable_id_changed?: () -> bool
+      def auditable_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
       def auditable_id_change: () -> [ ::Integer?, ::Integer? ]
 
@@ -59,7 +59,7 @@ module ::Audited
 
       def auditable_id_was: () -> ::Integer?
 
-      def auditable_id_previously_changed?: () -> bool
+      def auditable_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
       def auditable_id_previous_change: () -> ::Array[::Integer?]?
 
@@ -91,7 +91,7 @@ module ::Audited
 
       def auditable_type?: () -> bool
 
-      def auditable_type_changed?: () -> bool
+      def auditable_type_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
       def auditable_type_change: () -> [ ::String?, ::String? ]
 
@@ -99,7 +99,7 @@ module ::Audited
 
       def auditable_type_was: () -> ::String?
 
-      def auditable_type_previously_changed?: () -> bool
+      def auditable_type_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
       def auditable_type_previous_change: () -> ::Array[::String?]?
 
@@ -131,7 +131,7 @@ module ::Audited
 
       def associated_id?: () -> bool
 
-      def associated_id_changed?: () -> bool
+      def associated_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
       def associated_id_change: () -> [ ::Integer?, ::Integer? ]
 
@@ -139,7 +139,7 @@ module ::Audited
 
       def associated_id_was: () -> ::Integer?
 
-      def associated_id_previously_changed?: () -> bool
+      def associated_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
       def associated_id_previous_change: () -> ::Array[::Integer?]?
 
@@ -171,7 +171,7 @@ module ::Audited
 
       def associated_type?: () -> bool
 
-      def associated_type_changed?: () -> bool
+      def associated_type_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
       def associated_type_change: () -> [ ::String?, ::String? ]
 
@@ -179,7 +179,7 @@ module ::Audited
 
       def associated_type_was: () -> ::String?
 
-      def associated_type_previously_changed?: () -> bool
+      def associated_type_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
       def associated_type_previous_change: () -> ::Array[::String?]?
 
@@ -211,7 +211,7 @@ module ::Audited
 
       def user_id?: () -> bool
 
-      def user_id_changed?: () -> bool
+      def user_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
       def user_id_change: () -> [ ::Integer?, ::Integer? ]
 
@@ -219,7 +219,7 @@ module ::Audited
 
       def user_id_was: () -> ::Integer?
 
-      def user_id_previously_changed?: () -> bool
+      def user_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
       def user_id_previous_change: () -> ::Array[::Integer?]?
 
@@ -251,7 +251,7 @@ module ::Audited
 
       def user_type?: () -> bool
 
-      def user_type_changed?: () -> bool
+      def user_type_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
       def user_type_change: () -> [ ::String?, ::String? ]
 
@@ -259,7 +259,7 @@ module ::Audited
 
       def user_type_was: () -> ::String?
 
-      def user_type_previously_changed?: () -> bool
+      def user_type_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
       def user_type_previous_change: () -> ::Array[::String?]?
 
@@ -291,7 +291,7 @@ module ::Audited
 
       def username?: () -> bool
 
-      def username_changed?: () -> bool
+      def username_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
       def username_change: () -> [ ::String?, ::String? ]
 
@@ -299,7 +299,7 @@ module ::Audited
 
       def username_was: () -> ::String?
 
-      def username_previously_changed?: () -> bool
+      def username_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
       def username_previous_change: () -> ::Array[::String?]?
 
@@ -331,7 +331,7 @@ module ::Audited
 
       def action?: () -> bool
 
-      def action_changed?: () -> bool
+      def action_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
       def action_change: () -> [ ::String?, ::String? ]
 
@@ -339,7 +339,7 @@ module ::Audited
 
       def action_was: () -> ::String?
 
-      def action_previously_changed?: () -> bool
+      def action_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
       def action_previous_change: () -> ::Array[::String?]?
 
@@ -371,7 +371,7 @@ module ::Audited
 
       def audited_changes?: () -> bool
 
-      def audited_changes_changed?: () -> bool
+      def audited_changes_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
       def audited_changes_change: () -> [ ::String?, ::String? ]
 
@@ -379,7 +379,7 @@ module ::Audited
 
       def audited_changes_was: () -> ::String?
 
-      def audited_changes_previously_changed?: () -> bool
+      def audited_changes_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
       def audited_changes_previous_change: () -> ::Array[::String?]?
 
@@ -411,7 +411,7 @@ module ::Audited
 
       def version?: () -> bool
 
-      def version_changed?: () -> bool
+      def version_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
       def version_change: () -> [ ::Integer?, ::Integer? ]
 
@@ -419,7 +419,7 @@ module ::Audited
 
       def version_was: () -> ::Integer?
 
-      def version_previously_changed?: () -> bool
+      def version_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
       def version_previous_change: () -> ::Array[::Integer?]?
 
@@ -451,7 +451,7 @@ module ::Audited
 
       def comment?: () -> bool
 
-      def comment_changed?: () -> bool
+      def comment_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
       def comment_change: () -> [ ::String?, ::String? ]
 
@@ -459,7 +459,7 @@ module ::Audited
 
       def comment_was: () -> ::String?
 
-      def comment_previously_changed?: () -> bool
+      def comment_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
       def comment_previous_change: () -> ::Array[::String?]?
 
@@ -491,7 +491,7 @@ module ::Audited
 
       def remote_address?: () -> bool
 
-      def remote_address_changed?: () -> bool
+      def remote_address_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
       def remote_address_change: () -> [ ::String?, ::String? ]
 
@@ -499,7 +499,7 @@ module ::Audited
 
       def remote_address_was: () -> ::String?
 
-      def remote_address_previously_changed?: () -> bool
+      def remote_address_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
       def remote_address_previous_change: () -> ::Array[::String?]?
 
@@ -531,7 +531,7 @@ module ::Audited
 
       def request_uuid?: () -> bool
 
-      def request_uuid_changed?: () -> bool
+      def request_uuid_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
       def request_uuid_change: () -> [ ::String?, ::String? ]
 
@@ -539,7 +539,7 @@ module ::Audited
 
       def request_uuid_was: () -> ::String?
 
-      def request_uuid_previously_changed?: () -> bool
+      def request_uuid_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
       def request_uuid_previous_change: () -> ::Array[::String?]?
 
@@ -571,7 +571,7 @@ module ::Audited
 
       def created_at?: () -> bool
 
-      def created_at_changed?: () -> bool
+      def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
 
       def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
 
@@ -579,7 +579,7 @@ module ::Audited
 
       def created_at_was: () -> ::ActiveSupport::TimeWithZone?
 
-      def created_at_previously_changed?: () -> bool
+      def created_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
 
       def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
 
