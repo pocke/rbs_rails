@@ -132,7 +132,7 @@ module RbsRails
       path.dirname.mkpath
 
       sig = RbsRails::ActiveRecord.class_to_rbs(klass)
-      path.write sig
+      Util::FileWriter.new(path).write sig
 
       true
     end
@@ -142,7 +142,7 @@ module RbsRails
       path.dirname.mkpath
 
       sig = RbsRails::PathHelpers.generate
-      path.write sig
+      Util::FileWriter.new(path).write sig
     end
 
     def create_option_parser #: OptionParser
