@@ -3,9 +3,7 @@
 module RbsRails
   module ActiveRecord
     module Enum
-      RAILS4_IGNORED_ENUM_KEYS: ::Array[untyped]
-
-      RAILS7_IGNORED_ENUM_KEYS: ::Array[untyped]
+      IGNORED_ENUM_KEYS: ::Array[untyped]
 
       type definitions = Hash[Symbol, Array[Symbol] | Hash[Symbol, untyped]]
 
