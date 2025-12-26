@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_09_02_022119) do
+ActiveRecord::Schema[7.2].define(version: 2025_09_02_022119) do
   create_table "audits", force: :cascade do |t|
     t.integer "auditable_id"
     t.string "auditable_type"
@@ -47,7 +47,22 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_02_022119) do
     t.integer "blog_id", null: false
   end
 
+  create_table "books", force: :cascade do |t|
+    t.integer "order_id"
+    t.integer "price"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "groups", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "orders", primary_key: ["shop_id", "id"], force: :cascade do |t|
+    t.integer "id"
+    t.integer "shop_id"
+    t.integer "price"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
