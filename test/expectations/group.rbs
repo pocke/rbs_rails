@@ -1,9 +1,9 @@
 # resolve-type-names: false
 
-class ::Blog < ::ApplicationRecord
-  extend ::ActiveRecord::Base::ClassMethods[::Blog, ::Blog::ActiveRecord_Relation, ::Integer]
+class ::Group < ::ApplicationRecord
+  extend ::ActiveRecord::Base::ClassMethods[::Group, ::Group::ActiveRecord_Relation, ::Integer]
 
-  module ::Blog::GeneratedAttributeMethods
+  module ::Group::GeneratedAttributeMethods
     def id: () -> ::Integer
 
     def id=: (::Integer) -> ::Integer
@@ -43,126 +43,6 @@ class ::Blog < ::ApplicationRecord
     def id_before_type_cast: () -> ::Integer
 
     def id_for_database: () -> ::Integer
-
-    def title: () -> ::String
-
-    def title=: (::String) -> ::String
-
-    def title?: () -> bool
-
-    def title_changed?: () -> bool
-
-    def title_change: () -> [ ::String?, ::String? ]
-
-    def title_will_change!: () -> void
-
-    def title_was: () -> ::String?
-
-    def title_previously_changed?: () -> bool
-
-    def title_previous_change: () -> ::Array[::String?]?
-
-    def title_previously_was: () -> ::String?
-
-    def title_before_last_save: () -> ::String?
-
-    def title_change_to_be_saved: () -> ::Array[::String?]?
-
-    def title_in_database: () -> ::String?
-
-    def saved_change_to_title: () -> ::Array[::String?]?
-
-    def saved_change_to_title?: () -> bool
-
-    def will_save_change_to_title?: () -> bool
-
-    def restore_title!: () -> void
-
-    def clear_title_change: () -> void
-
-    def title_before_type_cast: () -> ::String
-
-    def title_for_database: () -> ::String
-
-    def description: () -> ::String
-
-    def description=: (::String) -> ::String
-
-    def description?: () -> bool
-
-    def description_changed?: () -> bool
-
-    def description_change: () -> [ ::String?, ::String? ]
-
-    def description_will_change!: () -> void
-
-    def description_was: () -> ::String?
-
-    def description_previously_changed?: () -> bool
-
-    def description_previous_change: () -> ::Array[::String?]?
-
-    def description_previously_was: () -> ::String?
-
-    def description_before_last_save: () -> ::String?
-
-    def description_change_to_be_saved: () -> ::Array[::String?]?
-
-    def description_in_database: () -> ::String?
-
-    def saved_change_to_description: () -> ::Array[::String?]?
-
-    def saved_change_to_description?: () -> bool
-
-    def will_save_change_to_description?: () -> bool
-
-    def restore_description!: () -> void
-
-    def clear_description_change: () -> void
-
-    def description_before_type_cast: () -> ::String
-
-    def description_for_database: () -> ::String
-
-    def user_id: () -> ::Integer
-
-    def user_id=: (::Integer) -> ::Integer
-
-    def user_id?: () -> bool
-
-    def user_id_changed?: () -> bool
-
-    def user_id_change: () -> [ ::Integer?, ::Integer? ]
-
-    def user_id_will_change!: () -> void
-
-    def user_id_was: () -> ::Integer?
-
-    def user_id_previously_changed?: () -> bool
-
-    def user_id_previous_change: () -> ::Array[::Integer?]?
-
-    def user_id_previously_was: () -> ::Integer?
-
-    def user_id_before_last_save: () -> ::Integer?
-
-    def user_id_change_to_be_saved: () -> ::Array[::Integer?]?
-
-    def user_id_in_database: () -> ::Integer?
-
-    def saved_change_to_user_id: () -> ::Array[::Integer?]?
-
-    def saved_change_to_user_id?: () -> bool
-
-    def will_save_change_to_user_id?: () -> bool
-
-    def restore_user_id!: () -> void
-
-    def clear_user_id_change: () -> void
-
-    def user_id_before_type_cast: () -> ::Integer
-
-    def user_id_for_database: () -> ::Integer
 
     def created_at: () -> ::ActiveSupport::TimeWithZone
 
@@ -244,9 +124,9 @@ class ::Blog < ::ApplicationRecord
 
     def updated_at_for_database: () -> ::Time
   end
-  include ::Blog::GeneratedAttributeMethods
-  module ::Blog::GeneratedAliasAttributeMethods
-    include ::Blog::GeneratedAttributeMethods
+  include ::Group::GeneratedAttributeMethods
+  module ::Group::GeneratedAliasAttributeMethods
+    include ::Group::GeneratedAttributeMethods
 
     alias id_value id
 
@@ -288,44 +168,50 @@ class ::Blog < ::ApplicationRecord
 
     alias id_value_for_database id_for_database
   end
-  include ::Blog::GeneratedAliasAttributeMethods
-
+  include ::Group::GeneratedAliasAttributeMethods
   def users: () -> ::User::ActiveRecord_Associations_CollectionProxy
   def users=: (::User::ActiveRecord_Associations_CollectionProxy | ::Array[::User]) -> (::User::ActiveRecord_Associations_CollectionProxy | ::Array[::User])
   def user_ids: () -> ::Array[::Integer]
   def user_ids=: (::Array[::Integer]) -> ::Array[::Integer]
 
-  module ::Blog::GeneratedAssociationMethods
+  def thumbnail: () -> ::Thumbnail?
+  def thumbnail=: (::Thumbnail?) -> ::Thumbnail?
+  def build_thumbnail: (?untyped) -> ::Thumbnail
+  def create_thumbnail: (?untyped) -> ::Thumbnail
+  def create_thumbnail!: (?untyped) -> ::Thumbnail
+  def reload_thumbnail: () -> ::Thumbnail?
+
+  module ::Group::GeneratedAssociationMethods
   end
-  include ::Blog::GeneratedAssociationMethods
+  include ::Group::GeneratedAssociationMethods
 
-  module ::Blog::GeneratedRelationMethods
+  module ::Group::GeneratedRelationMethods
   end
 
-  class ::Blog::ActiveRecord_Relation < ::ActiveRecord::Relation
-    include ::Enumerable[::Blog]
-    include ::Blog::GeneratedRelationMethods
-    include ::ActiveRecord::Relation::Methods[::Blog, ::Integer]
+  class ::Group::ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Enumerable[::Group]
+    include ::Group::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::Group, ::Integer]
   end
 
-  class ::Blog::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
-    include ::Enumerable[::Blog]
-    include ::Blog::GeneratedRelationMethods
-    include ::ActiveRecord::Relation::Methods[::Blog, ::Integer]
+  class ::Group::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Enumerable[::Group]
+    include ::Group::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::Group, ::Integer]
 
-    def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Blog
-             | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Blog]
-    def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Blog
-              | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Blog]
-    def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Blog
-               | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Blog]
-    def reload: () -> ::Array[::Blog]
+    def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Group
+             | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Group]
+    def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Group
+              | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Group]
+    def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Group
+               | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Group]
+    def reload: () -> ::Array[::Group]
 
-    def replace: (::Array[::Blog]) -> void
-    def delete: (*::Blog | ::Integer) -> ::Array[::Blog]
-    def destroy: (*::Blog | ::Integer) -> ::Array[::Blog]
-    def <<: (*::Blog | ::Array[::Blog]) -> self
-    def prepend: (*::Blog | ::Array[::Blog]) -> self
+    def replace: (::Array[::Group]) -> void
+    def delete: (*::Group | ::Integer) -> ::Array[::Group]
+    def destroy: (*::Group | ::Integer) -> ::Array[::Group]
+    def <<: (*::Group | ::Array[::Group]) -> self
+    def prepend: (*::Group | ::Array[::Group]) -> self
   end
 end
 
@@ -334,4 +220,6 @@ end
 class ::User < ::ApplicationRecord
 end
 class ::User::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class ::Thumbnail < ::ApplicationRecord
 end

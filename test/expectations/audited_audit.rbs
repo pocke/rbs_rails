@@ -2,7 +2,7 @@
 
 module ::Audited
   class ::Audited::Audit < ::ActiveRecord::Base
-    extend ::_ActiveRecord_Relation_ClassMethods[::Audited::Audit, ::Audited::Audit::ActiveRecord_Relation, ::Integer]
+    extend ::ActiveRecord::Base::ClassMethods[::Audited::Audit, ::Audited::Audit::ActiveRecord_Relation, ::Integer]
 
     module ::Audited::Audit::GeneratedAttributeMethods
       def id: () -> ::Integer
@@ -608,6 +608,46 @@ module ::Audited
     include ::Audited::Audit::GeneratedAttributeMethods
     module ::Audited::Audit::GeneratedAliasAttributeMethods
       include ::Audited::Audit::GeneratedAttributeMethods
+
+      alias id_value id
+
+      alias id_value= id=
+
+      alias id_value? id?
+
+      alias id_value_changed? id_changed?
+
+      alias id_value_change id_change
+
+      alias id_value_will_change! id_will_change!
+
+      alias id_value_was id_was
+
+      alias id_value_previously_changed? id_previously_changed?
+
+      alias id_value_previous_change id_previous_change
+
+      alias id_value_previously_was id_previously_was
+
+      alias id_value_before_last_save id_before_last_save
+
+      alias id_value_change_to_be_saved id_change_to_be_saved
+
+      alias id_value_in_database id_in_database
+
+      alias saved_change_to_id_value saved_change_to_id
+
+      alias saved_change_to_id_value? saved_change_to_id?
+
+      alias will_save_change_to_id_value? will_save_change_to_id?
+
+      alias restore_id_value! restore_id!
+
+      alias clear_id_value_change clear_id_change
+
+      alias id_value_before_type_cast id_before_type_cast
+
+      alias id_value_for_database id_for_database
     end
     include ::Audited::Audit::GeneratedAliasAttributeMethods
 
@@ -655,15 +695,15 @@ module ::Audited
     end
 
     class ::Audited::Audit::ActiveRecord_Relation < ::ActiveRecord::Relation
-      include ::Audited::Audit::GeneratedRelationMethods
-      include ::_ActiveRecord_Relation[::Audited::Audit, ::Integer]
       include ::Enumerable[::Audited::Audit]
+      include ::Audited::Audit::GeneratedRelationMethods
+      include ::ActiveRecord::Relation::Methods[::Audited::Audit, ::Integer]
     end
 
     class ::Audited::Audit::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
       include ::Enumerable[::Audited::Audit]
       include ::Audited::Audit::GeneratedRelationMethods
-      include ::_ActiveRecord_Relation[::Audited::Audit, ::Integer]
+      include ::ActiveRecord::Relation::Methods[::Audited::Audit, ::Integer]
 
       def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Audited::Audit
                | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Audited::Audit]
@@ -680,4 +720,7 @@ module ::Audited
       def prepend: (*::Audited::Audit | ::Array[::Audited::Audit]) -> self
     end
   end
+end
+
+module ::Audited
 end

@@ -1,5 +1,6 @@
 require 'minitest'
 require 'minitest/autorun'
+require 'minitest/hooks'
 
 require 'pathname'
 require 'rbs_rails'
