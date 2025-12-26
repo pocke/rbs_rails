@@ -214,3 +214,12 @@ class ::Group < ::ApplicationRecord
     def prepend: (*::Group | ::Array[::Group]) -> self
   end
 end
+
+class ::ApplicationRecord < ::ActiveRecord::Base
+end
+class ::User < ::ApplicationRecord
+end
+class ::User::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class ::Thumbnail < ::ApplicationRecord
+end

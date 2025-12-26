@@ -19,6 +19,11 @@ module RbsRails
       ])
     end
 
+    # @rbs name: String
+    def <<(name) #: Array[String]
+      deps << name
+    end
+
     def build #: String | nil
       dep_rbs = +""
       deps.uniq!
