@@ -531,11 +531,11 @@ module RbsRails
             def #{col.name}: () -> #{column_type}
             def #{col.name}=: (#{column_type}) -> #{column_type}
             def #{col.name}?: () -> bool
-            def #{col.name}_changed?: () -> bool
+            def #{col.name}_changed?: (?from: #{class_name_opt}, ?to: #{class_name_opt}) -> bool
             def #{col.name}_change: () -> [#{class_name_opt}, #{class_name_opt}]
             def #{col.name}_will_change!: () -> void
             def #{col.name}_was: () -> #{class_name_opt}
-            def #{col.name}_previously_changed?: () -> bool
+            def #{col.name}_previously_changed?: (?from: #{class_name_opt}, ?to: #{class_name_opt}) -> bool
             def #{col.name}_previous_change: () -> ::Array[#{class_name_opt}]?
             def #{col.name}_previously_was: () -> #{class_name_opt}
             def #{col.name}_before_last_save: () -> #{class_name_opt}

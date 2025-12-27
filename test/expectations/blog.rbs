@@ -10,7 +10,7 @@ class ::Blog < ::ApplicationRecord
 
     def id?: () -> bool
 
-    def id_changed?: () -> bool
+    def id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def id_change: () -> [ ::Integer?, ::Integer? ]
 
@@ -18,7 +18,7 @@ class ::Blog < ::ApplicationRecord
 
     def id_was: () -> ::Integer?
 
-    def id_previously_changed?: () -> bool
+    def id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def id_previous_change: () -> ::Array[::Integer?]?
 
@@ -50,7 +50,7 @@ class ::Blog < ::ApplicationRecord
 
     def title?: () -> bool
 
-    def title_changed?: () -> bool
+    def title_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
     def title_change: () -> [ ::String?, ::String? ]
 
@@ -58,7 +58,7 @@ class ::Blog < ::ApplicationRecord
 
     def title_was: () -> ::String?
 
-    def title_previously_changed?: () -> bool
+    def title_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
     def title_previous_change: () -> ::Array[::String?]?
 
@@ -90,7 +90,7 @@ class ::Blog < ::ApplicationRecord
 
     def description?: () -> bool
 
-    def description_changed?: () -> bool
+    def description_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
     def description_change: () -> [ ::String?, ::String? ]
 
@@ -98,7 +98,7 @@ class ::Blog < ::ApplicationRecord
 
     def description_was: () -> ::String?
 
-    def description_previously_changed?: () -> bool
+    def description_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
     def description_previous_change: () -> ::Array[::String?]?
 
@@ -130,7 +130,7 @@ class ::Blog < ::ApplicationRecord
 
     def user_id?: () -> bool
 
-    def user_id_changed?: () -> bool
+    def user_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def user_id_change: () -> [ ::Integer?, ::Integer? ]
 
@@ -138,7 +138,7 @@ class ::Blog < ::ApplicationRecord
 
     def user_id_was: () -> ::Integer?
 
-    def user_id_previously_changed?: () -> bool
+    def user_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def user_id_previous_change: () -> ::Array[::Integer?]?
 
@@ -170,7 +170,7 @@ class ::Blog < ::ApplicationRecord
 
     def created_at?: () -> bool
 
-    def created_at_changed?: () -> bool
+    def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
 
     def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
 
@@ -178,7 +178,7 @@ class ::Blog < ::ApplicationRecord
 
     def created_at_was: () -> ::ActiveSupport::TimeWithZone?
 
-    def created_at_previously_changed?: () -> bool
+    def created_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
 
     def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
 
@@ -210,7 +210,7 @@ class ::Blog < ::ApplicationRecord
 
     def updated_at?: () -> bool
 
-    def updated_at_changed?: () -> bool
+    def updated_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
 
     def updated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
 
@@ -218,7 +218,7 @@ class ::Blog < ::ApplicationRecord
 
     def updated_at_was: () -> ::ActiveSupport::TimeWithZone?
 
-    def updated_at_previously_changed?: () -> bool
+    def updated_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
 
     def updated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
 
