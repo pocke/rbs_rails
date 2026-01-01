@@ -90,25 +90,31 @@ module RbsRails
     end
 
     def generate_models #: void
+      check_db_migrations!
       Rails.application.eager_load!
 
-      dep_builder = DependencyBuilder.new
-
       ::ActiveRecord::Base.descendants.each do |klass|
-        generate_single_model(klass, dep_builder)
+        generate_single_model(klass)
       rescue => e
         puts "Error generating RBS for #{klass.name} model"
         raise e
       end
+    end
 
-      if dep_rbs = dep_builder.build
-        config.signature_root_dir.join('model_dependencies.rbs').write(dep_rbs)
+    # Raise an error if database is not migrated to the latest version
+    def check_db_migrations! #: void
+      return unless config.check_db_migrations
+
+      if ::ActiveRecord::Migration.respond_to? :check_all_pending!
+        # Rails 7.1 or later
+        ::ActiveRecord::Migration.check_all_pending!  # steep:ignore NoMethod
+      else
+        ::ActiveRecord::Migration.check_pending!
       end
     end
 
     # @rbs klass: singleton(ActiveRecord::Base)
-    # @rbs dep_builder: DependencyBuilder
-    def generate_single_model(klass, dep_builder) #: bool
+    def generate_single_model(klass) #: bool
       return false if config.ignored_model?(klass)
       return false unless RbsRails::ActiveRecord.generatable?(klass)
 
@@ -125,9 +131,8 @@ module RbsRails
       path = config.signature_root_dir / rbs_relative_path
       path.dirname.mkpath
 
-      sig = RbsRails::ActiveRecord.class_to_rbs(klass, dependencies: dep_builder.deps)
-      path.write sig
-      dep_builder.done << klass.name
+      sig = RbsRails::ActiveRecord.class_to_rbs(klass)
+      Util::FileWriter.new(path).write sig
 
       true
     end
@@ -137,7 +142,7 @@ module RbsRails
       path.dirname.mkpath
 
       sig = RbsRails::PathHelpers.generate
-      path.write sig
+      Util::FileWriter.new(path).write sig
     end
 
     def create_option_parser #: OptionParser

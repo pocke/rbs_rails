@@ -3,8 +3,7 @@ require 'active_support/lazy_load_hooks'
 module RbsRails
   module ActiveRecord
     module Enum
-      RAILS4_IGNORED_ENUM_KEYS = %i[_prefix _suffix _default _scopes]
-      RAILS7_IGNORED_ENUM_KEYS = %i[prefix suffix default scopes]
+      IGNORED_ENUM_KEYS = %i[prefix suffix default scopes]
 
       # @rbs!
       #   type definitions = Hash[Symbol, Array[Symbol] | Hash[Symbol, untyped]]
@@ -16,22 +15,16 @@ module RbsRails
       def enum(*args, **options) #: void
         super  # steep:ignore
 
-        if args.empty?
-          # Rails 4.1 style
-          definitions = options.slice!(*RAILS4_IGNORED_ENUM_KEYS)
+        name, values = args #: [Symbol, Array[Symbol]?]
+        if values
+          # Enum definitions are passed via array argument
+          #   ex. enum :status, [:temporary, :accepted]
+          definitions = { name => values }
         else
-          # Rails 7 style
-          name, values = args #: [Symbol, Array[Symbol]?]
-          if values
-            # Enum definitions are passed via array argument
-            #   ex. enum :status, [:temporary, :accepted]
-            definitions = { name => values }
-          else
-            # Enum definitions are passed via keyword arguments
-            #   ex. enum :status, temporary: 1, accepted: 2
-            values = options.slice!(*RAILS7_IGNORED_ENUM_KEYS)
-            definitions = { name => values }
-          end
+          # Enum definitions are passed via keyword arguments
+          #   ex. enum :status, temporary: 1, accepted: 2
+          values = options.slice!(*IGNORED_ENUM_KEYS)
+          definitions = { name => values }
         end
 
         @enum_definitions ||= [] #: enum_definitions

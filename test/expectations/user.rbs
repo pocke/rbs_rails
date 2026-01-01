@@ -10,7 +10,7 @@ class ::User < ::ApplicationRecord
 
     def id?: () -> bool
 
-    def id_changed?: () -> bool
+    def id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def id_change: () -> [ ::Integer?, ::Integer? ]
 
@@ -18,7 +18,7 @@ class ::User < ::ApplicationRecord
 
     def id_was: () -> ::Integer?
 
-    def id_previously_changed?: () -> bool
+    def id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def id_previous_change: () -> ::Array[::Integer?]?
 
@@ -50,7 +50,7 @@ class ::User < ::ApplicationRecord
 
     def name?: () -> bool
 
-    def name_changed?: () -> bool
+    def name_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
     def name_change: () -> [ ::String?, ::String? ]
 
@@ -58,7 +58,7 @@ class ::User < ::ApplicationRecord
 
     def name_was: () -> ::String?
 
-    def name_previously_changed?: () -> bool
+    def name_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
     def name_previous_change: () -> ::Array[::String?]?
 
@@ -90,7 +90,7 @@ class ::User < ::ApplicationRecord
 
     def group_id?: () -> bool
 
-    def group_id_changed?: () -> bool
+    def group_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def group_id_change: () -> [ ::Integer?, ::Integer? ]
 
@@ -98,7 +98,7 @@ class ::User < ::ApplicationRecord
 
     def group_id_was: () -> ::Integer?
 
-    def group_id_previously_changed?: () -> bool
+    def group_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def group_id_previous_change: () -> ::Array[::Integer?]?
 
@@ -130,7 +130,7 @@ class ::User < ::ApplicationRecord
 
     def age?: () -> bool
 
-    def age_changed?: () -> bool
+    def age_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def age_change: () -> [ ::Integer?, ::Integer? ]
 
@@ -138,7 +138,7 @@ class ::User < ::ApplicationRecord
 
     def age_was: () -> ::Integer?
 
-    def age_previously_changed?: () -> bool
+    def age_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def age_previous_change: () -> ::Array[::Integer?]?
 
@@ -170,7 +170,7 @@ class ::User < ::ApplicationRecord
 
     def status?: () -> bool
 
-    def status_changed?: () -> bool
+    def status_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
     def status_change: () -> [ ::String?, ::String? ]
 
@@ -178,7 +178,7 @@ class ::User < ::ApplicationRecord
 
     def status_was: () -> ::String?
 
-    def status_previously_changed?: () -> bool
+    def status_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
     def status_previous_change: () -> ::Array[::String?]?
 
@@ -210,7 +210,7 @@ class ::User < ::ApplicationRecord
 
     def phone_numbers?: () -> bool
 
-    def phone_numbers_changed?: () -> bool
+    def phone_numbers_changed?: (?from: ::Array[untyped]?, ?to: ::Array[untyped]?) -> bool
 
     def phone_numbers_change: () -> [ ::Array[untyped]?, ::Array[untyped]? ]
 
@@ -218,7 +218,7 @@ class ::User < ::ApplicationRecord
 
     def phone_numbers_was: () -> ::Array[untyped]?
 
-    def phone_numbers_previously_changed?: () -> bool
+    def phone_numbers_previously_changed?: (?from: ::Array[untyped]?, ?to: ::Array[untyped]?) -> bool
 
     def phone_numbers_previous_change: () -> ::Array[::Array[untyped]?]?
 
@@ -250,7 +250,7 @@ class ::User < ::ApplicationRecord
 
     def contact_info?: () -> bool
 
-    def contact_info_changed?: () -> bool
+    def contact_info_changed?: (?from: ::Hash[untyped, untyped]?, ?to: ::Hash[untyped, untyped]?) -> bool
 
     def contact_info_change: () -> [ ::Hash[untyped, untyped]?, ::Hash[untyped, untyped]? ]
 
@@ -258,7 +258,7 @@ class ::User < ::ApplicationRecord
 
     def contact_info_was: () -> ::Hash[untyped, untyped]?
 
-    def contact_info_previously_changed?: () -> bool
+    def contact_info_previously_changed?: (?from: ::Hash[untyped, untyped]?, ?to: ::Hash[untyped, untyped]?) -> bool
 
     def contact_info_previous_change: () -> ::Array[::Hash[untyped, untyped]?]?
 
@@ -290,7 +290,7 @@ class ::User < ::ApplicationRecord
 
     def family_tree?: () -> bool
 
-    def family_tree_changed?: () -> bool
+    def family_tree_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
     def family_tree_change: () -> [ ::String?, ::String? ]
 
@@ -298,7 +298,7 @@ class ::User < ::ApplicationRecord
 
     def family_tree_was: () -> ::String?
 
-    def family_tree_previously_changed?: () -> bool
+    def family_tree_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
     def family_tree_previous_change: () -> ::Array[::String?]?
 
@@ -330,7 +330,7 @@ class ::User < ::ApplicationRecord
 
     def created_at?: () -> bool
 
-    def created_at_changed?: () -> bool
+    def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
 
     def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
 
@@ -338,7 +338,7 @@ class ::User < ::ApplicationRecord
 
     def created_at_was: () -> ::ActiveSupport::TimeWithZone?
 
-    def created_at_previously_changed?: () -> bool
+    def created_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
 
     def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
 
@@ -370,7 +370,7 @@ class ::User < ::ApplicationRecord
 
     def updated_at?: () -> bool
 
-    def updated_at_changed?: () -> bool
+    def updated_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
 
     def updated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
 
@@ -378,7 +378,7 @@ class ::User < ::ApplicationRecord
 
     def updated_at_was: () -> ::ActiveSupport::TimeWithZone?
 
-    def updated_at_previously_changed?: () -> bool
+    def updated_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
 
     def updated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
 
@@ -410,7 +410,7 @@ class ::User < ::ApplicationRecord
 
     def role?: () -> bool
 
-    def role_changed?: () -> bool
+    def role_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def role_change: () -> [ ::Integer?, ::Integer? ]
 
@@ -418,7 +418,7 @@ class ::User < ::ApplicationRecord
 
     def role_was: () -> ::Integer?
 
-    def role_previously_changed?: () -> bool
+    def role_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def role_previous_change: () -> ::Array[::Integer?]?
 
@@ -691,4 +691,13 @@ class ::User < ::ApplicationRecord
     def <<: (*::User | ::Array[::User]) -> self
     def prepend: (*::User | ::Array[::User]) -> self
   end
+end
+
+class ::ApplicationRecord < ::ActiveRecord::Base
+end
+class ::Blog < ::ApplicationRecord
+end
+class ::Blog::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class ::Group < ::ApplicationRecord
 end

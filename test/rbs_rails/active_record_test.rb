@@ -88,4 +88,18 @@ class ActiveRecordTest < Minitest::Test
 
     assert_equal expect_path.read, rbs_path.read
   end
+
+  def test_check_db_migrations
+    Bundler.with_unbundled_env do
+      begin
+        sh!('bin/rails db:rollback', chdir: app_dir)
+
+        assert_raises(RuntimeError) do
+          sh!('bin/rake', 'rbs_rails:all', chdir: app_dir)
+        end
+      ensure
+        sh!('bin/rails db:migrate', chdir: app_dir)
+      end
+    end
+  end
 end

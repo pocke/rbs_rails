@@ -10,23 +10,23 @@ module RbsRails
 
     # @rbs klass: untyped
     # @rbs dependencies: Array[String]
-    def self.class_to_rbs(klass, dependencies: []) #: untyped
-      Generator.new(klass, dependencies: dependencies).generate
+    def self.class_to_rbs(klass) #: untyped
+      Generator.new(klass).generate
     end
 
     class Generator
       IGNORED_ENUM_KEYS = %i[_prefix _suffix _default _scopes] #: Array[Symbol]
 
       # @rbs @parse_model_file: nil | Parser::AST::Node
-      # @rbs @dependencies: Array[String]
       # @rbs @enum_definitions: Array[Hash[Symbol, untyped]]
       # @rbs @klass_name: String
 
+      attr_reader :dependencies #: DependencyBuilder
+
       # @rbs klass: singleton(ActiveRecord::Base) & Enum
-      # @rbs dependencies: Array[String]
-      def initialize(klass, dependencies:) #: untyped
+      def initialize(klass) #: untyped
         @klass = klass
-        @dependencies = dependencies
+        @dependencies = DependencyBuilder.new
         @klass_name = Util.module_name(klass, abs: false)
 
         namespaces = klass_name(abs: false).split('::').tap{ |names| names.pop }
@@ -62,6 +62,8 @@ module RbsRails
           #{collection_proxy_decl}
 
           #{footer}
+
+          #{dependencies.build}
         RBS
       end
 
@@ -537,11 +539,11 @@ module RbsRails
             def #{col.name}: () -> #{column_type}
             def #{col.name}=: (#{column_type}) -> #{column_type}
             def #{col.name}?: () -> bool
-            def #{col.name}_changed?: () -> bool
+            def #{col.name}_changed?: (?from: #{class_name_opt}, ?to: #{class_name_opt}) -> bool
             def #{col.name}_change: () -> [#{class_name_opt}, #{class_name_opt}]
             def #{col.name}_will_change!: () -> void
             def #{col.name}_was: () -> #{class_name_opt}
-            def #{col.name}_previously_changed?: () -> bool
+            def #{col.name}_previously_changed?: (?from: #{class_name_opt}, ?to: #{class_name_opt}) -> bool
             def #{col.name}_previous_change: () -> ::Array[#{class_name_opt}]?
             def #{col.name}_previously_was: () -> #{class_name_opt}
             def #{col.name}_before_last_save: () -> #{class_name_opt}
