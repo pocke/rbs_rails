@@ -118,7 +118,7 @@ GEM
     marcel (1.0.4)
     mini_mime (1.1.5)
     mini_portile2 (2.8.9)
-    minitest (5.25.5)
+    minitest (5.27.0)
     minitest-hooks (1.5.2)
       minitest (> 5.3)
     mutex_m (0.3.0)
