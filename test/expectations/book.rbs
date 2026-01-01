@@ -10,7 +10,7 @@ class ::Book < ::ApplicationRecord
 
     def id?: () -> bool
 
-    def id_changed?: () -> bool
+    def id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def id_change: () -> [ ::Integer?, ::Integer? ]
 
@@ -18,7 +18,7 @@ class ::Book < ::ApplicationRecord
 
     def id_was: () -> ::Integer?
 
-    def id_previously_changed?: () -> bool
+    def id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def id_previous_change: () -> ::Array[::Integer?]?
 
@@ -50,7 +50,7 @@ class ::Book < ::ApplicationRecord
 
     def order_id?: () -> bool
 
-    def order_id_changed?: () -> bool
+    def order_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def order_id_change: () -> [ ::Integer?, ::Integer? ]
 
@@ -58,7 +58,7 @@ class ::Book < ::ApplicationRecord
 
     def order_id_was: () -> ::Integer?
 
-    def order_id_previously_changed?: () -> bool
+    def order_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def order_id_previous_change: () -> ::Array[::Integer?]?
 
@@ -90,7 +90,7 @@ class ::Book < ::ApplicationRecord
 
     def price?: () -> bool
 
-    def price_changed?: () -> bool
+    def price_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def price_change: () -> [ ::Integer?, ::Integer? ]
 
@@ -98,7 +98,7 @@ class ::Book < ::ApplicationRecord
 
     def price_was: () -> ::Integer?
 
-    def price_previously_changed?: () -> bool
+    def price_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def price_previous_change: () -> ::Array[::Integer?]?
 
@@ -130,7 +130,7 @@ class ::Book < ::ApplicationRecord
 
     def created_at?: () -> bool
 
-    def created_at_changed?: () -> bool
+    def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
 
     def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
 
@@ -138,7 +138,7 @@ class ::Book < ::ApplicationRecord
 
     def created_at_was: () -> ::ActiveSupport::TimeWithZone?
 
-    def created_at_previously_changed?: () -> bool
+    def created_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
 
     def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
 
@@ -170,7 +170,7 @@ class ::Book < ::ApplicationRecord
 
     def updated_at?: () -> bool
 
-    def updated_at_changed?: () -> bool
+    def updated_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
 
     def updated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
 
@@ -178,7 +178,7 @@ class ::Book < ::ApplicationRecord
 
     def updated_at_was: () -> ::ActiveSupport::TimeWithZone?
 
-    def updated_at_previously_changed?: () -> bool
+    def updated_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
 
     def updated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
 
@@ -288,4 +288,9 @@ class ::Book < ::ApplicationRecord
     def <<: (*::Book | ::Array[::Book]) -> self
     def prepend: (*::Book | ::Array[::Book]) -> self
   end
+end
+
+class ::ApplicationRecord < ::ActiveRecord::Base
+end
+class ::Order < ::ApplicationRecord
 end
