@@ -566,7 +566,7 @@ module RbsRails
       end
 
       private def alias_columns
-        attribute_aliases = klass.attribute_aliases
+        attribute_aliases = klass.attribute_aliases.dup
         attribute_aliases["id_value"] ||= "id" if klass.attribute_names.include?("id")
 
         mod_sig = +"module #{klass_name}::GeneratedAliasAttributeMethods\n"
