@@ -479,7 +479,7 @@ module RbsRails
 
       private def parser_class #: untyped
         case RUBY_VERSION
-        when /^2\./, /^3\.0\./, /^3\.1\./, /^3\.2\./
+        when /^3\.2\./
           # backward campatibility
           require 'parser/current'
           Parser::CurrentRuby
