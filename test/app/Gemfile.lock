@@ -3,6 +3,7 @@ PATH
   specs:
     rbs_rails (0.12.1)
       parser
+      prism
       rbs (>= 1)
 
 GEM
@@ -133,7 +134,7 @@ GEM
     marcel (1.0.4)
     mini_mime (1.1.5)
     mini_portile2 (2.8.7)
-    minitest (5.25.5)
+    minitest (5.27.0)
     msgpack (1.7.3)
     net-imap (0.5.9)
       date

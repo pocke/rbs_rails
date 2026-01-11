@@ -129,6 +129,10 @@ gems:
   version: '0'
   source:
     type: stdlib
+- name: dbm
+  version: '0'
+  source:
+    type: stdlib
 - name: delegate
   version: '0'
   source:
@@ -250,6 +254,18 @@ gems:
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
 - name: pathname
+  version: '0'
+  source:
+    type: stdlib
+- name: prism
+  version: 1.2.0
+  source:
+    type: rubygems
+- name: pstore
+  version: '0'
+  source:
+    type: stdlib
+- name: psych
   version: '0'
   source:
     type: stdlib

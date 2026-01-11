@@ -3,6 +3,7 @@ PATH
   specs:
     rbs_rails (0.12.1)
       parser
+      prism
       rbs (>= 1)
 
 GEM
