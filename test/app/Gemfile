@@ -19,3 +19,7 @@ gem 'packs-rails'
 gem 'audited'
 
 gem 'rbs_rails', path: '../../'
+
+# Temporary workaround for Ruby 4.1+ where tsort is no longer bundled.
+# Can be removed once rbs adds tsort as a runtime dependency.
+gem 'tsort'
