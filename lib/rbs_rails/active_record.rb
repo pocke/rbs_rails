@@ -479,13 +479,13 @@ module RbsRails
 
       private def parser_class #: untyped
         case RUBY_VERSION
-        when /^3\.2\./
+        when /\A3\.2\./
           # backward campatibility
           require 'parser/current'
           Parser::CurrentRuby
-        when /^3\.3\./
+        when /\A3\.3\./
           Prism::Translation::Parser33 # steep:ignore
-        when /^3\.4\./
+        when /\A3\.4\./
           Prism::Translation::Parser34 # steep:ignore
         else
           # For Prism v1.5.0+, Prism::Translation::ParserCurrent should be used instead.
