@@ -481,8 +481,8 @@ module RbsRails
         case RUBY_VERSION
         when /\A3\.2\./
           # backward campatibility
-          require 'parser/current'
-          Parser::CurrentRuby
+          require 'parser/ruby32'
+          Parser::Ruby32
         when /\A3\.3\./
           Prism::Translation::Parser33 # steep:ignore
         when /\A3\.4\./
