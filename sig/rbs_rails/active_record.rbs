@@ -73,6 +73,8 @@ module RbsRails
 
       private def parse_model_file: () -> untyped
 
+      private def parser_class: () -> untyped
+
       # : (Parser::AST::Node) { (Parser::AST::Node) -> untyped } -> untyped
       # : (Parser::AST::Node) -> Enumerator[Parser::AST::Node, untyped]
       private def traverse: (Parser::AST::Node) { (Parser::AST::Node) -> untyped } -> untyped

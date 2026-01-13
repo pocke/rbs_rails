@@ -471,9 +471,25 @@ module RbsRails
         return @parse_model_file = nil unless path
 
         begin
-          @parse_model_file = Parser::CurrentRuby.parse File.read(path)
+          @parse_model_file = parser_class.parse File.read(path)
         rescue => e
           @parse_model_file = nil
+        end
+      end
+
+      private def parser_class #: untyped
+        case RUBY_VERSION
+        when /\A3\.2\./
+          # backward campatibility
+          require 'parser/ruby32'
+          Parser::Ruby32
+        when /\A3\.3\./
+          Prism::Translation::Parser33 # steep:ignore
+        when /\A3\.4\./
+          Prism::Translation::Parser34 # steep:ignore
+        else
+          # For Prism v1.5.0+, Prism::Translation::ParserCurrent should be used instead.
+          Prism::Translation::Parser34 # steep:ignore
         end
       end
 

@@ -12,3 +12,7 @@ gem 'rbs-inline', require: false
 gem 'steep', '>= 1.4', require: false
 gem 'minitest'
 gem 'minitest-hooks'
+
+# Temporary workaround for Ruby 4.1+ where tsort is no longer bundled.
+# Can be removed once rbs adds tsort as a runtime dependency.
+gem 'tsort'
