@@ -33,6 +33,7 @@
 
 ### Bug fixes
 
+* Avoid reusing the same object when generating attribute aliases [#361](https://github.com/pocke/rbs_rails/pull/361)
 * Use Prism instead of parser/current to suppress warnings [#362](https://github.com/pocke/rbs_rails/pull/362)
 * Fix: Ruby::UnresolvedOverloading error when calling ::ActiveRecord::Relation#select [#353](https://github.com/pocke/rbs_rails/pull/353)
 * CI: Fix broken testcases [#336](https://github.com/pocke/rbs_rails/pull/336)
