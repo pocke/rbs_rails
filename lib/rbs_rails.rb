@@ -1,4 +1,5 @@
-require 'parser/current'
+require 'parser'
+require 'prism'
 require 'rbs'
 require 'stringio'
 
