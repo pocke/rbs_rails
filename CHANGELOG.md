@@ -33,6 +33,7 @@
 
 ### Bug fixes
 
+* Use Prism instead of parser/current to suppress warnings [#362](https://github.com/pocke/rbs_rails/pull/362)
 * Fix: Ruby::UnresolvedOverloading error when calling ::ActiveRecord::Relation#select [#353](https://github.com/pocke/rbs_rails/pull/353)
 * CI: Fix broken testcases [#336](https://github.com/pocke/rbs_rails/pull/336)
 * fix: external library models not saved to correct path structure [#324](https://github.com/pocke/rbs_rails/pull/324)
