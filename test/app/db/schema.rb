@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_09_02_022119) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_05_084032) do
   create_table "audits", force: :cascade do |t|
     t.integer "auditable_id"
     t.string "auditable_type"
@@ -55,6 +55,14 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_02_022119) do
   end
 
   create_table "groups", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "order_summaries", primary_key: ["shop_id", "price"], force: :cascade do |t|
+    t.datetime "summary_on", null: false
+    t.integer "shop_id", null: false
+    t.integer "price", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
