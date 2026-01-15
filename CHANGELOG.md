@@ -46,6 +46,7 @@
 
 ### misc
 
+* CI: Hello Ruby 4.0! [#359](https://github.com/pocke/rbs_rails/pull/359)
 * deps: Drop Rails 6 support [#355](https://github.com/pocke/rbs_rails/pull/355)
 * test: Share build results across tests to reduce build times [#337](https://github.com/pocke/rbs_rails/pull/337)
 * CI: Add GitHub Actions workflow for releasing gem [#309](https://github.com/pocke/rbs_rails/pull/309)
