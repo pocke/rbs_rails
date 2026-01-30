@@ -13,7 +13,7 @@ module RbsRails
       #   @enum_definitions: enum_definitions
 
       def enum(*args, **options) #: void
-        super  # steep:ignore
+        result = super  # steep:ignore
 
         name, values = args #: [Symbol, Array[Symbol]?]
         if values
@@ -29,6 +29,8 @@ module RbsRails
 
         @enum_definitions ||= [] #: enum_definitions
         @enum_definitions&.append([definitions, options])
+
+        result
       end
 
       def enum_definitions #: Array[[Symbol, String]]
