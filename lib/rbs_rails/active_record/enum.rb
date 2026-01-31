@@ -12,7 +12,7 @@ module RbsRails
       #
       #   @enum_definitions: enum_definitions
 
-      def enum(*args, **options) #: void
+      def enum(*args, **options) #: untyped
         result = super  # steep:ignore
 
         name, values = args #: [Symbol, Array[Symbol]?]

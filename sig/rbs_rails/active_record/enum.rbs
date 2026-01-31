@@ -13,7 +13,7 @@ module RbsRails
 
       @enum_definitions: enum_definitions
 
-      def enum: (*untyped args, **untyped options) -> void
+      def enum: (*untyped args, **untyped options) -> untyped
 
       def enum_definitions: () -> Array[[ Symbol, String ]]
 
