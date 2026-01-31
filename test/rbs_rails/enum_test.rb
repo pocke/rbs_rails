@@ -91,4 +91,16 @@ class EnumTest < Minitest::Test
                   [:timezone, "America_New_York"]],
                  model.enum_definitions
   end
+
+  def test_enum_returns_super_result
+    model = Class.new(ActiveRecord::Base) do
+      extend RbsRails::ActiveRecord::Enum
+
+      enum :status, [:temporary, :accepted]
+    end
+
+    result = model.enum :priority, [:low, :high]
+    assert_kind_of Hash, result
+    assert_equal({ "low" => 0, "high" => 1 }, result.to_h)
+  end
 end
