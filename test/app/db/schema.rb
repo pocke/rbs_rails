@@ -93,6 +93,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_05_084032) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "role", null: false
+    t.integer "label", null: false
     t.index ["group_id"], name: "index_users_on_group_id"
   end
 

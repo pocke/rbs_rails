@@ -376,9 +376,13 @@ module RbsRails
       private def enum_instance_methods #: String
         # @type var methods: Array[String]
         methods = []
-        klass.enum_definitions.each do |_, method_name|
-          methods << "def #{method_name}!: () -> bool"
-          methods << "def #{method_name}?: () -> bool"
+        defined_methods = klass.instance_methods.to_set
+        klass.enum_definitions.each do |_, enum_method_name|
+          ["#{enum_method_name}!", "#{enum_method_name}?"].each do |method_name|
+            if defined_methods.member?(method_name.to_sym)
+              methods << "def #{method_name}: () -> bool"
+            end
+          end
         end
 
         methods.join("\n")
@@ -388,14 +392,21 @@ module RbsRails
       private def enum_class_methods(singleton:) #: String
         # @type var methods: Array[String]
         methods = []
+        defined_methods = klass.methods.to_set
         klass.enum_definitions.map(&:first).uniq.each do |name|
           column = klass.columns_hash[name.to_s] || klass.columns_hash[klass.attribute_aliases[name.to_s]]
           class_name = sql_type_to_class(column.type)
-          methods << "def #{singleton ? 'self.' : ''}#{name.to_s.pluralize}: () -> ::ActiveSupport::HashWithIndifferentAccess[::String, #{class_name}]"
+          method_name = "#{name.to_s.pluralize}"
+          if defined_methods.member?(method_name.to_sym)
+            methods << "def #{singleton ? 'self.' : ''}#{method_name}: () -> ::ActiveSupport::HashWithIndifferentAccess[::String, #{class_name}]"
+          end
         end
-        klass.enum_definitions.each do |_, method_name|
-          methods << "def #{singleton ? 'self.' : ''}#{method_name}: () -> #{relation_class_name}"
-          methods << "def #{singleton ? 'self.' : ''}not_#{method_name}: () -> #{relation_class_name}"
+        klass.enum_definitions.each do |_, enum_method_name|
+          ["#{enum_method_name}", "not_#{enum_method_name}"].each do |method_name|
+            if defined_methods.member?(method_name.to_sym)
+              methods << "def #{singleton ? 'self.' : ''}#{method_name}: () -> #{relation_class_name}"
+            end
+          end
         end
         methods.join("\n")
       end
