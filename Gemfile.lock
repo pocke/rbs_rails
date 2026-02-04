@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rbs_rails (0.13.0)
+    rbs_rails (0.13.1)
       parser
       prism
       rbs (>= 1)
