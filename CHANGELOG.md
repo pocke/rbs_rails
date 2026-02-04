@@ -2,7 +2,18 @@
 
 ## master (unreleased)
 
-## 0.13
+## 0.13.1
+
+* Change enum method return type from void to untyped [#366](https://github.com/pocke/rbs_rails/pull/366)
+* Fix enum methods generation to only include defined methods [#368](https://github.com/pocke/rbs_rails/pull/368)
+* Remove stale sig/rbs_rails/utils directory [#367](https://github.com/pocke/rbs_rails/pull/367)
+* Fix argument types for will_save_change_to_attribute method [#370](https://github.com/pocke/rbs_rails/pull/370)
+* Add missing migration for label column on users table [#374](https://github.com/pocke/rbs_rails/pull/374)
+* Add from: and to: keyword argument types to saved_change_to_<attr>? [#375](https://github.com/pocke/rbs_rails/pull/375)
+
+### Bug fixes
+
+## 0.13.0
 
 ### New features
 
