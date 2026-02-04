@@ -2,7 +2,15 @@
 
 ## master (unreleased)
 
-## 0.13
+## 0.13.1
+
+* Change enum method return type from void to untyped [#366](https://github.com/pocke/rbs_rails/pull/366)
+* Fix enum methods generation to only include defined methods [#368](https://github.com/pocke/rbs_rails/pull/368)
+* Remove stale sig/rbs_rails/utils directory [#367](https://github.com/pocke/rbs_rails/pull/367)
+
+### Bug fixes
+
+## 0.13.0
 
 ### New features
 
