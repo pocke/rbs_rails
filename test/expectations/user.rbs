@@ -443,6 +443,46 @@ class ::User < ::ApplicationRecord
     def role_before_type_cast: () -> ::Integer
 
     def role_for_database: () -> ::Integer
+
+    def label: () -> ::String
+
+    def label=: (::String) -> ::String
+
+    def label?: () -> bool
+
+    def label_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def label_change: () -> [ ::String?, ::String? ]
+
+    def label_will_change!: () -> void
+
+    def label_was: () -> ::String?
+
+    def label_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def label_previous_change: () -> ::Array[::String?]?
+
+    def label_previously_was: () -> ::String?
+
+    def label_before_last_save: () -> ::String?
+
+    def label_change_to_be_saved: () -> ::Array[::String?]?
+
+    def label_in_database: () -> ::String?
+
+    def saved_change_to_label: () -> ::Array[::String?]?
+
+    def saved_change_to_label?: () -> bool
+
+    def will_save_change_to_label?: () -> bool
+
+    def restore_label!: () -> void
+
+    def clear_label_change: () -> void
+
+    def label_before_type_cast: () -> ::Integer
+
+    def label_for_database: () -> ::Integer
   end
   include ::User::GeneratedAttributeMethods
   module ::User::GeneratedAliasAttributeMethods
@@ -626,6 +666,7 @@ class ::User < ::ApplicationRecord
   def manager?: () -> bool
   def self.statuses: () -> ::ActiveSupport::HashWithIndifferentAccess[::String, ::Integer]
   def self.alias_roles: () -> ::ActiveSupport::HashWithIndifferentAccess[::String, ::Integer]
+  def self.labels: () -> ::ActiveSupport::HashWithIndifferentAccess[::String, ::Integer]
   def self.temporary: () -> ::User::ActiveRecord_Relation
   def self.not_temporary: () -> ::User::ActiveRecord_Relation
   def self.accepted: () -> ::User::ActiveRecord_Relation
@@ -642,6 +683,8 @@ class ::User < ::ApplicationRecord
     def statuses: () -> ::ActiveSupport::HashWithIndifferentAccess[::String, ::Integer]
 
     def alias_roles: () -> ::ActiveSupport::HashWithIndifferentAccess[::String, ::Integer]
+
+    def labels: () -> ::ActiveSupport::HashWithIndifferentAccess[::String, ::Integer]
 
     def temporary: () -> ::User::ActiveRecord_Relation
 

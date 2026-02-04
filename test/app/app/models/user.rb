@@ -17,4 +17,5 @@ class User < ApplicationRecord
 
   enum :status, [:temporary, :accepted], default: :temporary
   enum :alias_role, [:member, :manager], default: :member
+  enum :label, [:gold, :silver], default: :gold, scopes: false, instance_methods: false
 end
