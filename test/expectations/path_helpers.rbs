@@ -1,6 +1,7 @@
 # resolve-type-names: false
 
 interface ::_RbsRailsPathHelpers
+  def rails_mailers_path: (*untyped) -> ::String
   def rails_info_properties_path: (*untyped) -> ::String
   def rails_info_routes_path: (*untyped) -> ::String
   def rails_info_path: (*untyped) -> ::String
@@ -19,6 +20,7 @@ interface ::_RbsRailsPathHelpers
   def rails_blob_path: (*untyped) -> ::String
   def rails_storage_proxy_path: (*untyped) -> ::String
   def rails_storage_redirect_path: (*untyped) -> ::String
+  def rails_mailers_url: (*untyped) -> ::String
   def rails_info_properties_url: (*untyped) -> ::String
   def rails_info_routes_url: (*untyped) -> ::String
   def rails_info_url: (*untyped) -> ::String
