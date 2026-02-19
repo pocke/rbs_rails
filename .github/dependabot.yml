@@ -1,0 +1,19 @@
+version: 2
+updates:
+- package-ecosystem: bundler
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "20:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: parser
+    versions:
+    - 3.0.1.0
+  - dependency-name: steep
+    versions:
+    - 0.43.0
+    - 0.43.1
+  - dependency-name: rbs
+    versions:
+    - 1.1.0
