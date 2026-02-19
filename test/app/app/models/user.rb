@@ -7,6 +7,7 @@ class User < ApplicationRecord
 
   belongs_to :group
   has_and_belongs_to_many :blogs
+  has_many :delivery_addresses
   has_secure_password
 
   serialize :phone_numbers, type: Array

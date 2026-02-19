@@ -1,2 +1,32 @@
 class ApplicationRecord < ActiveRecord::Base
 end
+
+class Address
+  attr_reader postal_code: String
+  attr_reader prefecture: String
+  attr_reader city: String
+  attr_reader street_address: String
+  attr_reader building_name: String
+
+  def initialize: (String postal_code, String prefecture, String city, String street_address, String building_name) -> void
+
+  def to_s: () -> String
+
+  def ==: (instance other) -> bool
+end
+
+class Money
+  CURRENCIES: ::Hash[::String, ::String]
+
+  attr_reader price: Integer
+  attr_reader currency_code: String
+
+  def initialize: (Integer price, String currency_code) -> void
+
+  def ==: (instance other) -> bool
+
+  def to_i: () -> Integer
+
+  def to_s: () -> String
+end
+
