@@ -203,6 +203,46 @@ class ::Book < ::ApplicationRecord
     def updated_at_before_type_cast: () -> ::Time
 
     def updated_at_for_database: () -> ::Time
+
+    def currency_code: () -> ::String
+
+    def currency_code=: (::String) -> ::String
+
+    def currency_code?: () -> bool
+
+    def currency_code_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def currency_code_change: () -> [ ::String?, ::String? ]
+
+    def currency_code_will_change!: () -> void
+
+    def currency_code_was: () -> ::String?
+
+    def currency_code_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def currency_code_previous_change: () -> ::Array[::String?]?
+
+    def currency_code_previously_was: () -> ::String?
+
+    def currency_code_before_last_save: () -> ::String?
+
+    def currency_code_change_to_be_saved: () -> ::Array[::String?]?
+
+    def currency_code_in_database: () -> ::String?
+
+    def saved_change_to_currency_code: () -> ::Array[::String?]?
+
+    def saved_change_to_currency_code?: () -> bool
+
+    def will_save_change_to_currency_code?: () -> bool
+
+    def restore_currency_code!: () -> void
+
+    def clear_currency_code_change: () -> void
+
+    def currency_code_before_type_cast: () -> ::String
+
+    def currency_code_for_database: () -> ::String
   end
   include ::Book::GeneratedAttributeMethods
   module ::Book::GeneratedAliasAttributeMethods
@@ -256,11 +296,40 @@ class ::Book < ::ApplicationRecord
   def build_order: (untyped) -> ::Order
   def create_order: (untyped) -> ::Order
   def create_order!: (untyped) -> ::Order
+  def money: () -> ::Book::Money
+  def money=: (::Book::Money) -> ::Book::Money
   module ::Book::GeneratedAssociationMethods
   end
   include ::Book::GeneratedAssociationMethods
 
+  def jpy!: () -> bool
+  def jpy?: () -> bool
+  def usd!: () -> bool
+  def usd?: () -> bool
+  def eur!: () -> bool
+  def eur?: () -> bool
+  def self.currency_codes: () -> ::ActiveSupport::HashWithIndifferentAccess[::String, ::String]
+  def self.jpy: () -> ::Book::ActiveRecord_Relation
+  def self.not_jpy: () -> ::Book::ActiveRecord_Relation
+  def self.usd: () -> ::Book::ActiveRecord_Relation
+  def self.not_usd: () -> ::Book::ActiveRecord_Relation
+  def self.eur: () -> ::Book::ActiveRecord_Relation
+  def self.not_eur: () -> ::Book::ActiveRecord_Relation
+
   module ::Book::GeneratedRelationMethods
+    def currency_codes: () -> ::ActiveSupport::HashWithIndifferentAccess[::String, ::String]
+
+    def jpy: () -> ::Book::ActiveRecord_Relation
+
+    def not_jpy: () -> ::Book::ActiveRecord_Relation
+
+    def usd: () -> ::Book::ActiveRecord_Relation
+
+    def not_usd: () -> ::Book::ActiveRecord_Relation
+
+    def eur: () -> ::Book::ActiveRecord_Relation
+
+    def not_eur: () -> ::Book::ActiveRecord_Relation
   end
 
   class ::Book::ActiveRecord_Relation < ::ActiveRecord::Relation
@@ -293,4 +362,8 @@ end
 class ::ApplicationRecord < ::ActiveRecord::Base
 end
 class ::Order < ::ApplicationRecord
+end
+class ::Book::Money < ::Object
+end
+class ::Book < ::ApplicationRecord
 end

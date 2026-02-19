@@ -216,6 +216,7 @@ class ::Thumbnail < ::ApplicationRecord
   def build_blog: (untyped) -> ::Blog
   def create_blog: (untyped) -> ::Blog
   def create_blog!: (untyped) -> ::Blog
+
   module ::Thumbnail::GeneratedAssociationMethods
   end
   include ::Thumbnail::GeneratedAssociationMethods
