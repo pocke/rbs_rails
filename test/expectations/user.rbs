@@ -34,7 +34,7 @@ class ::User < ::ApplicationRecord
 
     def saved_change_to_id?: () -> bool
 
-    def will_save_change_to_id?: () -> bool
+    def will_save_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def restore_id!: () -> void
 
@@ -74,7 +74,7 @@ class ::User < ::ApplicationRecord
 
     def saved_change_to_name?: () -> bool
 
-    def will_save_change_to_name?: () -> bool
+    def will_save_change_to_name?: (?from: ::String?, ?to: ::String?) -> bool
 
     def restore_name!: () -> void
 
@@ -114,7 +114,7 @@ class ::User < ::ApplicationRecord
 
     def saved_change_to_group_id?: () -> bool
 
-    def will_save_change_to_group_id?: () -> bool
+    def will_save_change_to_group_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def restore_group_id!: () -> void
 
@@ -154,7 +154,7 @@ class ::User < ::ApplicationRecord
 
     def saved_change_to_age?: () -> bool
 
-    def will_save_change_to_age?: () -> bool
+    def will_save_change_to_age?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def restore_age!: () -> void
 
@@ -194,7 +194,7 @@ class ::User < ::ApplicationRecord
 
     def saved_change_to_status?: () -> bool
 
-    def will_save_change_to_status?: () -> bool
+    def will_save_change_to_status?: (?from: ::String?, ?to: ::String?) -> bool
 
     def restore_status!: () -> void
 
@@ -234,7 +234,7 @@ class ::User < ::ApplicationRecord
 
     def saved_change_to_phone_numbers?: () -> bool
 
-    def will_save_change_to_phone_numbers?: () -> bool
+    def will_save_change_to_phone_numbers?: (?from: ::Array[untyped]?, ?to: ::Array[untyped]?) -> bool
 
     def restore_phone_numbers!: () -> void
 
@@ -274,7 +274,7 @@ class ::User < ::ApplicationRecord
 
     def saved_change_to_contact_info?: () -> bool
 
-    def will_save_change_to_contact_info?: () -> bool
+    def will_save_change_to_contact_info?: (?from: ::Hash[untyped, untyped]?, ?to: ::Hash[untyped, untyped]?) -> bool
 
     def restore_contact_info!: () -> void
 
@@ -314,7 +314,7 @@ class ::User < ::ApplicationRecord
 
     def saved_change_to_family_tree?: () -> bool
 
-    def will_save_change_to_family_tree?: () -> bool
+    def will_save_change_to_family_tree?: (?from: ::String?, ?to: ::String?) -> bool
 
     def restore_family_tree!: () -> void
 
@@ -354,7 +354,7 @@ class ::User < ::ApplicationRecord
 
     def saved_change_to_created_at?: () -> bool
 
-    def will_save_change_to_created_at?: () -> bool
+    def will_save_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
 
     def restore_created_at!: () -> void
 
@@ -394,7 +394,7 @@ class ::User < ::ApplicationRecord
 
     def saved_change_to_updated_at?: () -> bool
 
-    def will_save_change_to_updated_at?: () -> bool
+    def will_save_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
 
     def restore_updated_at!: () -> void
 
@@ -434,7 +434,7 @@ class ::User < ::ApplicationRecord
 
     def saved_change_to_role?: () -> bool
 
-    def will_save_change_to_role?: () -> bool
+    def will_save_change_to_role?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def restore_role!: () -> void
 
@@ -474,7 +474,7 @@ class ::User < ::ApplicationRecord
 
     def saved_change_to_label?: () -> bool
 
-    def will_save_change_to_label?: () -> bool
+    def will_save_change_to_label?: (?from: ::String?, ?to: ::String?) -> bool
 
     def restore_label!: () -> void
 
