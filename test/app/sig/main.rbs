@@ -1,2 +1,17 @@
 class ApplicationRecord < ActiveRecord::Base
 end
+
+class Book::Money
+  CURRENCIES: ::Hash[::String, ::String]
+
+  attr_reader price: Integer
+  attr_reader currency_code: String
+
+  def initialize: (Integer price, String currency_code) -> void
+
+  def ==: (instance other) -> bool
+
+  def to_i: () -> Integer
+
+  def to_s: () -> String
+end

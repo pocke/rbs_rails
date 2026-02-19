@@ -632,6 +632,7 @@ class ::User < ::ApplicationRecord
   def build_group: (untyped) -> ::Group
   def create_group: (untyped) -> ::Group
   def create_group!: (untyped) -> ::Group
+
   module ::User::GeneratedAssociationMethods
     def avatar: () -> ::ActiveStorage::Attached::One
 
