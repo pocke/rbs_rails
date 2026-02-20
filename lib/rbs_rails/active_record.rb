@@ -577,7 +577,7 @@ module RbsRails
             def #{col.name}_change_to_be_saved: () -> ::Array[#{class_name_opt}]?
             def #{col.name}_in_database: () -> #{class_name_opt}
             def saved_change_to_#{col.name}: () -> ::Array[#{class_name_opt}]?
-            def saved_change_to_#{col.name}?: () -> bool
+            def saved_change_to_#{col.name}?: (?from: #{class_name_opt}, ?to: #{class_name_opt}) -> bool
             def will_save_change_to_#{col.name}?: () -> bool
             def restore_#{col.name}!: () -> void
             def clear_#{col.name}_change: () -> void

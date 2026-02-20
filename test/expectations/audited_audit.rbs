@@ -33,7 +33,7 @@ module ::Audited
 
       def saved_change_to_id: () -> ::Array[::Integer?]?
 
-      def saved_change_to_id?: () -> bool
+      def saved_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
       def will_save_change_to_id?: () -> bool
 
@@ -73,7 +73,7 @@ module ::Audited
 
       def saved_change_to_auditable_id: () -> ::Array[::Integer?]?
 
-      def saved_change_to_auditable_id?: () -> bool
+      def saved_change_to_auditable_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
       def will_save_change_to_auditable_id?: () -> bool
 
@@ -113,7 +113,7 @@ module ::Audited
 
       def saved_change_to_auditable_type: () -> ::Array[::String?]?
 
-      def saved_change_to_auditable_type?: () -> bool
+      def saved_change_to_auditable_type?: (?from: ::String?, ?to: ::String?) -> bool
 
       def will_save_change_to_auditable_type?: () -> bool
 
@@ -153,7 +153,7 @@ module ::Audited
 
       def saved_change_to_associated_id: () -> ::Array[::Integer?]?
 
-      def saved_change_to_associated_id?: () -> bool
+      def saved_change_to_associated_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
       def will_save_change_to_associated_id?: () -> bool
 
@@ -193,7 +193,7 @@ module ::Audited
 
       def saved_change_to_associated_type: () -> ::Array[::String?]?
 
-      def saved_change_to_associated_type?: () -> bool
+      def saved_change_to_associated_type?: (?from: ::String?, ?to: ::String?) -> bool
 
       def will_save_change_to_associated_type?: () -> bool
 
@@ -233,7 +233,7 @@ module ::Audited
 
       def saved_change_to_user_id: () -> ::Array[::Integer?]?
 
-      def saved_change_to_user_id?: () -> bool
+      def saved_change_to_user_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
       def will_save_change_to_user_id?: () -> bool
 
@@ -273,7 +273,7 @@ module ::Audited
 
       def saved_change_to_user_type: () -> ::Array[::String?]?
 
-      def saved_change_to_user_type?: () -> bool
+      def saved_change_to_user_type?: (?from: ::String?, ?to: ::String?) -> bool
 
       def will_save_change_to_user_type?: () -> bool
 
@@ -313,7 +313,7 @@ module ::Audited
 
       def saved_change_to_username: () -> ::Array[::String?]?
 
-      def saved_change_to_username?: () -> bool
+      def saved_change_to_username?: (?from: ::String?, ?to: ::String?) -> bool
 
       def will_save_change_to_username?: () -> bool
 
@@ -353,7 +353,7 @@ module ::Audited
 
       def saved_change_to_action: () -> ::Array[::String?]?
 
-      def saved_change_to_action?: () -> bool
+      def saved_change_to_action?: (?from: ::String?, ?to: ::String?) -> bool
 
       def will_save_change_to_action?: () -> bool
 
@@ -393,7 +393,7 @@ module ::Audited
 
       def saved_change_to_audited_changes: () -> ::Array[::String?]?
 
-      def saved_change_to_audited_changes?: () -> bool
+      def saved_change_to_audited_changes?: (?from: ::String?, ?to: ::String?) -> bool
 
       def will_save_change_to_audited_changes?: () -> bool
 
@@ -433,7 +433,7 @@ module ::Audited
 
       def saved_change_to_version: () -> ::Array[::Integer?]?
 
-      def saved_change_to_version?: () -> bool
+      def saved_change_to_version?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
       def will_save_change_to_version?: () -> bool
 
@@ -473,7 +473,7 @@ module ::Audited
 
       def saved_change_to_comment: () -> ::Array[::String?]?
 
-      def saved_change_to_comment?: () -> bool
+      def saved_change_to_comment?: (?from: ::String?, ?to: ::String?) -> bool
 
       def will_save_change_to_comment?: () -> bool
 
@@ -513,7 +513,7 @@ module ::Audited
 
       def saved_change_to_remote_address: () -> ::Array[::String?]?
 
-      def saved_change_to_remote_address?: () -> bool
+      def saved_change_to_remote_address?: (?from: ::String?, ?to: ::String?) -> bool
 
       def will_save_change_to_remote_address?: () -> bool
 
@@ -553,7 +553,7 @@ module ::Audited
 
       def saved_change_to_request_uuid: () -> ::Array[::String?]?
 
-      def saved_change_to_request_uuid?: () -> bool
+      def saved_change_to_request_uuid?: (?from: ::String?, ?to: ::String?) -> bool
 
       def will_save_change_to_request_uuid?: () -> bool
 
@@ -593,7 +593,7 @@ module ::Audited
 
       def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
 
-      def saved_change_to_created_at?: () -> bool
+      def saved_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
 
       def will_save_change_to_created_at?: () -> bool
 
