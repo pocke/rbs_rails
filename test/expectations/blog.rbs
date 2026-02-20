@@ -32,7 +32,7 @@ class ::Blog < ::ApplicationRecord
 
     def saved_change_to_id: () -> ::Array[::Integer?]?
 
-    def saved_change_to_id?: () -> bool
+    def saved_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def will_save_change_to_id?: () -> bool
 
@@ -72,7 +72,7 @@ class ::Blog < ::ApplicationRecord
 
     def saved_change_to_title: () -> ::Array[::String?]?
 
-    def saved_change_to_title?: () -> bool
+    def saved_change_to_title?: (?from: ::String?, ?to: ::String?) -> bool
 
     def will_save_change_to_title?: () -> bool
 
@@ -112,7 +112,7 @@ class ::Blog < ::ApplicationRecord
 
     def saved_change_to_description: () -> ::Array[::String?]?
 
-    def saved_change_to_description?: () -> bool
+    def saved_change_to_description?: (?from: ::String?, ?to: ::String?) -> bool
 
     def will_save_change_to_description?: () -> bool
 
@@ -152,7 +152,7 @@ class ::Blog < ::ApplicationRecord
 
     def saved_change_to_user_id: () -> ::Array[::Integer?]?
 
-    def saved_change_to_user_id?: () -> bool
+    def saved_change_to_user_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def will_save_change_to_user_id?: () -> bool
 
@@ -192,7 +192,7 @@ class ::Blog < ::ApplicationRecord
 
     def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
 
-    def saved_change_to_created_at?: () -> bool
+    def saved_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
 
     def will_save_change_to_created_at?: () -> bool
 
@@ -232,7 +232,7 @@ class ::Blog < ::ApplicationRecord
 
     def saved_change_to_updated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
 
-    def saved_change_to_updated_at?: () -> bool
+    def saved_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
 
     def will_save_change_to_updated_at?: () -> bool
 

@@ -32,7 +32,7 @@ class ::User < ::ApplicationRecord
 
     def saved_change_to_id: () -> ::Array[::Integer?]?
 
-    def saved_change_to_id?: () -> bool
+    def saved_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def will_save_change_to_id?: () -> bool
 
@@ -72,7 +72,7 @@ class ::User < ::ApplicationRecord
 
     def saved_change_to_name: () -> ::Array[::String?]?
 
-    def saved_change_to_name?: () -> bool
+    def saved_change_to_name?: (?from: ::String?, ?to: ::String?) -> bool
 
     def will_save_change_to_name?: () -> bool
 
@@ -112,7 +112,7 @@ class ::User < ::ApplicationRecord
 
     def saved_change_to_group_id: () -> ::Array[::Integer?]?
 
-    def saved_change_to_group_id?: () -> bool
+    def saved_change_to_group_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def will_save_change_to_group_id?: () -> bool
 
@@ -152,7 +152,7 @@ class ::User < ::ApplicationRecord
 
     def saved_change_to_age: () -> ::Array[::Integer?]?
 
-    def saved_change_to_age?: () -> bool
+    def saved_change_to_age?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def will_save_change_to_age?: () -> bool
 
@@ -192,7 +192,7 @@ class ::User < ::ApplicationRecord
 
     def saved_change_to_status: () -> ::Array[::String?]?
 
-    def saved_change_to_status?: () -> bool
+    def saved_change_to_status?: (?from: ::String?, ?to: ::String?) -> bool
 
     def will_save_change_to_status?: () -> bool
 
@@ -232,7 +232,7 @@ class ::User < ::ApplicationRecord
 
     def saved_change_to_phone_numbers: () -> ::Array[::Array[untyped]?]?
 
-    def saved_change_to_phone_numbers?: () -> bool
+    def saved_change_to_phone_numbers?: (?from: ::Array[untyped]?, ?to: ::Array[untyped]?) -> bool
 
     def will_save_change_to_phone_numbers?: () -> bool
 
@@ -272,7 +272,7 @@ class ::User < ::ApplicationRecord
 
     def saved_change_to_contact_info: () -> ::Array[::Hash[untyped, untyped]?]?
 
-    def saved_change_to_contact_info?: () -> bool
+    def saved_change_to_contact_info?: (?from: ::Hash[untyped, untyped]?, ?to: ::Hash[untyped, untyped]?) -> bool
 
     def will_save_change_to_contact_info?: () -> bool
 
@@ -312,7 +312,7 @@ class ::User < ::ApplicationRecord
 
     def saved_change_to_family_tree: () -> ::Array[::String?]?
 
-    def saved_change_to_family_tree?: () -> bool
+    def saved_change_to_family_tree?: (?from: ::String?, ?to: ::String?) -> bool
 
     def will_save_change_to_family_tree?: () -> bool
 
@@ -352,7 +352,7 @@ class ::User < ::ApplicationRecord
 
     def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
 
-    def saved_change_to_created_at?: () -> bool
+    def saved_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
 
     def will_save_change_to_created_at?: () -> bool
 
@@ -392,7 +392,7 @@ class ::User < ::ApplicationRecord
 
     def saved_change_to_updated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
 
-    def saved_change_to_updated_at?: () -> bool
+    def saved_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
 
     def will_save_change_to_updated_at?: () -> bool
 
@@ -432,7 +432,7 @@ class ::User < ::ApplicationRecord
 
     def saved_change_to_role: () -> ::Array[::Integer?]?
 
-    def saved_change_to_role?: () -> bool
+    def saved_change_to_role?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def will_save_change_to_role?: () -> bool
 
@@ -472,7 +472,7 @@ class ::User < ::ApplicationRecord
 
     def saved_change_to_label: () -> ::Array[::String?]?
 
-    def saved_change_to_label?: () -> bool
+    def saved_change_to_label?: (?from: ::String?, ?to: ::String?) -> bool
 
     def will_save_change_to_label?: () -> bool
 

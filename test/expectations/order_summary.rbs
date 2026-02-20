@@ -32,7 +32,7 @@ class ::OrderSummary < ::ApplicationRecord
 
     def saved_change_to_summary_on: () -> ::Array[::ActiveSupport::TimeWithZone?]?
 
-    def saved_change_to_summary_on?: () -> bool
+    def saved_change_to_summary_on?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
 
     def will_save_change_to_summary_on?: () -> bool
 
@@ -72,7 +72,7 @@ class ::OrderSummary < ::ApplicationRecord
 
     def saved_change_to_shop_id: () -> ::Array[::Integer?]?
 
-    def saved_change_to_shop_id?: () -> bool
+    def saved_change_to_shop_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def will_save_change_to_shop_id?: () -> bool
 
@@ -112,7 +112,7 @@ class ::OrderSummary < ::ApplicationRecord
 
     def saved_change_to_price: () -> ::Array[::Integer?]?
 
-    def saved_change_to_price?: () -> bool
+    def saved_change_to_price?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def will_save_change_to_price?: () -> bool
 
@@ -152,7 +152,7 @@ class ::OrderSummary < ::ApplicationRecord
 
     def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
 
-    def saved_change_to_created_at?: () -> bool
+    def saved_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
 
     def will_save_change_to_created_at?: () -> bool
 
@@ -192,7 +192,7 @@ class ::OrderSummary < ::ApplicationRecord
 
     def saved_change_to_updated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
 
-    def saved_change_to_updated_at?: () -> bool
+    def saved_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
 
     def will_save_change_to_updated_at?: () -> bool
 
