@@ -27,6 +27,8 @@ module RbsRails
 
       private def klass_decl: () -> String
 
+      private def pk_type_for(singleton(ActiveRecord::Base)) -> String
+
       private def pk_type: () -> String
 
       private def generated_relation_methods_decl: () -> String
