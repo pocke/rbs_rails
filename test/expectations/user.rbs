@@ -677,6 +677,7 @@ class ::User < ::ApplicationRecord
   def self.not_manager: () -> ::User::ActiveRecord_Relation
   def self.all_kind_args: (untyped type, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped untyped) { (*untyped) -> untyped } -> ::User::ActiveRecord_Relation
   def self.no_arg: () -> ::User::ActiveRecord_Relation
+  def self.popular: (?) -> ::User::ActiveRecord_Relation
   def self.with_attached_avatar: () -> ::User::ActiveRecord_Relation
 
   module ::User::GeneratedRelationMethods
@@ -705,6 +706,8 @@ class ::User < ::ApplicationRecord
     def all_kind_args: (untyped type, ?untyped m, ?untyped n, *untyped rest, untyped x, ?k: untyped, **untyped untyped) { (*untyped) -> untyped } -> ::User::ActiveRecord_Relation
 
     def no_arg: () -> ::User::ActiveRecord_Relation
+
+    def popular: (?) -> ::User::ActiveRecord_Relation
 
     def with_attached_avatar: () -> ::User::ActiveRecord_Relation
   end
