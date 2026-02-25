@@ -664,6 +664,22 @@ module ::Audited
     end
     include ::Audited::Audit::GeneratedAssociationMethods
 
+    def self.pluck: (:id | "id") -> ::Array[::Integer]
+                  | (:auditable_id | "auditable_id") -> ::Array[::Integer?]
+                  | (:auditable_type | "auditable_type") -> ::Array[::String?]
+                  | (:associated_id | "associated_id") -> ::Array[::Integer?]
+                  | (:associated_type | "associated_type") -> ::Array[::String?]
+                  | (:user_id | "user_id") -> ::Array[::Integer?]
+                  | (:user_type | "user_type") -> ::Array[::String?]
+                  | (:username | "username") -> ::Array[::String?]
+                  | (:action | "action") -> ::Array[::String?]
+                  | (:audited_changes | "audited_changes") -> ::Array[::String?]
+                  | (:version | "version") -> ::Array[::Integer?]
+                  | (:comment | "comment") -> ::Array[::String?]
+                  | (:remote_address | "remote_address") -> ::Array[::String?]
+                  | (:request_uuid | "request_uuid") -> ::Array[::String?]
+                  | (:created_at | "created_at") -> ::Array[::ActiveSupport::TimeWithZone?]
+                  | ...
     def self.ascending: () -> ::Audited::Audit::ActiveRecord_Relation
     def self.descending: () -> ::Audited::Audit::ActiveRecord_Relation
     def self.creates: () -> ::Audited::Audit::ActiveRecord_Relation
@@ -698,6 +714,23 @@ module ::Audited
       include ::Enumerable[::Audited::Audit]
       include ::Audited::Audit::GeneratedRelationMethods
       include ::ActiveRecord::Relation::Methods[::Audited::Audit, ::Integer]
+
+      def pluck: (:id | "id") -> ::Array[::Integer]
+               | (:auditable_id | "auditable_id") -> ::Array[::Integer?]
+               | (:auditable_type | "auditable_type") -> ::Array[::String?]
+               | (:associated_id | "associated_id") -> ::Array[::Integer?]
+               | (:associated_type | "associated_type") -> ::Array[::String?]
+               | (:user_id | "user_id") -> ::Array[::Integer?]
+               | (:user_type | "user_type") -> ::Array[::String?]
+               | (:username | "username") -> ::Array[::String?]
+               | (:action | "action") -> ::Array[::String?]
+               | (:audited_changes | "audited_changes") -> ::Array[::String?]
+               | (:version | "version") -> ::Array[::Integer?]
+               | (:comment | "comment") -> ::Array[::String?]
+               | (:remote_address | "remote_address") -> ::Array[::String?]
+               | (:request_uuid | "request_uuid") -> ::Array[::String?]
+               | (:created_at | "created_at") -> ::Array[::ActiveSupport::TimeWithZone?]
+               | ...
     end
 
     class ::Audited::Audit::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
@@ -718,6 +751,22 @@ module ::Audited
       def destroy: (*::Audited::Audit | ::Integer) -> ::Array[::Audited::Audit]
       def <<: (*::Audited::Audit | ::Array[::Audited::Audit]) -> self
       def prepend: (*::Audited::Audit | ::Array[::Audited::Audit]) -> self
+      def pluck: (:id | "id") -> ::Array[::Integer]
+               | (:auditable_id | "auditable_id") -> ::Array[::Integer?]
+               | (:auditable_type | "auditable_type") -> ::Array[::String?]
+               | (:associated_id | "associated_id") -> ::Array[::Integer?]
+               | (:associated_type | "associated_type") -> ::Array[::String?]
+               | (:user_id | "user_id") -> ::Array[::Integer?]
+               | (:user_type | "user_type") -> ::Array[::String?]
+               | (:username | "username") -> ::Array[::String?]
+               | (:action | "action") -> ::Array[::String?]
+               | (:audited_changes | "audited_changes") -> ::Array[::String?]
+               | (:version | "version") -> ::Array[::Integer?]
+               | (:comment | "comment") -> ::Array[::String?]
+               | (:remote_address | "remote_address") -> ::Array[::String?]
+               | (:request_uuid | "request_uuid") -> ::Array[::String?]
+               | (:created_at | "created_at") -> ::Array[::ActiveSupport::TimeWithZone?]
+               | ...
     end
   end
 end
