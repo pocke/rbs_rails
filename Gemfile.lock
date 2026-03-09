@@ -133,7 +133,7 @@ GEM
     net-smtp (0.5.0)
       net-protocol
     nio4r (2.7.4)
-    nokogiri (1.18.9)
+    nokogiri (1.19.1)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
     parser (3.3.8.0)
@@ -143,7 +143,7 @@ GEM
     psych (5.1.2)
       stringio
     racc (1.8.1)
-    rack (3.1.18)
+    rack (3.1.20)
     rack-session (2.1.1)
       base64 (>= 0.1.0)
       rack (>= 3.0.0)
