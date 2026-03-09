@@ -553,10 +553,10 @@ module RbsRails
             class_name = if klass.enum_definitions.any? { |name, _| name == col.name.to_sym }
                            '::String'
                          else
-                           sql_type_to_class(col.type)
+                           column_type_to_class(col)
                          end
           end
-          sql_class_name = col.type == :datetime ? '::Time' : sql_type_to_class(col.type)
+          sql_class_name = (col.type == :datetime && !column_array_type?(col)) ? '::Time' : column_type_to_class(col)
           # If the DB says the column can be null, we need `<type>?`
           # ...but if the type is already `untyped` there's no point in writing `untyped?`
           class_name_opt = (class_name == 'untyped') ? 'untyped' : optional(class_name)
@@ -634,10 +634,36 @@ module RbsRails
         class_name.include?("|") ? "(#{class_name})?" : "#{class_name}?"
       end
 
+      # PostgreSQL array columns (e.g. varchar[], integer[]) are detected via column.array?
+      # Method array? only exists on PostgreSQL::Column, not the base ActiveRecord::ConnectionAdapters::Column
+      # So untyped + .respond_to?(:array?) is probably the simplest + safest way to go at this time.
+      # @rbs col: untyped
+      private def column_array_type?(col) #: bool
+        # TODO: this is appropriate for PostgreSQL::Column subclass.
+        #  is this a common pattern? Hoping this works for other DBs that have array type columns
+        col.respond_to?(:array?) && col.array?
+      end
+
+      # Returns RBS type for a column, wrapping in ::Array[core_type] for PostgreSQL array columns
+      # The `type` method is missing from the RBS definition of Column.
+      # In Rails source, type is added via delegate :type, to: :sql_type_metadata,
+      # and delegation-based methods are not captured in the generated RBS signatures.
+      # The RBS only lists name, default, sql_type_metadata, null, etc.
+      # So, untyped since type would not help here until upstream defs are fixed
+      # @rbs col: untyped
+      private def column_type_to_class(col) #: String
+        core_type = sql_type_to_class(col.type)
+        if column_array_type?(col)
+          "::Array[#{core_type}]"
+        else
+          core_type
+        end
+      end
+
       # @rbs t: untyped
       private def sql_type_to_class(t) #: untyped
         case t
-        when :integer
+        when :integer, :bigint
           '::Integer'
         when :float
           '::Float'
