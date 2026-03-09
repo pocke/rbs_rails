@@ -34,7 +34,7 @@ class ::Blog < ::ApplicationRecord
 
     def saved_change_to_id?: () -> bool
 
-    def will_save_change_to_id?: () -> bool
+    def will_save_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def restore_id!: () -> void
 
@@ -74,7 +74,7 @@ class ::Blog < ::ApplicationRecord
 
     def saved_change_to_title?: () -> bool
 
-    def will_save_change_to_title?: () -> bool
+    def will_save_change_to_title?: (?from: ::String?, ?to: ::String?) -> bool
 
     def restore_title!: () -> void
 
@@ -114,7 +114,7 @@ class ::Blog < ::ApplicationRecord
 
     def saved_change_to_description?: () -> bool
 
-    def will_save_change_to_description?: () -> bool
+    def will_save_change_to_description?: (?from: ::String?, ?to: ::String?) -> bool
 
     def restore_description!: () -> void
 
@@ -154,7 +154,7 @@ class ::Blog < ::ApplicationRecord
 
     def saved_change_to_user_id?: () -> bool
 
-    def will_save_change_to_user_id?: () -> bool
+    def will_save_change_to_user_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
     def restore_user_id!: () -> void
 
@@ -194,7 +194,7 @@ class ::Blog < ::ApplicationRecord
 
     def saved_change_to_created_at?: () -> bool
 
-    def will_save_change_to_created_at?: () -> bool
+    def will_save_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
 
     def restore_created_at!: () -> void
 
@@ -234,7 +234,7 @@ class ::Blog < ::ApplicationRecord
 
     def saved_change_to_updated_at?: () -> bool
 
-    def will_save_change_to_updated_at?: () -> bool
+    def will_save_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
 
     def restore_updated_at!: () -> void
 
