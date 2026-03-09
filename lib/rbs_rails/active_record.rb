@@ -543,6 +543,8 @@ module RbsRails
           #      if your model has `serialize ..., Array`
           # etc.
           col_serialize_to = col_serializer.try(:object_class)&.name
+
+          col_is_enum = klass.enum_definitions.any? { |name, _| name == col.name.to_sym }
           if col_serializer.is_a?(Class) && col_serializer.name == 'ActiveRecord::Coders::JSON'
             class_name = 'untyped' # JSON
           elsif col_serialize_to == 'Array'
@@ -550,7 +552,7 @@ module RbsRails
           elsif col_serialize_to == 'Hash'
             class_name = '::Hash[untyped, untyped]' # Hash
           else
-            class_name = if klass.enum_definitions.any? { |name, _| name == col.name.to_sym }
+            class_name = if col_is_enum
                            '::String'
                          else
                            sql_type_to_class(col.type)
@@ -562,9 +564,14 @@ module RbsRails
           class_name_opt = (class_name == 'untyped') ? 'untyped' : optional(class_name)
           column_type = col.null ? class_name_opt : class_name
           sql_column_type = col.null ? optional(sql_class_name) : sql_class_name
+          arg_type = if col_is_enum
+                       [sql_class_name, column_type, '::Symbol'].uniq.join('|')
+                     else
+                       column_type
+                     end
           sig = <<~EOS
             def #{col.name}: () -> #{column_type}
-            def #{col.name}=: (#{column_type}) -> #{column_type}
+            def #{col.name}=: (#{arg_type}) -> #{column_type}
             def #{col.name}?: () -> bool
             def #{col.name}_changed?: (?from: #{class_name_opt}, ?to: #{class_name_opt}) -> bool
             def #{col.name}_change: () -> [#{class_name_opt}, #{class_name_opt}]
