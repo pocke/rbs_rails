@@ -98,6 +98,15 @@ class ActiveRecordTest < Minitest::Test
     assert_equal expect_path.read, rbs_path.read
   end
 
+  def test_delivery_address_model_rbs_generation
+    rbs_path = app_dir.join('sig/rbs_rails/app/models/delivery_address.rbs')
+    expect_path = expectations_dir / 'delivery_address.rbs'
+    # Code to re-generate the expectation files
+    # expect_path.write rbs_path.read
+
+    assert_equal expect_path.read, rbs_path.read
+  end
+
   def test_check_db_migrations
     Bundler.with_unbundled_env do
       begin
