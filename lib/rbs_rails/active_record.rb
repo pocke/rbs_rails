@@ -67,7 +67,7 @@ module RbsRails
         RBS
       end
 
-      private def pk_type #: String
+      private def pk_type_for(klass) #: String
         pk = klass.primary_key
         return 'top' unless pk
 
@@ -81,6 +81,10 @@ module RbsRails
           col = klass.columns.find { |column| column.name == pk }
           sql_type_to_class(col.type)
         end
+      end
+
+      private def pk_type #: String
+        pk_type_for(klass)
       end
 
       private def generated_relation_methods_decl #: String
@@ -169,12 +173,13 @@ module RbsRails
           type = Util.module_name(a.klass)
           collection_type = "#{type}::ActiveRecord_Associations_CollectionProxy"
           @dependencies << collection_type
+          association_pk_type = pk_type_for(a.klass)
 
           <<~RUBY.chomp
             def #{a.name}: () -> #{collection_type}
             def #{a.name}=: (#{collection_type} | ::Array[#{type}]) -> (#{collection_type} | ::Array[#{type}])
-            def #{singular_name}_ids: () -> ::Array[::Integer]
-            def #{singular_name}_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+            def #{singular_name}_ids: () -> ::Array[#{association_pk_type}]
+            def #{singular_name}_ids=: (::Array[#{association_pk_type}]) -> ::Array[#{association_pk_type}]
           RUBY
         end.join("\n")
       end
@@ -187,12 +192,13 @@ module RbsRails
           type = Util.module_name(a.klass)
           collection_type = "#{type}::ActiveRecord_Associations_CollectionProxy"
           @dependencies << collection_type
+          association_pk_type = pk_type_for(a.klass)
 
           <<~RUBY.chomp
             def #{a.name}: () -> #{collection_type}
             def #{a.name}=: (#{collection_type} | ::Array[#{type}]) -> (#{collection_type} | ::Array[#{type}])
-            def #{singular_name}_ids: () -> ::Array[::Integer]
-            def #{singular_name}_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+            def #{singular_name}_ids: () -> ::Array[#{association_pk_type}]
+            def #{singular_name}_ids=: (::Array[#{association_pk_type}]) -> ::Array[#{association_pk_type}]
           RUBY
         end.join("\n")
       end
