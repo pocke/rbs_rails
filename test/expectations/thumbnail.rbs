@@ -220,6 +220,12 @@ class ::Thumbnail < ::ApplicationRecord
   end
   include ::Thumbnail::GeneratedAssociationMethods
 
+  def self.pluck: (:id | "id") -> ::Array[::Integer]
+                | (:blog_id | "blog_id") -> ::Array[::Integer]
+                | (:created_at | "created_at") -> ::Array[::ActiveSupport::TimeWithZone]
+                | (:updated_at | "updated_at") -> ::Array[::ActiveSupport::TimeWithZone]
+                | ...
+
   module ::Thumbnail::GeneratedRelationMethods
   end
 
@@ -227,6 +233,12 @@ class ::Thumbnail < ::ApplicationRecord
     include ::Enumerable[::Thumbnail]
     include ::Thumbnail::GeneratedRelationMethods
     include ::ActiveRecord::Relation::Methods[::Thumbnail, ::Integer]
+
+    def pluck: (:id | "id") -> ::Array[::Integer]
+             | (:blog_id | "blog_id") -> ::Array[::Integer]
+             | (:created_at | "created_at") -> ::Array[::ActiveSupport::TimeWithZone]
+             | (:updated_at | "updated_at") -> ::Array[::ActiveSupport::TimeWithZone]
+             | ...
   end
 
   class ::Thumbnail::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
@@ -247,6 +259,11 @@ class ::Thumbnail < ::ApplicationRecord
     def destroy: (*::Thumbnail | ::Integer) -> ::Array[::Thumbnail]
     def <<: (*::Thumbnail | ::Array[::Thumbnail]) -> self
     def prepend: (*::Thumbnail | ::Array[::Thumbnail]) -> self
+    def pluck: (:id | "id") -> ::Array[::Integer]
+             | (:blog_id | "blog_id") -> ::Array[::Integer]
+             | (:created_at | "created_at") -> ::Array[::ActiveSupport::TimeWithZone]
+             | (:updated_at | "updated_at") -> ::Array[::ActiveSupport::TimeWithZone]
+             | ...
   end
 end
 

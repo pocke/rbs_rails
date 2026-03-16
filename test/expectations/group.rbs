@@ -185,6 +185,11 @@ class ::Group < ::ApplicationRecord
   end
   include ::Group::GeneratedAssociationMethods
 
+  def self.pluck: (:id | "id") -> ::Array[::Integer]
+                | (:created_at | "created_at") -> ::Array[::ActiveSupport::TimeWithZone]
+                | (:updated_at | "updated_at") -> ::Array[::ActiveSupport::TimeWithZone]
+                | ...
+
   module ::Group::GeneratedRelationMethods
   end
 
@@ -192,6 +197,11 @@ class ::Group < ::ApplicationRecord
     include ::Enumerable[::Group]
     include ::Group::GeneratedRelationMethods
     include ::ActiveRecord::Relation::Methods[::Group, ::Integer]
+
+    def pluck: (:id | "id") -> ::Array[::Integer]
+             | (:created_at | "created_at") -> ::Array[::ActiveSupport::TimeWithZone]
+             | (:updated_at | "updated_at") -> ::Array[::ActiveSupport::TimeWithZone]
+             | ...
   end
 
   class ::Group::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
@@ -212,6 +222,10 @@ class ::Group < ::ApplicationRecord
     def destroy: (*::Group | ::Integer) -> ::Array[::Group]
     def <<: (*::Group | ::Array[::Group]) -> self
     def prepend: (*::Group | ::Array[::Group]) -> self
+    def pluck: (:id | "id") -> ::Array[::Integer]
+             | (:created_at | "created_at") -> ::Array[::ActiveSupport::TimeWithZone]
+             | (:updated_at | "updated_at") -> ::Array[::ActiveSupport::TimeWithZone]
+             | ...
   end
 end
 
