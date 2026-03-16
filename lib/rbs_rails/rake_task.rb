@@ -23,6 +23,7 @@ module RbsRails
       block.call(self) if block
 
       def_generate_rbs_for_models
+      def_generate_rbs_for_mailers
       def_generate_rbs_for_path_helpers
       def_all
     end
@@ -47,6 +48,17 @@ module RbsRails
           sh "rbs_rails", "models", "--signature-root-dir=#{signature_root_dir}"
         else
           sh "rbs_rails", "models"
+        end
+      end
+    end
+
+    def def_generate_rbs_for_mailers #: void
+      desc 'Generate RBS files for Action Mailer mailers'
+      task :"#{name}:generate_rbs_for_mailers" do
+        if signature_root_dir
+          sh "rbs_rails", "mailers", "--signature-root-dir=#{signature_root_dir}"
+        else
+          sh "rbs_rails", "mailers"
         end
       end
     end
