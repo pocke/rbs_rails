@@ -182,6 +182,9 @@ class ::Group < ::ApplicationRecord
   def reload_thumbnail: () -> ::Thumbnail?
 
   module ::Group::GeneratedAssociationMethods
+    def users_attributes=: (Hash[untyped, untyped] | Array[Hash[untyped, untyped]]) -> void
+
+    def thumbnail_attributes=: (Hash[untyped, untyped]) -> void
   end
   include ::Group::GeneratedAssociationMethods
 

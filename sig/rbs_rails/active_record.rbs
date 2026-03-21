@@ -49,6 +49,8 @@ module RbsRails
 
       private def belongs_to: () -> String
 
+      private def nested_attributes_methods: () -> String?
+
       private def generated_association_methods: () -> String
 
       # @rbs singleton: bool
