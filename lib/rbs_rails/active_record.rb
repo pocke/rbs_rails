@@ -228,9 +228,9 @@ module RbsRails
           methods << "def #{a.name}=: (#{type_optional}) -> #{type_optional}"
           methods << "def reload_#{a.name}: () -> #{type_optional}"
           if !a.polymorphic?
-            methods << "def build_#{a.name}: (untyped) -> #{type}"
-            methods << "def create_#{a.name}: (untyped) -> #{type}"
-            methods << "def create_#{a.name}!: (untyped) -> #{type}"
+            methods << "def build_#{a.name}: (?untyped) -> #{type}"
+            methods << "def create_#{a.name}: (?untyped) -> #{type}"
+            methods << "def create_#{a.name}!: (?untyped) -> #{type}"
           end
           methods.join("\n")
         end.join("\n")
