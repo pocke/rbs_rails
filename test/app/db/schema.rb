@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_10_000002) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_10_140743) do
   create_table "audits", force: :cascade do |t|
     t.integer "auditable_id"
     t.string "auditable_type"
@@ -88,6 +88,20 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_10_000002) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "projects", id: :string, force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "tags", id: :string, force: :cascade do |t|
+    t.string "project_id", null: false
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id"], name: "index_tags_on_project_id"
+  end
+
   create_table "thumbnails", force: :cascade do |t|
     t.integer "blog_id", null: false
     t.datetime "created_at", null: false
@@ -111,6 +125,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_10_000002) do
   end
 
   add_foreign_key "delivery_addresses", "users"
+  add_foreign_key "tags", "projects"
   add_foreign_key "thumbnails", "blogs"
   add_foreign_key "users", "groups"
 end
