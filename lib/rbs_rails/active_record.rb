@@ -47,6 +47,7 @@ module RbsRails
           #{columns}
           #{alias_columns}
           #{associations}
+          #{composed_of_aggregations}
           #{generated_association_methods}
           #{has_secure_password}
           #{delegated_type_instance}
@@ -234,21 +235,58 @@ module RbsRails
           methods << "def #{a.name}=: (#{type_optional}) -> #{type_optional}"
           methods << "def reload_#{a.name}: () -> #{type_optional}"
           if !a.polymorphic?
-            methods << "def build_#{a.name}: (untyped) -> #{type}"
-            methods << "def create_#{a.name}: (untyped) -> #{type}"
-            methods << "def create_#{a.name}!: (untyped) -> #{type}"
+            methods << "def build_#{a.name}: (?untyped) -> #{type}"
+            methods << "def create_#{a.name}: (?untyped) -> #{type}"
+            methods << "def create_#{a.name}!: (?untyped) -> #{type}"
           end
           methods.join("\n")
         end.join("\n")
       end
 
+      private def composed_of_aggregations #: String
+        klass.reflect_on_all_aggregations.map do |a|
+          type = Util.module_name(a.klass)
+          @dependencies << a.klass.name
+          if a.options[:allow_nil]
+            type_optional = optional(type)
+            <<~RUBY.chomp
+              def #{a.name}: () -> #{type_optional}
+              def #{a.name}=: (#{type_optional}) -> #{type_optional}
+            RUBY
+          else
+            <<~RUBY.chomp
+              def #{a.name}: () -> #{type}
+              def #{a.name}=: (#{type}) -> #{type}
+            RUBY
+          end
+        end.join("\n")
+      end
+
+      private def nested_attributes_methods #: String?
+        return if klass.nested_attributes_options.empty?
+
+        klass.nested_attributes_options.each_key.map do |association_name|
+          reflection = klass.reflect_on_association(association_name)
+          next unless reflection
+
+          setter_name = "#{association_name}_attributes="
+          if reflection.collection?
+            "def #{setter_name}: (Hash[untyped, untyped] | Array[Hash[untyped, untyped]]) -> void"
+          else
+            "def #{setter_name}: (Hash[untyped, untyped]) -> void"
+          end
+        end.compact.join("\n")
+      end
+
       private def generated_association_methods #: String
-        # @type var sigs: Array[String]
+        # @type var sigs: Array[String?]
         sigs = []
+
+        sigs << "module #{klass_name}::GeneratedAssociationMethods"
+        sigs << nested_attributes_methods
 
         # Needs to require "active_storage/engine"
         if klass.respond_to?(:attachment_reflections)
-          sigs << "module #{klass_name}::GeneratedAssociationMethods"
           sigs << klass.attachment_reflections.map do |name, reflection|
             case reflection.macro
             when :has_one_attached
@@ -270,11 +308,12 @@ module RbsRails
               raise "unknown macro: #{reflection.macro}"
             end
           end.join("\n")
-          sigs << "end"
-          sigs << "include #{klass_name}::GeneratedAssociationMethods"
         end
 
-        sigs.join("\n")
+        sigs << "end"
+        sigs << "include #{klass_name}::GeneratedAssociationMethods"
+
+        sigs.compact.join("\n")
       end
 
       # @rbs singleton: bool

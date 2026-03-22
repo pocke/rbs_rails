@@ -660,6 +660,7 @@ module ::Audited
     def associated: () -> untyped
     def associated=: (untyped?) -> untyped?
     def reload_associated: () -> untyped?
+
     module ::Audited::Audit::GeneratedAssociationMethods
     end
     include ::Audited::Audit::GeneratedAssociationMethods

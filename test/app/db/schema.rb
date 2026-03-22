@@ -52,6 +52,19 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_10_140743) do
     t.integer "price"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "currency_code"
+  end
+
+  create_table "delivery_addresses", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "postal_code", null: false
+    t.string "prefecture", null: false
+    t.string "city", null: false
+    t.string "street_address", null: false
+    t.string "building_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_delivery_addresses_on_user_id"
   end
 
   create_table "groups", force: :cascade do |t|
@@ -111,6 +124,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_10_140743) do
     t.index ["group_id"], name: "index_users_on_group_id"
   end
 
+  add_foreign_key "delivery_addresses", "users"
   add_foreign_key "tags", "projects"
   add_foreign_key "thumbnails", "blogs"
   add_foreign_key "users", "groups"
