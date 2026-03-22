@@ -51,6 +51,8 @@ module RbsRails
 
       private def composed_of_aggregations: () -> String
 
+      private def nested_attributes_methods: () -> String?
+
       private def generated_association_methods: () -> String
 
       # @rbs singleton: bool
