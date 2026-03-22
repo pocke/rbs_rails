@@ -166,7 +166,7 @@ class ::User < ::ApplicationRecord
 
     def status: () -> ::String
 
-    def status=: (::String) -> ::String
+    def status=: (::Integer | ::String | ::Symbol) -> ::String
 
     def status?: () -> bool
 
@@ -446,7 +446,7 @@ class ::User < ::ApplicationRecord
 
     def label: () -> ::String
 
-    def label=: (::String) -> ::String
+    def label=: (::Integer | ::String | ::Symbol) -> ::String
 
     def label?: () -> bool
 
