@@ -609,7 +609,10 @@ class ::User < ::ApplicationRecord
     alias id_value_for_database id_for_database
   end
   include ::User::GeneratedAliasAttributeMethods
-
+  def delivery_addresses: () -> ::DeliveryAddress::ActiveRecord_Associations_CollectionProxy
+  def delivery_addresses=: (::DeliveryAddress::ActiveRecord_Associations_CollectionProxy | ::Array[::DeliveryAddress]) -> (::DeliveryAddress::ActiveRecord_Associations_CollectionProxy | ::Array[::DeliveryAddress])
+  def delivery_address_ids: () -> ::Array[::Integer]
+  def delivery_address_ids=: (::Array[::Integer]) -> ::Array[::Integer]
   def blogs: () -> ::Blog::ActiveRecord_Associations_CollectionProxy
   def blogs=: (::Blog::ActiveRecord_Associations_CollectionProxy | ::Array[::Blog]) -> (::Blog::ActiveRecord_Associations_CollectionProxy | ::Array[::Blog])
   def blog_ids: () -> ::Array[::Integer]
@@ -632,6 +635,7 @@ class ::User < ::ApplicationRecord
   def build_group: (?untyped) -> ::Group
   def create_group: (?untyped) -> ::Group
   def create_group!: (?untyped) -> ::Group
+
   module ::User::GeneratedAssociationMethods
     def avatar: () -> ::ActiveStorage::Attached::One
 
@@ -737,6 +741,10 @@ class ::User < ::ApplicationRecord
 end
 
 class ::ApplicationRecord < ::ActiveRecord::Base
+end
+class ::DeliveryAddress < ::ApplicationRecord
+end
+class ::DeliveryAddress::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
 end
 class ::Blog < ::ApplicationRecord
 end
