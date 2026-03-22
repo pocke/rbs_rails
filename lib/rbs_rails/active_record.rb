@@ -47,6 +47,7 @@ module RbsRails
           #{columns}
           #{alias_columns}
           #{associations}
+          #{composed_of_aggregations}
           #{generated_association_methods}
           #{has_secure_password}
           #{delegated_type_instance}
@@ -233,6 +234,25 @@ module RbsRails
             methods << "def create_#{a.name}!: (untyped) -> #{type}"
           end
           methods.join("\n")
+        end.join("\n")
+      end
+
+      private def composed_of_aggregations #: String
+        klass.reflect_on_all_aggregations.map do |a|
+          type = Util.module_name(a.klass)
+          @dependencies << a.klass.name
+          if a.options[:allow_nil]
+            type_optional = optional(type)
+            <<~RUBY.chomp
+              def #{a.name}: () -> #{type_optional}
+              def #{a.name}=: (#{type_optional}) -> #{type_optional}
+            RUBY
+          else
+            <<~RUBY.chomp
+              def #{a.name}: () -> #{type}
+              def #{a.name}=: (#{type}) -> #{type}
+            RUBY
+          end
         end.join("\n")
       end
 
