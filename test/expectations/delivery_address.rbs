@@ -413,9 +413,9 @@ class ::DeliveryAddress < ::ApplicationRecord
   def user: () -> ::User
   def user=: (::User?) -> ::User?
   def reload_user: () -> ::User?
-  def build_user: (untyped) -> ::User
-  def create_user: (untyped) -> ::User
-  def create_user!: (untyped) -> ::User
+  def build_user: (?untyped) -> ::User
+  def create_user: (?untyped) -> ::User
+  def create_user!: (?untyped) -> ::User
   def address: () -> ::Address
   def address=: (::Address) -> ::Address
   module ::DeliveryAddress::GeneratedAssociationMethods

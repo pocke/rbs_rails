@@ -293,9 +293,9 @@ class ::Book < ::ApplicationRecord
   def order: () -> ::Order
   def order=: (::Order?) -> ::Order?
   def reload_order: () -> ::Order?
-  def build_order: (untyped) -> ::Order
-  def create_order: (untyped) -> ::Order
-  def create_order!: (untyped) -> ::Order
+  def build_order: (?untyped) -> ::Order
+  def create_order: (?untyped) -> ::Order
+  def create_order!: (?untyped) -> ::Order
   def money: () -> ::Money?
   def money=: (::Money?) -> ::Money?
   module ::Book::GeneratedAssociationMethods
