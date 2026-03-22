@@ -206,7 +206,7 @@ class ::Book < ::ApplicationRecord
 
     def currency_code: () -> ::String?
 
-    def currency_code=: (::String?) -> ::String?
+    def currency_code=: (::String | ::String? | ::Symbol) -> ::String?
 
     def currency_code?: () -> bool
 
