@@ -253,9 +253,10 @@ class ::Tag < ::ApplicationRecord
   def project: () -> ::Project
   def project=: (::Project?) -> ::Project?
   def reload_project: () -> ::Project?
-  def build_project: (untyped) -> ::Project
-  def create_project: (untyped) -> ::Project
-  def create_project!: (untyped) -> ::Project
+  def build_project: (?untyped) -> ::Project
+  def create_project: (?untyped) -> ::Project
+  def create_project!: (?untyped) -> ::Project
+
   module ::Tag::GeneratedAssociationMethods
   end
   include ::Tag::GeneratedAssociationMethods
