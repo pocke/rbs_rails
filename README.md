@@ -73,7 +73,7 @@ RbsRails.configure do |config|
   # Enable or disable checking for database migrations.
   # If enabled, rbs_rails stops to generate RBS files if database is not migrated to the latest version.
   # Default: enabled
-  check_db_migrations = true
+  config.check_db_migrations = true
 
   # Define which models should be ignored during generation
   config.ignore_model_if do |klass|
