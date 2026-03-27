@@ -15,7 +15,7 @@ module RbsRails
 
       @ignore_model_if: (^(singleton(ActiveRecord::Base)) -> bool)?
 
-      attr_reader check_db_migrations: bool
+      attr_accessor check_db_migrations: bool
 
       def initialize: () -> void
 

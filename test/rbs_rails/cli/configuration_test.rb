@@ -54,6 +54,21 @@ class ConfigurationTest < Minitest::Test
     assert_equal path, config.signature_root_dir
   end
 
+  def test_default_check_db_migrations
+    config = RbsRails::CLI::Configuration.instance
+
+    assert config.check_db_migrations
+  end
+
+  def test_check_db_migrations_can_be_set_to_false
+    RbsRails.configure do |config|
+      config.check_db_migrations = false
+    end
+
+    config = RbsRails::CLI::Configuration.instance
+    refute config.check_db_migrations
+  end
+
   def test_default_ignored_model
     config = RbsRails::CLI::Configuration.instance
 
