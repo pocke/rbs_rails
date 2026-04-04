@@ -180,6 +180,7 @@ class ::Group < ::ApplicationRecord
   def create_thumbnail: (?untyped) -> ::Thumbnail
   def create_thumbnail!: (?untyped) -> ::Thumbnail
   def reload_thumbnail: () -> ::Thumbnail?
+  def reset_thumbnail: () -> void
 
   module ::Group::GeneratedAssociationMethods
     def users_attributes=: (Hash[untyped, untyped] | Array[Hash[untyped, untyped]]) -> void
