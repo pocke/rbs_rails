@@ -654,12 +654,21 @@ module ::Audited
     def auditable: () -> untyped
     def auditable=: (untyped?) -> untyped?
     def reload_auditable: () -> untyped?
+    def auditable_changed?: () -> bool
+    def auditable_previously_changed?: () -> bool
+    def reset_auditable: () -> void
     def user: () -> untyped
     def user=: (untyped?) -> untyped?
     def reload_user: () -> untyped?
+    def user_changed?: () -> bool
+    def user_previously_changed?: () -> bool
+    def reset_user: () -> void
     def associated: () -> untyped
     def associated=: (untyped?) -> untyped?
     def reload_associated: () -> untyped?
+    def associated_changed?: () -> bool
+    def associated_previously_changed?: () -> bool
+    def reset_associated: () -> void
 
     module ::Audited::Audit::GeneratedAssociationMethods
     end

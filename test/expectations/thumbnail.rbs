@@ -213,6 +213,9 @@ class ::Thumbnail < ::ApplicationRecord
   def blog: () -> ::Blog
   def blog=: (::Blog?) -> ::Blog?
   def reload_blog: () -> ::Blog?
+  def blog_changed?: () -> bool
+  def blog_previously_changed?: () -> bool
+  def reset_blog: () -> void
   def build_blog: (?untyped) -> ::Blog
   def create_blog: (?untyped) -> ::Blog
   def create_blog!: (?untyped) -> ::Blog
