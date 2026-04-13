@@ -20,7 +20,7 @@ module RbsRails
       #   @signature_root_dir: Pathname?
       #   @ignore_model_if: (^(singleton(ActiveRecord::Base)) -> bool)?
 
-      attr_reader :check_db_migrations  #: bool
+      attr_accessor :check_db_migrations  #: bool
 
       def initialize #: void
         @signature_root_dir = nil
