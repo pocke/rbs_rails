@@ -15,6 +15,7 @@
 * Generate RBS signatures for accepts_nested_attributes_for setters [#381](https://github.com/pocke/rbs_rails/pull/381)
 * Allow Integer and Symbol in enum attribute setter signatures [#379](https://github.com/pocke/rbs_rails/pull/379)
 * Determine primary key types for has_many and has_and_belongs_to_many associations [#376](https://github.com/pocke/rbs_rails/pull/376)
+* fix: Use attr_accessor for check_db_migrations to allow setting false [#385](https://github.com/pocke/rbs_rails/pull/385)
 
 ### Bug fixes
 
