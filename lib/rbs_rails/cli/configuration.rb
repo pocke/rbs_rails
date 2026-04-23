@@ -2,7 +2,7 @@ require 'forwardable'
 require 'singleton'
 
 module RbsRails
-  class CLI
+  class CLI < Thor
     class Configuration
       include Singleton
 

@@ -1,4 +1,4 @@
-require "optparse"
+require "thor"
 require "rbs_rails/cli/configuration"
 
 module RbsRails
@@ -7,62 +7,58 @@ module RbsRails
     CLI::Configuration.configure(&block)
   end
 
-  class CLI
-    attr_reader :config_file #: String?
+  class CLI < Thor
+    class_option :signature_root_dir, type: :string, banner: "DIR",
+                 desc: "Specify the root directory for RBS signatures"
+    class_option :config, type: :string, banner: "FILE",
+                 desc: "Load configuration from FILE"
 
-    # @rbs argv: Array[String]
-    def run(argv) #: Integer
-      parser = create_option_parser
+    desc "all", "Generate all RBS files"
+    def all #: void
+      apply_options
+      load_application
+      load_config
+      generate_models
+      generate_path_helpers
+    end
 
-      begin
-        args = parser.parse(argv)
-        subcommand = args.shift || "help"
+    desc "models", "Generate RBS files for models"
+    def models #: void
+      apply_options
+      load_application
+      load_config
+      generate_models
+    end
 
-        case subcommand
-        when "help"
-          $stdout.puts parser.help
-          0
-        when "version"
-          $stdout.puts "rbs_rails #{RbsRails::VERSION}"
-          0
-        when "all"
-          load_application
-          load_config
-          generate_models
-          generate_path_helpers
-          0
-        when "models"
-          load_application
-          load_config
-          generate_models
-          0
-        when "path_helpers"
-          load_application
-          load_config
-          generate_path_helpers
-          0
-        else
-          $stdout.puts "Unknown command: #{subcommand}"
-          $stdout.puts parser.help
-          1
-        end
-      rescue OptionParser::InvalidOption => e
-        $stderr.puts "Error: #{e.message}"
-        $stdout.puts parser.help
-        1
-      end
-    rescue StandardError => e
-      $stderr.puts "Error: #{e.message}"
-      1
+    desc "path_helpers", "Generate RBS for Rails path helpers"
+    def path_helpers #: void
+      apply_options
+      load_application
+      load_config
+      generate_path_helpers
+    end
+
+    desc "version", "Show version"
+    def version #: void
+      puts "rbs_rails #{RbsRails::VERSION}"
+    end
+
+    def self.exit_on_failure? #: bool
+      true
     end
 
     private
 
-    def config #: Configuration
+    def apply_options #: void
+      rbs_config.signature_root_dir = Pathname.new(options[:signature_root_dir]) if options[:signature_root_dir]
+    end
+
+    def rbs_config #: Configuration
       Configuration.instance
     end
 
     def load_config #: void
+      config_file = options[:config]
       if config_file
         load config_file
       else
@@ -103,7 +99,7 @@ module RbsRails
 
     # Raise an error if database is not migrated to the latest version
     def check_db_migrations! #: void
-      return unless config.check_db_migrations
+      return unless rbs_config.check_db_migrations
 
       if ::ActiveRecord::Migration.respond_to? :check_all_pending!
         # Rails 7.1 or later
@@ -115,7 +111,7 @@ module RbsRails
 
     # @rbs klass: singleton(ActiveRecord::Base)
     def generate_single_model(klass) #: bool
-      return false if config.ignored_model?(klass)
+      return false if rbs_config.ignored_model?(klass)
       return false unless RbsRails::ActiveRecord.generatable?(klass)
 
       original_path, _line = Object.const_source_location(klass.name) rescue nil
@@ -128,7 +124,7 @@ module RbsRails
                             "app/models/#{klass.name.underscore}.rbs"
                           end
 
-      path = config.signature_root_dir / rbs_relative_path
+      path = rbs_config.signature_root_dir / rbs_relative_path
       path.dirname.mkpath
 
       sig = RbsRails::ActiveRecord.class_to_rbs(klass)
@@ -138,36 +134,11 @@ module RbsRails
     end
 
     def generate_path_helpers #: void
-      path = config.signature_root_dir.join 'path_helpers.rbs'
+      path = rbs_config.signature_root_dir.join 'path_helpers.rbs'
       path.dirname.mkpath
 
       sig = RbsRails::PathHelpers.generate
       Util::FileWriter.new(path).write sig
-    end
-
-    def create_option_parser #: OptionParser
-      OptionParser.new do |opts|
-        opts.banner = <<~BANNER
-          Usage: rbs_rails [command] [options]
-
-          Commands:
-                  help           Show this help message
-                  version        Show version
-                  all            Generate all RBS files
-                  models         Generate RBS files for models
-                  path_helpers   Generate RBS for Rails path helpers
-
-          Options:
-        BANNER
-
-        opts.on("--signature-root-dir=DIR", "Specify the root directory for RBS signatures") do |dir|
-          config.signature_root_dir = Pathname.new(dir)
-        end
-
-        opts.on("--config=FILE", "Load configuration from FILE") do |file|
-          @config_file = file
-        end
-      end
     end
   end
 end
