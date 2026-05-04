@@ -623,15 +623,20 @@ class ::User < ::ApplicationRecord
   def create_avatar_attachment: (?untyped) -> ::ActiveStorage::Attachment
   def create_avatar_attachment!: (?untyped) -> ::ActiveStorage::Attachment
   def reload_avatar_attachment: () -> ::ActiveStorage::Attachment?
+  def reset_avatar_attachment: () -> void
   def avatar_blob: () -> ::ActiveStorage::Blob?
   def avatar_blob=: (::ActiveStorage::Blob?) -> ::ActiveStorage::Blob?
   def build_avatar_blob: (?untyped) -> ::ActiveStorage::Blob
   def create_avatar_blob: (?untyped) -> ::ActiveStorage::Blob
   def create_avatar_blob!: (?untyped) -> ::ActiveStorage::Blob
   def reload_avatar_blob: () -> ::ActiveStorage::Blob?
+  def reset_avatar_blob: () -> void
   def group: () -> ::Group
   def group=: (::Group?) -> ::Group?
   def reload_group: () -> ::Group?
+  def group_changed?: () -> bool
+  def group_previously_changed?: () -> bool
+  def reset_group: () -> void
   def build_group: (?untyped) -> ::Group
   def create_group: (?untyped) -> ::Group
   def create_group!: (?untyped) -> ::Group
