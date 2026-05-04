@@ -100,6 +100,21 @@ module RbsRails
       # @rbs class_name: String
       private def optional: (String class_name) -> String
 
+      # PostgreSQL array columns (e.g. varchar[], integer[]) are detected via column.array?
+      # Method array? only exists on PostgreSQL::Column, not the base ActiveRecord::ConnectionAdapters::Column
+      # So untyped + .respond_to?(:array?) is probably the simplest + safest way to go at this time.
+      # @rbs col: untyped
+      private def column_array_type?: (untyped col) -> bool
+
+      # Returns RBS type for a column, wrapping in ::Array[core_type] for PostgreSQL array columns
+      # The `type` method is missing from the RBS definition of Column.
+      # In Rails source, type is added via delegate :type, to: :sql_type_metadata,
+      # and delegation-based methods are not captured in the generated RBS signatures.
+      # The RBS only lists name, default, sql_type_metadata, null, etc.
+      # So, untyped since type would not help here until upstream defs are fixed
+      # @rbs col: untyped
+      private def column_type_to_class: (untyped col) -> String
+
       # @rbs t: untyped
       private def sql_type_to_class: (untyped t) -> untyped
 
