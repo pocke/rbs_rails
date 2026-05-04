@@ -645,6 +645,45 @@ module RbsRails
         end.join("\n")
         mod_sig << "\nend\n"
         mod_sig << "include #{klass_name}::GeneratedAttributeMethods"
+        va = virtual_attributes
+        mod_sig << "\n#{va}" unless va.empty?
+        mod_sig
+      end
+
+      private def virtual_attributes #: String
+        column_names = klass.columns.map(&:name)
+        names = klass.attribute_names.reject { |name| column_names.include?(name) }
+        return '' if names.empty?
+
+        mod_sig = +"module #{klass_name}::GeneratedAttributeMethods\n"
+        mod_sig << names.map do |name|
+          type = klass.attribute_types[name]
+          class_name = sql_type_to_class(type.type)
+          class_name_opt = (class_name == 'untyped') ? 'untyped' : optional(class_name)
+          sig = <<~EOS
+            def #{name}: () -> #{class_name_opt}
+            def #{name}=: (#{class_name_opt}) -> #{class_name_opt}
+            def #{name}?: () -> bool
+            def #{name}_changed?: (?from: #{class_name_opt}, ?to: #{class_name_opt}) -> bool
+            def #{name}_change: () -> [#{class_name_opt}, #{class_name_opt}]
+            def #{name}_will_change!: () -> void
+            def #{name}_was: () -> #{class_name_opt}
+            def #{name}_previously_changed?: (?from: #{class_name_opt}, ?to: #{class_name_opt}) -> bool
+            def #{name}_previous_change: () -> ::Array[#{class_name_opt}]?
+            def #{name}_previously_was: () -> #{class_name_opt}
+            def #{name}_before_last_save: () -> #{class_name_opt}
+            def #{name}_change_to_be_saved: () -> ::Array[#{class_name_opt}]?
+            def #{name}_in_database: () -> #{class_name_opt}
+            def saved_change_to_#{name}: () -> ::Array[#{class_name_opt}]?
+            def saved_change_to_#{name}?: (?from: #{class_name_opt}, ?to: #{class_name_opt}) -> bool
+            def will_save_change_to_#{name}?: (?from: #{class_name_opt}, ?to: #{class_name_opt}) -> bool
+            def restore_#{name}!: () -> void
+            def clear_#{name}_change: () -> void
+          EOS
+          sig << "\n"
+          sig
+        end.join("\n")
+        mod_sig << "\nend\n"
         mod_sig
       end
 

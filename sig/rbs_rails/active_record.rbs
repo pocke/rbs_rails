@@ -95,6 +95,8 @@ module RbsRails
 
       private def columns: () -> untyped
 
+      private def virtual_attributes: () -> String
+
       private def alias_columns: () -> untyped
 
       # @rbs class_name: String

@@ -205,6 +205,80 @@ class ::Order < ::ApplicationRecord
     def updated_at_for_database: () -> ::Time
   end
   include ::Order::GeneratedAttributeMethods
+  module ::Order::GeneratedAttributeMethods
+    def tax_rate: () -> ::Float?
+
+    def tax_rate=: (::Float?) -> ::Float?
+
+    def tax_rate?: () -> bool
+
+    def tax_rate_changed?: (?from: ::Float?, ?to: ::Float?) -> bool
+
+    def tax_rate_change: () -> [ ::Float?, ::Float? ]
+
+    def tax_rate_will_change!: () -> void
+
+    def tax_rate_was: () -> ::Float?
+
+    def tax_rate_previously_changed?: (?from: ::Float?, ?to: ::Float?) -> bool
+
+    def tax_rate_previous_change: () -> ::Array[::Float?]?
+
+    def tax_rate_previously_was: () -> ::Float?
+
+    def tax_rate_before_last_save: () -> ::Float?
+
+    def tax_rate_change_to_be_saved: () -> ::Array[::Float?]?
+
+    def tax_rate_in_database: () -> ::Float?
+
+    def saved_change_to_tax_rate: () -> ::Array[::Float?]?
+
+    def saved_change_to_tax_rate?: (?from: ::Float?, ?to: ::Float?) -> bool
+
+    def will_save_change_to_tax_rate?: (?from: ::Float?, ?to: ::Float?) -> bool
+
+    def restore_tax_rate!: () -> void
+
+    def clear_tax_rate_change: () -> void
+
+    def gift_message: () -> ::String?
+
+    def gift_message=: (::String?) -> ::String?
+
+    def gift_message?: () -> bool
+
+    def gift_message_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def gift_message_change: () -> [ ::String?, ::String? ]
+
+    def gift_message_will_change!: () -> void
+
+    def gift_message_was: () -> ::String?
+
+    def gift_message_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def gift_message_previous_change: () -> ::Array[::String?]?
+
+    def gift_message_previously_was: () -> ::String?
+
+    def gift_message_before_last_save: () -> ::String?
+
+    def gift_message_change_to_be_saved: () -> ::Array[::String?]?
+
+    def gift_message_in_database: () -> ::String?
+
+    def saved_change_to_gift_message: () -> ::Array[::String?]?
+
+    def saved_change_to_gift_message?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_gift_message?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_gift_message!: () -> void
+
+    def clear_gift_message_change: () -> void
+  end
+
   module ::Order::GeneratedAliasAttributeMethods
     include ::Order::GeneratedAttributeMethods
 
