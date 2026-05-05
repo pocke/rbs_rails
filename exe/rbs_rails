@@ -3,4 +3,9 @@
 require "rbs_rails"
 require "rbs_rails/cli"
 
-exit RbsRails::CLI.new().run(ARGV)
+begin
+  RbsRails::CLI.start(ARGV)
+rescue StandardError => e
+  $stderr.puts "Error: #{e.message}"
+  exit 1
+end
