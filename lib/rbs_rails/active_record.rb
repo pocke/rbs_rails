@@ -425,7 +425,7 @@ module RbsRails
         klass.enum_definitions.each do |_, enum_method_name|
           ["#{enum_method_name}!", "#{enum_method_name}?"].each do |method_name|
             if defined_methods.member?(method_name.to_sym)
-              methods << "def #{method_name}: () -> bool"
+              methods << "def #{format_method_name(method_name)}: () -> bool"
             end
           end
         end
@@ -443,17 +443,29 @@ module RbsRails
           class_name = sql_type_to_class(column.type)
           method_name = "#{name.to_s.pluralize}"
           if defined_methods.member?(method_name.to_sym)
-            methods << "def #{singleton ? 'self.' : ''}#{method_name}: () -> ::ActiveSupport::HashWithIndifferentAccess[::String, #{class_name}]"
+            methods << "def #{singleton ? 'self.' : ''}#{format_method_name(method_name)}: () -> ::ActiveSupport::HashWithIndifferentAccess[::String, #{class_name}]"
           end
         end
         klass.enum_definitions.each do |_, enum_method_name|
           ["#{enum_method_name}", "not_#{enum_method_name}"].each do |method_name|
             if defined_methods.member?(method_name.to_sym)
-              methods << "def #{singleton ? 'self.' : ''}#{method_name}: () -> #{relation_class_name}"
+              methods << "def #{singleton ? 'self.' : ''}#{format_method_name(method_name)}: () -> #{relation_class_name}"
             end
           end
         end
         methods.join("\n")
+      end
+
+      # Formats a method name for use in an RBS signature. ASCII-only
+      # Ruby identifiers are emitted as-is; everything else is wrapped in
+      # backticks, matching the behavior of RBS::Writer#method_name.
+      # @rbs method_name: String
+      private def format_method_name(method_name) #: String
+        if method_name.match?(/\A[A-Za-z_][A-Za-z0-9_]*[!?=]?\z/)
+          method_name
+        else
+          "`#{method_name}`"
+        end
       end
 
       # @rbs singleton: untyped

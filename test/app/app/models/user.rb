@@ -16,7 +16,7 @@ class User < ApplicationRecord
 
   has_one_attached :avatar
 
-  enum :status, [:temporary, :accepted], default: :temporary
+  enum :status, [:temporary, :accepted, :"123ABC", :"América"], default: :temporary
   enum :alias_role, [:member, :manager], default: :member
   enum :label, [:gold, :silver], default: :gold, scopes: false, instance_methods: false
 end
