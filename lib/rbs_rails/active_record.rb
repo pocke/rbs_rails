@@ -639,9 +639,38 @@ module RbsRails
           sig << "\n"
           sig
         end.join("\n")
+        mod_sig << store_accessor_methods
         mod_sig << "\nend\n"
         mod_sig << "include #{klass_name}::GeneratedAttributeMethods"
         mod_sig
+      end
+
+      private def store_accessor_methods #: String
+        klass.stored_attributes.each_value.flat_map do |accessors|
+          accessors.map do |accessor|
+            sig = <<~EOS
+              def #{accessor}: () -> ::String?
+              def #{accessor}=: (::String?) -> ::String?
+              def #{accessor}?: () -> bool
+              def #{accessor}_changed?: (?from: ::String?, ?to: ::String?) -> bool
+              def #{accessor}_change: () -> [::String?, ::String?]
+              def #{accessor}_will_change!: () -> void
+              def #{accessor}_was: () -> ::String?
+              def #{accessor}_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+              def #{accessor}_previous_change: () -> ::Array[::String?]?
+              def #{accessor}_previously_was: () -> ::String?
+              def #{accessor}_before_last_save: () -> ::String?
+              def #{accessor}_change_to_be_saved: () -> ::Array[::String?]?
+              def saved_change_to_#{accessor}: () -> ::Array[::String?]?
+              def saved_change_to_#{accessor}?: (?from: ::String?, ?to: ::String?) -> bool
+              def will_save_change_to_#{accessor}?: (?from: ::String?, ?to: ::String?) -> bool
+              def restore_#{accessor}!: () -> void
+              def clear_#{accessor}_change: () -> void
+            EOS
+            sig << "\n"
+            sig
+          end
+        end.join("\n")
       end
 
       private def alias_columns

@@ -483,6 +483,148 @@ class ::User < ::ApplicationRecord
     def label_before_type_cast: () -> ::Integer
 
     def label_for_database: () -> ::Integer
+
+    def preferences: () -> ::String?
+
+    def preferences=: (::String?) -> ::String?
+
+    def preferences?: () -> bool
+
+    def preferences_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def preferences_change: () -> [ ::String?, ::String? ]
+
+    def preferences_will_change!: () -> void
+
+    def preferences_was: () -> ::String?
+
+    def preferences_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def preferences_previous_change: () -> ::Array[::String?]?
+
+    def preferences_previously_was: () -> ::String?
+
+    def preferences_before_last_save: () -> ::String?
+
+    def preferences_change_to_be_saved: () -> ::Array[::String?]?
+
+    def preferences_in_database: () -> ::String?
+
+    def saved_change_to_preferences: () -> ::Array[::String?]?
+
+    def saved_change_to_preferences?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_preferences?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_preferences!: () -> void
+
+    def clear_preferences_change: () -> void
+
+    def preferences_before_type_cast: () -> ::String?
+
+    def preferences_for_database: () -> ::String?
+
+    def theme: () -> ::String?
+
+    def theme=: (::String?) -> ::String?
+
+    def theme?: () -> bool
+
+    def theme_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def theme_change: () -> [ ::String?, ::String? ]
+
+    def theme_will_change!: () -> void
+
+    def theme_was: () -> ::String?
+
+    def theme_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def theme_previous_change: () -> ::Array[::String?]?
+
+    def theme_previously_was: () -> ::String?
+
+    def theme_before_last_save: () -> ::String?
+
+    def theme_change_to_be_saved: () -> ::Array[::String?]?
+
+    def saved_change_to_theme: () -> ::Array[::String?]?
+
+    def saved_change_to_theme?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_theme?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_theme!: () -> void
+
+    def clear_theme_change: () -> void
+
+    def notifications_enabled: () -> ::String?
+
+    def notifications_enabled=: (::String?) -> ::String?
+
+    def notifications_enabled?: () -> bool
+
+    def notifications_enabled_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def notifications_enabled_change: () -> [ ::String?, ::String? ]
+
+    def notifications_enabled_will_change!: () -> void
+
+    def notifications_enabled_was: () -> ::String?
+
+    def notifications_enabled_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def notifications_enabled_previous_change: () -> ::Array[::String?]?
+
+    def notifications_enabled_previously_was: () -> ::String?
+
+    def notifications_enabled_before_last_save: () -> ::String?
+
+    def notifications_enabled_change_to_be_saved: () -> ::Array[::String?]?
+
+    def saved_change_to_notifications_enabled: () -> ::Array[::String?]?
+
+    def saved_change_to_notifications_enabled?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_notifications_enabled?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_notifications_enabled!: () -> void
+
+    def clear_notifications_enabled_change: () -> void
+
+    def language: () -> ::String?
+
+    def language=: (::String?) -> ::String?
+
+    def language?: () -> bool
+
+    def language_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def language_change: () -> [ ::String?, ::String? ]
+
+    def language_will_change!: () -> void
+
+    def language_was: () -> ::String?
+
+    def language_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def language_previous_change: () -> ::Array[::String?]?
+
+    def language_previously_was: () -> ::String?
+
+    def language_before_last_save: () -> ::String?
+
+    def language_change_to_be_saved: () -> ::Array[::String?]?
+
+    def saved_change_to_language: () -> ::Array[::String?]?
+
+    def saved_change_to_language?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_language?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_language!: () -> void
+
+    def clear_language_change: () -> void
   end
   include ::User::GeneratedAttributeMethods
   module ::User::GeneratedAliasAttributeMethods
