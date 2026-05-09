@@ -483,6 +483,46 @@ class ::User < ::ApplicationRecord
     def label_before_type_cast: () -> ::Integer
 
     def label_for_database: () -> ::Integer
+
+    def token: () -> ::String?
+
+    def token=: (::String?) -> ::String?
+
+    def token?: () -> bool
+
+    def token_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def token_change: () -> [ ::String?, ::String? ]
+
+    def token_will_change!: () -> void
+
+    def token_was: () -> ::String?
+
+    def token_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def token_previous_change: () -> ::Array[::String?]?
+
+    def token_previously_was: () -> ::String?
+
+    def token_before_last_save: () -> ::String?
+
+    def token_change_to_be_saved: () -> ::Array[::String?]?
+
+    def token_in_database: () -> ::String?
+
+    def saved_change_to_token: () -> ::Array[::String?]?
+
+    def saved_change_to_token?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_token?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_token!: () -> void
+
+    def clear_token_change: () -> void
+
+    def token_before_type_cast: () -> ::String?
+
+    def token_for_database: () -> ::String?
   end
   include ::User::GeneratedAttributeMethods
   module ::User::GeneratedAliasAttributeMethods
@@ -659,6 +699,8 @@ class ::User < ::ApplicationRecord
     alias authenticate authenticate_password
   end
   include ::User::ActiveModel_SecurePassword_InstanceMethodsOnActivation_password
+
+  def regenerate_token: () -> true
 
   def temporary!: () -> bool
   def temporary?: () -> bool

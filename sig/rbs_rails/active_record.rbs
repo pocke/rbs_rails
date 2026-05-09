@@ -66,6 +66,8 @@ module RbsRails
 
       private def has_secure_password: () -> String?
 
+      private def has_secure_token: () -> String?
+
       private def enum_instance_methods: () -> String
 
       # @rbs singleton: untyped

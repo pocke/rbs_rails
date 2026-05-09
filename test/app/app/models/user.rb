@@ -9,6 +9,7 @@ class User < ApplicationRecord
   has_and_belongs_to_many :blogs
   has_many :delivery_addresses
   has_secure_password
+  has_secure_token
 
   serialize :phone_numbers, type: Array
   serialize :contact_info, type: Hash
