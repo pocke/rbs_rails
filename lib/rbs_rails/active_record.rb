@@ -50,6 +50,7 @@ module RbsRails
           #{composed_of_aggregations}
           #{generated_association_methods}
           #{has_secure_password}
+          #{has_secure_token}
           #{delegated_type_instance}
           #{delegated_type_scope(singleton: true)}
           #{enum_instance_methods}
@@ -419,6 +420,27 @@ module RbsRails
             end
             include #{klass_name}::ActiveModel_SecurePassword_InstanceMethodsOnActivation_#{attribute}
           EOS
+        end.compact.join("\n")
+      end
+
+      private def has_secure_token #: String?
+        ast = parse_model_file
+        return unless ast
+
+        traverse(ast).map do |node|
+          # @type block: String?
+          next unless node.type == :send
+          next unless node.children[0].nil?
+          next unless node.children[1] == :has_secure_token
+
+          attribute_node = node.children[2]
+          attribute = if attribute_node && attribute_node.type == :sym
+                        attribute_node.children[0]
+                      else
+                        :token
+                      end
+
+          "def regenerate_#{attribute}: () -> true"
         end.compact.join("\n")
       end
 
