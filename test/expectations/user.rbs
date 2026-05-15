@@ -669,6 +669,10 @@ class ::User < ::ApplicationRecord
   def temporary?: () -> bool
   def accepted!: () -> bool
   def accepted?: () -> bool
+  def `123ABC!`: () -> bool
+  def `123ABC?`: () -> bool
+  def `América!`: () -> bool
+  def `América?`: () -> bool
   def member!: () -> bool
   def member?: () -> bool
   def manager!: () -> bool
@@ -680,6 +684,10 @@ class ::User < ::ApplicationRecord
   def self.not_temporary: () -> ::User::ActiveRecord_Relation
   def self.accepted: () -> ::User::ActiveRecord_Relation
   def self.not_accepted: () -> ::User::ActiveRecord_Relation
+  def self.`123ABC`: () -> ::User::ActiveRecord_Relation
+  def self.not_123ABC: () -> ::User::ActiveRecord_Relation
+  def self.`América`: () -> ::User::ActiveRecord_Relation
+  def self.`not_América`: () -> ::User::ActiveRecord_Relation
   def self.member: () -> ::User::ActiveRecord_Relation
   def self.not_member: () -> ::User::ActiveRecord_Relation
   def self.manager: () -> ::User::ActiveRecord_Relation
@@ -702,6 +710,14 @@ class ::User < ::ApplicationRecord
     def accepted: () -> ::User::ActiveRecord_Relation
 
     def not_accepted: () -> ::User::ActiveRecord_Relation
+
+    def `123ABC`: () -> ::User::ActiveRecord_Relation
+
+    def not_123ABC: () -> ::User::ActiveRecord_Relation
+
+    def `América`: () -> ::User::ActiveRecord_Relation
+
+    def `not_América`: () -> ::User::ActiveRecord_Relation
 
     def member: () -> ::User::ActiveRecord_Relation
 
