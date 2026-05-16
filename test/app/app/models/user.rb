@@ -14,6 +14,9 @@ class User < ApplicationRecord
   serialize :contact_info, type: Hash
   serialize :family_tree, coder: JSON
 
+  store :preferences, accessors: [:theme, :notifications_enabled]
+  store_accessor :preferences, :language
+
   has_one_attached :avatar
 
   enum :status, [:temporary, :accepted, :"123ABC", :"América"], default: :temporary
