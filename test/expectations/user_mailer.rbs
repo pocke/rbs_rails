@@ -1,0 +1,5 @@
+# resolve-type-names: false
+
+class ::UserMailer < ::ApplicationMailer
+  def self.welcome_email: (*untyped) -> ::ActionMailer::MessageDelivery
+end
