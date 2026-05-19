@@ -1,7 +1,7 @@
 # Generated from lib/rbs_rails/cli/configuration.rb with RBS::Inline
 
 module RbsRails
-  class CLI
+  class CLI < Thor
     class Configuration
       include Singleton
 

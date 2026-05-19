@@ -5,6 +5,7 @@ PATH
       parser
       prism
       rbs (>= 1)
+      thor (>= 1.0)
 
 GEM
   remote: https://rubygems.org/

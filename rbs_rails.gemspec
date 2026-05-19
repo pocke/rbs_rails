@@ -28,4 +28,5 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'parser'
   spec.add_runtime_dependency 'prism'
   spec.add_runtime_dependency 'rbs', '>= 1'
+  spec.add_runtime_dependency 'thor', '>= 1.0'
 end
