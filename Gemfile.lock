@@ -126,7 +126,7 @@ GEM
     minitest-hooks (1.5.2)
       minitest (> 5.3)
     mutex_m (0.3.0)
-    net-imap (0.5.14)
+    net-imap (0.5.15)
       date
       net-protocol
     net-pop (0.1.2)
