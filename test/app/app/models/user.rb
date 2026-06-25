@@ -8,6 +8,10 @@ class User < ApplicationRecord
   belongs_to :group
   has_and_belongs_to_many :blogs
   has_many :delivery_addresses
+  belongs_to :featured_article, class_name: "Article", optional: true
+  has_and_belongs_to_many :related_articles, class_name: "Article"
+  has_many :articles
+  has_one :latest_article, class_name: "Article"
   has_secure_password
 
   serialize :phone_numbers, type: Array
