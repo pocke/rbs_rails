@@ -52,16 +52,11 @@ module RbsRails
       private def belongs_to: () -> String
 
       # @rbs require_generatable: boolish
-      private def associations_for: (untyped macro, ?require_generatable: boolish) -> untyped
+      private def associations_for: (untyped macro, ?require_generatable: boolish) -> Array[::ActiveRecord::Reflection::AssociationReflection]
 
+      # @rbs association: ::ActiveRecord::Reflection::AssociationReflection
       # @rbs require_generatable: boolish
-      private def generatable_association?: (untyped association, require_generatable: boolish) -> boolish
-
-      private def collection_association_signature: (untyped a) -> String
-
-      # @rbs builder_methods: boolish
-      # @rbs optional_reader: boolish
-      private def singular_association_signature: (untyped a, builder_methods: boolish, ?optional_reader: boolish) -> String
+      private def generatable_association?: (::ActiveRecord::Reflection::AssociationReflection association, require_generatable: boolish) -> boolish
 
       private def composed_of_aggregations: () -> String
 

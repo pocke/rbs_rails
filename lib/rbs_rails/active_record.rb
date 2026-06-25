@@ -168,19 +168,57 @@ module RbsRails
 
       private def has_many #: String
         associations_for(:has_many, require_generatable: true).map do |a|
-          collection_association_signature(a)
+          @dependencies << a.klass.name
+
+          singular_name = a.name.to_s.singularize
+          type = Util.module_name(a.klass)
+          collection_type = "#{type}::ActiveRecord_Associations_CollectionProxy"
+          @dependencies << collection_type
+          association_pk_type = pk_type_for(a.klass)
+
+          <<~RUBY.chomp
+            def #{a.name}: () -> #{collection_type}
+            def #{a.name}=: (#{collection_type} | ::Array[#{type}]) -> (#{collection_type} | ::Array[#{type}])
+            def #{singular_name}_ids: () -> ::Array[#{association_pk_type}]
+            def #{singular_name}_ids=: (::Array[#{association_pk_type}]) -> ::Array[#{association_pk_type}]
+          RUBY
         end.join("\n")
       end
 
       private def has_and_belongs_to_many #: String
         associations_for(:has_and_belongs_to_many, require_generatable: true).map do |a|
-          collection_association_signature(a)
+          @dependencies << a.klass.name
+
+          singular_name = a.name.to_s.singularize
+          type = Util.module_name(a.klass)
+          collection_type = "#{type}::ActiveRecord_Associations_CollectionProxy"
+          @dependencies << collection_type
+          association_pk_type = pk_type_for(a.klass)
+
+          <<~RUBY.chomp
+            def #{a.name}: () -> #{collection_type}
+            def #{a.name}=: (#{collection_type} | ::Array[#{type}]) -> (#{collection_type} | ::Array[#{type}])
+            def #{singular_name}_ids: () -> ::Array[#{association_pk_type}]
+            def #{singular_name}_ids=: (::Array[#{association_pk_type}]) -> ::Array[#{association_pk_type}]
+          RUBY
         end.join("\n")
       end
 
       private def has_one #: String
         associations_for(:has_one).map do |a|
-          singular_association_signature(a, builder_methods: true)
+          @dependencies << a.klass.name unless a.polymorphic?
+
+          type = a.polymorphic? ? 'untyped' : Util.module_name(a.klass)
+          type_optional = optional(type)
+          <<~RUBY.chomp
+            def #{a.name}: () -> #{type_optional}
+            def #{a.name}=: (#{type_optional}) -> #{type_optional}
+            def build_#{a.name}: (?untyped) -> #{type}
+            def create_#{a.name}: (?untyped) -> #{type}
+            def create_#{a.name}!: (?untyped) -> #{type}
+            def reload_#{a.name}: () -> #{type_optional}
+            def reset_#{a.name}: () -> void
+          RUBY
         end.join("\n")
       end
 
@@ -210,12 +248,13 @@ module RbsRails
       end
 
       # @rbs require_generatable: boolish
-      private def associations_for(macro, require_generatable: false) #: untyped
+      private def associations_for(macro, require_generatable: false) #: Array[::ActiveRecord::Reflection::AssociationReflection]
         klass.reflect_on_all_associations(macro).select do |association|
           generatable_association?(association, require_generatable:)
         end
       end
 
+      # @rbs association: ::ActiveRecord::Reflection::AssociationReflection
       # @rbs require_generatable: boolish
       private def generatable_association?(association, require_generatable:) #: boolish
         return true if association.polymorphic?
@@ -227,44 +266,6 @@ module RbsRails
         ActiveRecord.generatable?(association_klass)
       rescue ::ActiveRecord::StatementInvalid
         false
-      end
-
-      private def collection_association_signature(a) #: String
-        @dependencies << a.klass.name
-
-        singular_name = a.name.to_s.singularize
-        type = Util.module_name(a.klass)
-        collection_type = "#{type}::ActiveRecord_Associations_CollectionProxy"
-        @dependencies << collection_type
-        association_pk_type = pk_type_for(a.klass)
-
-        <<~RUBY.chomp
-          def #{a.name}: () -> #{collection_type}
-          def #{a.name}=: (#{collection_type} | ::Array[#{type}]) -> (#{collection_type} | ::Array[#{type}])
-          def #{singular_name}_ids: () -> ::Array[#{association_pk_type}]
-          def #{singular_name}_ids=: (::Array[#{association_pk_type}]) -> ::Array[#{association_pk_type}]
-        RUBY
-      end
-
-      # @rbs builder_methods: boolish
-      # @rbs optional_reader: boolish
-      private def singular_association_signature(a, builder_methods:, optional_reader: true) #: String
-        @dependencies << a.klass.name unless a.polymorphic?
-
-        type = a.polymorphic? ? 'untyped' : Util.module_name(a.klass)
-        type_optional = optional(type)
-        # @type var methods: Array[String]
-        methods = []
-        methods << "def #{a.name}: () -> #{optional_reader ? type_optional : type}"
-        methods << "def #{a.name}=: (#{type_optional}) -> #{type_optional}"
-        if builder_methods
-          methods << "def build_#{a.name}: (?untyped) -> #{type}"
-          methods << "def create_#{a.name}: (?untyped) -> #{type}"
-          methods << "def create_#{a.name}!: (?untyped) -> #{type}"
-        end
-        methods << "def reload_#{a.name}: () -> #{type_optional}"
-        methods << "def reset_#{a.name}: () -> void"
-        methods.join("\n")
       end
 
       private def composed_of_aggregations #: String
