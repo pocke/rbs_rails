@@ -207,16 +207,17 @@ module RbsRails
       private def has_one #: String
         klass.reflect_on_all_associations(:has_one).map do |a|
           @dependencies << a.klass.name unless a.polymorphic?
+          association_options = a.options
 
           type = a.polymorphic? ? 'untyped' : Util.module_name(a.klass)
-          type_optional = optional(type)
+          effective_type = association_options[:required] ? type : optional(type)
           <<~RUBY.chomp
-            def #{a.name}: () -> #{type_optional}
-            def #{a.name}=: (#{type_optional}) -> #{type_optional}
+            def #{a.name}: () -> #{effective_type}
+            def #{a.name}=: (#{effective_type}) -> #{effective_type}
             def build_#{a.name}: (?untyped) -> #{type}
             def create_#{a.name}: (?untyped) -> #{type}
             def create_#{a.name}!: (?untyped) -> #{type}
-            def reload_#{a.name}: () -> #{type_optional}
+            def reload_#{a.name}: () -> #{effective_type}
             def reset_#{a.name}: () -> void
           RUBY
         end.join("\n")

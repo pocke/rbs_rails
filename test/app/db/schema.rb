@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_10_140743) do
+ActiveRecord::Schema[7.2].define(version: 2026_06_26_093111) do
   create_table "audits", force: :cascade do |t|
     t.integer "auditable_id"
     t.string "auditable_type"
@@ -80,6 +80,15 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_10_140743) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "order_taxes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "order_id", null: false
+    t.decimal "amount", precision: 10, scale: 2
+    t.string "tax_type"
+    t.index ["order_id"], name: "index_order_taxes_on_order_id"
+  end
+
   create_table "orders", primary_key: ["shop_id", "id"], force: :cascade do |t|
     t.integer "id"
     t.integer "shop_id"
@@ -125,6 +134,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_10_140743) do
   end
 
   add_foreign_key "delivery_addresses", "users"
+  add_foreign_key "order_taxes", "orders"
   add_foreign_key "tags", "projects"
   add_foreign_key "thumbnails", "blogs"
   add_foreign_key "users", "groups"
