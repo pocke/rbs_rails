@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_10_140743) do
+ActiveRecord::Schema[7.2].define(version: 2026_05_10_000001) do
   create_table "audits", force: :cascade do |t|
     t.integer "auditable_id"
     t.string "auditable_type"
@@ -121,7 +121,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_10_140743) do
     t.datetime "updated_at", null: false
     t.integer "role", null: false
     t.integer "label", null: false
+    t.string "token"
     t.index ["group_id"], name: "index_users_on_group_id"
+    t.index ["token"], name: "index_users_on_token", unique: true
   end
 
   add_foreign_key "delivery_addresses", "users"
