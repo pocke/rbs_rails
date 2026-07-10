@@ -4,15 +4,22 @@ module RbsRails
   # @rbs &block: (CLI::Configuration) -> void
   def self.configure: () { (CLI::Configuration) -> void } -> void
 
-  class CLI
-    attr_reader config_file: String?
+  class CLI < Thor
+    def all: () -> void
 
-    # @rbs argv: Array[String]
-    def run: (Array[String] argv) -> Integer
+    def models: () -> void
+
+    def path_helpers: () -> void
+
+    def version: () -> void
+
+    def self.exit_on_failure?: () -> bool
 
     private
 
-    def config: () -> Configuration
+    def apply_options: () -> void
+
+    def rbs_config: () -> Configuration
 
     def load_config: () -> void
 
@@ -29,7 +36,5 @@ module RbsRails
     def generate_single_model: (singleton(ActiveRecord::Base) klass) -> bool
 
     def generate_path_helpers: () -> void
-
-    def create_option_parser: () -> OptionParser
   end
 end
