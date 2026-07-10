@@ -167,7 +167,7 @@ module RbsRails
       end
 
       private def has_many #: String
-        klass.reflect_on_all_associations(:has_many).map do |a|
+        associations_for(:has_many, require_generatable: true).map do |a|
           @dependencies << a.klass.name
 
           singular_name = a.name.to_s.singularize
@@ -186,7 +186,7 @@ module RbsRails
       end
 
       private def has_and_belongs_to_many #: String
-        klass.reflect_on_all_associations(:has_and_belongs_to_many).map do |a|
+        associations_for(:has_and_belongs_to_many, require_generatable: true).map do |a|
           @dependencies << a.klass.name
 
           singular_name = a.name.to_s.singularize
@@ -205,7 +205,7 @@ module RbsRails
       end
 
       private def has_one #: String
-        klass.reflect_on_all_associations(:has_one).map do |a|
+        associations_for(:has_one).map do |a|
           @dependencies << a.klass.name unless a.polymorphic?
 
           type = a.polymorphic? ? 'untyped' : Util.module_name(a.klass)
@@ -223,7 +223,7 @@ module RbsRails
       end
 
       private def belongs_to #: String
-        klass.reflect_on_all_associations(:belongs_to).map do |a|
+        associations_for(:belongs_to).map do |a|
           @dependencies << a.klass.name unless a.polymorphic?
 
           is_optional = a.options[:optional]
@@ -245,6 +245,27 @@ module RbsRails
           end
           methods.join("\n")
         end.join("\n")
+      end
+
+      # @rbs require_generatable: boolish
+      private def associations_for(macro, require_generatable: false) #: Array[::ActiveRecord::Reflection::AssociationReflection]
+        klass.reflect_on_all_associations(macro).select do |association|
+          generatable_association?(association, require_generatable:)
+        end
+      end
+
+      # @rbs association: ::ActiveRecord::Reflection::AssociationReflection
+      # @rbs require_generatable: boolish
+      private def generatable_association?(association, require_generatable:) #: boolish
+        return true if association.polymorphic?
+
+        association_klass = association.klass
+        return false if CLI::Configuration.instance.ignored_model?(association_klass)
+        return true unless require_generatable
+
+        ActiveRecord.generatable?(association_klass)
+      rescue ::ActiveRecord::StatementInvalid
+        false
       end
 
       private def composed_of_aggregations #: String
