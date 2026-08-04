@@ -1,0 +1,32 @@
+# Generated from lib/rbs_rails/action_mailer.rb with RBS::Inline
+
+module RbsRails
+  module ActionMailer
+    # @rbs klass: singleton(ActionMailer::Base)
+    def self.class_to_rbs: (singleton(ActionMailer::Base) klass) -> String
+
+    class Generator
+      @klass_name: String
+
+      # @rbs klass: singleton(ActionMailer::Base)
+      def initialize: (singleton(ActionMailer::Base) klass) -> void
+
+      def generate: () -> String
+
+      private def klass_decl: () -> String
+
+      private def header: () -> String
+
+      private def methods: () -> String
+
+      private def footer: () -> String
+
+      # @rbs abs: bool
+      private def klass_name: (?abs: bool) -> String
+
+      private
+
+      attr_reader klass: singleton(ActionMailer::Base)
+    end
+  end
+end
