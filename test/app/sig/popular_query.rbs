@@ -1,0 +1,8 @@
+class User
+  class PopularQuery
+    def self.call: (?) -> untyped
+
+    def initialize: (?untyped relation) -> void
+    def call: (?) -> untyped
+  end
+end

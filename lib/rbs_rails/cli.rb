@@ -87,6 +87,7 @@ module RbsRails
     def install_hooks #: void
       # Load inspectors.  This is necessary to load earlier than Rails application.
       require 'rbs_rails/active_record/enum'
+      require 'rbs_rails/active_record/scope'
     end
 
     def generate_models #: void
