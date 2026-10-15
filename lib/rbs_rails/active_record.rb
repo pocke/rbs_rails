@@ -226,7 +226,13 @@ module RbsRails
         klass.reflect_on_all_associations(:belongs_to).map do |a|
           @dependencies << a.klass.name unless a.polymorphic?
 
-          is_optional = a.options[:optional]
+          # Mirror ActiveRecord::Associations::Builder::BelongsTo.define_validations:
+          # without an explicit `optional:`, the model's belongs_to_required_by_default decides.
+          is_optional = if a.options[:optional].nil?
+                          !a.active_record.belongs_to_required_by_default
+                        else
+                          a.options[:optional]
+                        end
 
           type = a.polymorphic? ? 'untyped' : Util.module_name(a.klass)
           type_optional = optional(type)
