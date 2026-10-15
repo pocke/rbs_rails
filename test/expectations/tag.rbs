@@ -250,7 +250,7 @@ class ::Tag < ::ApplicationRecord
   end
   include ::Tag::GeneratedAliasAttributeMethods
 
-  def project: () -> ::Project
+  def project: () -> ::Project?
   def project=: (::Project?) -> ::Project?
   def reload_project: () -> ::Project?
   def project_changed?: () -> bool
